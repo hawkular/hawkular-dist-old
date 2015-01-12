@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.hawkular</groupId>
+        <artifactId>hawkular-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>hawkular-bom</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Hawkular BOM</name>
+    <description>Hawkular Bill Of Materials</description>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- CONVENTIONS: -->
+            <!-- - Dependencies must be SORTED ALPHABETICALLY on groupId -->
+            <!-- - Do not declare <scope> (exception: import) or <optional>: a child module will declare scope/optional itself. -->
+            <!-- - Always extract the version as a property. -->
+            <!-- - A element's inner order is <groupId>, <artifactId>, [<type>,] [<classifier>,] <version> -->
+
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${version.com.google.code.gson}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${version.com.google.guava}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>gnu.getopt</groupId>
+                <artifactId>java-getopt</artifactId>
+                <version>${version.gnu.getopt}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+            </dependency>
+
+            <!-- ActiveMQ BOM -->
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-parent</artifactId>
+                <version>${version.org.apache.activemq}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-rar</artifactId>
+                <version>${version.org.apache.activemq}</version>
+                <type>rar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.spec</groupId>
+                <artifactId>jboss-javaee-7.0</artifactId>
+                <version>${version.org.jboss.spec}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${version.org.testng}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-controller</artifactId>
+                <version>${version.org.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-dist</artifactId>
+                <version>${version.org.wildfly}</version>
+                <type>zip</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-server</artifactId>
+                <version>${version.org.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-subsystem-test-framework</artifactId>
+                <version>${version.org.wildfly}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>
