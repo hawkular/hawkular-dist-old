@@ -1,3 +1,4 @@
+# Java binary class files
 *.class
 
 # Mobile Tools for Java (J2ME)
@@ -8,8 +9,11 @@
 *.war
 *.ear
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# virtual machine crash logs
 hs_err_pid*
+
+# maven target directories
+target/
 
 # IDE files
 .project
@@ -20,3 +24,6 @@ hs_err_pid*
 *.iml
 *.iws
 nb-configuration.xml
+
+# KDE
+.directory
