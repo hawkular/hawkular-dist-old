@@ -105,7 +105,8 @@
         <!-- DEPENDENCY VERSIONS -->
 
         <!-- CONVENTIONS: -->
-        <!-- - A version property must be specified in the format "version.{groupId}", optionally with a suffix to make it unique. -->
+        <!-- - A version property must be specified in the format "version.{groupId}" -->
+        <!-- - If groupId is not unique, append the property name with "-{artifactId}" -->
         <!-- - Version properties must be sorted alphabetically -->
 
         <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
