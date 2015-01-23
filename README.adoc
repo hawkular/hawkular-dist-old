@@ -23,7 +23,7 @@ endif::[]
 
 == License
 
-Hawkular is released under Apache License, Version 2.0 as described in the https://LICENSE[LICENSE] document
+Hawkular is released under Apache License, Version 2.0 as described in the link:LICENSE[LICENSE] document
 
 ----
    Copyright 2015 Red Hat, Inc.
