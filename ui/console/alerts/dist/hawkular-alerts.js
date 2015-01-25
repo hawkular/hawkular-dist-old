@@ -30,8 +30,12 @@ var HawkularAlerts;
 var HawkularAlerts;
 (function (HawkularAlerts) {
     HawkularAlerts.AlertsController = HawkularAlerts._module.controller("HawkularAlerts.AlertsController", ['$scope', function ($scope) {
-        $scope.target = "World!";
+        $scope.alerts = [
+            { name: "Out of Memory Alert", priority: 2 },
+            { name: "Out of Disk Space", priority: 1 },
+            { name: "CPU High", priority: 3 }
+        ];
     }]);
 })(HawkularAlerts || (HawkularAlerts = {}));
 
-angular.module("hawkular-alerts-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/alerts/html/alerts.html","<div class=\"row\">\n  <div class=\"col-md-12\" ng-controller=\"HawkularAlerts.AlertsController\">\n    <h1>Alerts</h1>\n    <p>Hello {{target}}</p>\n  </div>\n</div>\n");}]); hawtioPluginLoader.addModule("hawkular-alerts-templates");
+angular.module("hawkular-alerts-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/alerts/html/alerts.html","<div class=\"row\">\n  <div class=\"col-md-12\" ng-controller=\"HawkularAlerts.AlertsController\">\n    <h1>Alerts</h1>\n      <ul class=\"list-group\" ng-repeat=\"alert in alerts | orderBy:priority:true\">\n          <li class=\"list-group-item\">{{alert.name}}</li>\n      </ul>\n\n  </div>\n</div>\n");}]); hawtioPluginLoader.addModule("hawkular-alerts-templates");
