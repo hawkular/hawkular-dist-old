@@ -1,8 +1,21 @@
-<div class="row">
+<div class="row" ng-controller="HawkularMetrics.MetricsController">
     <div class="col-md-12">
-       <h1>Hawkular Metrics Graphs</h1>
+        <h1>Hawkular Metrics Graphs</h1>
     </div>
-    <div class="col-md-12" ng-controller="HawkularMetrics.MetricsController">
-        <p>Hello {{target}}</p>
+    <div class="col-md-8" ng-controller="HawkularMetrics.MetricsController">
+        <form class="form-horizontal" name="chartForm" role="form" novalidate>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">ID</label>
+
+                <div class="col-sm-5">
+                    <input type="text" class="form-control" name="searchId" ng-model="searchId"
+                           placeholder="Enter Id..." required ng-minlength="1">
+                        <span class="error-message"
+                              ng-show="chartForm.searchId.$dirty && chartForm.searchId.$error.required"> * Required.</span>
+                    <span class="help-block">Example: 100, apache3.cpu1  </span>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
