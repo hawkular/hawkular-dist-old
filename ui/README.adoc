@@ -1,7 +1,7 @@
 = Hawkular UI
 
 [.lead]
-Hawkular UI is the home of the UI console for Hawkular.  The current console is based on https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[Hawt.io 2]jjjjjjj, which a javascript based client-side framework. The various directories underneath console directory are hawt.io 2 plugins and the various plugins eventually compose a Hawkular console. This modular approach to creating hawtio console plugins allows us to create individual plugins that comprise a console or can easily  be plugged into other hawtio based consoles. This modular, plugin system makes it easy to add/remove functionality (even dynamically).
+Hawkular UI is the home of the UI console for Hawkular.  The current console is based on https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[Hawt.io 2], which a javascript based client-side framework. The various directories underneath console directory are hawt.io 2 plugins and the various plugins eventually compose a Hawkular console. This modular approach to creating hawtio console plugins allows us to create individual plugins that comprise a console or can easily  be plugged into other hawtio based consoles. This modular, plugin system makes it easy to add/remove functionality (even dynamically).
 
 
 == UI Structure Proposal
@@ -27,7 +27,7 @@ Assuming the node.js is already installed:
 npm install -g bower gulp typescript
 cd ui/console/metrics
 gulp
-Navigate to http://localhost:2772/
+In browser: Navigate to http://localhost:2772/
 ....
 
 For further detail the hawt.io plugin structure is described https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[here].
