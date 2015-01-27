@@ -83,10 +83,6 @@
         </pluginRepository>
     </pluginRepositories>
 
-    <modules>
-        <module>hawkular-bom</module>
-    </modules>
-
     <properties>
 
         <!-- MAVEN VERSIONS -->
