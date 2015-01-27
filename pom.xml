@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.hawkular</groupId>
-    <artifactId>hawkular-parent</artifactId>
+    <artifactId>hawkular</artifactId>
     <packaging>pom</packaging>
 
     <!-- Important a released version should always follow any of these patterns: -->
@@ -82,10 +82,6 @@
             <url>https://clojars.org/repo</url>
         </pluginRepository>
     </pluginRepositories>
-
-    <modules>
-        <module>hawkular-bom</module>
-    </modules>
 
     <properties>
 
