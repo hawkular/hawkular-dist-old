@@ -3,7 +3,11 @@ language: java
 jdk:
   - oraclejdk8
 
-install: mvn clean install
+install:
+  - mvn -s .travis.maven.settings.xml -version -B
+
+script:
+  - mvn -s .travis.maven.settings.xml clean install
 
 notifications:
   email: false
