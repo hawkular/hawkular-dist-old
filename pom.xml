@@ -46,10 +46,6 @@
         <url>https://github.com/hawkular</url>
         <tag>HEAD</tag>
     </scm>
-    <ciManagement>
-        <system>hudson</system>
-        <url>https://hudson.jboss.org/hudson/job/hawkular</url>
-    </ciManagement>
     <issueManagement>
         <system>jira</system>
         <url>https://issues.jboss.org/browse/HAWKULAR</url>
