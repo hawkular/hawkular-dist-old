@@ -1,5 +1,5 @@
 /// <reference path="../../includes.d.ts" />
-/// <reference path="alertsGlobals.d.ts" />
-declare module HawkularAlerts {
+/// <reference path="exampleGlobals.d.ts" />
+declare module Example {
     var _module: ng.IModule;
 }
