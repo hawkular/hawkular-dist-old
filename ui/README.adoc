@@ -1,36 +1,45 @@
-= Hawkular UI
+= Hawkular Console
 
 [.lead]
-Hawkular UI is the home of the UI console for Hawkular.  The current console is based on https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[Hawt.io 2], which a javascript based client-side framework. The various directories underneath console directory are hawt.io 2 plugins and the various plugins eventually compose a Hawkular console. This modular approach to creating hawtio console plugins allows us to create individual plugins that comprise a console or can easily  be plugged into other hawtio based consoles. This modular, plugin system makes it easy to add/remove functionality (even dynamically).
+Hawkular Console is the home of the UI console for Hawkular.  The current console is based on https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[Hawt.io 2], which is (now) a javascript based client-side framework.
+This console application pulls in various bower packages (libs) and Hawt.io 2 plugins (which are also bower packages) to plug-n-play various functionality to the console. Since one of the bower packages it pulls in is our Hawt.io plugin, it loads this plugin and adds it to the nav bar.
 
+== UI Directory Structure
 
-== UI Structure Proposal
-
-
-....
 * ui - directory for various Hawkular UIs
-** console - The Hawkular UI console
-*** metrics - metrics plugin for Hawkular UI Console
-*** alerts - alerts plugin for Hawkular UI Console
-*** metrics - alerts plugin for Hawkular UI Console
+
+** ui/console - The Hawkular UI console - which consumes bower components from https://github.com/hawkular/hawkular-console[hawkular-ui-components] (_name change pending_)
 
 The general idea here being hawt.io UIs which are composed of plugins (that can swapped around like legos between the various UIs)
-
-....
 
 
 == Dev Install
 
 Assuming the node.js is already installed:
 
-....
-npm install -g bower gulp typescript
-cd ui/console/metrics
-gulp
+`npm install -g bower gulp typescript`
+
+Install the cli commands globally
+
+`cd ui/console`
+
+`npm install`
+
+Install the local npm packages
+
+`bower install`
+
+Install the local bower packages for the application
+
+`gulp`
+
+Run the application and 'watch' the source tree for any changes refreshing the browser if any changes
+
 In browser: Navigate to http://localhost:2772/
-....
+
+Profit!
 
 For further detail the hawt.io plugin structure is described https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[here].
 
 
-_Eventually, this will be part of the maven plugin for running frontend npm/bower installs_
+_The maven plugin for running frontend npm/bower installs is underway as well_
