@@ -1,11 +1,11 @@
 {
-  "name": "hawkular-alerts",
+  "name": "hawkular-console",
   "version": "0.1.0",
   "keywords": [
-    "hawtio"
+    "hawtio hawkular console"
   ],
   "main": [
-    "dist/hawkular-alerts.js"
+    "dist/hawkular-console.js"
   ],
   "ignore": [
     "**/.*",
@@ -19,7 +19,8 @@
   "dependencies": {
     "hawtio-core": "~2.0.0",
     "hawtio-core-navigation": "~2.0.0",
-    "hawtio-utilities": "~2.0.0"
+    "hawtio-utilities": "~2.0.0",
+    "hawkular-console": "https://github.com/hawkular/hawkular-console"
   },
   "devDependencies": {
     "bootstrap": "~3.3.1",
