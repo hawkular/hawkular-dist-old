@@ -17,6 +17,10 @@
     <name>Hawkular Root Parent</name>
     <description>Hawkular Parent POM</description>
 
+    <modules>
+        <module>ui/console</module>
+    </modules>
+
     <url>http://github.com/hawkular</url>
     <inceptionYear>2015</inceptionYear>
     <organization>
