@@ -20,6 +20,31 @@
 
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>.</directory>
+                                    <excludes>
+                                        <exclude>pom.xml</exclude>
+                                        <exclude>target/</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Download node.js and related modules to install 3rd party frontend libraries -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
@@ -27,7 +52,7 @@
                 <version>0.0.20</version>
 
                 <configuration>
-                    <workingDirectory>.</workingDirectory>
+                    <workingDirectory>target</workingDirectory>
                 </configuration>
 
                 <executions>
@@ -36,7 +61,7 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
-                        <phase>generate-resources</phase>
+                        <phase>package</phase>
                         <configuration>
                             <nodeVersion>v0.10.33</nodeVersion>
                             <npmVersion>2.1.10</npmVersion>
@@ -48,7 +73,7 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <phase>generate-resources</phase>
+                        <phase>package</phase>
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
@@ -59,7 +84,7 @@
                         <goals>
                             <goal>bower</goal>
                         </goals>
-                        <phase>generate-resources</phase>
+                        <phase>package</phase>
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
@@ -70,7 +95,7 @@
                         <goals>
                             <goal>gulp</goal>
                         </goals>
-                        <phase>generate-resources</phase>
+                        <phase>package</phase>
                         <configuration>
                             <arguments>build</arguments>
                         </configuration>
@@ -79,4 +104,39 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>2.5</version>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>target</directory>
+                                    <excludes>
+                                        <exclude>node/**</exclude>
+                                        <exclude>node_modules/**</exclude>
+                                        <exclude>libs/**</exclude>
+                                    </excludes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- This profile doesn't do anything, other than cause the above 'development' profile not to be activated when we're performing a release -->
+        <profile>
+            <id>release</id>
+        </profile>
+    </profiles>
 </project>
