@@ -1,6 +1,6 @@
 {
   "name": "hawkular-console",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "private": true,
   "keywords": [
     "hawtio hawkular console"
@@ -12,18 +12,14 @@
     "plugins"
   ],
   "dependencies": {
-    "hawtio-core": "~2.0.0",
-    "hawtio-core-navigation": "~2.0.0",
-    "hawtio-utilities": "~2.0.0",
-    "hawkular-ui-components": "~0.1.6"
+    "hawtio-core": "2.0.9",
+    "hawtio-core-navigation": "2.0.17",
+    "hawtio-utilities": "2.0.16",
+    "hawkular-ui-components": "~0.1.8"
   },
   "devDependencies": {
-    "bootstrap": "~3.3.1",
-    "patternfly": "~1.1.2",
-    "hawtio-core-dts": "~2.0.0",
-    "angular-mocks": "~1.3.7"
-  },
-  "resolutions": {
-    "angular": "1.3.11"
+    "bootstrap": "3.3.2",
+    "patternfly": "1.1.3",
+    "hawtio-core-dts": "2.0.9"
   }
 }
