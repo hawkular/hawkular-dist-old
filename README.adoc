@@ -10,6 +10,7 @@ Sub-projects are currently:
 * https://github.com/hawkular/hawkular-bus[Hawkular-bus]: asynchronous bus to connect the various parts
 * https://github.com/hawkular/hawkular-alerts[Hawkular-alerts]: alerting on events.
 * https://github.com/hawkular/hawkular-ui-components[Hawkular-ui-components]: ui components such as https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[Hawt.io 2] plugins and Angular directives that make up  the _Hawkular Console_
+* https://github.com/hawkular/hawkular-charts[Hawkular-charts]: Charts and other Angular visualization components used to graphically render data in _Hawkular._
 * https://github.com/hawkular/hawkular-build-tools[Hawkular build tools]: Helpers and definitions to build Hawkular
 
 == About this repository
