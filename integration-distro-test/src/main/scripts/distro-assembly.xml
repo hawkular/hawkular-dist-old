@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <baseDirectory>${project.build.finalName}</baseDirectory>
+
+  <fileSets>
+    <!-- all non-binary files -->
+    <fileSet>
+      <directory>${project.build.directory}/distro-resources</directory>
+      <outputDirectory>/wildfly-${version.org.wildfly}</outputDirectory>
+      <excludes>
+        <exclude>bin/*.sh</exclude>
+        <exclude>bin/*.bat</exclude>
+      </excludes>
+      <filtered>false</filtered>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+  </fileSets>
+
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.nest:hawkular-nest-distro</include>
+      </includes>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <!-- exclude unwanted stuff and exclude stuff we want to overlay via our own distro-resources -->
+        <excludes>
+          <exclude>wildfly-${version.org.wildfly}/standalone/configuration/standalone.xml</exclude>
+        </excludes>
+      </unpackOptions>
+    </dependencySet>
+
+    <!-- all component deployments that go in the modules directory -->
+    <!--
+    <dependencySet>
+      <outputDirectory>wildfly-${version.org.wildfly}/modules/system/layers/base/org/hawkular/nest/main/deployments
+      </outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.COMPONENT:hawkular-COMPONENT-war</include>
+      </includes>
+      <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+  -->
+
+  </dependencySets>
+
+</assembly>
+
