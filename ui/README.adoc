@@ -12,8 +12,41 @@ This console application pulls in various bower packages (libs) and Hawt.io 2 pl
 
 The general idea here being hawt.io UIs which are composed of plugins (that can swapped around like legos between the various UIs)
 
+== Maven Install
+
+The easiest way to build the console is to use maven (inside the `console` directory):
+
+`mvn install`
+
+No system http://nodejs.org/[Node.js] dependencies are needed.
+http://nodejs.org/[Node.js] and its related modules are managed by the https://github.com/eirslett/frontend-maven-plugin[frontend-maven-plugin].
+They are downloaded to the build target (./console/target) directory, where the actual http://gulpjs.com/[Gulp] based build process
+(triggered by the maven plugin) happens.
+
+To save some time during the build process, the downloaded http://nodejs.org/[Node.js] files and its related modules are not deleted after the
+
+`mvn clean`
+
+is executed. If you want to delete the whole target directory, please use the `release` profile:
+
+`mvn clean -Prelease`
+
+In that case, the http://nodejs.org/[Node.js] is downloaded again, together with relevant modules.
+
+After the console is built, you can access it by traversing to the the build target (./console/target) directory:
+
+`cd console/target`
+
+and running the appropriate gulp (default) target:
+
+`gulp`
+
+After those steps, the console is available on http://localhost:2772/[http://localhost:2772/]
 
 == Dev Install
+
+You can still re-build the console using only java-script based tools. Please do that only after maven build and
+only within the build target (./console/target) directory.
 
 Assuming the node.js is already installed:
 
@@ -21,7 +54,7 @@ Assuming the node.js is already installed:
 
 Install the cli commands globally
 
-`cd ui/console`
+`cd console/target`
 
 `npm install`
 
