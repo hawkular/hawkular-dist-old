@@ -35,7 +35,6 @@
     <plugins>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
         <executions>
           <execution>
             <id>copy-resources</id>
@@ -128,7 +127,6 @@
         <plugins>
           <plugin>
             <artifactId>maven-clean-plugin</artifactId>
-            <version>2.5</version>
             <configuration>
               <excludeDefaultDirectories>true</excludeDefaultDirectories>
               <filesets>
