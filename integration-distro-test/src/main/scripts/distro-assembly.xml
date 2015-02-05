@@ -65,6 +65,8 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.inventory:rest-api</include>
+        <include>org.hawkular.alerts:hawkular-alerts-ear</include>
+        <include>org.hawkular.alerts:hawkular-notifiers-email</include>
       </includes>
       <unpack>false</unpack>
       <fileMode>0644</fileMode>
