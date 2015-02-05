@@ -59,19 +59,17 @@
     </dependencySet>
 
     <!-- all component deployments that go in the modules directory -->
-    <!--
     <dependencySet>
       <outputDirectory>wildfly-${version.org.wildfly}/modules/system/layers/base/org/hawkular/nest/main/deployments
       </outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.hawkular.COMPONENT:hawkular-COMPONENT-war</include>
+        <include>org.hawkular.inventory:rest-api</include>
       </includes>
       <unpack>false</unpack>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
-  -->
 
   </dependencySets>
 
