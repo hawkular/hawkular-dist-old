@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>2</version>
+    <version>5</version>
   </parent>
 
   <artifactId>hawkular</artifactId>
@@ -79,9 +79,7 @@
     <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
     <version.com.google.guava>16.0.1</version.com.google.guava>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
-    <version.junit>4.11</version.junit>
     <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
-    <version.org.jboss.spec>1.0.0.Final</version.org.jboss.spec>
     <version.org.testng>6.5.2</version.org.testng>
     <version.org.wildfly>8.2.0.Final</version.org.wildfly>
 
