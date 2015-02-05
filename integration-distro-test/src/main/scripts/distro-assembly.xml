@@ -67,6 +67,10 @@
         <include>org.hawkular.inventory:rest-api</include>
         <include>org.hawkular.alerts:hawkular-alerts-ear</include>
         <include>org.hawkular.alerts:hawkular-notifiers-email</include>
+        <include>org.rhq.metrics:rest-servlet</include>
+        <include>org.rhq.metrics:metrics-console</include>
+        <include>org.rhq.metrics:explorer</include>
+        <include>org.rhq.metrics:embedded-cassandra-ear</include>
       </includes>
       <unpack>false</unpack>
       <fileMode>0644</fileMode>

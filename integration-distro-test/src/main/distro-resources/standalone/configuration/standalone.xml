@@ -46,6 +46,11 @@
         <extension module="org.hawkular.bus.broker"/>
         <extension module="org.hawkular.nest"/>
     </extensions>
+
+    <system-properties>
+        <property name="rhq-metrics.backend" value="embedded_cass" />
+    </system-properties>
+
     <management>
         <security-realms>
             <security-realm name="ManagementRealm">
