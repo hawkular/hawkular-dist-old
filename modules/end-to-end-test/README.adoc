@@ -1,0 +1,22 @@
+= End To End Tests
+
+This module contains End-to-End test scenarios
+
+== Scenario 1: Register a target URL and list metrics
+
+A user on the UI will add a http-URL of a remote server to monitor.
+Hawkular will "ping" the resource via Http (HEAD?) request and record ping time + also
+record the size of the returned data
+
+image::Scenario1.png[]
+
+Steps:
+
+* Client adds a new resource of type URL
+* Client adds 2 metric names for ping time and data size (TODO implicit for type=URL ?)
+* Inventory informs the "pinger" that starts working
+* Pinger reports metrics to Metrics module
+* Clients requests metrics data for the metrics names above
+* Client defines an alert against one of the metrics of the resource
+
+
