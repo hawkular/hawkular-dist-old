@@ -48,7 +48,7 @@
     </extensions>
 
     <system-properties>
-        <property name="rhq-metrics.backend" value="embedded_cass" />
+        <property name="hawkular-metrics.backend" value="embedded_cass" />
     </system-properties>
 
     <management>
@@ -364,11 +364,11 @@
                     </connection-definitions>
                     <admin-objects>
                       <admin-object class-name="org.apache.activemq.command.ActiveMQTopic"
-                                    jndi-name="java:/topic/HKNotifications"
+                                    jndi-name="java:/topic/HawkularNotifications"
                                     enabled="true" use-java-context="true"
-                                    pool-name="HKNotifications">
+                                    pool-name="HawkularNotifications">
                         <config-property name="PhysicalName">
-                          HKNotifications
+                          HawkularNotifications
                         </config-property>
                       </admin-object>
                     </admin-objects>
