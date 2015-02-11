@@ -51,7 +51,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
-      <artifactId>rest-api</artifactId>
+      <artifactId>inventory-rest-api</artifactId>
       <version>${version.org.hawkular.inventory}</version>
       <type>war</type>
     </dependency>
