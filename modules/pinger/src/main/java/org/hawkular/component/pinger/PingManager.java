@@ -16,12 +16,26 @@
  */
 package org.hawkular.component.pinger;
 
+import org.hawkular.metrics.client.common.SingleMetric;
+
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A SLSB that coordinates the pinging of resources
@@ -32,25 +46,52 @@ import java.util.List;
 @Singleton
 public class PingManager {
 
+    String tenantId = "rest-test";
+
     @EJB
     public
     Pinger pinger;
 
-    String[] destinations = {
-            "http://jboss.org/rhq",
-            "http://www.redhat.com/",
-            "http://hawkular.github.io/"};
+    Set<PingDestination> destinations = new HashSet<>();
+
+
+    @PostConstruct
+    public void startUp() {
+
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target("http://localhost:8080/hawkular/inventory/" + tenantId + "/resources");
+        target.queryParam("type","URL");
+        Response response = target.request().get();
+
+        if (response.getStatus()==200) {
+
+            List list = response.readEntity(List.class); // TODO -> String.class and then Gson.fromJson ?
+
+
+            for (Object o  : list) {
+                if (o instanceof Map) {
+
+                    Map<String,Object> m = (Map) o;
+                    String id = (String) m.get("id");
+                    String type = (String) m.get("type");
+                    Map<String,String> params = (Map<String, String>) m.get("parameters");
+                    String url = params.get("url");
+                    destinations.add(new PingDestination(id,url));
+                }
+            }
+        }
+    }
 
 
 
-
-    @Schedule(minute = "*")
+    @Lock(LockType.READ)
+    @Schedule(minute = "*", hour = "*")
     public void scheduleWork() {
 
-        List<PingStatus> results = new ArrayList<>(destinations.length);
+        List<PingStatus> results = new ArrayList<>(destinations.size());
 
-        for (String url : destinations) {
-            PingStatus result = pinger.ping(url);
+        for (PingDestination destination : destinations) {
+            PingStatus result = pinger.ping(destination);
             results.add(result);
         }
 
@@ -58,8 +99,44 @@ public class PingManager {
     }
 
     private void reportResults(List<PingStatus> results) {
-        for (PingStatus ps : results) {
-            System.err.println(ps);
+
+        List<SingleMetric> metrics = new ArrayList<>(results.size());
+        for (PingStatus status : results){
+            SingleMetric m = new SingleMetric(status.destination.name() + ".duration",
+                    status
+                    .getTimestamp(), (double) status.getDuration());
+            metrics.add(m);
+            m = new SingleMetric(status.destination.name() + ".code",
+                    status
+                    .getTimestamp(), (double) status.getCode());
+            metrics.add(m);
+
         }
+
+
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target("http://localhost:8080/hawkular/metrics/" + tenantId +
+                "/metrics/numeric/data");
+
+
+        Entity<List<SingleMetric>> payload = Entity.entity(metrics, MediaType.APPLICATION_JSON_TYPE);
+        Response response = target.request().post(payload);
+
+        System.err.println("post status " + response.getStatus() + " : " + response.getStatusInfo());
+
+
     }
+
+    public void addDestination(PingDestination s) {
+        destinations.add(s);
+    }
+
+    public List<PingDestination> getDestinations() {
+        return new ArrayList<>(destinations);
+    }
+
+    public void removeDestination(PingDestination url) {
+        destinations.remove(url);
+    }
+
 }

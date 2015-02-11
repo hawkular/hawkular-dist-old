@@ -32,16 +32,45 @@
   <groupId>org.hawkular</groupId>
   <artifactId>hawkular-pinger</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <packaging>war</packaging>
 
 
   <description>Component that allows to ping remote web sites and report their status code + response time
   </description>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
+      <version>3.0.10.Final</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.inventory</groupId>
+      <artifactId>inventory-api</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.metrics</groupId>
+      <artifactId>clients-common</artifactId>
+      <version>0.3.0-SNAPSHOT</version>
+    </dependency>
+
     <dependency>
       <groupId>org.jboss.spec.javax.ejb</groupId>
       <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+      <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>jms-api</artifactId>
+      <version>1.1-rev-1</version>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
@@ -51,9 +80,53 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${version.junit}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.bus</groupId>
+      <artifactId>hawkular-bus-common</artifactId>
+      <version>1.0.0.Alpha1-SNAPSHOT</version>
     </dependency>
 
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.google.code.gson</groupId>
+                  <artifactId>gson</artifactId>
+                  <version>2.2.4</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.httpcomponents</groupId>
+                  <artifactId>httpclient</artifactId>
+                  <version>4.3.1</version>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+  </build>
 
 
 </project>

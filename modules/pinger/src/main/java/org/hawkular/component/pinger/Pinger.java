@@ -25,33 +25,43 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import javax.ejb.Stateless;
 import javax.ejb.Timeout;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 /**
  * Bean that does the pinging
  *
  * @author Heiko W. Rupp
+ *
+ * TODO should this be a MDB, so that we can have many requests in the pipe?
  */
 @Stateless
 public class Pinger {
 
     @Timeout()
-    public PingStatus ping(String destination) {
+    public PingStatus ping(PingDestination destination) {
 
-        HttpHead head = new HttpHead(destination);
+        HttpHead head = new HttpHead(destination.url);
         HttpClient client = HttpClientBuilder.create().build();
 
 
-        PingStatus status = null;
+        long t1 = System.currentTimeMillis();
+        PingStatus status = new PingStatus(destination,t1);
+
         try {
-            long t1 = System.currentTimeMillis();
             HttpResponse httpResponse = client.execute(head);
             StatusLine statusLine = httpResponse.getStatusLine();
             long t2 = System.currentTimeMillis();
 
-
-            status = new PingStatus(statusLine.getStatusCode(), (int) (t2-t1));
+            status.code = statusLine.getStatusCode();
+            status.duration = (int)(t2-t1);
+            status.setTimestamp(t2);
+        } catch (UnknownHostException e) {
+            status.code = 404;
+            status.setTimestamp(t1);
         } catch (IOException e) {
-            e.printStackTrace();  // TODO: Customise this generated block
+            Log.LOG.wPingExeption(e.getMessage());
+            status.setTimestamp(t1);
+            status.code = 500;
         } finally {
             head.releaseConnection();
         }
