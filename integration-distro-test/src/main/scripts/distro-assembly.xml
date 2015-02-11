@@ -65,6 +65,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.inventory:rest-api</include>
+        <include>org.hawkular:hawkular-pinger</include>
         <include>org.hawkular.alerts:hawkular-alerts-ear</include>
         <include>org.hawkular.alerts:hawkular-notifiers-email</include>
         <include>org.hawkular.metrics:rest-servlet</include>
