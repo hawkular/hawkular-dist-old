@@ -8,7 +8,7 @@ A user on the UI will add a http-URL of a remote server to monitor.
 Hawkular will "ping" the resource via Http (HEAD?) request and record ping time + also
 record the size of the returned data
 
-image::Scenario1.png[]
+image::scenario1.png[]
 
 Steps:
 
