@@ -23,16 +23,25 @@ package org.hawkular.component.pinger;
  */
 public class PingStatus {
 
+    PingDestination destination;
     int duration;
     int code;
     boolean timedOut = false;
+    private long timestamp;
 
-    public PingStatus(int code, int duration) {
+    public PingStatus(PingDestination destination, long timestamp) {
+        this.destination = destination;
+        this.timestamp = timestamp;
+    }
+
+    public PingStatus(PingDestination destination, int code, int duration) {
+        this.destination = destination;
         this.code = code;
         this.duration = duration;
     }
 
-    public PingStatus(int code, int duration, boolean timedOut) {
+    public PingStatus(PingDestination destination, int code, int duration, boolean timedOut) {
+        this.destination = destination;
         this.code = code;
         this.duration = duration;
         this.timedOut = timedOut;
@@ -53,9 +62,18 @@ public class PingStatus {
     @Override
     public String toString() {
         return "PingStatus{" +
-                "code=" + code +
+                "destination=" + destination +
+                ", code=" + code +
                 ", duration=" + duration +
                 ", timedOut=" + timedOut +
                 '}';
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }

@@ -16,10 +16,13 @@
  */
 package org.hawkular.component.pinger.test;
 
+import org.hawkular.component.pinger.PingDestination;
 import org.hawkular.component.pinger.PingManager;
 import org.hawkular.component.pinger.PingStatus;
 import org.hawkular.component.pinger.Pinger;
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * Simple test for the pinger
@@ -32,7 +35,8 @@ public class PingerTest {
     public void testPinger() throws Exception {
 
         Pinger pinger = new Pinger();
-        PingStatus status = pinger.ping("http://hawkular.github.io");
+        PingDestination destination = new PingDestination("123","http://hawkular.github.io");
+        PingStatus status = pinger.ping(destination);
 
         assert status.getCode()==200;
         assert status.isTimedOut()==false;
@@ -40,9 +44,27 @@ public class PingerTest {
     }
 
     @Test
-    public void testPingManagerTest() throws Exception {
+    public void testPingManagerSimple() throws Exception {
 
         PingManager manager = new PingManager();
+        manager.pinger = new Pinger();
+        PingDestination destination = new PingDestination("123","http://hawkular.github.io");
+        manager.addDestination(destination);
+        manager.scheduleWork();
+
+    }
+
+    /**
+     * This test tests the startup code. It requires a
+     * running inventory instance
+     * @throws Exception
+     */
+    @Test
+    public void testPingManagerStartup() throws Exception {
+
+        PingManager manager = new PingManager();
+        manager.startUp();
+        List<PingDestination> destinations = manager.getDestinations();
         manager.pinger = new Pinger();
         manager.scheduleWork();
 
