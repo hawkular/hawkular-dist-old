@@ -48,8 +48,6 @@ public class NotificationReceiver extends BasicMessageListener<SimpleBasicMessag
     @Override
     public void onBasicMessage(SimpleBasicMessage message) {
 
-        System.out.println("Pinger::Msg==> " + message);
-
         try {
 
             String payload = message.getMessage();

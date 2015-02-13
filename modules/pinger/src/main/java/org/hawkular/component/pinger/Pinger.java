@@ -22,13 +22,15 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.HttpClientBuilder;
 
+import javax.ejb.AsyncResult;
+import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
-import javax.ejb.Timeout;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.concurrent.Future;
 
 /**
- * Bean that does the pinging
+ * Bean that does the pinging. Runs async.
  *
  * @author Heiko W. Rupp
  *
@@ -36,12 +38,8 @@ import java.net.UnknownHostException;
 @Stateless
 public class Pinger {
 
-    // We could mark the method as follows and return an AsyncResult.
-    // But how do we then publish the data? From here as individual items?
-    // @Asynchronous
-    //    public Future<PingStatus> ping(PingDestination destination) {
-    @Timeout()
-    public PingStatus ping(PingDestination destination) {
+    @Asynchronous
+    public Future<PingStatus> ping(PingDestination destination) {
 
         HttpHead head = new HttpHead(destination.url);
         HttpClient client = HttpClientBuilder.create().build();
@@ -69,8 +67,7 @@ public class Pinger {
             head.releaseConnection();
         }
 
-        return status;
-        //return new AsyncResult<>(status);
+        return new AsyncResult<>(status);
 
     }
 }

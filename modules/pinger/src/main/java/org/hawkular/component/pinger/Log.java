@@ -22,7 +22,7 @@ import org.jboss.logging.Message;
 import org.jboss.logging.MessageLogger;
 
 /**
- * TODO document me
+ * Log messages of the pinger
  *
  * @author Heiko W. Rupp
  */
@@ -47,4 +47,9 @@ public interface Log {
     @LogMessage(level = Logger.Level.WARN)
     @Message(id = 5003, value = "No connection to topic %s possible")
     void wNoTopicConnection(String topicName);
+
+    @LogMessage(level = Logger.Level.WARN)
+    @Message(id = 5004, value = "Could not contact inventory - there will be no resources to start pinging. " +
+            "Code %d, message= %s")
+    void wNoInventoryFound(int status, String reasonPhrase);
 }
