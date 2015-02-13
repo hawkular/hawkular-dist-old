@@ -36,7 +36,15 @@ public interface Log {
     @Message(id = 5000, value = "No code in message headers found")
     void wNoCode();
 
-    @LogMessage(level = Logger.Level.INFO)
+    @LogMessage
     @Message(id = 5001, value = "Pinging the remote threw an exception: %s")
     void wPingExeption(String message);
+
+    @LogMessage
+    @Message(id = 5002, value = "post status : %s")
+    void metricPostStatus(String s);
+
+    @LogMessage(level = Logger.Level.WARN)
+    @Message(id = 5003, value = "No connection to topic %s possible")
+    void wNoTopicConnection(String topicName);
 }
