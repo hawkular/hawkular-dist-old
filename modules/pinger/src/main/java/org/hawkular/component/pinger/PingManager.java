@@ -27,9 +27,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,6 +52,8 @@ public class PingManager {
 
     Set<PingDestination> destinations = new HashSet<>();
 
+    @EJB
+    MetricPublisher metricPublisher;
 
     @PostConstruct
     public void startUp() {
@@ -83,9 +83,11 @@ public class PingManager {
     }
 
 
-
+    /**
+     * This method does the actual work
+     */
     @Lock(LockType.READ)
-    @Schedule(minute = "*", hour = "*")
+    @Schedule(minute = "*", hour = "*", persistent = false)
     public void scheduleWork() {
 
         List<PingStatus> results = new ArrayList<>(destinations.size());
@@ -100,6 +102,7 @@ public class PingManager {
 
     private void reportResults(List<PingStatus> results) {
 
+
         List<SingleMetric> metrics = new ArrayList<>(results.size());
         for (PingStatus status : results){
             SingleMetric m = new SingleMetric(status.destination.name() + ".duration",
@@ -113,16 +116,10 @@ public class PingManager {
 
         }
 
+        // Send them away
+        metricPublisher.sendToMetricsViaRest(tenantId, metrics);
+        metricPublisher.publishToTopic(metrics);
 
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/hawkular/metrics/" + tenantId +
-                "/metrics/numeric/data");
-
-
-        Entity<List<SingleMetric>> payload = Entity.entity(metrics, MediaType.APPLICATION_JSON_TYPE);
-        Response response = target.request().post(payload);
-
-        System.err.println("post status " + response.getStatus() + " : " + response.getStatusInfo());
 
 
     }

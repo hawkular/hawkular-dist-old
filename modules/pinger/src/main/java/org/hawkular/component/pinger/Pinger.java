@@ -32,11 +32,14 @@ import java.net.UnknownHostException;
  *
  * @author Heiko W. Rupp
  *
- * TODO should this be a MDB, so that we can have many requests in the pipe?
  */
 @Stateless
 public class Pinger {
 
+    // We could mark the method as follows and return an AsyncResult.
+    // But how do we then publish the data? From here as individual items?
+    // @Asynchronous
+    //    public Future<PingStatus> ping(PingDestination destination) {
     @Timeout()
     public PingStatus ping(PingDestination destination) {
 
@@ -67,6 +70,7 @@ public class Pinger {
         }
 
         return status;
+        //return new AsyncResult<>(status);
 
     }
 }
