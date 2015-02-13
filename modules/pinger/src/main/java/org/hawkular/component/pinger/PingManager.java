@@ -31,9 +31,12 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * A SLSB that coordinates the pinging of resources
@@ -65,8 +68,7 @@ public class PingManager {
 
         if (response.getStatus()==200) {
 
-            List list = response.readEntity(List.class); // TODO -> String.class and then Gson.fromJson ?
-
+            List list = response.readEntity(List.class);
 
             for (Object o  : list) {
                 if (o instanceof Map) {
@@ -80,21 +82,72 @@ public class PingManager {
                 }
             }
         }
+        else {
+            Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
+        }
     }
 
 
     /**
-     * This method does the actual work
+     * This method triggers the actual work by starting pingers,
+     * collecting their return values and then publishing them.
      */
     @Lock(LockType.READ)
     @Schedule(minute = "*", hour = "*", persistent = false)
     public void scheduleWork() {
 
+        if (destinations.size()==0) {
+            return;
+        }
+
         List<PingStatus> results = new ArrayList<>(destinations.size());
+        List<Future<PingStatus>> futures = new ArrayList<>(destinations.size());
 
         for (PingDestination destination : destinations) {
-            PingStatus result = pinger.ping(destination);
-            results.add(result);
+            Future<PingStatus> result = pinger.ping(destination);
+            futures.add(result);
+        }
+
+
+
+        int round = 1;
+        while (!futures.isEmpty() && round < 20) {
+            Iterator<Future<PingStatus>> iterator = futures.iterator();
+            while (iterator.hasNext()) {
+                Future<PingStatus> f = iterator.next();
+                if (f.isDone()) {
+                    try {
+                        results.add(f.get());
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();  // TODO: Customise this generated block
+                    }
+                    iterator.remove();
+                }
+            }
+            try {
+                Thread.sleep(500); // wait 500ms until the next iteration
+            } catch (InterruptedException e) {
+                // We don't care
+            }
+            round++;
+        }
+
+        // See if there are hanging items and cancel them away
+        if (!futures.isEmpty()) {
+            // We have waited 10 seconds above for results to come in.
+            // What is now left will be cancelled and marked as timed out
+            for (Future<PingStatus> f : futures) {
+                f.cancel(true);
+                PingStatus ps = null;
+                try {
+                    ps = f.get();
+                    ps.timedOut = true;
+                    ps.duration=10000;
+                    results.add(ps);
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();  // TODO: Customise this generated block
+                }
+            }
         }
 
         reportResults(results);
@@ -102,6 +155,9 @@ public class PingManager {
 
     private void reportResults(List<PingStatus> results) {
 
+        if (results.size()==0) {
+            return;
+        }
 
         List<SingleMetric> metrics = new ArrayList<>(results.size());
         for (PingStatus status : results){
@@ -118,7 +174,7 @@ public class PingManager {
 
         // Send them away
         metricPublisher.sendToMetricsViaRest(tenantId, metrics);
-        metricPublisher.publishToTopic(metrics);
+        metricPublisher.publishToTopic(tenantId, metrics);
 
 
 

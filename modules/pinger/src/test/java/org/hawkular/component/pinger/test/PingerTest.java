@@ -36,7 +36,7 @@ public class PingerTest {
 
         Pinger pinger = new Pinger();
         PingDestination destination = new PingDestination("123","http://hawkular.github.io");
-        PingStatus status = pinger.ping(destination);
+        PingStatus status = pinger.ping(destination).get();
 
         assert status.getCode()==200;
         assert status.isTimedOut()==false;
