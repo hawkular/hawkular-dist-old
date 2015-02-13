@@ -34,7 +34,9 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Publish metrics data
@@ -72,19 +74,24 @@ public class MetricPublisher {
 
     /**
      * Put a list of metric data on the Metrics topic.
+     * @param tenantId
      * @param metrics Metrics to publish
      */
     @Asynchronous
-    public void publishToTopic(List<SingleMetric> metrics) {
+    public void publishToTopic(String tenantId, List<SingleMetric> metrics) {
         if (topic != null) {
 
             ConnectionContextFactory factory = null;
             try {
 
+                Map<String,Object> data = new HashMap<>(2);
+                data.put("tenantId",tenantId);
+                data.put("data",metrics);
+
                 Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC,topic.getTopicName());
                 factory = new ConnectionContextFactory(connectionFactory);
                 ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
-                BasicMessage msg = new ObjectMessage(metrics);
+                BasicMessage msg = new ObjectMessage(data);
                 MessageProcessor processor = new MessageProcessor();
                 processor.send(pc, msg);
             }
