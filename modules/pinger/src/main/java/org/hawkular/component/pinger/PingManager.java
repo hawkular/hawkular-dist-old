@@ -50,13 +50,12 @@ public class PingManager {
     String tenantId = "rest-test";
 
     @EJB
-    public
-    Pinger pinger;
+    public Pinger pinger;
 
     Set<PingDestination> destinations = new HashSet<>();
 
     @EJB
-    MetricPublisher metricPublisher;
+    public MetricPublisher metricPublisher;
 
     @PostConstruct
     public void startUp() {
