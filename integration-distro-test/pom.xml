@@ -81,13 +81,13 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
-      <artifactId>rest-servlet</artifactId>
+      <artifactId>hawkular-metrics-api-jaxrs</artifactId>
       <version>${version.org.rhq.metrics}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
-      <artifactId>embedded-cassandra-ear</artifactId>
+      <artifactId>hawkular-metrics-embedded-cassandra-ear</artifactId>
       <version>${version.org.rhq.metrics}</version>
       <type>ear</type>
     </dependency>
