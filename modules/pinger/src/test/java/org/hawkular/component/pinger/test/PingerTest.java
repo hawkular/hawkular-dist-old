@@ -16,6 +16,7 @@
  */
 package org.hawkular.component.pinger.test;
 
+import org.hawkular.component.pinger.MetricPublisher;
 import org.hawkular.component.pinger.PingDestination;
 import org.hawkular.component.pinger.PingManager;
 import org.hawkular.component.pinger.PingStatus;
@@ -50,7 +51,12 @@ public class PingerTest {
         manager.pinger = new Pinger();
         PingDestination destination = new PingDestination("123","http://hawkular.github.io");
         manager.addDestination(destination);
-        manager.scheduleWork();
+        manager.metricPublisher = new MetricPublisher();
+        try {
+            manager.scheduleWork();
+        } catch (javax.ws.rs.ProcessingException e) {
+            // It's ok, as we may not have the full Jax-RS client stack available
+        }
 
     }
 
