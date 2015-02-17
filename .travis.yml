@@ -1,13 +1,16 @@
 language: java
-
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 install:
-  - mvn -s .travis.maven.settings.xml -version -B
-
+- mvn -s .travis.maven.settings.xml -version -B
 script:
-  - mvn -fae -s .travis.maven.settings.xml clean install
-
+- mvn -fae -s .travis.maven.settings.xml clean install
 notifications:
   email: false
+env:
+  global:
+  - secure: h2UBs+L83eGd8+vTvd4B5sh+ixjp67JB/5Ko/zGAEt6a3hIgrhqyjiXJmaEH3+jzJZKXUcUC6uOuxXHwZ4ODeF+McHViOjqqUGEynJ7AsLXqSr5SSBKZuY/pb69phQnh7Br5w2D+5IFHWEcjrSo/kHDbeZBVAMFRDeGVwpHy2yA=
+  - secure: BADgz+otMMO+gUlFNduU/mgFm1dOfv2ZWAYD3nO1nEwu7Y1QVUsqimHdlqntUcinILDVeD33oT27kElERvr7KyjfDEPSDAVUg5Y/5soezg/tBu0zi3iodAP2GynOMohS/Rfm4+3ajWuEe/Y2SYjFXgldMR9qjP+/31FsVtW8Op0=
+
+after_success:
+- test ${TRAVIS_BRANCH} = master && mvn  -s .travis.maven.settings.xml deploy
