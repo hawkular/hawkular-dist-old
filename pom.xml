@@ -54,6 +54,7 @@
 
   <modules>
     <module>ui/console</module>
+    <module>modules/pinger</module>
   </modules>
 
   <scm>
