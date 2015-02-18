@@ -38,7 +38,8 @@
     <version.org.hawkular.nest>1.0.0.Alpha1-SNAPSHOT</version.org.hawkular.nest>
     <version.org.hawkular.inventory>1.0-SNAPSHOT</version.org.hawkular.inventory>
     <version.org.hawkular.alerts>1.0.0.Alpha1-SNAPSHOT</version.org.hawkular.alerts>
-    <version.org.rhq.metrics>0.3.0-SNAPSHOT</version.org.rhq.metrics>
+    <version.org.hawkular.metrics>0.3.0-SNAPSHOT</version.org.hawkular.metrics>
+    <version.org.hawkular.console>1.0.0-SNAPSHOT</version.org.hawkular.console>
   </properties>
 
   <dependencies>
@@ -82,14 +83,20 @@
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
       <artifactId>hawkular-metrics-api-jaxrs</artifactId>
-      <version>${version.org.rhq.metrics}</version>
+      <version>${version.org.hawkular.metrics}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
       <artifactId>hawkular-metrics-embedded-cassandra-ear</artifactId>
-      <version>${version.org.rhq.metrics}</version>
+      <version>${version.org.hawkular.metrics}</version>
       <type>ear</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-console</artifactId>
+      <version>${version.org.hawkular.console}</version>
+      <type>war</type>
     </dependency>
   </dependencies>
 
