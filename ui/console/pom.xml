@@ -121,13 +121,10 @@
         <configuration>
           <webResources>
             <resource>
-              <directory>target/dist</directory>
-              <filtering>false</filtering>
-            </resource>
-            <resource>
               <directory>target</directory>
               <includes>
                 <include>libs/**</include>
+                <include>dist/**</include>
               </includes>
               <filtering>false</filtering>
             </resource>
