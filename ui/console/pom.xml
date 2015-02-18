@@ -31,6 +31,10 @@
   <name>hawkular-console</name>
   <packaging>war</packaging>
 
+  <properties>
+    <hawkular.console.context>/hawkular-console</hawkular.console.context>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
@@ -121,6 +125,14 @@
         <configuration>
           <webResources>
             <resource>
+              <directory>src/main/webapp</directory>
+              <includes>
+                <include>index.html</include>
+                <include>WEB-INF/*</include>
+              </includes>
+              <filtering>true</filtering>
+            </resource>
+            <resource>
               <directory>target</directory>
               <includes>
                 <include>libs/**</include>
@@ -138,9 +150,9 @@
   <profiles>
     <profile>
       <id>dev</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
+      <properties>
+        <hawkular.console.context>/</hawkular.console.context>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -162,11 +174,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <!-- This profile doesn't do anything, other than cause the above 'development' profile not to be activated when
-      we are performing a release -->
-    <profile>
-      <id>release</id>
     </profile>
   </profiles>
 </project>

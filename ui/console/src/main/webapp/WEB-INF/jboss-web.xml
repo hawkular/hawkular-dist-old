@@ -19,5 +19,5 @@
 -->
 
 <jboss-web>
-  <context-root>hawkular-console</context-root>
+  <context-root>${hawkular.console.context}</context-root>
 </jboss-web>
