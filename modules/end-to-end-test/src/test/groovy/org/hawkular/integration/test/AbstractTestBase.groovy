@@ -27,7 +27,7 @@ class AbstractTestBase {
 
   @BeforeClass
   static void initClient() {
-    client = new RESTClient("http://$baseURI/", ContentType.JSON)
+    client = new RESTClient("http://$baseURI", ContentType.JSON)
   }
 
 }
