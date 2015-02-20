@@ -33,6 +33,7 @@
 
   <properties>
     <hawkular.console.context>/hawkular-console</hawkular.console.context>
+    <hawkular.console.index.html.base.href>/hawkular-console/</hawkular.console.index.html.base.href>
   </properties>
 
   <build>
@@ -47,14 +48,16 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${basedir}/target/</outputDirectory>
+              <outputDirectory>${basedir}/target/gulp-build/</outputDirectory>
               <resources>
                 <resource>
-                  <directory>.</directory>
+                  <directory>src/main/webapp/</directory>
                   <excludes>
-                    <exclude>pom.xml</exclude>
-                    <exclude>target/</exclude>
+                    <exclude>WEB-INF/</exclude>
                   </excludes>
+                </resource>
+                <resource>
+                  <directory>src/main/scripts/</directory>
                 </resource>
               </resources>
             </configuration>
@@ -69,7 +72,7 @@
         <version>0.0.20</version>
 
         <configuration>
-          <workingDirectory>target</workingDirectory>
+          <workingDirectory>target/gulp-build/</workingDirectory>
         </configuration>
 
         <executions>
@@ -127,13 +130,19 @@
             <resource>
               <directory>src/main/webapp</directory>
               <includes>
-                <include>index.html</include>
                 <include>WEB-INF/*</include>
               </includes>
               <filtering>true</filtering>
             </resource>
             <resource>
-              <directory>target</directory>
+              <directory>target/gulp-build/</directory>
+              <includes>
+                <include>index.html</include>
+              </includes>
+              <filtering>true</filtering>
+            </resource>
+            <resource>
+              <directory>target/gulp-build/</directory>
               <includes>
                 <include>libs/**</include>
                 <include>dist/**</include>
@@ -152,6 +161,7 @@
       <id>dev</id>
       <properties>
         <hawkular.console.context>/</hawkular.console.context>
+        <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
       </properties>
       <build>
         <plugins>
@@ -161,7 +171,7 @@
               <excludeDefaultDirectories>true</excludeDefaultDirectories>
               <filesets>
                 <fileset>
-                  <directory>target</directory>
+                  <directory>target/gulp-build/</directory>
                   <excludes>
                     <exclude>node/**</exclude>
                     <exclude>node_modules/**</exclude>
