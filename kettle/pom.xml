@@ -23,13 +23,14 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>5</version>
+    <version>6</version>
   </parent>
 
-  <artifactId>hawkular-integration-test</artifactId>
+  <artifactId>hawkular-kettle</artifactId>
   <version>1.0.0.Alpha1-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Hawkular Integration Distribution</name>
+  <name>Hawkular Kettle</name>
+  <description>Hawkular distribution that integrates all components into a single server.</description>
 
   <properties>
     <checkstyle.suppressions.file>${basedir}/src/main/scripts/checkstyle-suppressions.xml</checkstyle.suppressions.file>

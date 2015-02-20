@@ -55,7 +55,7 @@
   <modules>
     <module>ui/console</module>
     <module>modules/pinger</module>
-    <module>integration-distro-test</module>
+    <module>kettle</module>
   </modules>
 
   <scm>
