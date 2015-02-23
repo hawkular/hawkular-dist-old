@@ -37,7 +37,7 @@
 
     <!-- The versions of the components that go into our integration distribution -->
     <version.org.hawkular.nest>1.0.0.Alpha1-SNAPSHOT</version.org.hawkular.nest>
-    <version.org.hawkular.inventory>1.0-SNAPSHOT</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>1.0.0-SNAPSHOT</version.org.hawkular.inventory>
     <version.org.hawkular.alerts>1.0.0.Alpha1-SNAPSHOT</version.org.hawkular.alerts>
     <version.org.hawkular.metrics>0.3.0-SNAPSHOT</version.org.hawkular.metrics>
     <version.org.hawkular.console>1.0.0-SNAPSHOT</version.org.hawkular.console>
