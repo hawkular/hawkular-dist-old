@@ -22,6 +22,7 @@
     "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
 
 <suppressions>
-  <!-- we want to remain as faithful to the Wildfly style as possible -->
-  <suppress checks="[a-zA-Z0-9]" files="standalone.xml"/>
+  <!--
+  <suppress checks="[a-zA-Z0-9]" files="regex\.xml"/>
+  -->
 </suppressions>
