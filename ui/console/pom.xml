@@ -32,8 +32,9 @@
   <packaging>war</packaging>
 
   <properties>
-    <hawkular.console.context>/hawkular-console</hawkular.console.context>
-    <hawkular.console.index.html.base.href>/hawkular-console/</hawkular.console.index.html.base.href>
+    <!-- TODO: should be /hawkular-console and /hawkular-console/ -->
+    <hawkular.console.context>/</hawkular.console.context>
+    <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
   </properties>
 
   <build>
