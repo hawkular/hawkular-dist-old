@@ -28,14 +28,9 @@
   <baseDirectory>${project.build.finalName}</baseDirectory>
 
   <fileSets>
-    <!-- all non-binary files -->
     <fileSet>
       <directory>${project.build.directory}/distro-resources</directory>
       <outputDirectory>/${nest.dist.zip.root.dir}</outputDirectory>
-      <excludes>
-        <exclude>bin/*.sh</exclude>
-        <exclude>bin/*.bat</exclude>
-      </excludes>
       <filtered>false</filtered>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
