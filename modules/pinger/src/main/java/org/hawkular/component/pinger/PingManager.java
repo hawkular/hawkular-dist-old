@@ -17,8 +17,6 @@
 package org.hawkular.component.pinger;
 
 import org.hawkular.metrics.client.common.SingleMetric;
-import org.hawkular.metrics.core.MetricId;
-import org.hawkular.metrics.core.NumericMetric;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -162,18 +160,9 @@ public class PingManager {
         }
 
         List<SingleMetric> singleMetrics = new ArrayList<>(results.size());
-        List<NumericMetric> nMetrics = new ArrayList<>(results.size());
         List<Map<String,Object>> mMetrics = new ArrayList<>();
 
         for (PingStatus status : results){
-            NumericMetric numericMetric = new NumericMetric(tenantId,
-                    new MetricId(status.destination.resourceId + ".status.duration"));
-            numericMetric.addData(status.getTimestamp(), status.getDuration());
-            nMetrics.add(numericMetric);
-            numericMetric = new NumericMetric(tenantId,new MetricId(status.destination.resourceId + ".status" +
-                                ".code"));
-            numericMetric.addData(status.getTimestamp(), status.getCode());
-            nMetrics.add(numericMetric);
 
             addDataItem(mMetrics, status, status.duration, "duration");
             addDataItem(mMetrics, status, status.code, "code");
