@@ -101,13 +101,17 @@ public class MetricPublisher {
 
             try ( ConnectionContextFactory factory = new ConnectionContextFactory(connectionFactory)) {
 
+                Map<String,Object> outer = new HashMap<>(1);
+
                 Map<String,Object> data = new HashMap<>(2);
                 data.put("tenantId",tenantId);
                 data.put("data",metrics);
 
+                outer.put("metricData",data);
+
                 Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC,topic.getTopicName());
                 ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
-                BasicMessage msg = new ObjectMessage(data);
+                BasicMessage msg = new ObjectMessage(outer);
                 MessageProcessor processor = new MessageProcessor();
                 processor.send(pc, msg);
             }
