@@ -1,0 +1,39 @@
+= Kettle
+
+image::Kettle.png[]
+
+This module is the integration point of Hawkular
+and mostly consists of configuration and assembly snippets.
+
+Mazz explains it like this:
+
+.The Kettle
+____
+Fillet of a pinger snake, In the kettle boil and bake; Eye of bus and toe of frog,
+Wool of cassandra and tongue of dog, Alert's fork and blind-worm's metrics,
+Inventory's leg and owlet's wing, For a charm of powerful trouble, Like a hell-broth boil and bubble.
+Double, double toil and trouble; Fire burn and kettle bubble.
+____
+
+== Building
+
+You can build the Kettle and thus the integrated server with
+
+[source,shell]
+----
+mvn install
+----
+
+You may need to pass option `-Dlicense.check` if you see the license checker complain on generated java script files.
+If you pass option `-Pdev` you will get an unzipped server in `target/ `.
+
+== Running
+
+When you have unzipped the server or are using `Pdev` in the above step, you can switch into its directory and start
+it
+
+[source,shell]
+----
+cd wildfly-8.2.0.Final
+bin/standalone.sh
+----
