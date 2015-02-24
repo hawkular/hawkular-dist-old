@@ -50,7 +50,7 @@
     <admin-object use-java-context="true"
                   enabled="true"
                   class-name="org.apache.activemq.command.ActiveMQTopic"
-                  jndi-name="java:/queue/HawkularNotifications"
+                  jndi-name="java:/topic/HawkularNotifications"
                   pool-name="HawkularNotifications">
       <config-property name="PhysicalName">HawkularNotifications</config-property>
     </admin-object>
