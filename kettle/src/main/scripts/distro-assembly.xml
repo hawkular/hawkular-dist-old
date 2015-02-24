@@ -31,7 +31,7 @@
     <!-- all non-binary files -->
     <fileSet>
       <directory>${project.build.directory}/distro-resources</directory>
-      <outputDirectory>/wildfly-${version.org.wildfly}</outputDirectory>
+      <outputDirectory>/${nest.dist.zip.root.dir}</outputDirectory>
       <excludes>
         <exclude>bin/*.sh</exclude>
         <exclude>bin/*.bat</exclude>
@@ -53,15 +53,14 @@
       <unpackOptions>
         <!-- exclude unwanted stuff and exclude stuff we want to overlay via our own distro-resources -->
         <excludes>
-          <exclude>wildfly-${version.org.wildfly}/standalone/configuration/standalone.xml</exclude>
+          <exclude>${nest.dist.zip.root.dir}/standalone/configuration/standalone.xml</exclude>
         </excludes>
       </unpackOptions>
     </dependencySet>
 
     <!-- all component deployments that go in the modules directory -->
     <dependencySet>
-      <outputDirectory>wildfly-${version.org.wildfly}/modules/system/layers/base/org/hawkular/nest/main/deployments
-      </outputDirectory>
+      <outputDirectory>${nest.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.inventory:inventory-rest-api</include>

@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>6</version>
+    <version>7</version>
   </parent>
 
   <artifactId>hawkular-kettle</artifactId>
@@ -33,6 +33,9 @@
   <description>Hawkular distribution that integrates all components into a single server.</description>
 
   <properties>
+    <kettle.build.type>production</kettle.build.type>
+    <nest.dist.zip.root.dir>wildfly-${version.org.wildfly}</nest.dist.zip.root.dir>
+
     <checkstyle.suppressions.file>${basedir}/src/main/scripts/checkstyle-suppressions.xml</checkstyle.suppressions.file>
 
     <!-- The versions of the components that go into our integration distribution -->
@@ -104,12 +107,32 @@
   <build>
 
     <plugins>
+      <!-- unpack the nest distribution to get its configuration that we need to customize -->
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-nest-configuration</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/nest</outputDirectory>
+              <includeArtifactIds>hawkular-nest-distro</includeArtifactIds>
+              <includes>*/standalone/configuration/standalone.xml</includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- if we have any files that we need in the distro, copy them now -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
             <id>copy-distro-resources</id>
-            <phase>validate</phase>
+            <phase>prepare-package</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -121,6 +144,40 @@
                   <filtering>false</filtering> <!-- let the assembly filter if it wants -->
                 </resource>
               </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- further customize standalone.xml -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <id>transform-standalone-xml</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+            <configuration>
+              <transformationSets>
+                <transformationSet>
+                  <dir>${basedir}/target/nest/${nest.dist.zip.root.dir}/standalone/configuration</dir>
+                  <stylesheet>src/main/scripts/standalone.xsl</stylesheet>
+                  <includes>
+                    <include>standalone.xml</include>
+                  </includes>
+                  <outputDir>${basedir}/target/distro-resources/standalone/configuration</outputDir>
+                  <parameters>
+                    <parameter>
+                      <name>kettle.build.type</name>
+                      <value>${kettle.build.type}</value>
+                    </parameter>
+                  </parameters>
+                </transformationSet>
+              </transformationSets>
             </configuration>
           </execution>
         </executions>
@@ -143,6 +200,7 @@
           </execution>
         </executions>
       </plugin>
+
     </plugins>
   </build>
 
@@ -150,6 +208,9 @@
     <!-- unzips the assembly so devs can run it right out of target/ -->
     <profile>
       <id>dev</id>
+      <properties>
+        <kettle.build.type>dev</kettle.build.type>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -162,7 +223,7 @@
                 <configuration>
                   <target>
                     <unzip src="${project.build.directory}/${project.build.finalName}-distribution.zip" dest="${project.build.directory}" />
-                    <chmod dir="${project.build.directory}/wildfly-${version.org.wildfly}/bin" includes="*.sh"
+                    <chmod dir="${project.build.directory}/${nest.dist.zip.root.dir}/bin" includes="*.sh"
                       perm="u+x" type="file" />
                   </target>
                 </configuration>
