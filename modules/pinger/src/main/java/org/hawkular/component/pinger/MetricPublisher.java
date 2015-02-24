@@ -16,6 +16,13 @@
  */
 package org.hawkular.component.pinger;
 
+import com.google.gson.Gson;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
@@ -27,13 +34,7 @@ import org.hawkular.metrics.client.common.SingleMetric;
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,42 +55,57 @@ public class MetricPublisher {
 
 
     /**
-     * Send a list of metric data for a tenant to the Hwkular-metrics service via REST
+     * Send a list of metric data for a tenant to the Hawkular-metrics service via REST
      * @param tenantId Name of the tenant
      * @param metrics List of metrics
      */
     @Asynchronous
-    public void sendToMetricsViaRest(String tenantId, List<SingleMetric> metrics) {
+    public void sendToMetricsViaRest(String tenantId, List<Map<String, Object>> metrics) {
         // Send it to metrics via rest
+/*
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/hawkular/metrics/" + tenantId +
+        WebTarget target = client.target("http://localhost:8080/hawkular-metrics/" + tenantId +
                 "/metrics/numeric/data");
 
 
-        Entity<List<SingleMetric>> payload = Entity.entity(metrics, MediaType.APPLICATION_JSON_TYPE);
-        Response response = target.request().post(payload);
+        Entity<List<NumericMetric>> payload = Entity.entity(metrics, MediaType.APPLICATION_JSON_TYPE);
+        Invocation invocation = target.request().buildPost(payload);
+        Response response = invocation.invoke();
 
         Log.LOG.metricPostStatus( response.getStatus() + " : " + response.getStatusInfo());
+*/
+
+        String payload = new Gson().toJson(metrics);
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpPost request = new HttpPost("http://localhost:8080/hawkular-metrics/" + tenantId +
+                        "/metrics/numeric/data");
+        request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
+
+
+        try {
+            HttpResponse response = client.execute(request);
+            Log.LOG.metricPostStatus(response.getStatusLine().toString());
+        } catch (IOException e) {
+            e.printStackTrace();  // TODO: Customise this generated block
+        }
     }
 
     /**
      * Put a list of metric data on the Metrics topic.
-     * @param tenantId
+     * @param tenantId Id of the tenant
      * @param metrics Metrics to publish
      */
     @Asynchronous
     public void publishToTopic(String tenantId, List<SingleMetric> metrics) {
         if (topic != null) {
 
-            ConnectionContextFactory factory = null;
-            try {
+            try ( ConnectionContextFactory factory = new ConnectionContextFactory(connectionFactory)) {
 
                 Map<String,Object> data = new HashMap<>(2);
                 data.put("tenantId",tenantId);
                 data.put("data",metrics);
 
                 Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC,topic.getTopicName());
-                factory = new ConnectionContextFactory(connectionFactory);
                 ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
                 BasicMessage msg = new ObjectMessage(data);
                 MessageProcessor processor = new MessageProcessor();
@@ -97,15 +113,6 @@ public class MetricPublisher {
             }
             catch (Exception e) {
                 e.printStackTrace();
-            }
-            finally {
-                if (factory!=null) {
-                    try {
-                        factory.close();
-                    } catch (JMSException e) {
-                        e.printStackTrace();  // TODO: Customise this generated block
-                    }
-                }
             }
         }
         else {
