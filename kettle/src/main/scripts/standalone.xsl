@@ -21,9 +21,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:ra="urn:jboss:domain:resource-adapters:2.0"
-                xmlns:ejb3="urn:jboss:domain:ejb3:2.0"
                 version="2.0"
-                exclude-result-prefixes="xalan ra ejb3">
+                exclude-result-prefixes="xalan ra">
 
   <!-- will indicate if this is a "dev" build or "production" build -->
   <xsl:param name="kettle.build.type"/>
