@@ -199,7 +199,22 @@
           </execution>
         </executions>
       </plugin>
-
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.1.2</version>
+        <configuration>
+          <imageName>hawkular:snapshot</imageName>
+          <dockerDirectory>docker</dockerDirectory>
+          <resources>
+            <resource>
+              <targetPath>/</targetPath>
+              <directory>${project.build.directory}</directory>
+              <include>${project.build.finalName}-distribution.zip</include>
+            </resource>
+          </resources>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
