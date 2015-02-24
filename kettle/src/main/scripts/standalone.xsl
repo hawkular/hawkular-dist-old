@@ -45,6 +45,28 @@
     <xsl:call-template name="system-properties"/>
   </xsl:template>
 
+  <!-- add our JMS queues/topices that are required to be defined as admin-objects -->
+  <xsl:template name="admin-objects">
+    <admin-object use-java-context="true"
+                  enabled="true"
+                  class-name="org.apache.activemq.command.ActiveMQTopic"
+                  jndi-name="java:/queue/HawkularNotifications"
+                  pool-name="HawkularNotifications">
+      <config-property name="PhysicalName">HawkularNotifications</config-property>
+    </admin-object>
+    <admin-object use-java-context="true"
+                  enabled="true"
+                  class-name="org.apache.activemq.command.ActiveMQTopic"
+                  jndi-name="java:/topic/HawkularMetricData"
+                  pool-name="HawkularMetricData">
+      <config-property name="PhysicalName">HawkularMetricData</config-property>
+    </admin-object>
+  </xsl:template>
+
+  <xsl:template match="ra:admin-objects">
+    <xsl:call-template name="admin-objects"/>
+  </xsl:template>
+
   <!-- copy everything else as-is -->
   <xsl:template match="node()|@*">
     <xsl:copy>
