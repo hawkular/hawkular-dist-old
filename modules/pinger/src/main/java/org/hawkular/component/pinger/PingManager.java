@@ -176,10 +176,10 @@ public class PingManager {
 
 
             // for the topic to alerting
-            SingleMetric singleMetric = new SingleMetric(status.destination.name() + ".duration",
+            SingleMetric singleMetric = new SingleMetric(status.destination.resourceId + ".status.duration",
                     status.getTimestamp(), (double) status.getDuration());
             singleMetrics.add(singleMetric);
-            singleMetric = new SingleMetric(status.destination.name() + ".code",
+            singleMetric = new SingleMetric(status.destination.resourceId + ".status.code",
                     status.getTimestamp(), (double) status.getCode());
             singleMetrics.add(singleMetric);
 
