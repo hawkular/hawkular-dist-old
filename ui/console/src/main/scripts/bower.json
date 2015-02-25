@@ -16,7 +16,7 @@
     "hawtio-core-navigation": "2.0.17",
     "hawtio-utilities": "2.0.16",
     "hawtio-template-cache": "2.0.1",
-    "hawkular-ui-components": "https://github.com/hawkular/hawkular-ui-components.git"
+    "hawkular-ui-components": "hawkular/hawkular-ui-components#master"
   },
   "devDependencies": {
     "bootstrap": "3.3.2",
