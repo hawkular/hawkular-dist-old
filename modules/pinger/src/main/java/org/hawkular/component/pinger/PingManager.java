@@ -100,6 +100,14 @@ public class PingManager {
             return;
         }
 
+        doThePing(destinations);
+    }
+
+    /**
+     * Runs the pinging work on the provided list of destinations
+     * @param destinations Set of destinations to ping
+     */
+    private void doThePing(Set<PingDestination> destinations) {
         List<PingStatus> results = new ArrayList<>(destinations.size());
         List<Future<PingStatus>> futures = new ArrayList<>(destinations.size());
 
@@ -107,7 +115,6 @@ public class PingManager {
             Future<PingStatus> result = pinger.ping(destination);
             futures.add(result);
         }
-
 
 
         int round = 1;
@@ -198,8 +205,16 @@ public class PingManager {
         mMetrics.add(outer);
     }
 
-    public void addDestination(PingDestination s) {
-        destinations.add(s);
+    /**
+     * Add a new destination into the system. This triggers an immediate
+     * ping and then adding to the list of destinations.
+     * @param pd new Destination
+     */
+    public void addDestination(PingDestination pd) {
+        Set<PingDestination> oneTimeDestinations = new HashSet<>(1);
+        oneTimeDestinations.add(pd);
+        doThePing(oneTimeDestinations);
+        destinations.add(pd);
     }
 
     public List<PingDestination> getDestinations() {
