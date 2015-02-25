@@ -21,9 +21,11 @@ import org.hawkular.component.pinger.PingDestination;
 import org.hawkular.component.pinger.PingManager;
 import org.hawkular.component.pinger.PingStatus;
 import org.hawkular.component.pinger.Pinger;
+import org.hawkular.metrics.client.common.SingleMetric;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Simple test for the pinger
@@ -49,6 +51,7 @@ public class PingerTest {
 
         PingManager manager = new PingManager();
         manager.pinger = new Pinger();
+        manager.metricPublisher = new NoOpMetricPublisher();
         PingDestination destination = new PingDestination("123","http://hawkular.github.io");
         manager.addDestination(destination);
         manager.metricPublisher = new MetricPublisher();
@@ -65,14 +68,31 @@ public class PingerTest {
      * running inventory instance
      * @throws Exception
      */
-//    @Test
+    @Test
     public void testPingManagerStartup() throws Exception {
 
         PingManager manager = new PingManager();
-        manager.startUp();
+        try {
+            manager.startUp();
+        } catch (javax.ws.rs.ProcessingException e) {
+            // It's ok, as we may not have the full Jax-RS client stack available
+        }
         List<PingDestination> destinations = manager.getDestinations();
         manager.pinger = new Pinger();
         manager.scheduleWork();
 
+    }
+
+
+    private class NoOpMetricPublisher extends MetricPublisher {
+        @Override
+        public void sendToMetricsViaRest(String tenantId, List<Map<String, Object>> metrics) {
+
+        }
+
+        @Override
+        public void publishToTopic(String tenantId, List<SingleMetric> metrics) {
+
+        }
     }
 }
