@@ -30,6 +30,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +48,7 @@ import java.util.concurrent.Future;
 @Singleton
 public class PingManager {
 
-    String tenantId = "rest-test";
+    String tenantId = "test";
 
     @EJB
     public Pinger pinger;
@@ -158,25 +159,43 @@ public class PingManager {
             return;
         }
 
-        List<SingleMetric> metrics = new ArrayList<>(results.size());
+        List<SingleMetric> singleMetrics = new ArrayList<>(results.size());
+        List<Map<String,Object>> mMetrics = new ArrayList<>();
+
         for (PingStatus status : results){
-            SingleMetric m = new SingleMetric(status.destination.name() + ".duration",
-                    status
-                    .getTimestamp(), (double) status.getDuration());
-            metrics.add(m);
-            m = new SingleMetric(status.destination.name() + ".code",
-                    status
-                    .getTimestamp(), (double) status.getCode());
-            metrics.add(m);
+
+            addDataItem(mMetrics, status, status.duration, "duration");
+            addDataItem(mMetrics, status, status.code, "code");
+
+
+            // for the topic to alerting
+            SingleMetric singleMetric = new SingleMetric(status.destination.name() + ".duration",
+                    status.getTimestamp(), (double) status.getDuration());
+            singleMetrics.add(singleMetric);
+            singleMetric = new SingleMetric(status.destination.name() + ".code",
+                    status.getTimestamp(), (double) status.getCode());
+            singleMetrics.add(singleMetric);
 
         }
 
         // Send them away
-        metricPublisher.sendToMetricsViaRest(tenantId, metrics);
-        metricPublisher.publishToTopic(tenantId, metrics);
+        metricPublisher.sendToMetricsViaRest(tenantId, mMetrics);
+        metricPublisher.publishToTopic(tenantId, singleMetrics);
 
 
 
+    }
+
+    private void addDataItem(List<Map<String, Object>> mMetrics, PingStatus status, Number value, String name) {
+        Map<String,Number> dataMap = new HashMap<>(2);
+        dataMap.put("timestamp", status.getTimestamp());
+        dataMap.put("value", value);
+        List<Map<String,Number>> data = new ArrayList<>(1);
+        data.add(dataMap);
+        Map<String,Object> outer = new HashMap<>(2);
+        outer.put("name",status.destination.resourceId + ".status." + name);
+        outer.put("data",data);
+        mMetrics.add(outer);
     }
 
     public void addDestination(PingDestination s) {
