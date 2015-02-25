@@ -1,0 +1,13 @@
+== Build the Kettle Docker image
+Make sure you are in hawkular/kettle directory
+[source,shell]
+----
+mvn package docker:build
+----
+
+Running Hawkular
+[source,shell]
+----
+docker run -dP --name hawkular hawkular:snapshot
+docker port hawkular
+----
