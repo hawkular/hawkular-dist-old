@@ -13,4 +13,4 @@ env:
   - secure: BADgz+otMMO+gUlFNduU/mgFm1dOfv2ZWAYD3nO1nEwu7Y1QVUsqimHdlqntUcinILDVeD33oT27kElERvr7KyjfDEPSDAVUg5Y/5soezg/tBu0zi3iodAP2GynOMohS/Rfm4+3ajWuEe/Y2SYjFXgldMR9qjP+/31FsVtW8Op0=
 
 after_success:
-- test "${TRAVIS_BRANCH}" = "master" && test "${TRAVIS_PULL_REQUEST}" = "false" && mvn  -s .travis.maven.settings.xml deploy -DskipTests
+- test "${TRAVIS_BRANCH}" = "master" && test "${TRAVIS_PULL_REQUEST}" = "false" && mvn  -s .travis.maven.settings.xml deploy -DskipTests && curl --data "build=true" -X POST https://registry.hub.docker.com/u/vnguyen/hawkular/trigger/bd7a514e-66b4-4a99-8cb4-6562eea44490/
