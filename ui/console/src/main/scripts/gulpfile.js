@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 var gulp = require('gulp'),
+    del = require('del'),
     wiredep = require('wiredep').stream,
     eventStream = require('event-stream'),
     gulpLoadPlugins = require('gulp-load-plugins'),
@@ -68,8 +69,7 @@ gulp.task('path-adjust', function () {
 });
 
 gulp.task('clean-defs', function () {
-    return gulp.src('defs.d.ts', {read: false})
-        .pipe(plugins.clean());
+    del(['defs.d.ts/**']);
 });
 
 gulp.task('tsc', ['clean-defs'], function () {
@@ -134,8 +134,7 @@ gulp.task('concat', ['template'], function () {
 });
 
 gulp.task('clean', ['concat'], function () {
-    return gulp.src(['templates.js', 'compiled.js'], {read: false})
-        .pipe(plugins.clean());
+    del(['templates.js', 'compiled.js']);
 });
 
 gulp.task('watch', ['build'], function () {
