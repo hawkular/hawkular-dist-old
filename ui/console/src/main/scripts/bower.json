@@ -13,7 +13,7 @@
   ],
   "dependencies": {
     "hawtio-core": "2.0.9",
-    "hawtio-core-navigation": "2.0.17",
+    "hawtio-core-navigation": "2.0.28",
     "hawtio-utilities": "2.0.16",
     "hawtio-template-cache": "2.0.1",
     "hawkular-ui-components": "hawkular/hawkular-ui-components#master",
@@ -22,5 +22,9 @@
   "devDependencies": {
     "bootstrap": "3.3.2",
     "hawtio-core-dts": "2.0.9"
+  },
+  "resolutions": {
+    "hawtio-core-navigation": "2.0.28",
+    "lodash": "3.2.0"
   }
 }
