@@ -56,6 +56,7 @@
                   <excludes>
                     <exclude>WEB-INF/</exclude>
                   </excludes>
+                  <filtering>true</filtering>
                 </resource>
                 <resource>
                   <directory>src/main/scripts/</directory>
@@ -139,12 +140,6 @@
               <directory>target/gulp-build/</directory>
               <includes>
                 <include>index.html</include>
-              </includes>
-              <filtering>true</filtering>
-            </resource>
-            <resource>
-              <directory>target/gulp-build/</directory>
-              <includes>
                 <include>libs/**</include>
                 <include>dist/**</include>
               </includes>
