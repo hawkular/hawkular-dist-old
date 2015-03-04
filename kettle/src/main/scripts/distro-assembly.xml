@@ -20,9 +20,6 @@
 
 <assembly>
   <id>distribution</id>
-  <formats>
-    <format>zip</format>
-  </formats>
 
   <includeBaseDirectory>false</includeBaseDirectory>
   <baseDirectory>${project.build.finalName}</baseDirectory>
