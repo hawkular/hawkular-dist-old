@@ -15,6 +15,7 @@
     "gulp-size": "^1.2.0",
     "gulp-tslint": "^1.4.2",
     "gulp-typescript": "^2.3.0",
+    "gulp-less": "^3.0.1",
     "gulp-watch": "^3.0.0",
     "through2": "^0.6.3",
     "underscore.string": "^2.4.0",

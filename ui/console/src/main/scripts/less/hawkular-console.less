@@ -1,0 +1,75 @@
+@inc:               30;
+
+/* Basic color palette */
+@c_white:           #fff;
+
+/* Side navigation colors */
+@c_snavslight:      #464646;
+@c_snavlight:       #404040;
+@c_snav:            #343434;
+@c_snavdark:        @c_snav - @inc;
+@c_snavboder:       #525252;
+@c_snavfont:        #aaaaaa;
+
+/* Side menu (1st column) */
+
+.hk-sidebar {
+  /*background-color: @c_snav;*/
+  padding: 0;
+
+  .navbar-vertical {
+    border: none;
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      text-align: center;
+      margin-top: 26px;
+
+      &:first-child {
+        margin-top: 24px;
+      }
+
+      a {
+        font-size: 14px;
+        /*color: @c_white;*/
+        font-weight: bold;
+        /*opacity: 0.5;*/
+
+        &:hover, &:focus {
+          text-decoration: none;
+          opacity: 1;
+        }
+
+        .fa {
+          display: block;
+          color: inherit;
+          opacity: 1;
+          -webkit-opacity: inherit;
+          font-size: 36px;
+
+          &.fa-mobile {
+            font-size: 42px;
+          }
+        }
+      }
+
+      &.active {
+        background: url(../css/img/sidebar-active.svg) no-repeat right 16px;
+
+        a {
+          opacity: 1;
+          background-color: transparent;
+          border: none;
+
+          &:after {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
