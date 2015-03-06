@@ -138,11 +138,35 @@ gulp.task('clean', ['concat'], function () {
 });
 
 gulp.task('watch', ['build'], function () {
-    plugins.watch(['libs/**/*.js', 'libs/**/*.css', 'index.html', config.dist + '/' + config.js], function () {
+    plugins.watch(['libs/**/*.js', 'libs/**/*.css', config.dist + '/**/*'], function () {
         gulp.start('reload');
+    });
+    plugins.watch(['index.html'], function () {
+        gulp.start('bower', 'reload');
     });
     plugins.watch(['libs/**/*.d.ts', config.ts, config.templates], function () {
         gulp.start(['tslint-watch', 'tsc', 'template', 'concat', 'clean']);
+    });
+
+    plugins.watch([config.less], function () {
+        gulp.start(['less']);
+    });
+
+    /* If something in the src folder changes, just copy it and let the handlers above handle the situation */
+    plugins.watch(['../../src/main/scripts/**/*'], function () {
+        gulp.src('../../src/main/scripts/**/*')
+        .pipe(gulp.dest('.'));
+    });
+
+    plugins.watch(['../../src/main/webapp/resources/**/*'], function () {
+        gulp.src('../../src/main/webapp/resources/**/*')
+        .pipe(gulp.dest('./resources/'));
+    });
+
+    plugins.watch(['../../src/main/webapp/index.html'], function () {
+        gulp.src('../../src/main/webapp/index.html')
+        .pipe(plugins.replace('${hawkular.console.index.html.base.href}', '/'))
+        .pipe(gulp.dest('.'));
     });
 });
 
