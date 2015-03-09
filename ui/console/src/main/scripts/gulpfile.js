@@ -148,10 +148,6 @@ gulp.task('watch', ['build'], function () {
         gulp.start(['tslint-watch', 'tsc', 'template', 'concat', 'clean']);
     });
 
-    plugins.watch([config.less], function () {
-        gulp.start(['less']);
-    });
-
     /* If something in the src folder changes, just copy it and let the handlers above handle the situation */
     plugins.watch(['../../src/main/scripts/**/*'], function () {
         gulp.src('../../src/main/scripts/**/*')
