@@ -251,7 +251,7 @@
                 def uuidBackend = UUID.randomUUID().toString()
                 def uuidUi = UUID.randomUUID().toString()
                 project.properties.setProperty('uuid.hawkular.accounts.backend', uuidBackend.toString())
-                project.properties.setProperty('uuid.hawkular.accounts.ui', uuidUi.toString())
+                project.properties.setProperty('uuid.hawkular.ui', uuidUi.toString())
               </source>
             </configuration>
           </execution>

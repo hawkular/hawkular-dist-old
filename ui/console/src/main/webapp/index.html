@@ -41,15 +41,11 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <span class="pficon pficon-user"></span>
-              Anonymous <b class="caret"></b>
+              {{username}} <b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a href="#">Log In</a>
-              </li>
-              <li class="divider"></li>
-              <li class="disabled">
-                <a href="#" >Log Out</a>
+                <a href="#" onclick="window.keycloak.logout()">Log Out</a>
               </li>
             </ul>
           </li>
@@ -62,9 +58,25 @@
     <div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
       <div ng-include src="viewPartial"></div>
     </div>
-
     <!-- add any scripts under dist/ here -->
     <script src="dist/hawkular-console.js"></script>
+    <script type="text/javascript">
+        window.keycloakReady = false;
+        window.keycloak = Keycloak("/keycloak.json");
+
+        window.keycloak.onAuthLogout = function() {
+            location.reload();
+        };
+
+        window.keycloak.onReady = function(authenticated) {
+            window.keycloakReady = true;
+        };
+
+        window.keycloak.init({ onLoad: 'login-required' }).error(function () {
+            alert("Couldn't log you in. Sorry.");
+            window.location.reload();
+        });
+    </script>
 
   </body>
 </html>

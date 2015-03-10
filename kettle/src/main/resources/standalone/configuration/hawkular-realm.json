@@ -44,7 +44,7 @@
   },
   "scopeMappings": [
     {
-      "client": "hawkular-accounts-ui",
+      "client": "hawkular-ui",
       "roles": ["user"]
     }
   ],
@@ -57,17 +57,19 @@
       "secret" : "${uuid.hawkular.accounts.backend}"
     },
     {
-      "name": "hawkular-accounts-ui",
+      "name": "hawkular-ui",
       "enabled": true,
       "bearerOnly" : false,
       "publicClient": true,
-      "secret": "${uuid.hawkular.accounts.ui}",
+      "secret": "${uuid.hawkular.ui}",
       "fullScopeAllowed" : false,
       "redirectUris": [
+        "http://localhost:8080/*",
         "http://localhost:9000/*",
         "http://localhost:2772/*"
       ],
       "webOrigins": [
+        "http://localhost:8080",
         "http://localhost:9000",
         "http://localhost:2772"
       ],
