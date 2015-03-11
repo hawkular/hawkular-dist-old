@@ -57,7 +57,7 @@
 
     <div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
       <hawkular-sidebar class="col-md-2 hk-sidebar" ng-controller="Sidebar.SidebarController" ng-show="!hideSidebar"></hawkular-sidebar>
-      <div ng-include src="viewPartial"></div>
+      <div ng-include src="viewPartial" class="col-md-10"></div>
     </div>
     <!-- add any scripts under dist/ here -->
     <script src="dist/hawkular-console.js"></script>
