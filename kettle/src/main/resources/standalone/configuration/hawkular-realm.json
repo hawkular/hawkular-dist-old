@@ -63,16 +63,8 @@
       "publicClient": true,
       "secret": "${uuid.hawkular.ui}",
       "fullScopeAllowed" : false,
-      "redirectUris": [
-        "http://localhost:8080/*",
-        "http://localhost:9000/*",
-        "http://localhost:2772/*"
-      ],
-      "webOrigins": [
-        "http://localhost:8080",
-        "http://localhost:9000",
-        "http://localhost:2772"
-      ],
+      "redirectUris": ["/*"],
+      "webOrigins": [],
       "claims": {
         "username": true,
         "name": true,
