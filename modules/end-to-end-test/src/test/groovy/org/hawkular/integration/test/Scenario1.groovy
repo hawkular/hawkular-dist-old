@@ -25,7 +25,7 @@ import org.junit.Test
 
 import static junit.framework.Assert.assertEquals
 
-class Scenario1 extends org.hawkular.integration.test.AbstractTestBase {
+class Scenario1 extends AbstractTestBase {
 
     def tenantId = "i-test"
     def hawk_id = "hawkular_web"
@@ -55,7 +55,8 @@ class Scenario1 extends org.hawkular.integration.test.AbstractTestBase {
         response = client.post(path: "inventory/$tenantId/resources/$hawk_id/metrics",
             body: [ statusCode, statusTime])
 
-        assertEquals(200, response.status)
+        def good = response.status == 200 || response.status == 304
+        assert good
 
         // 3 inform pinger is internal
 
@@ -65,8 +66,10 @@ class Scenario1 extends org.hawkular.integration.test.AbstractTestBase {
             postMetricValue(hawk_id, statusCode, 200, i)
         }
 
-        postMetricValue(statusCode, 500, i-2)
-        postMetricValue(statusCode, 404, i-1)
+        postMetricValue(hawk_id, statusCode, 500, -2)
+        postMetricValue(hawk_id, statusCode, 404, -1)
+        postMetricValue(hawk_id, statusCode, 200, 0)
+        postMetricValue(hawk_id, statusTime, 42, 0)
 
 
         // 5 was simulated in step 4 as well
@@ -75,12 +78,14 @@ class Scenario1 extends org.hawkular.integration.test.AbstractTestBase {
 
         def end = System.currentTimeMillis()
         def start = end - 4 *3600 * 1000 // 4h earlier
-        response = client.get(path: "metrics/$tenantId/metrics/numeric/${hawk_id}.status.time/data", query:
+        response = client.get(path: "/hawkular-metrics/$tenantId/metrics/numeric/${hawk_id}.status.time/data", query:
                 [start: start, end: end])
+
+        println(response.data)
 
         // 7 define an alert
 
-        response = client.post(path: "alerts/triggers/")
+//        response = client.post(path: "alerts/triggers/")
 
     }
 
@@ -91,7 +96,7 @@ class Scenario1 extends org.hawkular.integration.test.AbstractTestBase {
 
         long time = now + (timeSkewMinutes * 60 * 1000)
 
-        response = client.post(path: "/metrics/$tenantId/metrics/numeric/$tmp/data",
+        response = client.post(path: "/hawkular-metrics/$tenantId/metrics/numeric/$tmp/data",
                 body: [[timestamp: time, value: value]])
         assertEquals(200, response.status)
     }
