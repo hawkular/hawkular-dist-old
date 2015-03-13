@@ -33,20 +33,24 @@ is executed. If you want to delete the whole target directory, please use the `r
 
 In that case, the http://nodejs.org/[Node.js] is downloaded again, together with relevant modules.
 
-After the console is built, you can access it by traversing to the the build target (./console/target) directory:
+After the console is built, you can access it by traversing to the the build target (./console/target/gulp-build) directory:
 
-`cd console/target`
+`cd console/target/gulp-build`
 
 and running the appropriate gulp (default) target:
 
 `gulp`
 
-After those steps, the console is available on http://localhost:2772/[http://localhost:2772/]
+After those steps, the console is available on http://localhost:2772/[http://localhost:2772/], but be aware that
+it's only a front-end and you need the server running for console to work properly. The advantage of this approach is,
+that is scans for file changes in the source directory and apply them directly into the target directory, which is
+suitable for console developing since it doesn't require the whole maven build to see the actual changes in the console UI.
 
 == Dev Install
 
 You can still re-build the console using only java-script based tools. Please do that only after maven build and
-only within the build target (./console/target) directory.
+only within the build target (./console/target/gulp-build) directory. These steps are rarely used and if you're not
+an hawkular console developer you most probably won't need it.
 
 Assuming the node.js is already installed:
 
