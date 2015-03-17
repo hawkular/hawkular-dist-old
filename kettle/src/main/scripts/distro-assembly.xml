@@ -38,6 +38,10 @@
     <fileSet>
       <directory>src/main/resources</directory>
       <outputDirectory>/${nest.dist.zip.root.dir}/</outputDirectory>
+      <excludes>
+        <!-- We handle this file specially (at the end of this file) -->
+        <exclude>**/hawkular-realm*json</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 
@@ -111,9 +115,10 @@
 
   <files>
     <file>
-      <source>src/main/resources/standalone/configuration/hawkular-realm.json</source>
+      <source>src/main/resources/standalone/configuration/${hawkular.realm.template}</source>
       <outputDirectory>${nest.dist.zip.root.dir}/standalone/configuration/</outputDirectory>
       <filtered>true</filtered>
+      <destName>hawkular-realm.json</destName>
     </file>
   </files>
 
