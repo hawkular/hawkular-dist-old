@@ -16,8 +16,8 @@
     "hawtio-core-navigation": "2.0.28",
     "hawtio-utilities": "2.0.16",
     "hawtio-template-cache": "2.0.1",
-    "hawkular-ui-components": "hawkular/hawkular-ui-components#master",
-    "patternfly": "1.1.3"
+    "patternfly": "1.1.3",
+    "hawkular-ui-components": "hawkular/hawkular-ui-components#master"
   },
   "devDependencies": {
     "bootstrap": "3.3.2",
