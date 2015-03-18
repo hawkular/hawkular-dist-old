@@ -25,7 +25,7 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-default navbar-fixed-top navbar-pf" role="navigation">
+    <nav class="navbar navbar-default navbar-pf" role="navigation">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
           <span class="sr-only">Toggle navigation</span>
@@ -36,8 +36,7 @@
         <a class="navbar-brand" href="/">
           <img src="resources/img/hawkular.png" alt="RED HAT JBOSS HAWKULAR Management Console">
         </a>
-      </div>
-      <div class="collapse navbar-collapse navbar-collapse-1">
+
         <ul class="nav navbar-nav navbar-utility pull-right">
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -51,15 +50,15 @@
             </ul>
           </li>
         </ul>
-        <hawkular-topbar ng-controller="Topbar.TopbarController"></hawkular-topbar>
       </div>
+      <ul class="nav navbar-nav navbar-primary" hawtio-main-nav></ul>
+      <ul class="nav navbar-nav" hawtio-sub-tabs></ul>
     </nav>
 
-    <div id="main" class="row below-topbar" ng-controller="HawtioNav.ViewController">
-      <hawkular-sidebar ng-controller="Sidebar.SidebarController" ng-show="!hideSidebar"></hawkular-sidebar>
-      <div class="col-sm-9 col-md-10 content" ng-include src="viewPartial"></div>
+    <div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
+      <hawkular-sidebar class="col-md-2 hk-sidebar" ng-controller="Sidebar.SidebarController" ng-show="!hideSidebar"></hawkular-sidebar>
+      <div ng-include src="viewPartial" class="col-md-10"></div>
     </div>
-
     <!-- add any scripts under dist/ here -->
     <script src="dist/hawkular-console.js"></script>
     <script type="text/javascript">
