@@ -62,19 +62,6 @@ public class MetricPublisher {
     @Asynchronous
     public void sendToMetricsViaRest(String tenantId, List<Map<String, Object>> metrics) {
         // Send it to metrics via rest
-/*
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/hawkular-metrics/" + tenantId +
-                "/metrics/numeric/data");
-
-
-        Entity<List<NumericMetric>> payload = Entity.entity(metrics, MediaType.APPLICATION_JSON_TYPE);
-        Invocation invocation = target.request().buildPost(payload);
-        Response response = invocation.invoke();
-
-        Log.LOG.metricPostStatus( response.getStatus() + " : " + response.getStatusInfo());
-*/
-
         String payload = new Gson().toJson(metrics);
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost request = new HttpPost("http://localhost:8080/hawkular-metrics/" + tenantId +
@@ -84,7 +71,9 @@ public class MetricPublisher {
 
         try {
             HttpResponse response = client.execute(request);
-            Log.LOG.metricPostStatus(response.getStatusLine().toString());
+            if (response.getStatusLine().getStatusCode()>399) {
+                Log.LOG.metricPostStatus(response.getStatusLine().toString());
+            }
         } catch (IOException e) {
             e.printStackTrace();  // TODO: Customise this generated block
         }
