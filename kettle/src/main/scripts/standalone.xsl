@@ -98,6 +98,16 @@
   </xsl:template>
   <!-- End of Keycloak-related changes -->
 
+  <!-- Add a cache for Hawkular Accounts -->
+  <xsl:template match="node()[name(.)='cache-container'][1]">
+    <xsl:copy>
+      <xsl:copy-of select="node()|@*"/>
+    </xsl:copy>
+    <cache-container name="hawkular-accounts" default-cache="role-cache">
+      <local-cache name="role-cache"/>
+    </cache-container>
+  </xsl:template>
+
   <!-- add our JMS queues/topices that are required to be defined as admin-objects -->
   <xsl:template name="admin-objects">
     <admin-objects>
