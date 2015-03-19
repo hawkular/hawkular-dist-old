@@ -200,7 +200,7 @@ public class PingManager {
         List<Map<String,Number>> data = new ArrayList<>(1);
         data.add(dataMap);
         Map<String,Object> outer = new HashMap<>(2);
-        outer.put("name",status.destination.resourceId + ".status." + name);
+        outer.put("id",status.destination.resourceId + ".status." + name);
         outer.put("data",data);
         mMetrics.add(outer);
     }

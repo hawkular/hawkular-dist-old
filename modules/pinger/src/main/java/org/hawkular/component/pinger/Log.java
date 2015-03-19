@@ -40,8 +40,8 @@ public interface Log {
     @Message(id = 5001, value = "Pinging the remote threw an exception: %s")
     void wPingExeption(String message);
 
-    @LogMessage(level = Logger.Level.DEBUG)
-    @Message(id = 5002, value = "post status : %s")
+    @LogMessage(level = Logger.Level.WARN)
+    @Message(id = 5002, value = "Post to metrics faild with post status : %s")
     void metricPostStatus(String s);
 
     @LogMessage(level = Logger.Level.WARN)
