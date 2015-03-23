@@ -82,7 +82,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.alerts</groupId>
-      <artifactId>hawkular-notifiers-email</artifactId>
+      <artifactId>hawkular-actions-email</artifactId>
       <version>${version.org.hawkular.alerts}</version>
       <type>war</type>
     </dependency>
