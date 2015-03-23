@@ -51,13 +51,13 @@
             </ul>
           </li>
         </ul>
-        <hawkular-topbar ng-controller="Topbar.TopbarController"></hawkular-topbar>
+        <hawkular-topbar ng-controller="Topbar.TopbarController" ng-show="!hideSidebar"></hawkular-topbar>
       </div>
     </nav>
 
     <div id="main" class="row below-topbar" ng-controller="HawtioNav.ViewController">
       <hawkular-sidebar ng-controller="Sidebar.SidebarController" ng-show="!hideSidebar"></hawkular-sidebar>
-      <div class="col-sm-9 col-md-10 content" ng-include src="viewPartial"></div>
+      <div class="content" ng-class="hideSidebar ? 'col-sm-12 col-md-12' : 'col-sm-9 col-md-10'" ng-include src="viewPartial"></div>
     </div>
 
     <!-- add any scripts under dist/ here -->
