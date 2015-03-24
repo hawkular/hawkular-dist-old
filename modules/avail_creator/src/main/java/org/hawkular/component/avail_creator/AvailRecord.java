@@ -16,26 +16,23 @@
  */
 package org.hawkular.component.avail_creator;
 
-import org.jboss.logging.LogMessage;
-import org.jboss.logging.Logger;
-import org.jboss.logging.Message;
-import org.jboss.logging.MessageLogger;
-
 /**
- * Log messages of the creator
+ * One single availability
  *
  * @author Heiko W. Rupp
  */
-@MessageLogger(projectCode = "HAWKULAR")
-public interface Log {
+class AvailRecord {
 
-    Log LOG = Logger.getMessageLogger(Log.class, "org.hawkular.component.avail_creator");
 
-    @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5100, value = "No connection to topic %s possible")
-    void wNoTopicConnection(String topicName);
+    String tenantId;
+    final String id;
+    final long timestamp;
+    final String avail;
 
-    @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5101, value = "Problem sending availabiliy to Hawkular-Metrics: %s")
-    void availPostStatus(String s);
+    public AvailRecord(String tenantId, String id, long timestamp, String avail) {
+        this.tenantId = tenantId;
+        this.id = id;
+        this.timestamp = timestamp;
+        this.avail = avail;
+    }
 }

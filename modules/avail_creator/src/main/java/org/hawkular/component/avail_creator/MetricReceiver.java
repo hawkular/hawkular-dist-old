@@ -17,14 +17,9 @@
 package org.hawkular.component.avail_creator;
 
 import com.google.gson.GsonBuilder;
-import org.hawkular.bus.common.BasicMessage;
-import org.hawkular.bus.common.ConnectionContextFactory;
-import org.hawkular.bus.common.Endpoint;
-import org.hawkular.bus.common.MessageProcessor;
-import org.hawkular.bus.common.ObjectMessage;
-import org.hawkular.bus.common.producer.ProducerConnectionContext;
 
 import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.jms.ConnectionFactory;
 import javax.jms.Message;
@@ -64,6 +59,8 @@ public class MetricReceiver implements MessageListener {
     @javax.annotation.Resource (lookup = "java:/HawkularBusConnectionFactory")
     ConnectionFactory connectionFactory;
 
+    @EJB
+    AvailPublisher availPublisher;
 
     @Override
     public void onMessage(Message message) {
@@ -79,6 +76,8 @@ public class MetricReceiver implements MessageListener {
             List<Map<String,Object>> inputList = (List<Map<String, Object>>) metricDataMap.get("data");
             List<AvailRecord> outer = new ArrayList<>();
 
+            List<Availability> availabilityList = new ArrayList<>();
+
             for (Map<String,Object> item: inputList) {
                 String source = (String) item.get("source");
                 if (source.endsWith(".status.code")) {
@@ -93,25 +92,15 @@ public class MetricReceiver implements MessageListener {
 
                     AvailRecord ar = new AvailRecord(tenant, id,timestamp,avail);
                     outer.add(ar);
+
+
                 }
             }
 
+            availPublisher.sendToMetricsViaRest(outer);
 
-            if (topic != null) {
+            availPublisher.publishToTopic(outer, this);
 
-                try (ConnectionContextFactory factory = new ConnectionContextFactory(connectionFactory)) {
-                    Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC, topic.getTopicName());
-                    ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
-                    BasicMessage msg = new ObjectMessage(outer);
-                    MessageProcessor processor = new MessageProcessor();
-                    processor.send(pc, msg);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            else {
-                Log.LOG.wNoTopicConnection("HawkularAvailData");
-            }
 
         } catch (Exception e) {
             e.printStackTrace();  // TODO: Customise this generated block
@@ -129,23 +118,6 @@ public class MetricReceiver implements MessageListener {
             return "UP";
         }
         return "DOWN";
-    }
-
-
-    private static class AvailRecord {
-
-
-        private String tenantId;
-        private final String id;
-        private final long timestamp;
-        private final String avail;
-
-        public AvailRecord(String tenantId, String id, long timestamp, String avail) {
-            this.tenantId = tenantId;
-            this.id = id;
-            this.timestamp = timestamp;
-            this.avail = avail;
-        }
     }
 
 
