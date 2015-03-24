@@ -60,6 +60,7 @@
 
           <!-- Our standalone.conf contains an override to the JAVA_OPTS, to tell Keycloak to import our realm -->
           <exclude>${nest.dist.zip.root.dir}/bin/standalone.conf</exclude>
+          <exclude>${nest.dist.zip.root.dir}/bin/standalone.conf.bat</exclude>
 
         </excludes>
       </unpackOptions>
