@@ -23,6 +23,8 @@
          version="3.1">
 
   <display-name>Hawkular Avail Creator</display-name>
+  <description>A Bus listener that takes in *.status.code metrics and translates them into availability
+    records, that are sent to Hawkular-Metrics and -Alerts.</description>
 
 
 </web-app>

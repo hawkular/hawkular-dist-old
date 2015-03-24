@@ -14,39 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.component.avail_creator;
+package org.hawkular.component.availcreator;
 
 /**
- * One Availability point
+ * One single availability
  *
  * @author Heiko W. Rupp
  */
-public class Availability {
+class AvailRecord {
 
-    long timestamp;
-    String value;
 
-    public Availability(long timestamp, String value) {
+    String tenantId;
+    final String id;
+    final long timestamp;
+    final String avail;
+
+    public AvailRecord(String tenantId, String id, long timestamp, String avail) {
+        this.tenantId = tenantId;
+        this.id = id;
         this.timestamp = timestamp;
-        this.value = value;
-    }
-
-    public Availability() {
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+        this.avail = avail;
     }
 }

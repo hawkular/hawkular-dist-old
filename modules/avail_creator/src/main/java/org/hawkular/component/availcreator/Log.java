@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.component.avail_creator;
+package org.hawkular.component.availcreator;
 
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
@@ -29,7 +29,7 @@ import org.jboss.logging.MessageLogger;
 @MessageLogger(projectCode = "HAWKULAR")
 public interface Log {
 
-    Log LOG = Logger.getMessageLogger(Log.class, "org.hawkular.component.avail_creator");
+    Log LOG = Logger.getMessageLogger(Log.class, "org.hawkular.component.availcreator");
 
     @LogMessage(level = Logger.Level.WARN)
     @Message(id = 5100, value = "No connection to topic %s possible")
