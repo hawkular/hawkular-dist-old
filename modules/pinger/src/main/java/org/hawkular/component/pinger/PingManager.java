@@ -48,6 +48,12 @@ import java.util.concurrent.Future;
 @Singleton
 public class PingManager {
 
+    // How many rounds a WAIT_MILLIS do we wait for results to come in?
+    private static final int ROUNDS = 15;
+    // How long do we wait between each round
+    private static final int WAIT_MILLIS = 500;
+
+
     String tenantId = "test";
 
     @EJB
@@ -93,7 +99,7 @@ public class PingManager {
      * collecting their return values and then publishing them.
      */
     @Lock(LockType.READ)
-    @Schedule(minute = "*", hour = "*", persistent = false)
+    @Schedule(minute = "*", hour = "*", second = "0,20,40", persistent = false)
     public void scheduleWork() {
 
         if (destinations.size()==0) {
@@ -104,7 +110,10 @@ public class PingManager {
     }
 
     /**
-     * Runs the pinging work on the provided list of destinations
+     * Runs the pinging work on the provided list of destinations.
+     * The actual pings are scheduled to run in parallel in a thread pool.
+     * After ROUNDS*WAIT_MILLIS, remaining pings are cancelled and
+     * an error
      * @param destinations Set of destinations to ping
      */
     private void doThePing(Set<PingDestination> destinations) {
@@ -118,7 +127,7 @@ public class PingManager {
 
 
         int round = 1;
-        while (!futures.isEmpty() && round < 20) {
+        while (!futures.isEmpty() && round < ROUNDS) {
             Iterator<Future<PingStatus>> iterator = futures.iterator();
             while (iterator.hasNext()) {
                 Future<PingStatus> f = iterator.next();
@@ -132,7 +141,7 @@ public class PingManager {
                 }
             }
             try {
-                Thread.sleep(500); // wait 500ms until the next iteration
+                Thread.sleep(WAIT_MILLIS); // wait until the next iteration
             } catch (InterruptedException e) {
                 // We don't care
             }
@@ -211,9 +220,6 @@ public class PingManager {
      * @param pd new Destination
      */
     public void addDestination(PingDestination pd) {
-        Set<PingDestination> oneTimeDestinations = new HashSet<>(1);
-        oneTimeDestinations.add(pd);
-        doThePing(oneTimeDestinations);
         destinations.add(pd);
     }
 
