@@ -125,6 +125,13 @@
                     pool-name="HawkularMetricData">
         <config-property name="PhysicalName">HawkularMetricData</config-property>
       </admin-object>
+      <admin-object use-java-context="true"
+                    enabled="true"
+                    class-name="org.apache.activemq.command.ActiveMQTopic"
+                    jndi-name="java:/topic/HawkularAvailData"
+                    pool-name="HawkularAvailData">
+        <config-property name="PhysicalName">HawkularAvailData</config-property>
+      </admin-object>
     </admin-objects>
   </xsl:template>
 
