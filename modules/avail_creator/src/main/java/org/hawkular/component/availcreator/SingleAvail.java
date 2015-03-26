@@ -21,7 +21,7 @@ package org.hawkular.component.availcreator;
  *
  * @author Heiko W. Rupp
  */
-class AvailRecord {
+class SingleAvail {
 
 
     String tenantId;
@@ -29,7 +29,7 @@ class AvailRecord {
     final long timestamp;
     final String avail;
 
-    public AvailRecord(String tenantId, String id, long timestamp, String avail) {
+    public SingleAvail(String tenantId, String id, long timestamp, String avail) {
         this.tenantId = tenantId;
         this.id = id;
         this.timestamp = timestamp;

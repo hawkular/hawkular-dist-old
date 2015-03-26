@@ -16,7 +16,9 @@
  */
 package org.hawkular.component.availcreator;
 
-import com.google.gson.GsonBuilder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -25,9 +27,8 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
+import com.google.gson.GsonBuilder;
 
 /**
  * Receiver that listens on JMS Topic and checks for metrics *.status.code
@@ -46,17 +47,16 @@ import java.util.Map;
  *
  * @author Heiko W. Rupp
  */
-@MessageDriven( activationConfig = {
+@MessageDriven(activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "HawkularMetricData")
 })
-@SuppressWarnings("unused")
 public class MetricReceiver implements MessageListener {
 
-    @javax.annotation.Resource ( lookup = "java:/topic/HawkularAvailData")
+    @javax.annotation.Resource(lookup = "java:/topic/HawkularAvailData")
     javax.jms.Topic topic;
 
-    @javax.annotation.Resource (lookup = "java:/HawkularBusConnectionFactory")
+    @javax.annotation.Resource(lookup = "java:/HawkularBusConnectionFactory")
     ConnectionFactory connectionFactory;
 
     @EJB
@@ -66,41 +66,37 @@ public class MetricReceiver implements MessageListener {
     public void onMessage(Message message) {
 
         try {
-
-            String payload = ((TextMessage)message).getText();
+            String payload = ((TextMessage) message).getText();
             Map map = new GsonBuilder().create().fromJson(payload, Map.class);
 
             Map metricDataMap = (Map) map.get("metricData");
             // Get <rid>.status.code  metrics
             String tenant = (String) metricDataMap.get("tenantId");
-            List<Map<String,Object>> inputList = (List<Map<String, Object>>) metricDataMap.get("data");
-            List<AvailRecord> outer = new ArrayList<>();
+            List<Map<String, Object>> inputList = (List<Map<String, Object>>) metricDataMap.get("data");
+            List<SingleAvail> outer = new ArrayList<>();
 
             List<Availability> availabilityList = new ArrayList<>();
 
-            for (Map<String,Object> item: inputList) {
+            for (Map<String, Object> item : inputList) {
+
                 String source = (String) item.get("source");
                 if (source.endsWith(".status.code")) {
                     double codeD = (double) item.get("value");
                     int code = (int) codeD;
 
-                    String id = source.substring(0,source.indexOf("."));
+                    String id = source.substring(0, source.indexOf("."));
                     double timestampD = (double) item.get("timestamp");
                     long timestamp = (long) timestampD;
 
                     String avail = computeAvail(code);
 
-                    AvailRecord ar = new AvailRecord(tenant, id,timestamp,avail);
+                    SingleAvail ar = new SingleAvail(tenant, id, timestamp, avail);
                     outer.add(ar);
-
-
                 }
             }
-
             availPublisher.sendToMetricsViaRest(outer);
 
             availPublisher.publishToTopic(outer, this);
-
 
         } catch (Exception e) {
             e.printStackTrace();  // TODO: Customise this generated block
@@ -119,6 +115,5 @@ public class MetricReceiver implements MessageListener {
         }
         return "DOWN";
     }
-
 
 }

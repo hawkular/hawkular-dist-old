@@ -16,7 +16,15 @@
  */
 package org.hawkular.component.availcreator;
 
-import com.google.gson.Gson;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Asynchronous;
+import javax.ejb.Stateless;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -30,13 +38,7 @@ import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.ObjectMessage;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 
-import javax.ejb.Asynchronous;
-import javax.ejb.Stateless;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.gson.Gson;
 
 /**
  * Publish Avail data
@@ -46,16 +48,13 @@ import java.util.Map;
 @Stateless
 public class AvailPublisher {
 
-
     @Asynchronous
-    public void sendToMetricsViaRest(List<AvailRecord> availabilities) {
+    public void sendToMetricsViaRest(List<SingleAvail> availabilities) {
         // Send it to metrics via rest
-
-
 
         HttpClient client = HttpClientBuilder.create().build();
 
-        for (AvailRecord avr: availabilities) {
+        for (SingleAvail avr : availabilities) {
 
             String rid = avr.id;
             String tenantId = avr.tenantId;
@@ -63,12 +62,11 @@ public class AvailPublisher {
             HttpPost request = new HttpPost("http://localhost:8080/hawkular-metrics/" + tenantId +
                     "/metrics/availability/" + rid + "/data");
 
-            Availability availability = new Availability(avr.timestamp ,avr.avail.toLowerCase());
+            Availability availability = new Availability(avr.timestamp, avr.avail.toLowerCase());
             List<Availability> list = new ArrayList<>(1);
             list.add(availability);
             String payload = new Gson().toJson(list);
             request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
-
 
             try {
                 HttpResponse response = client.execute(request);
@@ -81,11 +79,12 @@ public class AvailPublisher {
         }
     }
 
-    void publishToTopic(List<AvailRecord> availRecordList, MetricReceiver metricReceiver) {
+    public void publishToTopic(List<SingleAvail> availRecordList, MetricReceiver metricReceiver) {
         if (metricReceiver.topic != null) {
-
-            Map<String,Object> outer = new HashMap<>(1);
-            outer.put("availData", availRecordList);
+            Map<String, Object> outer = new HashMap<>(1);
+            Map<String, Object> data = new HashMap<>(2);
+            data.put("data", availRecordList);
+            outer.put("availData", data);
 
             try (ConnectionContextFactory factory = new ConnectionContextFactory(metricReceiver.connectionFactory)) {
                 Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC, metricReceiver.topic.getTopicName());
