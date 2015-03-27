@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -49,7 +48,6 @@ import org.hawkular.metrics.client.common.SingleMetric;
 @Startup
 @Singleton
 public class PingManager {
-
     // How many rounds a WAIT_MILLIS do we wait for results to come in?
     private static final int ROUNDS = 15;
     // How long do we wait between each round
@@ -118,16 +116,19 @@ public class PingManager {
      */
     private void doThePing(Set<PingDestination> destinations) {
         List<PingStatus> results = new ArrayList<>(destinations.size());
-        List<Future<PingStatus>> futures = new ArrayList<>(destinations.size());
+        // In case of timeouts we will not be able to get the PingStatus from the Future, so use a Map
+        // to keep track of what destination's ping actually hung.
+        Map<Future<PingStatus>, PingStatus> futures = new HashMap<>(destinations.size());
 
         for (PingDestination destination : destinations) {
-            Future<PingStatus> result = pinger.ping(destination);
-            futures.add(result);
+            PingStatus request = new PingStatus(destination);
+            Future<PingStatus> result = pinger.ping(request);
+            futures.put(result, request);
         }
 
         int round = 1;
         while (!futures.isEmpty() && round < ROUNDS) {
-            Iterator<Future<PingStatus>> iterator = futures.iterator();
+            Iterator<Future<PingStatus>> iterator = futures.keySet().iterator();
             while (iterator.hasNext()) {
                 Future<PingStatus> f = iterator.next();
                 if (f.isDone()) {
@@ -147,28 +148,18 @@ public class PingManager {
             round++;
         }
 
-        // See if there are hanging items and cancel them away
-        if (!futures.isEmpty()) {
-            // We have waited 10 seconds above for results to come in.
-            // What is now left will be cancelled and marked as timed out
-            for (Future<PingStatus> f : futures) {
-                f.cancel(true);
-                PingStatus ps = null;
-                try {
-                    ps = f.get();
-                    // can be null if the future did not complete
-                    // TODO this timeout logic needs to be fixed to actually provide a result
-                    if (null != ps) {
-                        ps.timedOut = true;
-                        ps.duration = 10000;
-                        results.add(ps);
-                    }
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();  // TODO: Customise this generated block
-                } catch ( CancellationException e ) {
-                    // do nothing
-                }
-            }
+        // Cancel hanging pings and report them as timeouts
+        for (Map.Entry<Future<PingStatus>, PingStatus> entry : futures.entrySet()) {
+            entry.getKey().cancel(true);
+            PingStatus ps = entry.getValue();
+            ps.code = 503; // unavailable
+            ps.timedOut = true;
+            long now = System.currentTimeMillis();
+            // (jshaughn) This used to be set explicitly to 10000, but I don't know why.  It seemed
+            // dangerous because that could be in the future given that ROUNDS*WAIT_MILLIS < 10000.
+            ps.duration = (int) (now - ps.getTimestamp());
+            ps.setTimestamp(now);
+            results.add(ps);
         }
 
         reportResults(results);

@@ -16,6 +16,7 @@
  */
 package org.hawkular.component.pinger;
 
+
 /**
  * Outcome of the ping
  *
@@ -29,9 +30,9 @@ public class PingStatus {
     boolean timedOut = false;
     private long timestamp;
 
-    public PingStatus(PingDestination destination, long timestamp) {
+    public PingStatus(PingDestination destination) {
         this.destination = destination;
-        this.timestamp = timestamp;
+        this.timestamp = System.currentTimeMillis();
     }
 
     public PingStatus(PingDestination destination, int code, int duration) {
