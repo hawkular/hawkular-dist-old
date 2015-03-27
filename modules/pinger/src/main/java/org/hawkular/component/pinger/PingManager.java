@@ -16,7 +16,16 @@
  */
 package org.hawkular.component.pinger;
 
-import org.hawkular.metrics.client.common.SingleMetric;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -29,15 +38,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+
+import org.hawkular.metrics.client.common.SingleMetric;
 
 /**
  * A SLSB that coordinates the pinging of resources
@@ -52,7 +54,6 @@ public class PingManager {
     private static final int ROUNDS = 15;
     // How long do we wait between each round
     private static final int WAIT_MILLIS = 500;
-
 
     String tenantId = "test";
 
@@ -69,22 +70,22 @@ public class PingManager {
 
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("http://localhost:8080/hawkular/inventory/" + tenantId + "/resources");
-        target.queryParam("type","URL");
+        target.queryParam("type", "URL");
         Response response = target.request().get();
 
-        if (response.getStatus()==200) {
+        if (response.getStatus() == 200) {
 
             List list = response.readEntity(List.class);
 
-            for (Object o  : list) {
+            for (Object o : list) {
                 if (o instanceof Map) {
 
-                    Map<String,Object> m = (Map) o;
+                    Map<String, Object> m = (Map) o;
                     String id = (String) m.get("id");
                     String type = (String) m.get("type");
-                    Map<String,String> params = (Map<String, String>) m.get("parameters");
+                    Map<String, String> params = (Map<String, String>) m.get("parameters");
                     String url = params.get("url");
-                    destinations.add(new PingDestination(id,url));
+                    destinations.add(new PingDestination(id, url));
                 }
             }
         }
@@ -92,7 +93,6 @@ public class PingManager {
             Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
         }
     }
-
 
     /**
      * This method triggers the actual work by starting pingers,
@@ -102,7 +102,7 @@ public class PingManager {
     @Schedule(minute = "*", hour = "*", second = "0,20,40", persistent = false)
     public void scheduleWork() {
 
-        if (destinations.size()==0) {
+        if (destinations.size() == 0) {
             return;
         }
 
@@ -124,7 +124,6 @@ public class PingManager {
             Future<PingStatus> result = pinger.ping(destination);
             futures.add(result);
         }
-
 
         int round = 1;
         while (!futures.isEmpty() && round < ROUNDS) {
@@ -157,11 +156,17 @@ public class PingManager {
                 PingStatus ps = null;
                 try {
                     ps = f.get();
-                    ps.timedOut = true;
-                    ps.duration=10000;
-                    results.add(ps);
+                    // can be null if the future did not complete
+                    // TODO this timeout logic needs to be fixed to actually provide a result
+                    if (null != ps) {
+                        ps.timedOut = true;
+                        ps.duration = 10000;
+                        results.add(ps);
+                    }
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();  // TODO: Customise this generated block
+                } catch ( CancellationException e ) {
+                    // do nothing
                 }
             }
         }
@@ -171,18 +176,17 @@ public class PingManager {
 
     private void reportResults(List<PingStatus> results) {
 
-        if (results.size()==0) {
+        if (results.size() == 0) {
             return;
         }
 
         List<SingleMetric> singleMetrics = new ArrayList<>(results.size());
-        List<Map<String,Object>> mMetrics = new ArrayList<>();
+        List<Map<String, Object>> mMetrics = new ArrayList<>();
 
-        for (PingStatus status : results){
+        for (PingStatus status : results) {
 
             addDataItem(mMetrics, status, status.duration, "duration");
             addDataItem(mMetrics, status, status.code, "code");
-
 
             // for the topic to alerting
             SingleMetric singleMetric = new SingleMetric(status.destination.resourceId + ".status.duration",
@@ -198,19 +202,17 @@ public class PingManager {
         metricPublisher.sendToMetricsViaRest(tenantId, mMetrics);
         metricPublisher.publishToTopic(tenantId, singleMetrics);
 
-
-
     }
 
     private void addDataItem(List<Map<String, Object>> mMetrics, PingStatus status, Number value, String name) {
-        Map<String,Number> dataMap = new HashMap<>(2);
+        Map<String, Number> dataMap = new HashMap<>(2);
         dataMap.put("timestamp", status.getTimestamp());
         dataMap.put("value", value);
-        List<Map<String,Number>> data = new ArrayList<>(1);
+        List<Map<String, Number>> data = new ArrayList<>(1);
         data.add(dataMap);
-        Map<String,Object> outer = new HashMap<>(2);
-        outer.put("id",status.destination.resourceId + ".status." + name);
-        outer.put("data",data);
+        Map<String, Object> outer = new HashMap<>(2);
+        outer.put("id", status.destination.resourceId + ".status." + name);
+        outer.put("data", data);
         mMetrics.add(outer);
     }
 
