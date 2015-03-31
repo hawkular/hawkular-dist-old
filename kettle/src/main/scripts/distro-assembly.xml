@@ -73,7 +73,7 @@
       <includes>
         <include>org.hawkular.inventory:inventory-rest-api</include>
         <include>org.hawkular:hawkular-pinger</include>
-        <include>org.hawkular:hawkular-avail_creator</include>
+        <include>org.hawkular:hawkular-avail-creator</include>
         <include>org.hawkular.alerts:hawkular-alerts-ear</include>
         <include>org.hawkular.alerts:hawkular-actions-email</include>
         <include>org.hawkular.metrics:hawkular-metrics-api-jaxrs</include>

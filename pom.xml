@@ -55,7 +55,7 @@
   <modules>
     <module>ui/console</module>
     <module>modules/pinger</module>
-    <module>modules/avail_creator</module>
+    <module>modules/avail-creator</module>
     <module>kettle</module>
   </modules>
 

@@ -29,7 +29,7 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-avail_creator</artifactId>
+  <artifactId>hawkular-avail-creator</artifactId>
   <packaging>war</packaging>
 
   <description>Component that takes status codes and creates avail messages

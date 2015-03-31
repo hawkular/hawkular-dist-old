@@ -70,7 +70,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular</groupId>
-      <artifactId>hawkular-avail_creator</artifactId>
+      <artifactId>hawkular-avail-creator</artifactId>
       <version>${version.org.hawkular.inventory}</version>
       <type>war</type>
     </dependency>
