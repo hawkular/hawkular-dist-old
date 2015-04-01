@@ -1,6 +1,6 @@
 {
   "name": "hawkular-console",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "keywords": [
     "hawtio hawkular console"
@@ -17,7 +17,7 @@
     "hawtio-utilities": "2.0.21",
     "hawtio-template-cache": "2.0.2",
     "patternfly": "1.1.3",
-    "hawkular-ui-components": "hawkular/hawkular-ui-components#master"
+    "hawkular-ui-components": "0.2.2"
   },
   "devDependencies": {
     "hawtio-core-dts": "2.0.16"
