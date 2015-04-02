@@ -173,7 +173,7 @@
 
   <profiles>
     <profile>
-      <id>dev</id>
+      <id>cache</id>
       <properties>
         <hawkular.console.context>/</hawkular.console.context>
         <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
