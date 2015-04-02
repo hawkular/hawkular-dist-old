@@ -65,10 +65,10 @@ public class PingManager {
 
     @PostConstruct
     public void startUp() {
-
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/hawkular/inventory/" + tenantId + "/resources");
-        target.queryParam("type", "URL");
+        // TODO: inventory does not have to be co-located
+        WebTarget target = client.target("http://localhost:8080/hawkular/inventory/" + tenantId
+                +"/resourceTypes/URL/resources");
         Response response = target.request().get();
 
         if (response.getStatus() == 200) {
@@ -77,17 +77,15 @@ public class PingManager {
 
             for (Object o : list) {
                 if (o instanceof Map) {
-
                     Map<String, Object> m = (Map) o;
                     String id = (String) m.get("id");
-                    String type = (String) m.get("type");
-                    Map<String, String> params = (Map<String, String>) m.get("parameters");
+                    Map<String, Object> type = (Map<String, Object>) m.get("type");
+                    Map<String, String> params = (Map<String, String>) m.get("properties");
                     String url = params.get("url");
                     destinations.add(new PingDestination(id, url));
                 }
             }
-        }
-        else {
+        } else {
             Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
         }
     }
