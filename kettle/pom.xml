@@ -46,6 +46,7 @@
     <version.org.hawkular.console>1.0.0-SNAPSHOT</version.org.hawkular.console>
     <version.org.hawkular.accounts>1.0.0-SNAPSHOT</version.org.hawkular.accounts>
     <version.org.hawkular.pinger>1.0.0-SNAPSHOT</version.org.hawkular.pinger>
+    <version.org.hawkular.availCreator>1.0.0-SNAPSHOT</version.org.hawkular.availCreator>
     <version.org.keycloak>1.1.0.Final</version.org.keycloak>
   </properties>
 
@@ -72,7 +73,7 @@
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-avail-creator</artifactId>
-      <version>${version.org.hawkular.inventory}</version>
+      <version>${version.org.hawkular.availCreator}</version>
       <type>war</type>
     </dependency>
     <dependency>
