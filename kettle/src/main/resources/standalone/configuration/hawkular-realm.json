@@ -49,6 +49,12 @@
       "roles": ["user"]
     }
   ],
+  "applicationScopeMappings" : {
+    "account" : [ {
+      "client" : "hawkular-ui",
+      "roles" : [ "manage-account", "view-profile" ]
+    } ]
+  },
   "applications" : [
     {
       "name": "hawkular-accounts-backend",
