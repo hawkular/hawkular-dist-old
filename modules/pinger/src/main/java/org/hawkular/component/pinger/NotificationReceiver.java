@@ -29,14 +29,14 @@ import java.util.Map;
 
 /**
  * Receiver that listens on JMS Topic and checks for updated resources.
- * Listening goes on 'java:/topic/HawkularNotifications'
+ * Listening goes on 'java:/topic/HawkularInventoryChanges'
  *
  * @author Heiko W. Rupp
  */
 @MessageDriven( activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = "HawkularNotifications"),
-        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "code LIKE 'resource%'")
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "java:/topic/HawkularInventoryChanges"),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "entityType = 'resource'")
 })
 @SuppressWarnings("unused")
 public class NotificationReceiver extends BasicMessageListener<SimpleBasicMessage> {
@@ -49,14 +49,16 @@ public class NotificationReceiver extends BasicMessageListener<SimpleBasicMessag
 
         try {
 
+            Log.LOG.debugf("Received message: %s", message);
+
             String payload = message.getMessage();
             Map<String, String> details = message.getHeaders();
-            String code;
-            if (details!=null) {
-                code = details.get("code");
+            String action;
+            if (details != null) {
+                action = details.get("action");
             } else {
                 // should never happen as the selector should not let them pass
-                Log.LOG.wNoCode();
+                Log.LOG.wNoAction();
                 return;
             }
 
@@ -69,11 +71,9 @@ public class NotificationReceiver extends BasicMessageListener<SimpleBasicMessag
             String url = (String) resource.getProperties().get("url");
             PingDestination destination = new PingDestination(resource.getId(), url);
 
-            if ("resource_added".equals(code)) {
-
+            if ("created".equals(action)) {
                 pingManager.addDestination(destination);
-            }
-            else if ("resource_deleted".equals(code)) {
+            } else if ("deleted".equals(action)) {
                 pingManager.removeDestination(destination);
             }
 
