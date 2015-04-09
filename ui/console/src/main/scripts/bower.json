@@ -12,15 +12,15 @@
     "plugins"
   ],
   "dependencies": {
-    "hawtio-core": "2.0.11",
-    "hawtio-core-navigation": "2.0.30",
+    "hawtio-core": "2.0.16",
+    "hawtio-core-navigation": "2.0.39",
     "hawtio-utilities": "2.0.21",
     "hawtio-template-cache": "2.0.2",
     "patternfly": "1.1.3",
     "hawkular-ui-components": "^0.2.4"
   },
   "devDependencies": {
-    "hawtio-core-dts": "2.0.16"
+    "hawtio-core-dts": "2.0.17"
   },
   "resolutions": {
     "patternfly": "1.1.3",
