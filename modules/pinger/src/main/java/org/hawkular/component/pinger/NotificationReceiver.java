@@ -16,11 +16,10 @@
  */
 package org.hawkular.component.pinger;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.hawkular.bus.common.SimpleBasicMessage;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 import org.hawkular.inventory.api.model.Resource;
+import org.hawkular.inventory.api.observable.Action;
+import org.hawkular.inventory.bus.api.ResourceEvent;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -39,19 +38,18 @@ import java.util.Map;
         @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "entityType = 'resource'")
 })
 @SuppressWarnings("unused")
-public class NotificationReceiver extends BasicMessageListener<SimpleBasicMessage> {
+public class NotificationReceiver extends BasicMessageListener<ResourceEvent> {
 
 
     @EJB PingManager pingManager;
 
     @Override
-    public void onBasicMessage(SimpleBasicMessage message) {
+    public void onBasicMessage(ResourceEvent message) {
 
         try {
 
             Log.LOG.debugf("Received message: %s", message);
 
-            String payload = message.getMessage();
             Map<String, String> details = message.getHeaders();
             String action;
             if (details != null) {
@@ -62,18 +60,17 @@ public class NotificationReceiver extends BasicMessageListener<SimpleBasicMessag
                 return;
             }
 
-            Gson gson = new GsonBuilder().create();
+            Resource resource = message.getObject();
 
-            Resource resource = gson.fromJson(payload, Resource.class);
             if (!"URL".equals(resource.getType().getId())) {
                 return;
             }
             String url = (String) resource.getProperties().get("url");
             PingDestination destination = new PingDestination(resource.getId(), url);
 
-            if ("created".equals(action)) {
+            if (message.getAction() == Action.Enumerated.CREATED) {
                 pingManager.addDestination(destination);
-            } else if ("deleted".equals(action)) {
+            } else if (message.getAction() == Action.Enumerated.DELETED) {
                 pingManager.removeDestination(destination);
             }
 
