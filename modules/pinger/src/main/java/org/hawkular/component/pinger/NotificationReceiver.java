@@ -20,8 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.hawkular.bus.common.SimpleBasicMessage;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
-import org.hawkular.inventory.api.Resource;
-import org.hawkular.inventory.api.ResourceType;
+import org.hawkular.inventory.api.model.Resource;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -64,10 +63,10 @@ public class NotificationReceiver extends BasicMessageListener<SimpleBasicMessag
             Gson gson = new GsonBuilder().create();
 
             Resource resource = gson.fromJson(payload, Resource.class);
-            if (!resource.getType().equals(ResourceType.URL)) {
+            if (!"URL".equals(resource.getType().getId())) {
                 return;
             }
-            String url = resource.getParameters().get("url");
+            String url = (String) resource.getProperties().get("url");
             PingDestination destination = new PingDestination(resource.getId(), url);
 
             if ("resource_added".equals(code)) {
