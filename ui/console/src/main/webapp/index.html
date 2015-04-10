@@ -36,7 +36,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="/">
-          <img src="resources/img/hawkular.png" alt="RED HAT JBOSS HAWKULAR Management Console">
+          <img id="hawkularLogo" src="resources/img/hawkular.png" alt="RED HAT JBOSS HAWKULAR Management Console" title="Hawkular">
         </a>
       </div>
       <div class="collapse navbar-collapse navbar-collapse-1">
@@ -64,5 +64,10 @@
 
     <!-- add any scripts under dist/ here -->
     <script src="dist/hawkular-console.js"></script>
+    <script>
+      document.getElementById("hawkularLogo").title = HawkularComponentsVersions[0].version;
+      var comment = document.createComment(JSON.stringify(HawkularComponentsVersions));
+      document.getElementsByTagName('body')[0].appendChild(comment);
+    </script>
   </body>
 </html>
