@@ -35,9 +35,15 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
+import org.hawkular.inventory.api.model.Environment;
+import org.hawkular.inventory.api.model.ResourceType;
+import org.hawkular.inventory.api.model.Tenant;
 import org.hawkular.metrics.client.common.SingleMetric;
 
 /**
@@ -53,7 +59,8 @@ public class PingManager {
     // How long do we wait between each round
     private static final int WAIT_MILLIS = 500;
 
-    String tenantId = "test";
+    private final String tenantId = "test";
+    private final String environmentId = "test";
 
     @EJB
     public Pinger pinger;
@@ -70,25 +77,40 @@ public class PingManager {
             try {
                 Client client = ClientBuilder.newClient();
                 // TODO: inventory does not have to be co-located
-                WebTarget target = client.target("http://localhost:8080/hawkular/inventory/" + tenantId
-                        + "/resourceTypes/URL/resources");
+                final String host = "http://localhost:8080";
+                final String inventoryUrl = host + "/hawkular/inventory/";
+                WebTarget target = client.target(inventoryUrl + tenantId + "/resourceTypes/URL/resources");
                 Response response = target.request().get();
 
-                if (response.getStatus() == 200) {
-
+                if (isResponseOk(response.getStatus())) {
                     List list = response.readEntity(List.class);
+                    if (list.isEmpty()) {
+                        response.close();
+                        target = client.target(inventoryUrl + "tenants");
+                        response = target.request().post(Entity.json(new Tenant.Blueprint(tenantId)));
+                        if (isResponseOk(response.getStatus())) {
+                            response.close();
+                            target = client.target(inventoryUrl + tenantId + "/environments");
+                            response = target.request().post(Entity.json(new Environment.Blueprint(environmentId)));
+                            response.close();
 
-                    for (Object o : list) {
-                        if (o instanceof Map) {
-                            Map<String, Object> m = (Map) o;
-                            String id = (String) m.get("id");
-                            Map<String, Object> type = (Map<String, Object>) m.get("type");
-                            Map<String, String> params = (Map<String, String>) m.get("properties");
-                            String url = params.get("url");
-                            destinations.add(new PingDestination(id, url));
+                            // the 2nd call could have been done in parallel, but let's not risk in the startUp method
+                            WebTarget target2 = client.target(inventoryUrl + tenantId + "/resourceTypes");
+                            target2.request().post(Entity.json(new ResourceType.Blueprint("URL", "1.0")));
+                        }
+                    } else {
+                        for (Object o : list) {
+                            if (o instanceof Map) {
+                                Map<String, Object> m = (Map) o;
+                                String id = (String) m.get("id");
+                                Map<String, String> params = (Map<String, String>) m.get("properties");
+                                String url = params.get("url");
+                                destinations.add(new PingDestination(id, url));
+                            }
                         }
                     }
-
+                    response.close();
+                    client.close();
                     return;
                 } else {
                     Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
@@ -242,4 +264,7 @@ public class PingManager {
         destinations.remove(url);
     }
 
+    private boolean isResponseOk(int code) {
+        return code >= 200 && code < 300;
+    }
 }
