@@ -17,6 +17,8 @@
 package org.hawkular.component.pinger;
 
 import org.hawkular.inventory.api.model.Environment;
+import org.hawkular.inventory.api.model.MetricType;
+import org.hawkular.inventory.api.model.MetricUnit;
 import org.hawkular.inventory.api.model.ResourceType;
 import org.hawkular.inventory.api.model.Tenant;
 import org.hawkular.metrics.client.common.SingleMetric;
@@ -42,6 +44,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A SLSB that coordinates the pinging of resources
@@ -87,13 +91,20 @@ public class PingManager {
                         response = target.request().post(Entity.json(new Tenant.Blueprint(tenantId)));
                         if (isResponseOk(response.getStatus())) {
                             response.close();
-                            target = client.target(inventoryUrl + tenantId + "/environments");
-                            response = target.request().post(Entity.json(new Environment.Blueprint(environmentId)));
-                            response.close();
 
-                            // the 2nd call could have been done in parallel, but let's not risk in the startUp method
-                            WebTarget target2 = client.target(inventoryUrl + tenantId + "/resourceTypes");
-                            target2.request().post(Entity.json(new ResourceType.Blueprint("URL", "1.0")));
+                            Function<String, Consumer<org.hawkular.inventory.api.model.Entity.Blueprint>>  create =
+                                    path -> blueprint -> {
+                                final WebTarget url = client.target(inventoryUrl + tenantId + path);
+                                final Response resp = url.request().post(Entity.json(blueprint));
+                                resp.close();
+                            };
+
+                            create.apply("/environments").accept(new Environment.Blueprint(environmentId));
+                            create.apply("/resourceTypes").accept(new ResourceType.Blueprint("URL", "1.0"));
+                            create.apply("/metricTypes").accept(new MetricType.Blueprint("status.duration.type",
+                                    MetricUnit.MILLI_SECOND));
+                            create.apply("/metricTypes").accept(new MetricType.Blueprint("status.code.type",
+                                    MetricUnit.NONE));
                         }
                     } else {
                         for (Object o : list) {
