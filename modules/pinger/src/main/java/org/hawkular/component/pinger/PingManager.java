@@ -65,31 +65,49 @@ public class PingManager {
 
     @PostConstruct
     public void startUp() {
+        int attempts = 0;
+        while (attempts++ < 10) {
+            try {
+                Client client = ClientBuilder.newClient();
+                // TODO: inventory does not have to be co-located
+                WebTarget target = client.target("http://localhost:8080/hawkular/inventory/" + tenantId
+                        + "/resourceTypes/URL/resources");
+                Response response = target.request().get();
 
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/hawkular/inventory/" + tenantId + "/resources");
-        target.queryParam("type", "URL");
-        Response response = target.request().get();
+                if (response.getStatus() == 200) {
 
-        if (response.getStatus() == 200) {
+                    List list = response.readEntity(List.class);
 
-            List list = response.readEntity(List.class);
+                    for (Object o : list) {
+                        if (o instanceof Map) {
+                            Map<String, Object> m = (Map) o;
+                            String id = (String) m.get("id");
+                            Map<String, Object> type = (Map<String, Object>) m.get("type");
+                            Map<String, String> params = (Map<String, String>) m.get("properties");
+                            String url = params.get("url");
+                            destinations.add(new PingDestination(id, url));
+                        }
+                    }
 
-            for (Object o : list) {
-                if (o instanceof Map) {
-
-                    Map<String, Object> m = (Map) o;
-                    String id = (String) m.get("id");
-                    String type = (String) m.get("type");
-                    Map<String, String> params = (Map<String, String>) m.get("parameters");
-                    String url = params.get("url");
-                    destinations.add(new PingDestination(id, url));
+                    return;
+                } else {
+                    Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
                 }
+            } catch (Exception e) {
+                Log.LOG.wNoInventoryFound(-1, "Exception while trying to reach or read response of inventory: "
+                        + e.getMessage());
+            }
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
             }
         }
-        else {
-            Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
-        }
+
+        Log.LOG.wNoInventoryFound(-1,
+                "Inventory was not found on the configured location in 20s. Pinger won't function properly.");
     }
 
     /**
