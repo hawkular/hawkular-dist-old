@@ -16,15 +16,10 @@
  */
 package org.hawkular.component.pinger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import org.hawkular.inventory.api.model.Environment;
+import org.hawkular.inventory.api.model.ResourceType;
+import org.hawkular.inventory.api.model.Tenant;
+import org.hawkular.metrics.client.common.SingleMetric;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -38,13 +33,15 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.util.EntityUtils;
-import org.hawkular.inventory.api.model.Environment;
-import org.hawkular.inventory.api.model.ResourceType;
-import org.hawkular.inventory.api.model.Tenant;
-import org.hawkular.metrics.client.common.SingleMetric;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * A SLSB that coordinates the pinging of resources
