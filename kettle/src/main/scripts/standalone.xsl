@@ -114,9 +114,9 @@
       <admin-object use-java-context="true"
                     enabled="true"
                     class-name="org.apache.activemq.command.ActiveMQTopic"
-                    jndi-name="java:/topic/HawkularNotifications"
-                    pool-name="HawkularNotifications">
-        <config-property name="PhysicalName">HawkularNotifications</config-property>
+                    jndi-name="java:/topic/HawkularInventoryChanges"
+                    pool-name="HawkularInventoryChanges">
+        <config-property name="PhysicalName">HawkularInventoryChanges</config-property>
       </admin-object>
       <admin-object use-java-context="true"
                     enabled="true"

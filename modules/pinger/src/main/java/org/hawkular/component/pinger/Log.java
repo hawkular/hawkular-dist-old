@@ -16,6 +16,7 @@
  */
 package org.hawkular.component.pinger;
 
+import org.jboss.logging.BasicLogger;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
@@ -27,14 +28,14 @@ import org.jboss.logging.MessageLogger;
  * @author Heiko W. Rupp
  */
 @MessageLogger(projectCode = "HAWKULAR")
-public interface Log {
+public interface Log extends BasicLogger {
 
     Log LOG = Logger.getMessageLogger(Log.class, "org.hawkular.component.pinger");
 
 
     @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5000, value = "No code in message headers found")
-    void wNoCode();
+    @Message(id = 5000, value = "No action in message headers found")
+    void wNoAction();
 
     @LogMessage
     @Message(id = 5001, value = "Pinging the remote threw an exception: %s")
