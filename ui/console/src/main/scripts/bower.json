@@ -17,7 +17,7 @@
     "hawtio-utilities": "2.0.21",
     "hawtio-template-cache": "2.0.2",
     "patternfly": "1.1.3",
-    "hawkular-ui-components": "^0.3.1"
+    "hawkular-ui-components": "^0.3.4"
   },
   "devDependencies": {
     "hawtio-core-dts": "2.0.17"
