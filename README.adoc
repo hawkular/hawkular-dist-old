@@ -25,6 +25,21 @@ ifdef::env-github[]
 image:https://travis-ci.org/hawkular/hawkular.svg["Build Status", link="https://travis-ci.org/hawkular/hawkular"]
 endif::[]
 
+== Building
+
+To build Hawkular, clone this repository and build from the top level. After this has finished,
+you will find a runnable build inside the `kettle/target` directory.
+
+[source,shell]
+----
+$ git clone https://github.com/hawkular/hawkular.git
+$ cd hawkular
+$ mvn install
+----
+
+Please have a look at the
+http://www.hawkular.org/docs/dev/development.html[developer documentation] for more information
+
 == License
 
 Hawkular is released under Apache License, Version 2.0 as described in the link:LICENSE[LICENSE] document
