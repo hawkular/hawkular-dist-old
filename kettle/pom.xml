@@ -39,6 +39,7 @@
     <checkstyle.suppressions.file>${basedir}/src/main/scripts/checkstyle-suppressions.xml</checkstyle.suppressions.file>
 
     <!-- The versions of the components that go into our integration distribution -->
+    <version.org.hawkular.agent>1.0.0-SNAPSHOT</version.org.hawkular.agent>
     <version.org.hawkular.nest>1.0.0-SNAPSHOT</version.org.hawkular.nest>
     <version.org.hawkular.inventory>0.0.1-SNAPSHOT</version.org.hawkular.inventory>
     <version.org.hawkular.alerts>1.0.0-SNAPSHOT</version.org.hawkular.alerts>
@@ -51,6 +52,13 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.hawkular.agent</groupId>
+      <artifactId>hawkular-monitor</artifactId>
+      <version>${version.org.hawkular.agent}</version>
+      <classifier>module</classifier>
+      <type>zip</type>
+    </dependency>
     <dependency>
       <groupId>org.hawkular.nest</groupId>
       <artifactId>hawkular-nest-distro</artifactId>
@@ -145,6 +153,7 @@
             <configuration>
               <outputDirectory>${basedir}/target/nest</outputDirectory>
               <includeArtifactIds>hawkular-nest-distro</includeArtifactIds>
+              <!-- just unpack the config file - its all we need -->
               <includes>*/standalone/configuration/standalone.xml</includes>
             </configuration>
           </execution>

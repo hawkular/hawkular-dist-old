@@ -66,7 +66,7 @@
       </unpackOptions>
     </dependencySet>
 
-    <!-- all component deployments that go in the modules directory -->
+    <!-- all component deployments that go in the nest's internal modules directory -->
     <dependencySet>
       <outputDirectory>${nest.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
@@ -81,6 +81,18 @@
         <include>org.hawkular:hawkular-console</include>
       </includes>
       <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+
+    <!-- additional subsystem extensions that go in the main WildFly modules directory -->
+    <dependencySet>
+      <outputDirectory>${nest.dist.zip.root.dir}/modules/system/layers/base</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.agent:hawkular-monitor:zip:module</include>
+      </includes>
+      <unpack>true</unpack>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>

@@ -38,15 +38,17 @@
     </system-properties>
   </xsl:template>
 
+  <!-- add additional subsystem extensions -->
   <xsl:template match="node()[name(.)='extensions']">
     <xsl:copy>
       <xsl:apply-templates select="node()|@*"/>
       <extension module="org.keycloak.keycloak-subsystem"/>
+      <extension module="org.hawkular.agent.monitor"/>
     </xsl:copy>
     <xsl:call-template name="system-properties"/>
   </xsl:template>
 
-  <!-- Keycloak-related - datasource, our secured deployments (important) and security domain definitions -->
+  <!-- Keycloak-related - datasource -->
   <xsl:template match="node()[name(.)='datasources']">
     <xsl:copy>
       <xsl:apply-templates select="node()[name(.)='datasource']"/>
@@ -61,9 +63,83 @@
       <xsl:apply-templates select="node()[name(.)='drivers']"/>
     </xsl:copy>
   </xsl:template>
+
+  <!-- add extension subsystem configurations -->
   <xsl:template match="node()[name(.)='profile']">
     <xsl:copy>
       <xsl:apply-templates select="node()|@*"/>
+
+      <!-- Hawkular Monitor agent subsystem -->
+      <subsystem xmlns="urn:org.hawkular.agent.monitor:monitor:1.0"
+                 enabled="true"
+                 apiJndiName="java:global/hawkular/agent/monitor/api"
+                 numMetricSchedulerThreads="3"
+                 numAvailSchedulerThreads="3">
+
+        <storage-adapter type="HAWKULAR"
+                         url="http://localhost:8080"
+                         context="/hawkular-bus/message/"
+                         restContext="/hawkular-metrics/" />
+
+        <diagnostics enabled="true"
+                     reportTo="LOG"
+                     interval="5"
+                     timeUnits="minutes"/>
+
+        <metric-set-dmr name="platform" enabled="true">
+          <metric-dmr name="heap.used"
+                      interval="30"
+                      timeUnits="seconds"
+                      resource="/core-service=platform-mbean/type=memory"
+                      attribute="heap-memory-usage#used" />
+
+          <metric-dmr name="heap.committed"
+                      interval="1"
+                      timeUnits="minutes"
+                      resource="/core-service=platform-mbean/type=memory"
+                      attribute="heap-memory-usage#committed" />
+
+          <metric-dmr name="non-heap.used"
+                      interval="30"
+                      timeUnits="seconds"
+                      resource="/core-service=platform-mbean/type=memory"
+                      attribute="non-heap-memory-usage#used" />
+
+          <metric-dmr name="non-heap.committed"
+                      interval="1"
+                      timeUnits="minutes"
+                      resource="/core-service=platform-mbean/type=memory"
+                      attribute="non-heap-memory-usage#committed" />
+
+          <metric-dmr name="thread-count"
+                      interval="2"
+                      timeUnits="minutes"
+                      resource="/core-service=platform-mbean/type=threading"
+                      attribute="thread-count" />
+        </metric-set-dmr>
+
+        <avail-set-dmr name="server-availabilities" enabled="true">
+          <avail-dmr name="app-server"
+                     interval="30"
+                     timeUnits="seconds"
+                     resource="/"
+                     attribute="server-state"
+                     upRegex="run.*" />
+
+          <avail-dmr name="hawkular-bus-broker"
+                     interval="1"
+                     timeUnits="minutes"
+                     resource="/subsystem=hawkular-bus-broker" />
+        </avail-set-dmr>
+
+        <managed-resources>
+          <local-dmr enabled="true"
+                     metricSets="platform"
+                     availSets="server-availabilities" />
+        </managed-resources>
+      </subsystem>
+
+      <!-- Keycloak-related - our secured deployments (important) -->
       <subsystem xmlns="urn:jboss:domain:keycloak:1.0">
         <auth-server name="main-auth-server">
           <enabled>true</enabled>
@@ -84,6 +160,8 @@
       </subsystem>
     </xsl:copy>
   </xsl:template>
+
+  <!-- Keycloak-related - security-domain definitions -->
   <xsl:template match="node()[name(.)='security-domains']">
     <xsl:copy>
       <xsl:apply-templates select="node()[name(.)='security-domain']"/>
@@ -99,7 +177,6 @@
       </security-domain>
     </xsl:copy>
   </xsl:template>
-  <!-- End of Keycloak-related changes -->
 
   <!-- Add a cache for Hawkular Accounts -->
   <xsl:template match="node()[name(.)='cache-container'][1]">
