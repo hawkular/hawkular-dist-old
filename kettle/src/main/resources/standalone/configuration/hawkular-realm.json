@@ -59,7 +59,7 @@
     {
       "name": "hawkular-accounts-backend",
       "enabled": true,
-      "bearerOnly" : true,
+      "bearerOnly" : false,
       "publicClient": false,
       "secret" : "${uuid.hawkular.accounts.backend}"
     },
