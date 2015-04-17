@@ -26,6 +26,7 @@
 
   <!-- will indicate if this is a "dev" build or "production" build -->
   <xsl:param name="kettle.build.type"/>
+  <xsl:param name="uuid.hawkular.accounts.backend"/>
 
   <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes" xalan:indent-amount="4" standalone="no"/>
   <xsl:strip-space elements="*"/>
@@ -77,6 +78,8 @@
           <resource>hawkular-accounts-backend</resource>
           <use-resource-role-mappings>true</use-resource-role-mappings>
           <enable-cors>true</enable-cors>
+          <enable-basic-auth>true</enable-basic-auth>
+          <credential name="secret"><xsl:value-of select="$uuid.hawkular.accounts.backend" /></credential>
         </secure-deployment>
       </subsystem>
     </xsl:copy>

@@ -200,6 +200,10 @@
                       <name>kettle.build.type</name>
                       <value>${kettle.build.type}</value>
                     </parameter>
+                    <parameter>
+                      <name>uuid.hawkular.accounts.backend</name>
+                      <value>${uuid.hawkular.accounts.backend}</value>
+                    </parameter>
                   </parameters>
                 </transformationSet>
               </transformationSets>
