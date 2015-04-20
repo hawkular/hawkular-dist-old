@@ -23,30 +23,45 @@ http://nodejs.org/[Node.js] and its related modules are managed by the https://g
 They are downloaded to the build target (./console/target) directory, where the actual http://gulpjs.com/[Gulp] based build process
 (triggered by the maven plugin) happens.
 
-To save some time during the build process, the downloaded http://nodejs.org/[Node.js] files and its related modules are not deleted after the
+To save some time during the build process, the downloaded http://nodejs.org/[Node.js] files and its related modules
+don't have to be deleted after invoking the `clean` target. If you want to persist the node.js related stuff in the target
+directory, please use the `cache` profile:
 
-`mvn clean`
+`mvn clean -Pcache`
 
-is executed. If you want to delete the whole target directory, please use the `release` profile:
+In that case, the http://nodejs.org/[Node.js] is not deleted and doesn't have to be downloaded again, together with
+npm modules and bower packages. Be aware, this causes the libraries not being updated.
 
-`mvn clean -Prelease`
+After the console is built, you can access it by traversing to the the build target (./console/target/gulp-build) directory:
 
-In that case, the http://nodejs.org/[Node.js] is downloaded again, together with relevant modules.
-
-After the console is built, you can access it by traversing to the the build target (./console/target) directory:
-
-`cd console/target`
+`cd console/target/gulp-build`
 
 and running the appropriate gulp (default) target:
 
 `gulp`
 
-After those steps, the console is available on http://localhost:2772/[http://localhost:2772/]
+After those steps, the console is available on http://localhost:2772/[http://localhost:2772/], but be aware that
+it's only a front-end and you need the server running for console to work properly. The advantage of this approach is,
+that is scans for file changes in the source directory and apply them directly into the target directory, which is
+suitable for console developing since it doesn't require the whole maven build to see the actual changes in the console UI.
+
+== Hawkular-ui-components development
+
+If you want to use your local version of hawkular-ui-components, you can use the `link` profile and the
+https://oncletom.io/2013/live-development-bower-component/[bower link functionality]. In the hawkular-ui-components,
+link your bower package with:
+
+`bower link`
+
+and then build the kettle with:
+
+`mvn clean install -Plink`
 
 == Dev Install
 
 You can still re-build the console using only java-script based tools. Please do that only after maven build and
-only within the build target (./console/target) directory.
+only within the build target (./console/target/gulp-build) directory. These steps are rarely used and if you're not
+an hawkular console developer you most probably won't need it.
 
 Assuming the node.js is already installed:
 

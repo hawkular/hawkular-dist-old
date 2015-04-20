@@ -16,6 +16,11 @@
  */
 package org.hawkular.component.pinger;
 
+import org.hawkular.inventory.api.model.Environment;
+import org.hawkular.inventory.api.model.MetricType;
+import org.hawkular.inventory.api.model.MetricUnit;
+import org.hawkular.inventory.api.model.ResourceType;
+import org.hawkular.inventory.api.model.Tenant;
 import org.hawkular.metrics.client.common.SingleMetric;
 
 import javax.annotation.PostConstruct;
@@ -27,6 +32,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -38,6 +44,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A SLSB that coordinates the pinging of resources
@@ -47,8 +55,13 @@ import java.util.concurrent.Future;
 @Startup
 @Singleton
 public class PingManager {
+    // How many rounds a WAIT_MILLIS do we wait for results to come in?
+    private static final int ROUNDS = 15;
+    // How long do we wait between each round
+    private static final int WAIT_MILLIS = 500;
 
-    String tenantId = "test";
+    private final String tenantId = "test";
+    private final String environmentId = "test";
 
     @EJB
     public Pinger pinger;
@@ -60,43 +73,82 @@ public class PingManager {
 
     @PostConstruct
     public void startUp() {
+        int attempts = 0;
+        while (attempts++ < 10) {
+            try {
+                Client client = ClientBuilder.newClient();
+                // TODO: inventory does not have to be co-located
+                final String host = "http://localhost:8080";
+                final String inventoryUrl = host + "/hawkular/inventory/";
+                WebTarget target = client.target(inventoryUrl + tenantId + "/resourceTypes/URL/resources");
+                Response response = target.request().get();
 
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/hawkular/inventory/" + tenantId + "/resources");
-        target.queryParam("type","URL");
-        Response response = target.request().get();
+                if (isResponseOk(response.getStatus())) {
+                    List list = response.readEntity(List.class);
+                    if (list.isEmpty()) {
+                        response.close();
+                        target = client.target(inventoryUrl + "tenants");
+                        response = target.request().post(Entity.json(new Tenant.Blueprint(tenantId)));
+                        if (isResponseOk(response.getStatus())) {
+                            response.close();
 
-        if (response.getStatus()==200) {
+                            Function<String, Consumer<org.hawkular.inventory.api.model.Entity.Blueprint>>  create =
+                                    path -> blueprint -> {
+                                final WebTarget url = client.target(inventoryUrl + tenantId + path);
+                                final Response resp = url.request().post(Entity.json(blueprint));
+                                resp.close();
+                            };
 
-            List list = response.readEntity(List.class);
-
-            for (Object o  : list) {
-                if (o instanceof Map) {
-
-                    Map<String,Object> m = (Map) o;
-                    String id = (String) m.get("id");
-                    String type = (String) m.get("type");
-                    Map<String,String> params = (Map<String, String>) m.get("parameters");
-                    String url = params.get("url");
-                    destinations.add(new PingDestination(id,url));
+                            create.apply("/environments").accept(new Environment.Blueprint(environmentId));
+                            create.apply("/resourceTypes").accept(new ResourceType.Blueprint("URL", "1.0"));
+                            create.apply("/metricTypes").accept(new MetricType.Blueprint("status.duration.type",
+                                    MetricUnit.MILLI_SECOND));
+                            create.apply("/metricTypes").accept(new MetricType.Blueprint("status.code.type",
+                                    MetricUnit.NONE));
+                        }
+                    } else {
+                        for (Object o : list) {
+                            if (o instanceof Map) {
+                                Map<String, Object> m = (Map) o;
+                                String id = (String) m.get("id");
+                                Map<String, String> params = (Map<String, String>) m.get("properties");
+                                String url = params.get("url");
+                                destinations.add(new PingDestination(id, url));
+                            }
+                        }
+                    }
+                    response.close();
+                    client.close();
+                    return;
+                } else {
+                    Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
                 }
+            } catch (Exception e) {
+                Log.LOG.wNoInventoryFound(-1, "Exception while trying to reach or read response of inventory: "
+                        + e.getMessage());
+            }
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
             }
         }
-        else {
-            Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
-        }
-    }
 
+        Log.LOG.wNoInventoryFound(-1,
+                "Inventory was not found on the configured location in 20s. Pinger won't function properly.");
+    }
 
     /**
      * This method triggers the actual work by starting pingers,
      * collecting their return values and then publishing them.
      */
     @Lock(LockType.READ)
-    @Schedule(minute = "*", hour = "*", persistent = false)
+    @Schedule(minute = "*", hour = "*", second = "0,20,40", persistent = false)
     public void scheduleWork() {
 
-        if (destinations.size()==0) {
+        if (destinations.size() == 0) {
             return;
         }
 
@@ -104,22 +156,27 @@ public class PingManager {
     }
 
     /**
-     * Runs the pinging work on the provided list of destinations
+     * Runs the pinging work on the provided list of destinations.
+     * The actual pings are scheduled to run in parallel in a thread pool.
+     * After ROUNDS*WAIT_MILLIS, remaining pings are cancelled and
+     * an error
      * @param destinations Set of destinations to ping
      */
     private void doThePing(Set<PingDestination> destinations) {
         List<PingStatus> results = new ArrayList<>(destinations.size());
-        List<Future<PingStatus>> futures = new ArrayList<>(destinations.size());
+        // In case of timeouts we will not be able to get the PingStatus from the Future, so use a Map
+        // to keep track of what destination's ping actually hung.
+        Map<Future<PingStatus>, PingStatus> futures = new HashMap<>(destinations.size());
 
         for (PingDestination destination : destinations) {
-            Future<PingStatus> result = pinger.ping(destination);
-            futures.add(result);
+            PingStatus request = new PingStatus(destination);
+            Future<PingStatus> result = pinger.ping(request);
+            futures.put(result, request);
         }
 
-
         int round = 1;
-        while (!futures.isEmpty() && round < 20) {
-            Iterator<Future<PingStatus>> iterator = futures.iterator();
+        while (!futures.isEmpty() && round < ROUNDS) {
+            Iterator<Future<PingStatus>> iterator = futures.keySet().iterator();
             while (iterator.hasNext()) {
                 Future<PingStatus> f = iterator.next();
                 if (f.isDone()) {
@@ -132,29 +189,25 @@ public class PingManager {
                 }
             }
             try {
-                Thread.sleep(500); // wait 500ms until the next iteration
+                Thread.sleep(WAIT_MILLIS); // wait until the next iteration
             } catch (InterruptedException e) {
                 // We don't care
             }
             round++;
         }
 
-        // See if there are hanging items and cancel them away
-        if (!futures.isEmpty()) {
-            // We have waited 10 seconds above for results to come in.
-            // What is now left will be cancelled and marked as timed out
-            for (Future<PingStatus> f : futures) {
-                f.cancel(true);
-                PingStatus ps = null;
-                try {
-                    ps = f.get();
-                    ps.timedOut = true;
-                    ps.duration=10000;
-                    results.add(ps);
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();  // TODO: Customise this generated block
-                }
-            }
+        // Cancel hanging pings and report them as timeouts
+        for (Map.Entry<Future<PingStatus>, PingStatus> entry : futures.entrySet()) {
+            entry.getKey().cancel(true);
+            PingStatus ps = entry.getValue();
+            ps.code = 503; // unavailable
+            ps.timedOut = true;
+            long now = System.currentTimeMillis();
+            // (jshaughn) This used to be set explicitly to 10000, but I don't know why.  It seemed
+            // dangerous because that could be in the future given that ROUNDS*WAIT_MILLIS < 10000.
+            ps.duration = (int) (now - ps.getTimestamp());
+            ps.setTimestamp(now);
+            results.add(ps);
         }
 
         reportResults(results);
@@ -162,18 +215,17 @@ public class PingManager {
 
     private void reportResults(List<PingStatus> results) {
 
-        if (results.size()==0) {
+        if (results.size() == 0) {
             return;
         }
 
         List<SingleMetric> singleMetrics = new ArrayList<>(results.size());
-        List<Map<String,Object>> mMetrics = new ArrayList<>();
+        List<Map<String, Object>> mMetrics = new ArrayList<>();
 
-        for (PingStatus status : results){
+        for (PingStatus status : results) {
 
             addDataItem(mMetrics, status, status.duration, "duration");
             addDataItem(mMetrics, status, status.code, "code");
-
 
             // for the topic to alerting
             SingleMetric singleMetric = new SingleMetric(status.destination.resourceId + ".status.duration",
@@ -189,19 +241,17 @@ public class PingManager {
         metricPublisher.sendToMetricsViaRest(tenantId, mMetrics);
         metricPublisher.publishToTopic(tenantId, singleMetrics);
 
-
-
     }
 
     private void addDataItem(List<Map<String, Object>> mMetrics, PingStatus status, Number value, String name) {
-        Map<String,Number> dataMap = new HashMap<>(2);
+        Map<String, Number> dataMap = new HashMap<>(2);
         dataMap.put("timestamp", status.getTimestamp());
         dataMap.put("value", value);
-        List<Map<String,Number>> data = new ArrayList<>(1);
+        List<Map<String, Number>> data = new ArrayList<>(1);
         data.add(dataMap);
-        Map<String,Object> outer = new HashMap<>(2);
-        outer.put("name",status.destination.resourceId + ".status." + name);
-        outer.put("data",data);
+        Map<String, Object> outer = new HashMap<>(2);
+        outer.put("id", status.destination.resourceId + ".status." + name);
+        outer.put("data", data);
         mMetrics.add(outer);
     }
 
@@ -211,9 +261,6 @@ public class PingManager {
      * @param pd new Destination
      */
     public void addDestination(PingDestination pd) {
-        Set<PingDestination> oneTimeDestinations = new HashSet<>(1);
-        oneTimeDestinations.add(pd);
-        doThePing(oneTimeDestinations);
         destinations.add(pd);
     }
 
@@ -225,4 +272,7 @@ public class PingManager {
         destinations.remove(url);
     }
 
+    private boolean isResponseOk(int code) {
+        return code >= 200 && code < 300;
+    }
 }

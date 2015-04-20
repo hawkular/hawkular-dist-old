@@ -2,13 +2,9 @@
 <html>
 
   <head>
-    <title>hawkular-console</title>
+    <title>HAWKULAR</title>
     <base href='${hawkular.console.index.html.base.href}'>
     <meta charset="UTF8">
-
-
-    <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="libs/patternfly/dist/css/patternfly.css" />
 
     <!-- bower:css -->
     <!-- endbower -->
@@ -18,6 +14,8 @@
     <script src="libs/es5-dom-shim/__COMIPLE/a.ie8.js"></script>
     <![endif]-->
     <script src="libs/es5-dom-shim/__COMPILE/a.js"></script>
+    <script src="libs/patternfly/components/jquery/jquery.js"></script>
+    <script src="libs/patternfly/components/bootstrap/dist/js/bootstrap.js"></script>
 
     <!-- bower:js -->
     <!-- endbower -->
@@ -26,53 +24,60 @@
          https://github.com/marmelab/EventDrops/issues/21#issuecomment-75988799
     -->
     <script src="libs/event-drops/src/eventDrops.js"></script>
-
-    <script src="libs/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="libs/patternfly/dist/js/patternfly.js"></script>
-
   </head>
 
-  <body>
-    <nav class="navbar navbar-default navbar-pf" role="navigation">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/">
-          <img src="resources/img/hawkular.png" alt="RED HAT JBOSS HAWKULAR Management Console">
-        </a>
-
-        <ul class="nav navbar-nav navbar-utility pull-right">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <span class="pficon pficon-user"></span>
-              Anonymous <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a href="#">Log In</a>
-              </li>
-              <li class="divider"></li>
-              <li class="disabled">
-                <a href="#" >Log Out</a>
-              </li>
-            </ul>
-          </li>
-        </ul>
+  <body style="background-color: #f5f5f5" class="ng-cloak"> <!-- FIXME: Add CSS rule -->
+    <nav class="navbar navbar-default navbar-fixed-top navbar-pf" role="navigation">
+      <div data-idle-countdown="countdown" data-ng-init="countdown=30" id="idle">
+        <strong>You'll be logged out in {{countdown}} second(s).</strong>.
       </div>
-      <ul class="nav navbar-nav navbar-primary" hawtio-main-nav></ul>
-      <ul class="nav navbar-nav" hawtio-sub-tabs></ul>
+
+      <div>
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">
+            <img id="hawkularLogo" src="resources/img/hawkular.png" alt="RED HAT JBOSS HAWKULAR Management Console" title="Hawkular">
+          </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-utility pull-right">
+            <li class="dropdown" data-ng-controller="HawkularAccounts.PersonaController">
+              <a href="#" dropdown-toggle>
+                <span class="pficon pficon-user"></span>
+                {{currentPersona.name}} <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu" id="personaSwitcher">
+                <li data-ng-repeat="persona in personas">
+                  <a href="#" data-ng-click="switchPersona(persona)">{{persona.name}}</a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="#" data-ng-click="userDetails.logout()">Log Out</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <hawkular-topbar ng-controller="Topbar.TopbarController" ng-show="!hideSidebar"></hawkular-topbar>
+        </div>
+      </div>
     </nav>
 
-    <div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
-      <div ng-include src="viewPartial"></div>
+    <div id="main" class="row" ng-class="{'below-topbar': !hideSidebar}" ng-controller="HawtioNav.ViewController">
+      <hawkular-sidebar ng-controller="Sidebar.SidebarController" ng-show="!hideSidebar"></hawkular-sidebar>
+      <div class="container" ng-class="hideSidebar ? 'col-sm-12 col-md-12' : 'col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2'" ng-include src="viewPartial"></div>
     </div>
 
     <!-- add any scripts under dist/ here -->
     <script src="dist/hawkular-console.js"></script>
-
+    <script>
+      document.getElementById("hawkularLogo").title = HawkularComponentsVersions[0].version;
+      var comment = document.createComment(JSON.stringify(HawkularComponentsVersions));
+      document.getElementsByTagName('body')[0].appendChild(comment);
+    </script>
   </body>
 </html>

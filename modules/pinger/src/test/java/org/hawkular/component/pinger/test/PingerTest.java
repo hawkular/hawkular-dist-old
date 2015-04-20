@@ -16,6 +16,9 @@
  */
 package org.hawkular.component.pinger.test;
 
+import java.util.List;
+import java.util.Map;
+
 import org.hawkular.component.pinger.MetricPublisher;
 import org.hawkular.component.pinger.PingDestination;
 import org.hawkular.component.pinger.PingManager;
@@ -23,9 +26,6 @@ import org.hawkular.component.pinger.PingStatus;
 import org.hawkular.component.pinger.Pinger;
 import org.hawkular.metrics.client.common.SingleMetric;
 import org.junit.Test;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Simple test for the pinger
@@ -39,7 +39,7 @@ public class PingerTest {
 
         Pinger pinger = new Pinger();
         PingDestination destination = new PingDestination("123","http://hawkular.github.io");
-        PingStatus status = pinger.ping(destination).get();
+        PingStatus status = pinger.ping(new PingStatus(destination)).get();
 
         assert status.getCode()==200;
         assert status.isTimedOut()==false;

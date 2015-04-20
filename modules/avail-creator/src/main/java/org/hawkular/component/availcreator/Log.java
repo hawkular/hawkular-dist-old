@@ -14,43 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.component.pinger;
+package org.hawkular.component.availcreator;
 
-import org.jboss.logging.BasicLogger;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
 import org.jboss.logging.MessageLogger;
 
 /**
- * Log messages of the pinger
+ * Log messages of the creator
  *
  * @author Heiko W. Rupp
  */
 @MessageLogger(projectCode = "HAWKULAR")
-public interface Log extends BasicLogger {
+public interface Log {
 
-    Log LOG = Logger.getMessageLogger(Log.class, "org.hawkular.component.pinger");
-
-
-    @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5000, value = "No action in message headers found")
-    void wNoAction();
-
-    @LogMessage
-    @Message(id = 5001, value = "Pinging the remote threw an exception: %s")
-    void wPingExeption(String message);
+    Log LOG = Logger.getMessageLogger(Log.class, "org.hawkular.component.availcreator");
 
     @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5002, value = "Post to metrics faild with post status : %s")
-    void metricPostStatus(String s);
-
-    @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5003, value = "No connection to topic %s possible")
+    @Message(id = 5100, value = "No connection to topic %s possible")
     void wNoTopicConnection(String topicName);
 
     @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5004, value = "Could not contact inventory - there will be no resources to start pinging. " +
-            "Code %d, message= %s")
-    void wNoInventoryFound(int status, String reasonPhrase);
+    @Message(id = 5101, value = "Problem sending availabiliy to Hawkular-Metrics: %s")
+    void availPostStatus(String s);
 }

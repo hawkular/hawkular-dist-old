@@ -37,6 +37,19 @@
     <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.ocpsoft.rewrite</groupId>
+      <artifactId>rewrite-servlet</artifactId>
+      <version>2.0.12.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -56,69 +69,12 @@
                   <excludes>
                     <exclude>WEB-INF/</exclude>
                   </excludes>
+                  <filtering>true</filtering>
                 </resource>
                 <resource>
                   <directory>src/main/scripts/</directory>
                 </resource>
               </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Download node.js and related modules to install 3rd party frontend libraries -->
-      <plugin>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <version>0.0.20</version>
-
-        <configuration>
-          <workingDirectory>target/gulp-build/</workingDirectory>
-        </configuration>
-
-        <executions>
-          <execution>
-            <id>install node and npm</id>
-            <goals>
-              <goal>install-node-and-npm</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <nodeVersion>v0.10.33</nodeVersion>
-              <npmVersion>2.1.10</npmVersion>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>npm install</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>bower install</id>
-            <goals>
-              <goal>bower</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>gulp build</id>
-            <goals>
-              <goal>gulp</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <arguments>build</arguments>
             </configuration>
           </execution>
         </executions>
@@ -139,15 +95,15 @@
               <directory>target/gulp-build/</directory>
               <includes>
                 <include>index.html</include>
-              </includes>
-              <filtering>true</filtering>
-            </resource>
-            <resource>
-              <directory>target/gulp-build/</directory>
-              <includes>
                 <include>libs/**</include>
                 <include>dist/**</include>
               </includes>
+              <excludes>
+                <exclude>node_modules/**</exclude>
+                <exclude>.bower/**</exclude>
+                <exclude>node/**</exclude>
+                <exclude>libs/hawkular-ui-components/node_modules/**</exclude>
+              </excludes>
               <filtering>false</filtering>
             </resource>
           </webResources>
@@ -159,7 +115,7 @@
 
   <profiles>
     <profile>
-      <id>dev</id>
+      <id>cache</id>
       <properties>
         <hawkular.console.context>/</hawkular.console.context>
         <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
@@ -182,6 +138,146 @@
                 </fileset>
               </filesets>
             </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Download node.js and related modules to install 3rd party frontend libraries -->
+    <profile>
+      <id>default-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <hawkular.console.context>/</hawkular.console.context>
+        <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>0.0.20</version>
+
+            <configuration>
+              <workingDirectory>target/gulp-build/</workingDirectory>
+            </configuration>
+
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <nodeVersion>v0.10.33</nodeVersion>
+                  <npmVersion>2.1.10</npmVersion>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>bower install</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>gulp build</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>build</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>link</id>
+      <properties>
+        <hawkular.console.context>/</hawkular.console.context>
+        <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>0.0.20</version>
+
+            <configuration>
+              <workingDirectory>target/gulp-build/</workingDirectory>
+            </configuration>
+
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <nodeVersion>v0.10.33</nodeVersion>
+                  <npmVersion>2.1.10</npmVersion>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>bower link</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>link hawkular-ui-components</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>gulp build</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>build</arguments>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

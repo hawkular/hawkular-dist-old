@@ -35,6 +35,14 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
+    <fileSet>
+      <directory>src/main/resources</directory>
+      <outputDirectory>/${nest.dist.zip.root.dir}/</outputDirectory>
+      <excludes>
+        <!-- We handle this file specially (at the end of this file) -->
+        <exclude>**/hawkular-realm*json</exclude>
+      </excludes>
+    </fileSet>
   </fileSets>
 
   <dependencySets>
@@ -49,19 +57,25 @@
         <!-- exclude unwanted stuff and exclude stuff we want to overlay via our own distro-resources -->
         <excludes>
           <exclude>${nest.dist.zip.root.dir}/standalone/configuration/standalone.xml</exclude>
+
+          <!-- Our standalone.conf contains an override to the JAVA_OPTS, to tell Keycloak to import our realm -->
+          <exclude>${nest.dist.zip.root.dir}/bin/standalone.conf</exclude>
+          <exclude>${nest.dist.zip.root.dir}/bin/standalone.conf.bat</exclude>
+
         </excludes>
       </unpackOptions>
     </dependencySet>
 
-    <!-- all component deployments that go in the modules directory -->
+    <!-- all component deployments that go in the nest's internal modules directory -->
     <dependencySet>
       <outputDirectory>${nest.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.inventory:inventory-rest-api</include>
         <include>org.hawkular:hawkular-pinger</include>
+        <include>org.hawkular:hawkular-avail-creator</include>
         <include>org.hawkular.alerts:hawkular-alerts-ear</include>
-        <include>org.hawkular.alerts:hawkular-notifiers-email</include>
+        <include>org.hawkular.alerts:hawkular-actions-email</include>
         <include>org.hawkular.metrics:hawkular-metrics-api-jaxrs</include>
         <include>org.hawkular.metrics:hawkular-metrics-embedded-cassandra-ear</include>
         <include>org.hawkular:hawkular-console</include>
@@ -71,7 +85,56 @@
       <directoryMode>0755</directoryMode>
     </dependencySet>
 
+    <!-- additional subsystem extensions that go in the main WildFly modules directory -->
+    <dependencySet>
+      <outputDirectory>${nest.dist.zip.root.dir}/modules/system/layers/base</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.agent:hawkular-monitor:zip:module</include>
+      </includes>
+      <unpack>true</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+
+    <!--
+    hawkular-accounts is separated from the others because we need a stable name to the war, without the
+    version number. This is because we use the Keycloak's "secure-deployment" to configure the integration, and that
+    requires the war name.
+    -->
+    <dependencySet>
+      <outputDirectory>${nest.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.accounts:hawkular-accounts:war</include>
+      </includes>
+      <outputFileNameMapping>hawkular-accounts.war</outputFileNameMapping>
+      <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+
+    <!-- Keycloak modules -->
+    <dependencySet>
+      <outputDirectory>${nest.dist.zip.root.dir}/</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.keycloak:keycloak-wildfly-adapter-dist:zip</include>
+      </includes>
+      <unpack>true</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
   </dependencySets>
+
+  <files>
+    <file>
+      <source>src/main/resources/standalone/configuration/${hawkular.realm.template}</source>
+      <outputDirectory>${nest.dist.zip.root.dir}/standalone/configuration/</outputDirectory>
+      <filtered>true</filtered>
+      <destName>hawkular-realm.json</destName>
+    </file>
+  </files>
 
 </assembly>
 

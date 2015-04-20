@@ -29,38 +29,14 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-pinger</artifactId>
+  <artifactId>hawkular-avail-creator</artifactId>
   <packaging>war</packaging>
 
-  <description>Component that allows to ping remote web sites and report their status code + response time
+  <description>Component that takes status codes and creates avail messages
   </description>
 
   <dependencies>
 
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-client</artifactId>
-      <version>3.0.10.Final</version> <!-- TODO move to parent -->
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.inventory</groupId>
-      <artifactId>inventory-api</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.inventory</groupId>
-      <artifactId>inventory-bus-api</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.metrics</groupId>
-      <artifactId>clients-common</artifactId>
-      <version>0.3.0-SNAPSHOT</version>
-    </dependency>
 
     <dependency>
       <groupId>org.jboss.spec.javax.ejb</groupId>
@@ -73,7 +49,6 @@
       <version>1.1-rev-1</version> <!-- TODO move to parent -->
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
@@ -112,6 +87,7 @@
 
   <build>
     <plugins>
+
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>

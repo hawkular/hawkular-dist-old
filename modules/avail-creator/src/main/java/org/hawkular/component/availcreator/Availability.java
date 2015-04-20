@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
@@ -14,20 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.integration.test
+package org.hawkular.component.availcreator;
 
-import groovyx.net.http.ContentType
-import groovyx.net.http.RESTClient
-import org.junit.BeforeClass
+/**
+ * One Availability point
+ *
+ * @author Heiko W. Rupp
+ */
+public class Availability {
 
-class AbstractTestBase {
+    long timestamp;
+    String value;
 
-  static baseURI = System.getProperty('hawkular.base-uri') ?: '127.0.0.1:8080/hawkular/'
-  static RESTClient client
+    public Availability(long timestamp, String value) {
+        this.timestamp = timestamp;
+        this.value = value;
+    }
 
-  @BeforeClass
-  static void initClient() {
-    client = new RESTClient("http://$baseURI", ContentType.JSON)
-  }
+    public Availability() {
+    }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

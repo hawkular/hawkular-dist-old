@@ -34,18 +34,31 @@
   <properties>
     <kettle.build.type>production</kettle.build.type>
     <nest.dist.zip.root.dir>wildfly-${version.org.wildfly}</nest.dist.zip.root.dir>
+    <hawkular.realm.template>hawkular-realm.json</hawkular.realm.template>
 
     <checkstyle.suppressions.file>${basedir}/src/main/scripts/checkstyle-suppressions.xml</checkstyle.suppressions.file>
 
     <!-- The versions of the components that go into our integration distribution -->
+    <version.org.hawkular.agent>1.0.0-SNAPSHOT</version.org.hawkular.agent>
     <version.org.hawkular.nest>1.0.0-SNAPSHOT</version.org.hawkular.nest>
-    <version.org.hawkular.inventory>1.0.0-SNAPSHOT</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>0.0.1-SNAPSHOT</version.org.hawkular.inventory>
     <version.org.hawkular.alerts>1.0.0-SNAPSHOT</version.org.hawkular.alerts>
-    <version.org.hawkular.metrics>0.3.0-SNAPSHOT</version.org.hawkular.metrics>
+    <version.org.hawkular.metrics>0.3.2-SNAPSHOT</version.org.hawkular.metrics>
     <version.org.hawkular.console>1.0.0-SNAPSHOT</version.org.hawkular.console>
+    <version.org.hawkular.accounts>1.0.0-SNAPSHOT</version.org.hawkular.accounts>
+    <version.org.hawkular.pinger>1.0.0-SNAPSHOT</version.org.hawkular.pinger>
+    <version.org.hawkular.availCreator>1.0.0-SNAPSHOT</version.org.hawkular.availCreator>
+    <version.org.keycloak>1.1.0.Final</version.org.keycloak>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.hawkular.agent</groupId>
+      <artifactId>hawkular-monitor</artifactId>
+      <version>${version.org.hawkular.agent}</version>
+      <classifier>module</classifier>
+      <type>zip</type>
+    </dependency>
     <dependency>
       <groupId>org.hawkular.nest</groupId>
       <artifactId>hawkular-nest-distro</artifactId>
@@ -62,7 +75,13 @@
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-pinger</artifactId>
-      <version>${version.org.hawkular.inventory}</version>
+      <version>${version.org.hawkular.pinger}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-avail-creator</artifactId>
+      <version>${version.org.hawkular.availCreator}</version>
       <type>war</type>
     </dependency>
     <dependency>
@@ -79,7 +98,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.alerts</groupId>
-      <artifactId>hawkular-notifiers-email</artifactId>
+      <artifactId>hawkular-actions-email</artifactId>
       <version>${version.org.hawkular.alerts}</version>
       <type>war</type>
     </dependency>
@@ -101,6 +120,21 @@
       <version>${version.org.hawkular.console}</version>
       <type>war</type>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts</artifactId>
+      <version>${version.org.hawkular.accounts}</version>
+      <type>war</type>
+    </dependency>
+
+    <!-- Keycloak-related dependencies -->
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-wildfly-adapter-dist</artifactId>
+      <version>${version.org.keycloak}</version>
+      <type>zip</type>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -119,6 +153,7 @@
             <configuration>
               <outputDirectory>${basedir}/target/nest</outputDirectory>
               <includeArtifactIds>hawkular-nest-distro</includeArtifactIds>
+              <!-- just unpack the config file - its all we need -->
               <includes>*/standalone/configuration/standalone.xml</includes>
             </configuration>
           </execution>
@@ -174,6 +209,10 @@
                       <name>kettle.build.type</name>
                       <value>${kettle.build.type}</value>
                     </parameter>
+                    <parameter>
+                      <name>uuid.hawkular.accounts.backend</name>
+                      <value>${uuid.hawkular.accounts.backend}</value>
+                    </parameter>
                   </parameters>
                 </transformationSet>
               </transformationSets>
@@ -215,6 +254,32 @@
           </resources>
         </configuration>
       </plugin>
+
+      <!-- Generate some keys for Keycloak integration, so that we don't ship with default credentials -->
+      <plugin>
+        <groupId>org.codehaus.gmaven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <id>set-custom-property</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+                import java.util.UUID
+                def uuidBackend = UUID.randomUUID().toString()
+                def uuidUi = UUID.randomUUID().toString()
+                project.properties.setProperty('uuid.hawkular.accounts.backend', uuidBackend.toString())
+                project.properties.setProperty('uuid.hawkular.ui', uuidUi.toString())
+              </source>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 
@@ -224,6 +289,8 @@
       <id>dev</id>
       <properties>
         <kettle.build.type>dev</kettle.build.type>
+        <!-- This special realm for dev purposes has a default user 'jdoe' with password 'password' -->
+        <hawkular.realm.template>hawkular-realm-for-dev.json</hawkular.realm.template>
       </properties>
       <build>
         <plugins>

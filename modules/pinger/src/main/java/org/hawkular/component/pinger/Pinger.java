@@ -16,18 +16,19 @@
  */
 package org.hawkular.component.pinger;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.concurrent.Future;
+
+import javax.ejb.AsyncResult;
+import javax.ejb.Asynchronous;
+import javax.ejb.Stateless;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.HttpClientBuilder;
-
-import javax.ejb.AsyncResult;
-import javax.ejb.Asynchronous;
-import javax.ejb.Stateless;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.concurrent.Future;
 
 /**
  * Bean that does the pinging. Runs async.
@@ -39,35 +40,28 @@ import java.util.concurrent.Future;
 public class Pinger {
 
     @Asynchronous
-    public Future<PingStatus> ping(PingDestination destination) {
+    public Future<PingStatus> ping(PingStatus status) {
 
-        HttpHead head = new HttpHead(destination.url);
+        HttpHead head = new HttpHead(status.destination.url);
         HttpClient client = HttpClientBuilder.create().build();
-
-
-        long t1 = System.currentTimeMillis();
-        PingStatus status = new PingStatus(destination,t1);
 
         try {
             HttpResponse httpResponse = client.execute(head);
             StatusLine statusLine = httpResponse.getStatusLine();
-            long t2 = System.currentTimeMillis();
+            long now = System.currentTimeMillis();
 
             status.code = statusLine.getStatusCode();
-            status.duration = (int)(t2-t1);
-            status.setTimestamp(t2);
+            status.duration = (int) (now - status.getTimestamp());
+            status.setTimestamp(now);
         } catch (UnknownHostException e) {
             status.code = 404;
-            status.setTimestamp(t1);
         } catch (IOException e) {
             Log.LOG.wPingExeption(e.getMessage());
-            status.setTimestamp(t1);
             status.code = 500;
         } finally {
             head.releaseConnection();
         }
 
         return new AsyncResult<>(status);
-
     }
 }
