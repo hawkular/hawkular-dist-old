@@ -56,7 +56,7 @@
     <module>ui/console</module>
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
-    <module>modules/json/metrics</module>
+    <module>modules/clients/metrics-bus</module>
     <module>kettle</module>
   </modules>
 

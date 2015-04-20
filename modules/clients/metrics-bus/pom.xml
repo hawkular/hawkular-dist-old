@@ -29,9 +29,9 @@
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-metrics-message-api</artifactId>
-  <name>Hawkular Metrics Message API</name>
-  <description>JSON Schema/Java API for metrics messages.</description>
+  <artifactId>hawkular-metrics-bus-message-api</artifactId>
+  <name>Hawkular Metrics Bus Message API</name>
+  <description>JSON Schema/Java API for metrics bus messages.</description>
 
   <dependencies>
     <dependency>
