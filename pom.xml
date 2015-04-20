@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>7</version>
+    <version>8</version>
   </parent>
 
   <artifactId>hawkular</artifactId>
@@ -56,6 +56,7 @@
     <module>ui/console</module>
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
+    <module>modules/clients/metrics-bus</module>
     <module>kettle</module>
   </modules>
 
@@ -84,6 +85,7 @@
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
     <version.org.testng>6.5.2</version.org.testng>
+    <version.org.hawkular.bus>1.0.0-SNAPSHOT</version.org.hawkular.bus>
     <version.org.wildfly>8.2.0.Final</version.org.wildfly>
 
   </properties>
