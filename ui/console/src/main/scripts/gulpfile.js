@@ -72,6 +72,17 @@ gulp.task('clean-defs', function () {
     del(['defs.d.ts/**']);
 });
 
+gulp.task('git-sha', function(cb) {
+  plugins.git.exec({args : 'log -n 1 --oneline'}, function (err, stdout) {
+    if (err) throw err;
+    var versionFile = 'version.js';
+    var gitSha = stdout.slice(0, -1);
+    var jsString = 'var HawkularVersion = \'' + gitSha + '\';';
+    fs.writeFileSync(versionFile, jsString);
+    cb();
+  });
+});
+
 gulp.task('tsc', ['clean-defs'], function () {
     var cwd = process.cwd();
     var tsResult = gulp.src(config.ts)
@@ -123,10 +134,10 @@ gulp.task('template', ['tsc'], function () {
         .pipe(gulp.dest('.'));
 });
 
-gulp.task('concat', ['template'], function () {
+gulp.task('concat', ['template', 'git-sha'], function () {
     var gZipSize = size(gZippedSizeOptions);
 
-    return gulp.src(['compiled.js', 'templates.js'])
+    return gulp.src(['compiled.js', 'templates.js', 'version.js'])
         .pipe(plugins.concat(config.js))
         .pipe(gulp.dest(config.dist))
         .pipe(size(normalSizeOptions))
