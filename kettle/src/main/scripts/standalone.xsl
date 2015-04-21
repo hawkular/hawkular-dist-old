@@ -185,6 +185,7 @@
     </xsl:copy>
     <cache-container name="hawkular-accounts" default-cache="role-cache">
       <local-cache name="role-cache"/>
+      <local-cache name="operation-cache"/>
     </cache-container>
   </xsl:template>
 
