@@ -132,11 +132,11 @@
                      resource="/subsystem=hawkular-bus-broker" />
         </avail-set-dmr>
 
-        <managed-resources>
+        <managed-servers>
           <local-dmr enabled="true"
                      metricSets="platform"
                      availSets="server-availabilities" />
-        </managed-resources>
+        </managed-servers>
       </subsystem>
 
       <!-- Keycloak-related - our secured deployments (important) -->
