@@ -51,8 +51,19 @@ var config = {
 };
 
 gulp.task('bower', function () {
+    var cacheBuster = Date.now();
+
     gulp.src('index.html')
-        .pipe(wiredep({}))
+        .pipe(wiredep({
+          fileTypes: {
+            html: {
+              replace: {
+                js: '<script src="{{filePath}}?v=' + cacheBuster + '"></script>',
+                css: '<link rel="stylesheet" href="{{filePath}}?v=' + cacheBuster + '" />'
+              }
+            }
+          }
+        }))
         .pipe(gulp.dest('.'));
 });
 
