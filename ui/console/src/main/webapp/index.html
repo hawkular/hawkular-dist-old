@@ -55,7 +55,7 @@
                 <li data-ng-repeat="persona in personas">
                   <a href="#" data-ng-click="switchPersona(persona)">{{persona.name}}</a>
                 </li>
-                <li class="divider"></li>
+                <li class="divider" data-ng-show="personas.length"></li>
                 <li>
                   <a href="#" data-ng-click="userDetails.logout()">Log Out</a>
                 </li>
