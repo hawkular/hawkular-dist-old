@@ -27,7 +27,7 @@
   </head>
 
   <body style="background-color: #f5f5f5" class="ng-cloak"> <!-- FIXME: Add CSS rule -->
-    <nav class="navbar navbar-default navbar-fixed-top navbar-pf" role="navigation">
+    <nav class="navbar navbar-default navbar-pf" role="navigation">
       <div data-idle-countdown="countdown" data-ng-init="countdown=30" id="idle">
         <strong>You'll be logged out in {{countdown}} second(s).</strong>.
       </div>
@@ -62,14 +62,13 @@
               </ul>
             </li>
           </ul>
-          <hawkular-topbar ng-controller="Topbar.TopbarController" ng-show="!hideSidebar"></hawkular-topbar>
+          <hawkular-topbar ng-controller="Topbar.TopbarController"></hawkular-topbar>
         </div>
       </div>
     </nav>
 
-    <div id="main" class="row" ng-class="{'below-topbar': !hideSidebar}" ng-controller="HawtioNav.ViewController">
-      <hawkular-sidebar ng-controller="Sidebar.SidebarController" ng-show="!hideSidebar"></hawkular-sidebar>
-      <div class="container" ng-class="hideSidebar ? 'col-sm-12 col-md-12' : 'col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2'" ng-include src="viewPartial"></div>
+    <div ng-controller="HawtioNav.ViewController">
+      <div class="container screen-content" ng-include src="viewPartial"></div>
     </div>
 
     <!-- add any scripts under dist/ here -->
