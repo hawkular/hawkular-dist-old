@@ -80,6 +80,7 @@
         <include>org.hawkular.metrics:hawkular-metrics-embedded-cassandra-ear</include>
         <include>org.hawkular:hawkular-console</include>
       </includes>
+      <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
