@@ -142,4 +142,5 @@
     </plugins>
   </build>
 
+  <name>Hawkular: Pinger</name>
 </project>

@@ -26,18 +26,15 @@
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>hawkular-kettle</artifactId>
+  <artifactId>hawkular-dist</artifactId>
   <packaging>pom</packaging>
-  <name>Hawkular Kettle</name>
+  <name>Hawkular Distribution</name>
   <description>Hawkular distribution that integrates all components into a single server.</description>
 
   <properties>
     <kettle.build.type>production</kettle.build.type>
-    <nest.dist.zip.root.dir>wildfly-${version.org.wildfly}</nest.dist.zip.root.dir>
     <hawkular.realm.template>hawkular-realm.json</hawkular.realm.template>
-
-    <checkstyle.suppressions.file>${basedir}/src/main/scripts/checkstyle-suppressions.xml</checkstyle.suppressions.file>
-
+    <checkstyle.suppressions.file>checkstyle-suppressions.xml</checkstyle.suppressions.file>
   </properties>
 
   <dependencies>
@@ -197,7 +194,7 @@
               <transformationSets>
                 <transformationSet>
                   <dir>${basedir}/target/nest/${nest.dist.zip.root.dir}/standalone/configuration</dir>
-                  <stylesheet>src/main/scripts/standalone.xsl</stylesheet>
+                  <stylesheet>src/main/resources/wildfly/patches/standalone.xsl</stylesheet>
                   <includes>
                     <include>standalone.xml</include>
                   </includes>
@@ -222,8 +219,9 @@
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
           <descriptors>
-            <descriptor>src/main/scripts/distro-assembly.xml</descriptor>
+            <descriptor>assembly.xml</descriptor>
           </descriptors>
           <formats>
             <format>zip</format>

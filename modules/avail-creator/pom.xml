@@ -118,4 +118,5 @@
     </plugins>
   </build>
 
+  <name>Hawkular: Availability Creator</name>
 </project>

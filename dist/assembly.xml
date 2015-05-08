@@ -19,7 +19,10 @@
 -->
 
 <assembly>
-  <id>distribution</id>
+  <id>wildfly</id>
+  <formats>
+    <format>zip</format>
+  </formats>
 
   <includeBaseDirectory>false</includeBaseDirectory>
   <baseDirectory>${project.build.finalName}</baseDirectory>
@@ -33,12 +36,8 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>src/main/resources</directory>
-      <outputDirectory>/${nest.dist.zip.root.dir}/</outputDirectory>
-      <excludes>
-        <!-- We handle this file specially (at the end of this file) -->
-        <exclude>**/hawkular-realm*json</exclude>
-      </excludes>
+      <directory>src/main/resources/wildfly/bin</directory>
+      <outputDirectory>/${nest.dist.zip.root.dir}/bin</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/keycloak/</directory>
@@ -143,7 +142,7 @@
 
   <files>
     <file>
-      <source>src/main/resources/standalone/configuration/${hawkular.realm.template}</source>
+      <source>src/main/resources/configuration/${hawkular.realm.template}</source>
       <outputDirectory>${nest.dist.zip.root.dir}/standalone/configuration/</outputDirectory>
       <filtered>true</filtered>
       <destName>hawkular-realm.json</destName>

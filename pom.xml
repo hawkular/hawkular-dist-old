@@ -56,7 +56,7 @@
     <module>ui/console</module>
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
-    <module>kettle</module>
+    <module>dist</module>
   </modules>
 
   <scm>
@@ -79,6 +79,17 @@
     <!-- - If groupId is not unique, append the property name with ".{artifactId}" -->
     <!-- - Version properties must be sorted alphabetically -->
 
+    <version.org.hawkular.agent>0.0.1-SNAPSHOT</version.org.hawkular.agent>
+    <version.org.hawkular.nest>0.0.1-SNAPSHOT</version.org.hawkular.nest>
+    <version.org.hawkular.inventory>0.0.1-SNAPSHOT</version.org.hawkular.inventory>
+    <version.org.hawkular.alerts>1.0.0-SNAPSHOT</version.org.hawkular.alerts>
+    <version.org.hawkular.metrics>0.3.2-SNAPSHOT</version.org.hawkular.metrics>
+    <version.org.hawkular.console>1.0.0-SNAPSHOT</version.org.hawkular.console>
+    <version.org.hawkular.accounts>1.0.0-SNAPSHOT</version.org.hawkular.accounts>
+    <version.org.hawkular.pinger>1.0.0-SNAPSHOT</version.org.hawkular.pinger>
+    <version.org.hawkular.availCreator>1.0.0-SNAPSHOT</version.org.hawkular.availCreator>
+
+    <version.org.keycloak>1.1.0.Final</version.org.keycloak>
     <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
     <version.com.google.guava>16.0.1</version.com.google.guava>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
