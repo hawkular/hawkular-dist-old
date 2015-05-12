@@ -207,10 +207,6 @@
     <xsl:attribute name="jms-connection-factory">java:/HawkularBusConnectionFactory</xsl:attribute>
   </xsl:template>
 
-<!--   <xsl:template match="@datasource[.='java:jboss/datasources/ExampleDS']"> -->
-<!--     <xsl:attribute name="datasource">java:jboss/datasources/HawkularDS</xsl:attribute> -->
-<!--   </xsl:template> -->
-
   <!-- add system properties -->
   <xsl:template name="system-properties">
     <system-properties>

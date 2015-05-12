@@ -121,6 +121,16 @@
       <groupId>org.wildfly</groupId>
       <artifactId>wildfly-dist</artifactId>
       <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>jaxen</groupId>
+          <artifactId>jaxen</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.transaction</groupId>
+          <artifactId>jta</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Keycloak-related dependencies -->
@@ -171,23 +181,9 @@
               <goal>unpack-dependencies</goal>
             </goals>
             <configuration>
-              <outputDirectory>${assembly.dir}</outputDirectory>
+              <outputDirectory>${project.build.directory}/wildfly</outputDirectory>
               <includeArtifactIds>wildfly-dist</includeArtifactIds>
               <excludes>*/appclient/**,*/docs/**,*/domain/**</excludes>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unpack-ra-module</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${assembly.dir}/${wildfly.dist.zip.root.dir}/modules/system/layers/base</outputDirectory>
-              <includeArtifactIds>
-                hawkular-bus-ra-wf-module
-              </includeArtifactIds>
-              <excludeTransitive>true</excludeTransitive>
             </configuration>
           </execution>
           <execution>
@@ -211,29 +207,6 @@
         </executions>
       </plugin>
 
-      <!-- put some custom files in the out-of-box wildfly we unpacked above -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-distro-resources-to-wildfly</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${assembly.dir}/${wildfly.dist.zip.root.dir}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/distro-resources</directory>
-                  <filtering>true</filtering>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- install our hawkular extension modules and customize standalone.xml -->
       <plugin>
         <groupId>org.wildfly.plugins</groupId>
@@ -246,9 +219,11 @@
               <goal>deploy</goal>
             </goals>
             <configuration>
-              <jbossHome>${assembly.dir}/${wildfly.dist.zip.root.dir}</jbossHome>
+              <jbossHome>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}</jbossHome>
               <serverConfig>standalone/configuration/standalone.xml</serverConfig>
-              <modulesHome>modules/system/layers/base</modulesHome>
+              <!-- we do not care about this backup, so put it somewhere so it won't overwrite first backup -->
+              <serverConfigBackup>${project.build.directory}/standalone.xml.out</serverConfigBackup>
+              <modulesHome>modules</modulesHome>
               <moduleZip>${project.build.directory}/hawkular-modules/hawkular-bus-broker-wf-extension.zip</moduleZip>
               <subsystem>${basedir}/src/main/resources/wildfly/snippets/subsystem-hawkular-bus-broker-wf-extension.xml</subsystem>
               <socketBinding>${basedir}/src/main/resources/wildfly/snippets/socketbinding-hawkular-bus-broker-wf-extension.xml</socketBinding>
@@ -268,11 +243,11 @@
               <goal>deploy</goal>
             </goals>
             <configuration>
-              <jbossHome>${assembly.dir}/${wildfly.dist.zip.root.dir}</jbossHome>
+              <jbossHome>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}</jbossHome>
               <serverConfig>standalone/configuration/standalone.xml</serverConfig>
               <!-- we do not care about this backup, so put it somewhere so it won't overwrite first backup -->
               <serverConfigBackup>${project.build.directory}/standalone.xml.out</serverConfigBackup>
-              <modulesHome>modules/system/layers/base</modulesHome>
+              <modulesHome>modules</modulesHome>
               <moduleZip>${project.build.directory}/hawkular-modules/hawkular-nest-wf-extension.zip</moduleZip>
               <subsystem>${basedir}/src/main/resources/wildfly/snippets/subsystem-hawkular-nest-wf-extension.xml</subsystem>
               <socketBinding>${basedir}/src/main/resources/wildfly/snippets/socketbinding-hawkular-bus-broker-wf-extension.xml</socketBinding>
@@ -295,7 +270,7 @@
             <configuration>
               <transformationSets>
                 <transformationSet>
-                  <dir>${assembly.dir}/${wildfly.dist.zip.root.dir}/standalone/configuration</dir>
+                  <dir>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}/standalone/configuration</dir>
                   <stylesheet>src/main/resources/wildfly/patches/standalone.xsl</stylesheet>
                   <includes>
                     <include>standalone.xml</include>
@@ -321,6 +296,7 @@
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
+          <finalName>hawkular-${project.version}</finalName>
           <appendAssemblyId>false</appendAssemblyId>
           <descriptors>
             <descriptor>assembly.xml</descriptor>
@@ -352,7 +328,7 @@
             <resource>
               <targetPath>/</targetPath>
               <directory>${project.build.directory}</directory>
-              <include>${project.build.finalName}-distribution.zip</include>
+              <include>hawkular-${project.version}.zip</include>
             </resource>
           </resources>
         </configuration>

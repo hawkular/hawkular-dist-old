@@ -65,8 +65,8 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>${project.build.directory}/distro-resources</directory>
-      <outputDirectory>/${wildfly.dist.zip.root.dir}</outputDirectory>
+      <directory>${project.build.directory}/wildfly</directory>
+      <outputDirectory>/</outputDirectory>
       <filtered>false</filtered>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
@@ -78,29 +78,9 @@
   </fileSets>
 
   <dependencySets>
-    <dependencySet>
-      <outputDirectory>/</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
-      <includes>
-        <include>org.hawkular.nest:hawkular-nest-distro</include>
-      </includes>
-      <unpack>true</unpack>
-      <unpackOptions>
-        <!-- exclude unwanted stuff and exclude stuff we want to overlay via our own distro-resources -->
-        <excludes>
-          <exclude>${wildfly.dist.zip.root.dir}/standalone/configuration/standalone.xml</exclude>
-
-          <!-- Our standalone.conf contains an override to the JAVA_OPTS, to tell Keycloak to import our realm -->
-          <exclude>${wildfly.dist.zip.root.dir}/bin/standalone.conf</exclude>
-          <exclude>${wildfly.dist.zip.root.dir}/bin/standalone.conf.bat</exclude>
-
-        </excludes>
-      </unpackOptions>
-    </dependencySet>
-
     <!-- all component deployments that go in the nest's internal modules directory -->
     <dependencySet>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.inventory:inventory-rest-api</include>
@@ -131,10 +111,11 @@
 
     <!-- additional subsystem extensions that go in the main WildFly modules directory -->
     <dependencySet>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/system/layers/base</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/modules</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.agent:hawkular-monitor:zip:module</include>
+        <include>org.hawkular.bus:hawkular-bus-ra-wf-module:zip:module</include>
       </includes>
       <unpack>true</unpack>
       <fileMode>0644</fileMode>
@@ -147,7 +128,7 @@
     requires the war name.
     -->
     <dependencySet>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.accounts:hawkular-accounts:war</include>
