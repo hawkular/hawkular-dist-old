@@ -80,7 +80,7 @@
     <!-- - Version properties must be sorted alphabetically -->
 
     <version.org.hawkular.agent>0.0.1-SNAPSHOT</version.org.hawkular.agent>
-    <version.org.hawkular.nest>0.0.1-SNAPSHOT</version.org.hawkular.nest>
+    <version.org.hawkular.bus>0.0.1-SNAPSHOT</version.org.hawkular.bus>
     <version.org.hawkular.inventory>0.0.1-SNAPSHOT</version.org.hawkular.inventory>
     <version.org.hawkular.alerts>1.0.0-SNAPSHOT</version.org.hawkular.alerts>
     <version.org.hawkular.metrics>0.3.2-SNAPSHOT</version.org.hawkular.metrics>
@@ -113,7 +113,6 @@
 
   <dependencyManagement>
     <dependencies>
-
       <dependency>
         <groupId>org.hawkular.accounts</groupId>
         <artifactId>hawkular-accounts</artifactId>
@@ -126,6 +125,12 @@
         <artifactId>hawkular-monitor</artifactId>
         <version>${version.org.hawkular.agent}</version>
         <classifier>module</classifier>
+      </dependency>      
+
+      <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-dist</artifactId>
+        <version>${version.org.wildfly}</version>
         <type>zip</type>
       </dependency>
 
@@ -216,14 +221,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.hawkular.nest</groupId>
-        <artifactId>hawkular-nest-distro</artifactId>
-        <version>${version.org.hawkular.nest}</version>
-        <classifier>distribution</classifier>
-        <type>zip</type>
-      </dependency>
-
-      <dependency>
         <groupId>org.hawkular</groupId>
         <artifactId>hawkular-pinger</artifactId>
         <version>${version.org.hawkular.pinger}</version>
@@ -237,7 +234,13 @@
         <type>zip</type>
       </dependency>
 
+      <dependency>
+        <groupId>org.hawkular.bus</groupId>
+        <artifactId>hawkular-bus-broker-wf-extension</artifactId>
+        <version>${version.org.hawkular.bus}</version>
+        <type>zip</type>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
-
 </project>

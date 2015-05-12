@@ -19,7 +19,7 @@
 -->
 
 <assembly>
-  <id>wildfly</id>
+  <id>zip-distrib</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -29,15 +29,47 @@
 
   <fileSets>
     <fileSet>
-      <directory>${project.build.directory}/distro-resources</directory>
-      <outputDirectory>/${nest.dist.zip.root.dir}</outputDirectory>
+      <directory>src/main/resources/wildfly/configuration</directory>
+      <outputDirectory>/${wildfly.dist.zip.root.dir}/standalone/configuration</outputDirectory>
       <filtered>false</filtered>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>src/main/resources/wildfly/bin</directory>
-      <outputDirectory>/${nest.dist.zip.root.dir}/bin</outputDirectory>
+      <outputDirectory>/${wildfly.dist.zip.root.dir}/bin</outputDirectory>
+      <filtered>false</filtered>
+      <fileMode>0744</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+     <!-- non-binary files -->
+    <fileSet>
+      <directory>${assembly.dir}</directory>
+      <outputDirectory>/</outputDirectory>
+      <excludes>
+        <exclude>**/*.sh</exclude>
+      </excludes>
+      <filtered>false</filtered>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    <!-- all scripts and other files that go in the /bin directory - will have u+x file perm set-->
+    <fileSet>
+      <directory>${assembly.dir}</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>**/*.sh</include>
+      </includes>
+      <filtered>false</filtered>
+      <fileMode>0744</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/distro-resources</directory>
+      <outputDirectory>/${wildfly.dist.zip.root.dir}</outputDirectory>
+      <filtered>false</filtered>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/keycloak/</directory>
@@ -56,11 +88,11 @@
       <unpackOptions>
         <!-- exclude unwanted stuff and exclude stuff we want to overlay via our own distro-resources -->
         <excludes>
-          <exclude>${nest.dist.zip.root.dir}/standalone/configuration/standalone.xml</exclude>
+          <exclude>${wildfly.dist.zip.root.dir}/standalone/configuration/standalone.xml</exclude>
 
           <!-- Our standalone.conf contains an override to the JAVA_OPTS, to tell Keycloak to import our realm -->
-          <exclude>${nest.dist.zip.root.dir}/bin/standalone.conf</exclude>
-          <exclude>${nest.dist.zip.root.dir}/bin/standalone.conf.bat</exclude>
+          <exclude>${wildfly.dist.zip.root.dir}/bin/standalone.conf</exclude>
+          <exclude>${wildfly.dist.zip.root.dir}/bin/standalone.conf.bat</exclude>
 
         </excludes>
       </unpackOptions>
@@ -68,7 +100,7 @@
 
     <!-- all component deployments that go in the nest's internal modules directory -->
     <dependencySet>
-      <outputDirectory>${nest.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.inventory:inventory-rest-api</include>
@@ -99,7 +131,7 @@
 
     <!-- additional subsystem extensions that go in the main WildFly modules directory -->
     <dependencySet>
-      <outputDirectory>${nest.dist.zip.root.dir}/modules/system/layers/base</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/system/layers/base</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.agent:hawkular-monitor:zip:module</include>
@@ -115,7 +147,7 @@
     requires the war name.
     -->
     <dependencySet>
-      <outputDirectory>${nest.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.accounts:hawkular-accounts:war</include>
@@ -128,7 +160,8 @@
 
     <!-- Keycloak theme -->
     <dependencySet>
-      <outputDirectory>${nest.dist.zip.root.dir}/modules/org/hawkular/keycloak/theme/main</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/org/hawkular/keycloak/theme/main</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.accounts:hawkular-accounts-keycloak-theme:jar</include>
       </includes>
@@ -143,7 +176,7 @@
   <files>
     <file>
       <source>src/main/resources/configuration/${hawkular.realm.template}</source>
-      <outputDirectory>${nest.dist.zip.root.dir}/standalone/configuration/</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/standalone/configuration/</outputDirectory>
       <filtered>true</filtered>
       <destName>hawkular-realm.json</destName>
     </file>
