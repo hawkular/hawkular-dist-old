@@ -46,6 +46,17 @@ public class PingerTest {
 
     }
 
+    @org.junit.Test
+    public void testSslPinger() throws Exception {
+
+        Pinger pinger = new Pinger();
+        PingDestination destination = new PingDestination("123","https://www.perfcake.org");
+        PingStatus status = pinger.ping(new PingStatus(destination)).get();
+
+        assert status.getCode()==200;
+        assert status.isTimedOut()==false;
+    }
+
     @Test
     public void testPingManagerSimple() throws Exception {
 
