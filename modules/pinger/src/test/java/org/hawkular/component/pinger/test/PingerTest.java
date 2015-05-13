@@ -25,6 +25,7 @@ import org.hawkular.component.pinger.PingManager;
 import org.hawkular.component.pinger.PingStatus;
 import org.hawkular.component.pinger.Pinger;
 import org.hawkular.metrics.client.common.SingleMetric;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -34,27 +35,27 @@ import org.junit.Test;
  */
 public class PingerTest {
 
-    @org.junit.Test
+    @Test
     public void testPinger() throws Exception {
 
         Pinger pinger = new Pinger();
         PingDestination destination = new PingDestination("123","http://hawkular.github.io");
         PingStatus status = pinger.ping(new PingStatus(destination)).get();
 
-        assert status.getCode()==200;
-        assert status.isTimedOut()==false;
+        Assert.assertEquals(200, status.getCode());
+        Assert.assertFalse(status.isTimedOut());
 
     }
 
-    @org.junit.Test
+    @Test
     public void testSslPinger() throws Exception {
 
         Pinger pinger = new Pinger();
         PingDestination destination = new PingDestination("123","https://www.perfcake.org");
         PingStatus status = pinger.ping(new PingStatus(destination)).get();
 
-        assert status.getCode()==200;
-        assert status.isTimedOut()==false;
+        Assert.assertEquals(200, status.getCode());
+        Assert.assertFalse(status.isTimedOut());
     }
 
     @Test
@@ -95,7 +96,7 @@ public class PingerTest {
     }
 
 
-    private class NoOpMetricPublisher extends MetricPublisher {
+    private static class NoOpMetricPublisher extends MetricPublisher {
         @Override
         public void sendToMetricsViaRest(String tenantId, List<Map<String, Object>> metrics) {
 
