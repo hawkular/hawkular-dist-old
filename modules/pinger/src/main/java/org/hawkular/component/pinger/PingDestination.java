@@ -17,18 +17,40 @@
 package org.hawkular.component.pinger;
 
 /**
- * Destination for pinging
+ * A destination for pinging.
  *
  * @author Heiko W. Rupp
  */
 public class PingDestination {
 
-    String resourceId;
-    String url;
+    /** The default method {@value} */
+    public static final String DEFAULT_METHOD = "GET";
 
+    final String resourceId;
+    final String url;
+    final String method;
+
+    /**
+     * Creates a new {@link PingDestination} using the default method {@value #DEFAULT_METHOD}.
+     *
+     * @param resourceId the resourceId of this destination
+     * @param url the url to ping
+     */
     public PingDestination(String resourceId, String url) {
+        this(resourceId, url, DEFAULT_METHOD);
+    }
+
+    /**
+     * Creates a new {@link PingDestination}
+     *
+     * @param url the url to ping
+     * @param method the HTTP method to use in the ping request or null to use the default method
+     *               {@value #DEFAULT_METHOD}
+     */
+    public PingDestination(String resourceId, String url, String method) {
         this.resourceId = resourceId;
         this.url = url;
+        this.method = method == null ? DEFAULT_METHOD : method;
     }
 
     @Override
@@ -39,6 +61,7 @@ public class PingDestination {
         PingDestination that = (PingDestination) o;
 
         if (!resourceId.equals(that.resourceId)) return false;
+        if (!method.equals(that.method)) return false;
         return url.equals(that.url);
 
     }
@@ -47,6 +70,7 @@ public class PingDestination {
     public int hashCode() {
         int result = resourceId.hashCode();
         result = 31 * result + url.hashCode();
+        result = 31 * result + method.hashCode();
         return result;
     }
 
@@ -55,6 +79,7 @@ public class PingDestination {
         return "PingDestination{" +
                 "resourceId='" + resourceId + '\'' +
                 ", url='" + url + '\'' +
+                ", method='" + method + '\'' +
                 '}';
     }
 

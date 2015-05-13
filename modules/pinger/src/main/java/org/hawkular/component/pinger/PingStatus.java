@@ -24,7 +24,7 @@ package org.hawkular.component.pinger;
  */
 public class PingStatus {
 
-    PingDestination destination;
+    final PingDestination destination;
     int duration;
     int code;
     boolean timedOut = false;

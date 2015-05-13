@@ -24,6 +24,7 @@ import org.hawkular.inventory.bus.api.ResourceEvent;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+
 import java.util.Map;
 
 /**
@@ -65,8 +66,11 @@ public class NotificationReceiver extends BasicMessageListener<ResourceEvent> {
             if (!"URL".equals(resource.getType().getId())) {
                 return;
             }
-            String url = (String) resource.getProperties().get("url");
-            PingDestination destination = new PingDestination(resource.getId(), url);
+
+            Map<String, Object> props = resource.getProperties();
+            String url = (String) props.get("url");
+            String method = (String) props.get("method");
+            PingDestination destination = new PingDestination(resource.getId(), url, method);
 
             if (message.getAction() == Action.Enumerated.CREATED) {
                 pingManager.addDestination(destination);

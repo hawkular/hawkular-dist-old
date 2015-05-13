@@ -29,7 +29,8 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -83,10 +84,11 @@ public class Pinger {
     @Asynchronous
     public Future<PingStatus> ping(final PingStatus status) {
 
-        HttpHead head = new HttpHead(status.destination.url);
+        PingDestination dest = status.destination;
+        HttpUriRequest request = RequestBuilder.create(dest.method).setUri(dest.url).build();
 
-        try (CloseableHttpClient client = getHttpClient(status.destination.url)) {
-            HttpResponse httpResponse = client.execute(head);
+        try (CloseableHttpClient client = getHttpClient(dest.url)) {
+            HttpResponse httpResponse = client.execute(request);
             StatusLine statusLine = httpResponse.getStatusLine();
             long now = System.currentTimeMillis();
 
@@ -98,8 +100,6 @@ public class Pinger {
         } catch (IOException e) {
             Log.LOG.wPingExeption(e.getMessage());
             status.code = 500;
-        } finally {
-            head.releaseConnection();
         }
 
         return new AsyncResult<>(status);

@@ -113,7 +113,8 @@ public class PingManager {
                                 String id = (String) m.get("id");
                                 Map<String, String> params = (Map<String, String>) m.get("properties");
                                 String url = params.get("url");
-                                destinations.add(new PingDestination(id, url));
+                                String method = params.get("method");
+                                destinations.add(new PingDestination(id, url, method));
                             }
                         }
                     }
