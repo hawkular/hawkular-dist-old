@@ -43,6 +43,10 @@
         <exclude>**/hawkular-realm*json</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/keycloak/</directory>
+      <outputDirectory>${nest.dist.zip.root.dir}/</outputDirectory>
+    </fileSet>
   </fileSets>
 
   <dependencySets>
@@ -115,16 +119,17 @@
       <directoryMode>0755</directoryMode>
     </dependencySet>
 
-    <!-- Keycloak modules -->
+    <!-- Keycloak theme -->
     <dependencySet>
-      <outputDirectory>${nest.dist.zip.root.dir}/</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
+      <outputDirectory>${nest.dist.zip.root.dir}/modules/org/hawkular/keycloak/theme/main</outputDirectory>
       <includes>
-        <include>org.keycloak:keycloak-wildfly-adapter-dist:zip</include>
+        <include>org.hawkular.accounts:hawkular-accounts-keycloak-theme:jar</include>
       </includes>
-      <unpack>true</unpack>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
+      <outputFileNameMapping>hawkular-accounts-keycloak-theme.jar</outputFileNameMapping>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useProjectAttachments>false</useProjectAttachments>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useTransitiveFiltering>false</useTransitiveFiltering>
     </dependencySet>
   </dependencySets>
 

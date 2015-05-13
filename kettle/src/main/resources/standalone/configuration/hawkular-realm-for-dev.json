@@ -7,6 +7,9 @@
   "registrationAllowed" : true,
   "requiredCredentials" : [ "password" ],
   "passwordPolicy" : "length(8) and lowerCase(1) and upperCase(1) and specialChars(1) and digits(1) and hashIterations(1)",
+  "loginTheme" : "hawkular",
+  "accountTheme" : "hawkular",
+  "adminTheme" : "hawkular",
   "defaultRoles" : [ "user" ],
   "users" : [ {
     "id" : "28026b36-8fe4-4332-84c8-524e173a68bf",
