@@ -48,6 +48,30 @@ public class PingerTest {
     }
 
     @Test
+    public void testHeadPinger() throws Exception {
+
+        Pinger pinger = new Pinger();
+        PingDestination destination = new PingDestination("123","http://hawkular.github.io", "HEAD");
+        PingStatus status = pinger.ping(new PingStatus(destination)).get();
+
+        Assert.assertEquals(200, status.getCode());
+        Assert.assertFalse(status.isTimedOut());
+
+    }
+
+    @Test
+    public void testPostPinger() throws Exception {
+
+        Pinger pinger = new Pinger();
+        PingDestination destination = new PingDestination("123","https://www.perfcake.org", "POST");
+        PingStatus status = pinger.ping(new PingStatus(destination)).get();
+
+        Assert.assertEquals(200, status.getCode());
+        Assert.assertFalse(status.isTimedOut());
+
+    }
+
+    @Test
     public void testSslPinger() throws Exception {
 
         Pinger pinger = new Pinger();
