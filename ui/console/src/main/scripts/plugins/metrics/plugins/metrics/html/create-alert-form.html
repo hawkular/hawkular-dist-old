@@ -1,0 +1,62 @@
+<div ng-controller="QuickAlertController as qac" ng-show="vm.chartData.dataPoints.length > 1">
+  <div ng-show="!showQuickAlert" class="col-sm-9 col-md-10 content">
+    <button class="btn btn-primary pull-left" ng-click="qac.toggleQuickAlert()">Add an Alert</button>
+  </div>
+  <div ng-show="showQuickAlert" class="col-sm-9 col-md-10 content">
+    <h1>Add an Alert</h1>
+
+    <form class="form-horizontal" name="addQuickAlertForm" role="form">
+      <div class="form-group">
+        <label class="col-md-4 control-label">
+          Fire when metric is
+        </label>
+
+        <div id="alert-radio-container" class="col-md-4">
+          <label class="radio-inline">
+            <input type="radio" ng-model="quickTrigger.operator" class="radio" value="LT"> <
+          </label>
+          <label class="radio-inline">
+            <input type="radio" ng-model="quickTrigger.operator" class="radio" value="GT"> >
+          </label>
+          <label class="radio-inline">
+            <input type="radio" ng-model="quickTrigger.operator" class="radio" value="LTE"> <=
+          </label>
+          <label class="radio-inline">
+            <input type="radio" ng-model="quickTrigger.operator" class="radio" value="GTE"> >=
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="threshold">
+          Of threshold
+        </label>
+
+        <div class="col-md-2">
+          <input type="number" id="threshold" ng-model="quickTrigger.threshold" class="form-control"
+                 ng-minlength="1" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="actions">
+          Notify to:
+        </label>
+
+        <div class="col-md-3">
+          <ui-select id="actions" multiple ng-model="quickTrigger.actions" theme="bootstrap"
+                     ng-disabled="disabled" close-on-select="false">
+            <ui-select-match placeholder="Select action...">{{$item}}</ui-select-match>
+            <ui-select-choices repeat="action in actions | filter:$select.search">
+              {{ action }}
+            </ui-select-choices>
+          </ui-select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-offset-4 col-md-6">
+          <button class="btn btn-primary" ng-click="qac.saveQuickAlert()">Create Alert</button>
+          <button type="button" class="btn btn-default" ng-click="qac.toggleQuickAlert()">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

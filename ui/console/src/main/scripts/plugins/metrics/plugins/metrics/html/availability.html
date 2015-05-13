@@ -1,0 +1,81 @@
+<div ng-controller="MetricsAvailabilityController as vm">
+  <hawkular-sidebar ng-controller="Sidebar.SidebarController">
+    <div class="nav-tabs-container">
+      <ul class="nav nav-tabs nav-tabs-pf">
+        <li class="active"><a href="/hawkular-ui/url/availability/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="availability">Availability</a></li>
+        <li><a href="/hawkular-ui/url/response-time/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="response-time">Response Time</a></li>
+        <li><a href="/hawkular-ui/url/alerts/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="alerts">Alerts</a></li>
+      </ul>
+    </div>
+  </hawkular-sidebar>
+
+  <section id="availability" class="tab-content">
+
+    <!-- Summary -->
+    <h3 class="pull-left">Availability Status</h3>
+    <span class="update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
+    <div class="panel panel-default summary">
+      <div class="row">
+        <div class="col-md-3 summary-item">
+          <span class="data" ng-show="vm.uptimeRatio < 1">{{vm.uptimeRatio * 100 | number:3}} %</span>
+          <span class="data" ng-show="vm.uptimeRatio === 1">{{vm.uptimeRatio * 100}} %</span>
+          <span class="item">Availability</span>
+        </div>
+        <div class="col-md-3 summary-item">
+          <span class="data">{{vm.downtimeDuration / 1000 | number:0}} s</span>
+          <span class="item">Total Downtime Duration</span>
+        </div>
+        <div class="col-md-3 summary-item">
+          <span class="data" ng-show="vm.lastDowntime.valueOf() !== 0">{{vm.lastDowntime | date:'mediumDate'}}</span>
+          <span class="data" ng-show="!vm.lastDowntime || vm.lastDowntime.valueOf() === 0">Always Up</span>
+          <span class="item">Last Downtime</span>
+        </div>
+        <div class="col-md-3 summary-item">
+          <span class="data">{{vm.downtimeCount}}</span>
+          <span class="item">Downtime Events</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="info-top clearfix">
+      <h3 class="pull-left" data-toggle="tooltip" data-placement="top" title="" data-original-title="Expand/collapse">
+        <button class="btn btn-link trigger" ng-click="showAllAlerts = !showAllAlerts"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+      </h3>
+      <span class="settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    </div>
+
+    <div class="alerts-activity clearfix">
+      <!-- No Alerts -->
+      <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
+        <div class="alert-icon"><i class="fa fa-flag-o"></i></div>
+        <div class="event">No Alerts have been fired in this category and time range.</div>
+      </div>
+      <!-- Alerts exist -->
+      <div class="panel panel-default alert alert-danger" ng-repeat="alert in vm.alertList | limitTo: (showAllAlerts ? 100000 : 3) track by $index">
+        <div class="alert-icon"><i class="fa fa-flag"></i></div>
+        <div class="date">{{alert.evalSets[0][0].evalTimestamp | date:'medium' }}</div>
+        <div class="event">Server <strong>down</strong> for {{(alert.ctime - alert.evalSets[0][0].evalTimestamp) / 1000 | number:0}} seconds (until {{alert.ctime | date:'mediumTime'}}).</div>
+      </div>
+    </div>
+
+    <!-- Availability Chart -->
+    <h3>Availability</h3>
+    <div class="panel panel-default graph">
+      <img src="img/graph-availability.png" alt="graph" width="944" height="197">
+    </div>
+    <!--<div class="panel panel-default graph">-->
+      <!--<div class="update pull-right" ng-show="vm.availabilityDataPoints.length > 0" >-->
+        <!--<i class="fa fa-clock-o"></i><a ng-click="vm.refreshAvailPageNow(vm.getRawMetricId())"><strong>Last update</strong> 20 seconds ago</a>-->
+      <!--</div>-->
+
+      <!--<h2>Avail points: {{vm.availabilityDataPoints.length}}</h2>-->
+      <!--<availability-chart-->
+        <!--data="{{vm.availabilityDataPoints}}"-->
+        <!--chart-type="availability"-->
+        <!--chart-height="250">-->
+      <!--</availability-chart>-->
+    <!--</div>-->
+
+  </section>
+</div>

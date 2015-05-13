@@ -1,0 +1,84 @@
+<div ng-controller="MetricsViewController as vm">
+
+  <hawkular-sidebar ng-controller="Sidebar.SidebarController">
+    <div class="nav-tabs-container">
+      <ul class="nav nav-tabs nav-tabs-pf">
+        <li><a href="/hawkular-ui/url/availability/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="availability">Availability</a></li>
+        <li class="active"><a href="/hawkular-ui/url/response-time/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="response-time">Response Time</a></li>
+        <li><a href="/hawkular-ui/url/alerts/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="alerts">Alerts</a></li>
+      </ul>
+    </div>
+  </hawkular-sidebar>
+
+  <section class="response-time" id="response-time">
+
+    <!-- Summary -->
+    <h3 class="pull-left">Response Time Status</h3>
+    <span class="update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
+    <div class="panel panel-default summary">
+      <div class="row">
+        <div class="col-md-4 summary-item">
+          <span class="data">{{vm.average}} <span>ms</span></span>
+          <span class="item">Average</span>
+        </div>
+        <div class="col-md-4 summary-item">
+          <span class="data">{{vm.median}} <span>ms</span></span>
+          <span class="item">Median</span>
+        </div>
+        <div class="col-md-4 summary-item">
+          <span class="data">{{vm.percentile95th}} <span>ms</span></span>
+          <span class="item">95th percentile</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="info-top clearfix">
+      <h3 class="pull-left" data-toggle="tooltip" data-placement="top" title="" data-original-title="Expand/collapse">
+        <button class="btn btn-link trigger" ng-click="showAllAlerts = !showAllAlerts"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+      </h3>
+      <span class="settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    </div>
+    <div class="alerts-activity clearfix">
+      <!-- No Alerts -->
+      <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
+        <div class="alert-icon"><i class="fa fa-flag-o"></i></div>
+        <div class="event">No Alerts have been fired in this category and time range.</div>
+      </div>
+      <!-- Alerts exist -->
+      <div class="panel panel-default alert alert-danger" ng-repeat="alert in vm.alertList | limitTo: (showAllAlerts ? 100000 : 3) track by $index">
+        <div class="alert-icon"><i class="fa fa-flag"></i></div>
+        <div class="date">{{alert.evalSets[0][0].evalTimestamp | date:'medium' }}</div>
+        <div class="event"><strong>Response time</strong> was above the threshold ({{alert.evalSets[0][0].condition.threshold}}ms) for {{(alert.ctime - alert.evalSets[0][0].evalTimestamp) / 1000 | number:0}} seconds (until {{alert.ctime | date:'mediumTime'}}).</div>
+      </div>
+    </div>
+
+    <!-- Response Time Graph -->
+    <h3>Response Time</h3>
+    <div class="panel panel-default graph">
+      <div class="legend pull-left" ng-show="vm.chartData.dataPoints.length > 0">
+        <span><i class="fa fa-circle primary"></i>Response Time</span>
+        <span><i class="fa fa-circle danger"></i>Response Time (above the threshold)</span>
+      </div>
+      <div class="update pull-right" ng-show="vm.chartData.dataPoints.length > 0" >
+        <i class="fa fa-clock-o"></i><a ng-click="vm.refreshChartDataNow(vm.getMetricId())"><strong>Last
+        update</strong> 20 seconds ago</a>
+      </div>
+
+      <p class="label label-info waiting-label" ng-hide="vm.chartData.dataPoints.length > 0" >We are
+        collecting your initial data. Please be patient(could be up to a minute)...</p>
+
+      <div id="metrics-chart">
+        <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+        <hawkular-chart
+          data="{{vm.chartData.dataPoints}}"
+          chart-type="hawkularmetric"
+          alert-value="{{vm.threshold}}"
+          y-axis-units="Response Time (ms)"
+          chart-height="250">
+        </hawkular-chart>
+      </div>
+    </div>
+
+  </section>
+</div>

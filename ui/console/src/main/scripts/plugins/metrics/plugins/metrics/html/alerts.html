@@ -1,0 +1,19 @@
+<div ng-controller="MetricsAlertController as mac">
+  <hawkular-sidebar ng-controller="Sidebar.SidebarController">
+    <div class="nav-tabs-container">
+      <ul class="nav nav-tabs nav-tabs-pf">
+        <li><a href="/hawkular-ui/url/availability/{{mac.$routeParams.resourceId}}/{{mac.$routeParams.timeOffset}}" class="availability">Availability</a></li>
+        <li><a href="/hawkular-ui/url/response-time/{{mac.$routeParams.resourceId}}/{{mac.$routeParams.timeOffset}}" class="response-time">Response Time</a></li>
+        <li class="active"><a href="/hawkular-ui/url/alerts/{{mac.$routeParams.resourceId}}/{{mac.$routeParams.timeOffset}}" class="alerts">Alerts</a></li>
+      </ul>
+    </div>
+  </hawkular-sidebar>
+
+  <section id="alerts" class="tab-content">
+    <div class="info-top clearfix">
+      <h3 class="pull-left">Alerts <span>({{(mac.alertList | filter:timeFilter).length}})</span></h3>
+      <span class="settings pull-right"><a href="#" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    </div>
+    <div ng-include="'plugins/metrics/html/alerts-view.html'"></div>
+  </section>
+</div>

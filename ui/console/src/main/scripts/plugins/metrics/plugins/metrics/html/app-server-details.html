@@ -1,0 +1,209 @@
+<div ng-controller="HawkularMetrics.AppServerDetailsController as vm">
+
+  <hawkular-sidebar ng-controller="Sidebar.SidebarController">
+    <div class="nav-tabs-container">
+      <ul class="nav nav-tabs nav-tabs-pf" ng-init="vm.activeTab = vm.activeTab || 'jvm-metrics'">
+        <li ng-class="vm.activeTab === 'jvm-metrics' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'jvm-metrics'" class="jvm-metrics">JVM Metrics</a></li>
+        <li ng-class="vm.activeTab === 'deployments' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'deployments'" class="deployments">Deployments</a></li>
+        <li ng-class="vm.activeTab === 'datasources' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'datasources'" class="datasources">Datasources</a></li>
+        <li ng-class="vm.activeTab === 'alerts' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'alerts'" class="alerts">Alerts</a></li>
+      </ul>
+    </div>
+  </hawkular-sidebar>
+
+  <section id="jvm-metrics" class="tab-content" ng-if="vm.activeTab === 'jvm-metrics'">
+
+    <h3 class="pull-left">JVM Status (Last hour)</h3>
+    <span class="update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
+    <div class="panel panel-default summary">
+      <div class="row">
+        <div class="col-sm-3 summary-item">
+          <span class="data">-Xmx</span>
+          <span class="item">Max. Heap</span>
+        </div>
+        <div class="col-sm-3 summary-item">
+          <span class="data">20 GB</span>
+          <span class="item">Avg. Heap Usage</span>
+        </div>
+        <div class="col-sm-3 summary-item">
+          <span class="data">22:00</span>
+          <span class="item">Last Garbage Collection</span>
+        </div>
+        <div class="col-sm-3 summary-item">
+          <span class="data">3</span>
+          <span class="item">Alerts</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-top clearfix">
+      <h3 class="pull-left" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><button class="btn btn-link trigger"><i class="fa fa-plus-square-o"></i> Alerts <span>(2 of 10)</span></button></h3>
+      <span class="settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    </div>
+    <div class="alerts-activity clearfix">
+      <div class="panel panel-default alert alert-danger">
+        <div class="alert-icon"><i class="fa fa-flag"></i></div>
+        <div class="date">12 Feb, 5:35 PM</div>
+        <div class="event">Server <strong>down</strong> for 4 minutes (until 5:39 PM).</div>
+      </div>
+      <div class="panel panel-default alert alert-danger">
+        <div class="alert-icon"><i class="fa fa-flag"></i></div>
+        <div class="date">11 Feb, 3:53 PM</div>
+        <div class="event"><strong>Response time</strong> was above the threshold for 7 minutes (until 4:00 PM).</div>
+      </div>
+    </div>
+
+    <h3>JVM Heap</h3>
+    <div class="panel panel-default graph">
+      <img src="img/ph-jvm.png" alt="ph-jvm" width="876" height="253">
+    </div>
+
+  </section>
+
+  <section id="deployments" class="tab-content" ng-if="vm.activeTab === 'deployments'">
+
+    <h3 class="pull-left">Deployments (Last hour)</h3>
+    <span class="update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
+    <div class="panel panel-default summary">
+      <div class="row">
+        <div class="col-sm-3 summary-item">
+          <span class="data">-Xmx</span>
+          <span class="item">Max. Heap</span>
+        </div>
+        <div class="col-sm-3 summary-item">
+          <span class="data">20 GB</span>
+          <span class="item">Avg. Heap Usage</span>
+        </div>
+        <div class="col-sm-3 summary-item">
+          <span class="data">22:00</span>
+          <span class="item">Last Garbage Collection</span>
+        </div>
+        <div class="col-sm-3 summary-item">
+          <span class="data">3</span>
+          <span class="item">Alerts</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-top clearfix">
+      <h3 class="pull-left" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><button class="btn btn-link trigger"><i class="fa fa-plus-square-o"></i> Alerts <span>(1)</span></button></h3>
+      <span class="settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    </div>
+    <div class="alerts-activity clearfix">
+      <div class="panel panel-default alert alert-danger">
+        <div class="alert-icon">
+          <i class="fa fa-flag"></i>
+        </div>
+        <div class="date">
+          12 Feb, 5:35 PM
+        </div>
+        <div class="event">
+          Server <strong>down</strong> for 4 minutes (until 5:39 PM).
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section id="datasources" class="tab-content"  ng-if="vm.activeTab === 'datasources'">
+
+    <h3 class="pull-left">Datasources (Last hour)</h3>
+    <span class="update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
+    <div class="panel panel-default summary">
+      <div class="row">
+        <div class="col-sm-3 summary-item">
+          <span class="data">-Xmx</span>
+          <span class="item">Max. Heap</span>
+        </div>
+        <div class="col-sm-3 summary-item">
+          <span class="data">20 GB</span>
+          <span class="item">Avg. Heap Usage</span>
+        </div>
+        <div class="col-sm-3 summary-item">
+          <span class="data">22:00</span>
+          <span class="item">Last Garbage Collection</span>
+        </div>
+        <div class="col-sm-3 summary-item">
+          <span class="data">3</span>
+          <span class="item">Alerts</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-top clearfix">
+      <h3 class="pull-left" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><button class="btn btn-link trigger"><i class="fa fa-plus-square-o"></i> Alerts <span>(0)</span></button></h3>
+      <span class="settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    </div>
+    <div class="alerts-activity clearfix">
+      <p>No alerts.</p>
+    </div>
+
+  </section>
+
+  <section id="alerts" class="tab-content" ng-if="vm.activeTab === 'alerts'">
+
+    <div class="info-top clearfix">
+      <h3 class="pull-left" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse">Alerts <span>(29)</span></h3>
+      <span class="settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    </div>
+    <div class="alerts-activity clearfix">
+      <div class="panel panel-default alert alert-danger">
+        <div class="alert-icon">
+          <i class="fa fa-flag"></i>
+        </div>
+        <div class="date">
+          12 Feb, 5:35 PM
+        </div>
+        <div class="event">
+          Server <strong>down</strong> for 4 minutes (until 5:39 PM).
+        </div>
+      </div>
+      <div class="panel panel-default alert alert-danger">
+        <div class="alert-icon">
+          <i class="fa fa-flag"></i>
+        </div>
+        <div class="date">
+          11 Feb, 3:53 PM
+        </div>
+        <div class="event">
+          <strong>Response time</strong> was above the threshold for 7 minutes (until 4:00 PM).
+        </div>
+      </div>
+      <div class="panel panel-default alert alert-danger">
+        <div class="alert-icon">
+          <i class="fa fa-flag"></i>
+        </div>
+        <div class="date">
+          11 Feb, 3:53 PM
+        </div>
+        <div class="event">
+          <strong>Response time</strong> was above the threshold for 7 minutes (until 4:00 PM).
+        </div>
+      </div>
+      <div class="panel panel-default alert alert-danger">
+        <div class="alert-icon">
+          <i class="fa fa-flag"></i>
+        </div>
+        <div class="date">
+          11 Feb, 3:53 PM
+        </div>
+        <div class="event">
+          <strong>Response time</strong> was above the threshold for 7 minutes (until 4:00 PM).
+        </div>
+      </div>
+      <div class="panel panel-default alert alert-danger">
+        <div class="alert-icon">
+          <i class="fa fa-flag"></i>
+        </div>
+        <div class="date">
+          11 Feb, 3:53 PM
+        </div>
+        <div class="event">
+          <strong>Response time</strong> was above the threshold for 7 minutes (until 4:00 PM).
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</div>

@@ -1,0 +1,52 @@
+<!-- <div class="col-sm-3 col-md-2 sidebar-pf sidebar-pf-left sidebar-pf-dark sidebar-pf-big-icons sidebar-pf-fixed">
+  <nav>
+    <ul class="nav nav-pills nav-stacked nav-dark nav-big-icons" ng-hide="isSinglePage()">
+      <li ng-class="getClass('/metrics/availability')"><a ng-href="/metrics/availability/{{hkParams.resourceId}}/{{hkParams.timeOffset}}/{{hkEndTimestamp}}"><i class="fa fa-arrow-up"></i>Availability</a></li>
+      <li ng-class="getClass('/metrics/response-time')"><a ng-href="/metrics/response-time/{{hkParams.resourceId}}/{{hkParams.timeOffset}}/{{hkEndTimestamp}}"><i class="fa fa-line-chart"></i>Response Time</a></li>
+      <li ng-class="getClass('/metrics/alerts')"><a ng-href="/metrics/alerts/{{hkParams.resourceId}}/{{hkParams.timeOffset}}/{{hkEndTimestamp}}"><i class="fa fa-flag"></i>Alerts</a></li>
+    </ul>
+    <ul class="nav nav-pills nav-stacked nav-dark nav-big-icons" du-spy-context  ng-show="isSinglePage()">
+      <li du-scrollspy="secav" offset="135" class="active"><a href="#secav" du-smooth-scroll offset="135"><i class="fa fa-arrow-up"></i>Availability</a></li>
+      <li du-scrollspy="secrt" offset="125"><a href="#secrt" du-smooth-scroll offset="125"><i class="fa fa-line-chart"></i>Response Time</a></li>
+      <li du-scrollspy="secal" offset="125"><a href="#secal" du-smooth-scroll offset="125"><i class="fa fa-flag"></i>Alerts</a></li>
+    </ul>
+  </nav>
+</div> -->
+
+<div class="screen-top-nav">
+  <div>
+    <div class="row top-row">
+      <div class="col-sm-4">
+        <a ng-show="isAppServerPage()" href="/hawkular-ui/app/app-list" class="back">« All Application Servers</a>
+        <a ng-hide="isAppServerPage()" href="/hawkular-ui/url/url-list" class="back">« All URLs</a>
+      </div>
+      <div class="col-sm-4">
+        <h1 ng-init="isAppServerPage() ? getAppServerFromId(hkParams.resourceId) : getUrlFromId(hkParams.resourceId)">{{resourceName}}</h1>
+      </div>
+      <div class="col-sm-4">
+        <div class="date-range dropdown">
+          <i class="fa fa-calendar"></i>
+          <div class="input" dropdown-toggle>
+            {{offsetName}} <span class="additional-info">({{getFormattedDate()}})</span>
+          </div>
+          <div class="dropdown-menu infotip bottom-right">
+            <div class="arrow"></div>
+            <div class="dropdown-menu-content">
+              <span class="label">Last</span>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Hour'}" ng-click="setRange({hour: 1})">1h</button>
+                <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last 12 Hours'}" ng-click="setRange({hours: 12})">12h</button>
+                <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Day'}" ng-click="setRange({day: 1})">Day</button>
+                <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Week'}" ng-click="setRange({week: 1})">Week</button>
+                <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Month'}" ng-click="setRange({month: 1})">Month</button>
+                <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Year'}" ng-click="setRange({year: 1})">Year</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div ng-transclude></div>
+  </div>
+</div>
+

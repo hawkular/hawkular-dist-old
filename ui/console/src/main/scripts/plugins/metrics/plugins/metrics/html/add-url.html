@@ -1,0 +1,110 @@
+<div ng-controller="HawkularMetrics.AddUrlController as vm">
+  <div ng-class="{'fade-in': vm.resourceList.length === 0}">
+    <h1 class="text-center">Hello {{userDetails.firstName}}!</h1>
+    <i class="fa fa-line-chart" ng-show="vm.resourceList.length === 0"></i>
+    <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a website that you want to monitor.</h2>
+    <form class="form-horizontal add-url" name="addUrlForm" role="form" novalidate ng-submit="vm.addUrl(vm.resourceUrl)">
+      <div class="form-group input">
+        <div class="col-lg-6 col-sm-8 col-xs-12 align-center">
+          <div class="input-group input-group-lg">
+            <input type="url" class="form-control" name="resourceUrl" ng-model="vm.resourceUrl"
+                   ng-model-options="{ updateOn: 'default blur'}"
+                   placeholder="Enter a website URL (e.g.: http://www.website.com)" required>
+            <span class="input-group-btn">
+              <button class="btn btn-primary" class="btn-lg" type="submit" ng-disabled="addUrlForm.$invalid || vm.addProgress">
+               <div ng-show="vm.addProgress" class="spinner spinner-sm"></div>
+              Add URL
+              </button>
+            </span>
+          </div>
+          <span class="help-block"
+                  ng-show="addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$invalid">The URL you entered is not valid. Please enter a valid URL.</span>
+
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="row urls-list-labels" ng-show="vm.resourceList.length > 0">
+    <div class="col-md-4 text-left">
+      <button class="btn btn-link" tooltip="Sort" tooltip-trigger tooltip-placement="top" ng-click="vm.reverse = !vm.reverse">
+        URL <i class="fa" ng-class="vm.reverse ? 'fa-angle-up' : 'fa-angle-down'"></i>
+      </button>
+    </div>
+    <div class="col-md-4">
+      Current Response Time
+    </div>
+    <div class="col-md-4">
+      Current Availability
+    </div>
+  </div>
+
+  <div class="panel panel-default summary url-info" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">
+    <div class="row row-table">
+      <div class="col-md-4 summary-item">
+        <span class="url-link"><a href="/hawkular-ui/url/availability/{{res.id}}">{{res.properties.url}}</a><i class="fa fa-flag" tooltip="Some alert happened" tooltip-trigger tooltip-placement="top" ng-show="(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length > 0"></i></span>
+        <button class="btn btn-link delete" tooltip="Remove" tooltip-trigger tooltip-placement="top" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
+        <button class="btn btn-link trigger" ng-show="res.responseTime.length > 0" tooltip="Expand/collapse" tooltip-trigger tooltip-placement="top" ng-click="vm.resourceList.expanded[res.id] = !vm.resourceList.expanded[res.id]"><i class="fa" ng-class="vm.resourceList.expanded[res.id] ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>Last 24 hours</button>
+      </div>
+      <div class="col-md-4 summary-item">
+        <span class="data" ng-show="res.responseTime.length > 0">{{res.responseTime[0].value}} <span>ms</span></span>
+        <span class="data spinner" ng-hide="res.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
+      </div>
+      <div class="col-md-4 summary-item">
+        <span class="data" ng-show="res.responseTime.length > 0"><i class="fa " ng-class="res.isUp ? 'fa-arrow-up' : 'fa-arrow-down'"></i>{{res.isUp ? 'Up' : 'Down'}}</span>
+        <span class="data spinner" ng-hide="res.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
+        <span class="time" tooltip="Last update" tooltip-trigger tooltip-placement="top"><i class="fa fa-clock-o"></i>{{res.updateTime| date:"HH:mm" }}</span>
+      </div>
+    </div>
+    <hr>
+    <div class="row row-table panel-expanded-content" ng-show="vm.resourceList.expanded[res.id]">
+      <div class="col-md-4 summary-item text-left">
+        <ul class="list-unstyled alert-status" ng-hide="(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length === 0">
+          <li ng-repeat="alert in (vm.alertList|filter:{triggerId: (res.id + '_trigger')}).slice().reverse() | limitTo:3 track by $index">
+            <i class="fa fa-flag"></i>{{alert.evalSets[0][0].dataTimestamp|date:'hh:mm a'}}: <span ng-if="alert.evalSets[0][0].condition.type=='AVAILABILITY'"><strong>server down</strong></span><span ng-if="alert.evalSets[0][0].condition.type=='THRESHOLD'"><strong>high response time</strong> ({{alert.evalSets[0][0].value}}ms)</span>
+          </li>
+        </ul>
+        <span class="no-alerts" ng-show="(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length === 0">No alerts.</span>
+        <a href="/hawkular-ui/url/alerts/{{res.id}}" class="bottom-area" ng-show="(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length > 0">View All Alerts ({{(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length}})</a>
+      </div>
+      <div class="col-md-4 summary-item">
+        <!--<div id="metrics-chart" class="top-area" style="height: 44px; width: 237px;">-->
+          <!--<hawkular-chart data="{{res.responseTime}}" chart-type="line" chart-height="44" chart-width="237"></hawkular-chart>-->
+        <!--</div>-->
+        <div class="bottom-area">
+          <span class="data">{{vm.getAverage(res.responseTime, 'value')}} <span>ms</span></span>
+          <span class="item">Average Response Time</span>
+        </div>
+      </div>
+      <div class="col-md-4 summary-item">
+        <span class="time"><i class="fa fa-clock-o"></i>Last 24 hours</span>
+        <div class="top-area">
+          <span class="data" ng-show="res.availability === 100"><i class="fa fa-arrow-up"></i>Always Up</span>
+          <span class="data" ng-hide="res.availability === 100"><i class="fa fa-arrow-down"></i>Down {{res.downTime / 3 | number:0}} min</span>
+        </div>
+        <div class="bottom-area">
+          <span class="data" ng-hide="res.availability === 100">{{res.availability | number:3}} <span>%</span></span>
+          <span class="data" ng-show="res.availability === 100">{{res.availability}} <span>%</span></span>
+          <span class="item">Availability</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="pagination pull-right" ng-show="vm.resourceList.length > 0">
+    <li>
+      <a href="#" ng-click="vm.setPage(vm.resCurPage-1)">
+        <span class="i fa fa-angle-left"></span>
+      </a>
+    </li>
+    <li ng-class="{'active' : vm.resCurPage === 0}"><a href="#" ng-click="vm.setPage(0)">1</a></li>
+    <li ng-class="{'active' : vm.resCurPage === 1}"><a href="#" ng-click="vm.setPage(1)">2</a></li>
+    <li ng-class="{'active' : vm.resCurPage === 2}"><a href="#" ng-click="vm.setPage(2)">3</a></li>
+    <li ng-class="{'active' : vm.resCurPage === 3}"><a href="#" ng-click="vm.setPage(3)">4</a></li>
+    <li ng-class="{'active' : vm.resCurPage === 4}"><a href="#" ng-click="vm.setPage(4)">5</a></li>
+    <li>
+      <a href="#" ng-click="vm.setPage(vm.resCurPage+1)">
+        <span class="i fa fa-angle-right"></span>
+      </a>
+    </li>
+  </ul>
+</div>
