@@ -133,16 +133,28 @@ gulp.task('tslint-watch', function () {
         }));
 });
 
-gulp.task('template', ['tsc'], function () {
+gulp.task('template', ['tsc', 'less'], function () {
     return gulp.src(config.templates)
         .pipe(plugins.angularTemplatecache({
             filename: 'templates.js',
-            root: 'plugins/',
+            root: '',
+            base: function(file){
+              var filename = /[^/]*$/.exec( file.relative).input;
+              var prefixIndex = filename.indexOf('/') + 1;
+              return filename.substring(prefixIndex, filename.length);
+            },
             standalone: true,
             module: config.templateModule,
             templateFooter: '}]); hawtioPluginLoader.addModule("' + config.templateModule + '");'
         }))
         .pipe(gulp.dest('.'));
+});
+
+gulp.task('less', function(){
+  return gulp.src(['plugins/**/*.less'])
+    .pipe(plugins.less())
+    .pipe(plugins.concat('console-style.css'))
+    .pipe(gulp.dest(config.dist));
 });
 
 gulp.task('concat', ['template', 'git-sha'], function () {

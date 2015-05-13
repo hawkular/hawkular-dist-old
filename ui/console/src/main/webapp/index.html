@@ -8,6 +8,7 @@
 
     <!-- bower:css -->
     <!-- endbower -->
+    <link href="dist/console-style.css?v=${hawkular.console.timestamp}" rel="stylesheet">
 
     <!-- ES6/ES6 shim -->
     <!--[if IE 8]>
@@ -72,12 +73,10 @@
     </div>
 
     <!-- add any scripts under dist/ here -->
-    <script src="dist/hawkular-console.js"></script>
+    <script src="dist/hawkular-console.js?v=${hawkular.console.timestamp}"></script>
     <script>
-      var title = 'HAWKULAR: ' + HawkularVersion + ',&#013;UI-COMP: ' + HawkularComponentsVersions[0].version;
+      var title = 'HAWKULAR: ' + HawkularVersion;
       document.getElementById("hawkularLogo").title = title;
-      var comment = document.createComment(JSON.stringify(HawkularComponentsVersions));
-      document.getElementsByTagName('body')[0].appendChild(comment);
     </script>
   </body>
 </html>
