@@ -33,6 +33,7 @@
 
   <properties>
     <!-- TODO: should be /hawkular-console and /hawkular-console/ -->
+    <hawkular.console.timestamp>${maven.build.timestamp}</hawkular.console.timestamp>
     <hawkular.console.context>/</hawkular.console.context>
     <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
   </properties>
