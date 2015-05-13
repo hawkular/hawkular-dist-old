@@ -23,8 +23,8 @@ package org.hawkular.component.pinger;
  */
 public class PingDestination {
 
-    String resourceId;
-    String url;
+    final String resourceId;
+    final String url;
 
     public PingDestination(String resourceId, String url) {
         this.resourceId = resourceId;
