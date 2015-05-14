@@ -47,10 +47,13 @@ import java.util.concurrent.Future;
 @Startup
 @Singleton
 public class PingManager {
-    // How many rounds a WAIT_MILLIS do we wait for results to come in?
+    /** How many rounds a WAIT_MILLIS do we wait for results to come in? */
     private static final int ROUNDS = 15;
-    // How long do we wait between each round
+    /** How long do we wait between each round in milliseconds */
     private static final int WAIT_MILLIS = 500;
+    /** Rough timeout in milliseconds for the pings afher which the pings are cancelled and reported as timeouted.
+     * Note that in practice, the real time given to pings can be longer. */
+    private static final int TIMEOUT_MILLIS = ROUNDS * WAIT_MILLIS;
 
     private final String tenantId = "test";
 
@@ -139,12 +142,11 @@ public class PingManager {
         List<PingStatus> results = new ArrayList<>(destinations.size());
         // In case of timeouts we will not be able to get the PingStatus from the Future, so use a Map
         // to keep track of what destination's ping actually hung.
-        Map<Future<PingStatus>, PingStatus> futures = new HashMap<>(destinations.size());
+        Map<Future<PingStatus>, PingDestination> futures = new HashMap<>(destinations.size());
 
         for (PingDestination destination : destinations) {
-            PingStatus request = new PingStatus(destination);
-            Future<PingStatus> result = pinger.ping(request);
-            futures.put(result, request);
+            Future<PingStatus> result = pinger.ping(destination);
+            futures.put(result, destination);
         }
 
         int round = 1;
@@ -170,16 +172,11 @@ public class PingManager {
         }
 
         // Cancel hanging pings and report them as timeouts
-        for (Map.Entry<Future<PingStatus>, PingStatus> entry : futures.entrySet()) {
+        for (Map.Entry<Future<PingStatus>, PingDestination> entry : futures.entrySet()) {
             entry.getKey().cancel(true);
-            PingStatus ps = entry.getValue();
-            ps.code = 503; // unavailable
-            ps.timedOut = true;
-            long now = System.currentTimeMillis();
-            // (jshaughn) This used to be set explicitly to 10000, but I don't know why.  It seemed
-            // dangerous because that could be in the future given that ROUNDS*WAIT_MILLIS < 10000.
-            ps.duration = (int) (now - ps.getTimestamp());
-            ps.setTimestamp(now);
+            PingDestination destination = entry.getValue();
+            final long now = System.currentTimeMillis();
+            PingStatus ps = PingStatus.timeout(destination, now, TIMEOUT_MILLIS);
             results.add(ps);
         }
 

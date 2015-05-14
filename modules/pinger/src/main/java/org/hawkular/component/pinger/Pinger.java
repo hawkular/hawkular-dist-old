@@ -42,6 +42,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
  *
  * @author Heiko W. Rupp
  * @author Martin Večeřa
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  *
  */
 @Stateless
@@ -82,26 +83,28 @@ public class Pinger {
     }
 
     @Asynchronous
-    public Future<PingStatus> ping(final PingStatus status) {
+    public Future<PingStatus> ping(final PingDestination destination) {
 
-        PingDestination dest = status.destination;
-        HttpUriRequest request = RequestBuilder.create(dest.method).setUri(dest.url).build();
+        HttpUriRequest request = RequestBuilder.create(destination.method).setUri(destination.url).build();
 
-        try (CloseableHttpClient client = getHttpClient(dest.url)) {
+        try (CloseableHttpClient client = getHttpClient(destination.url)) {
+            long start = System.currentTimeMillis();
             HttpResponse httpResponse = client.execute(request);
             StatusLine statusLine = httpResponse.getStatusLine();
             long now = System.currentTimeMillis();
 
-            status.code = statusLine.getStatusCode();
-            status.duration = (int) (now - status.getTimestamp());
-            status.setTimestamp(now);
+            final int code = statusLine.getStatusCode();
+            final int duration = (int) (now - start);
+            PingStatus result = new PingStatus(destination, code, now, duration);
+            return new AsyncResult<>(result);
         } catch (UnknownHostException e) {
-            status.code = 404;
+            PingStatus result = PingStatus.error(destination, 404, System.currentTimeMillis());
+            return new AsyncResult<>(result);
         } catch (IOException e) {
             Log.LOG.wPingExeption(e.getMessage());
-            status.code = 500;
+            PingStatus result = PingStatus.error(destination, 500, System.currentTimeMillis());
+            return new AsyncResult<>(result);
         }
 
-        return new AsyncResult<>(status);
     }
 }
