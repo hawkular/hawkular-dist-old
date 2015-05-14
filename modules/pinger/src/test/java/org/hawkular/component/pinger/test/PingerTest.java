@@ -99,27 +99,6 @@ public class PingerTest {
 
     }
 
-    /**
-     * This test tests the startup code. It requires a
-     * running inventory instance
-     * @throws Exception
-     */
-    @Test
-    public void testPingManagerStartup() throws Exception {
-
-        PingManager manager = new PingManager();
-        try {
-            manager.startUp();
-        } catch (javax.ws.rs.ProcessingException e) {
-            // It's ok, as we may not have the full Jax-RS client stack available
-        }
-        List<PingDestination> destinations = manager.getDestinations();
-        manager.pinger = new Pinger();
-        manager.scheduleWork();
-
-    }
-
-
     private static class NoOpMetricPublisher extends MetricPublisher {
         @Override
         public void sendToMetricsViaRest(String tenantId, List<Map<String, Object>> metrics) {

@@ -16,25 +16,14 @@
  */
 package org.hawkular.component.pinger;
 
-import org.hawkular.inventory.api.model.Environment;
-import org.hawkular.inventory.api.model.MetricType;
-import org.hawkular.inventory.api.model.MetricUnit;
-import org.hawkular.inventory.api.model.ResourceType;
-import org.hawkular.inventory.api.model.Tenant;
 import org.hawkular.metrics.client.common.SingleMetric;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,8 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * A SLSB that coordinates the pinging of resources
@@ -61,7 +48,6 @@ public class PingManager {
     private static final int WAIT_MILLIS = 500;
 
     private final String tenantId = "test";
-    private final String environmentId = "test";
 
     @EJB
     public Pinger pinger;
@@ -70,76 +56,6 @@ public class PingManager {
 
     @EJB
     public MetricPublisher metricPublisher;
-
-    @PostConstruct
-    public void startUp() {
-        int attempts = 0;
-        while (attempts++ < 10) {
-            try {
-                Client client = ClientBuilder.newClient();
-                // TODO: inventory does not have to be co-located
-                final String host = "http://localhost:8080";
-                final String inventoryUrl = host + "/hawkular/inventory/";
-                WebTarget target = client.target(inventoryUrl + tenantId + "/resourceTypes/URL/resources");
-                Response response = target.request().get();
-
-                if (isResponseOk(response.getStatus())) {
-                    List list = response.readEntity(List.class);
-                    if (list.isEmpty()) {
-                        response.close();
-                        target = client.target(inventoryUrl + "tenants");
-                        response = target.request().post(Entity.json(new Tenant.Blueprint(tenantId)));
-                        if (isResponseOk(response.getStatus())) {
-                            response.close();
-
-                            Function<String, Consumer<org.hawkular.inventory.api.model.Entity.Blueprint>>  create =
-                                    path -> blueprint -> {
-                                final WebTarget url = client.target(inventoryUrl + tenantId + path);
-                                final Response resp = url.request().post(Entity.json(blueprint));
-                                resp.close();
-                            };
-
-                            create.apply("/environments").accept(new Environment.Blueprint(environmentId));
-                            create.apply("/resourceTypes").accept(new ResourceType.Blueprint("URL", "1.0"));
-                            create.apply("/metricTypes").accept(new MetricType.Blueprint("status.duration.type",
-                                    MetricUnit.MILLI_SECOND));
-                            create.apply("/metricTypes").accept(new MetricType.Blueprint("status.code.type",
-                                    MetricUnit.NONE));
-                        }
-                    } else {
-                        for (Object o : list) {
-                            if (o instanceof Map) {
-                                Map<String, Object> m = (Map) o;
-                                String id = (String) m.get("id");
-                                Map<String, String> params = (Map<String, String>) m.get("properties");
-                                String url = params.get("url");
-                                String method = params.get("method");
-                                destinations.add(new PingDestination(id, url, method));
-                            }
-                        }
-                    }
-                    response.close();
-                    client.close();
-                    return;
-                } else {
-                    Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
-                }
-            } catch (Exception e) {
-                Log.LOG.wNoInventoryFound(-1, "Exception while trying to reach or read response of inventory: "
-                        + e.getMessage());
-            }
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-
-        Log.LOG.wNoInventoryFound(-1,
-                "Inventory was not found on the configured location in 20s. Pinger won't function properly.");
-    }
 
     /**
      * This method triggers the actual work by starting pingers,
