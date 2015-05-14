@@ -18,12 +18,17 @@ package org.hawkular.component.pinger;
 
 import org.hawkular.metrics.client.common.SingleMetric;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,6 +61,57 @@ public class PingManager {
 
     @EJB
     public MetricPublisher metricPublisher;
+
+    @PostConstruct
+    public void startUp() {
+        int attempts = 0;
+        while (attempts++ < 10) {
+            try {
+                Client client = ClientBuilder.newClient();
+                // TODO: inventory does not have to be co-located
+                final String host = "http://localhost:8080";
+                final String inventoryUrl = host + "/hawkular/inventory/";
+                WebTarget target = client.target(inventoryUrl + tenantId + "/resourceTypes/URL/resources");
+                Response response = target.request().get();
+
+                if (isResponseOk(response.getStatus())) {
+                    List<?> list = response.readEntity(List.class);
+                    if (list.isEmpty()) {
+                    } else {
+                        for (Object o : list) {
+                            if (o instanceof Map) {
+                                Map<?, ?> m = (Map<?, ?>) o;
+                                String id = (String) m.get("id");
+                                @SuppressWarnings("unchecked")
+                                Map<String, String> params = (Map<String, String>) m.get("properties");
+                                String url = params.get("url");
+                                String method = params.get("method");
+                                destinations.add(new PingDestination(id, url, method));
+                            }
+                        }
+                    }
+                    response.close();
+                    client.close();
+                    return;
+                } else {
+                    Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
+                }
+            } catch (Exception e) {
+                Log.LOG.wNoInventoryFound(-1, "Exception while trying to reach or read response of inventory: "
+                        + e.getMessage());
+            }
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+
+        Log.LOG.wNoInventoryFound(-1,
+                "Inventory was not found on the configured location in 20s. Pinger won't function properly.");
+    }
 
     /**
      * This method triggers the actual work by starting pingers,
