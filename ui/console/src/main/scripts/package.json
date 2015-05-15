@@ -16,6 +16,7 @@
     "gulp-notify": "^2.1.0",
     "gulp-replace": "0.5.3",
     "gulp-size": "^1.2.0",
+    "gulp-sourcemaps": "1.5.0",
     "gulp-tslint": "^1.4.2",
     "gulp-typescript": "^2.3.0",
     "gulp-watch": "^3.0.0",

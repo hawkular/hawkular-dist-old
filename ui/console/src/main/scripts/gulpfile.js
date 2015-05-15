@@ -24,7 +24,8 @@ var gulp = require('gulp'),
     path = require('path'),
     size = require('gulp-size'),
     s = require('underscore.string'),
-    tslint = require('gulp-tslint');
+    tslint = require('gulp-tslint'),
+    jsString;
 
 var plugins = gulpLoadPlugins({});
 var pkg = require('./package.json');
@@ -86,19 +87,26 @@ gulp.task('clean-defs', function () {
 });
 
 gulp.task('git-sha', function(cb) {
-  plugins.git.exec({args : 'log -n 1 --oneline'}, function (err, stdout) {
-    if (err) throw err;
-    var versionFile = 'version.js';
-    var gitSha = stdout.slice(0, -1);
-    var jsString = 'var HawkularVersion = \'' + gitSha + '\';';
+  var versionFile = 'version.js';
+
+  if(!jsString) {
+    plugins.git.exec({args: 'log -n 1 --oneline'}, function (err, stdout) {
+      if (err) throw err;
+      var gitSha = stdout.slice(0, -1);
+      jsString = 'var HawkularVersion = \'' + gitSha + '\';';
+      fs.writeFileSync(versionFile, jsString);
+      cb();
+    });
+  } else {
     fs.writeFileSync(versionFile, jsString);
     cb();
-  });
+  }
 });
 
-var gulpTsc = function() {
+var gulpTsc = function(done) {
   var cwd = process.cwd();
   var tsResult = gulp.src(config.ts)
+    .pipe(plugins.sourcemaps.init())
     .pipe(plugins.typescript(config.tsProject))
     .on('error', plugins.notify.onError({
       message: '#{ error.message }',
@@ -108,6 +116,7 @@ var gulpTsc = function() {
   return eventStream.merge(
     tsResult.js
       .pipe(plugins.concat('compiled.js'))
+      .pipe(plugins.sourcemaps.write())
       .pipe(gulp.dest('.')),
     tsResult.dts
       .pipe(gulp.dest('d.ts')))
@@ -118,15 +127,17 @@ var gulpTsc = function() {
       var relative = path.relative(cwd, filename);
       fs.appendFileSync('defs.d.ts', '/// <reference path="' + relative + '"/>\n');
       return buf;
-    }));
+    })).on('end', function(){
+      done && done();
+    });
 };
 
-gulp.task('tsc', ['clean-defs'], function () {
-  gulpTsc();
+gulp.task('tsc', ['clean-defs'], function (done) {
+  gulpTsc(done);
 });
 
-gulp.task('tsc-live', ['copy-sources','clean-defs'], function () {
-  gulpTsc();
+gulp.task('tsc-live', ['copy-sources','clean-defs'], function (done) {
+  gulpTsc(done);
 });
 
 gulp.task('tslint', function () {
@@ -160,11 +171,11 @@ var gulpTemplate = function(){
     .pipe(gulp.dest('.'));
 };
 
-gulp.task('template', ['tsc', 'less'], function () {
+gulp.task('template', ['tsc'], function () {
   return gulpTemplate();
 });
 
-gulp.task('template-live', ['tsc', 'less-live', 'copy-sources'], function () {
+gulp.task('template-live', ['tsc-live', 'copy-sources'], function () {
   return gulpTemplate();
 });
 
@@ -190,17 +201,19 @@ var gulpConcat = function() {
   var gZipSize = size(gZippedSizeOptions);
 
   return gulp.src(['compiled.js', 'templates.js', 'version.js'])
+    .pipe(plugins.sourcemaps.init({loadMaps: true}))
     .pipe(plugins.concat(config.js))
+    .pipe(plugins.sourcemaps.write())
     .pipe(gulp.dest(config.dist))
     .pipe(size(normalSizeOptions))
     .pipe(gZipSize);
 };
 
-gulp.task('concat', ['template', 'git-sha'], function () {
+gulp.task('concat', ['template', 'tsc', 'git-sha'], function () {
   return gulpConcat();
 });
 
-gulp.task('concat-live', ['template-live', 'git-sha'], function () {
+gulp.task('concat-live', ['template-live', 'tsc-live', 'git-sha'], function () {
   return gulpConcat();
 });
 
@@ -237,20 +250,5 @@ gulp.task('copy-kettle-css', ['less-live'] , function() {
     .pipe(gulp.dest(config.serverPath));
 });
 
-gulp.task('connect', ['watch'], function () {
-    plugins.connect.server({
-        root: '.',
-        livereload: true,
-        port: 2772,
-        fallback: 'index.html'
-    });
-});
-
-gulp.task('reload', function () {
-    gulp.src('.')
-        .pipe(plugins.connect.reload());
-});
-
-gulp.task('build', ['bower', 'path-adjust', 'tslint', 'tsc', 'template', 'concat', 'clean']);
-gulp.task('build-live', ['copy-sources', 'bower', 'path-adjust', 'tslint-watch', 'tsc', 'template-live', 'concat-live']);
-gulp.task('default', ['connect']);
+gulp.task('build', ['bower', 'path-adjust', 'tslint', 'tsc', 'less', 'template', 'concat', 'clean']);
+gulp.task('build-live', ['copy-sources', 'bower', 'path-adjust', 'tslint-watch', 'tsc-live', 'less-live', 'template-live', 'concat-live']);
