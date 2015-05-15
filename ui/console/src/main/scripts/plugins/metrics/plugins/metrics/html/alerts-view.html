@@ -1,0 +1,64 @@
+<div class="hk-alerts-feedback" hk-clear-notifications="hkNotifications.alerts">
+  <div ng-repeat="notification in hkNotifications.alerts">
+    <div ng-switch="notification.type">
+      <div class="alert alert-success" ng-switch-when="success">
+        <span class="pficon pficon-ok"></span>
+        <strong>{{notification.message}}</strong>
+      </div>
+
+      <div class="alert alert-danger" ng-switch-when="error">
+        <span class="pficon-layered">
+          <span class="pficon pficon-error-octagon"></span>
+          <span class="pficon pficon-error-exclamation"></span>
+        </span>
+        <strong>Error:</strong> {{notification.message}}</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+<div class="info-top clearfix">
+  <p class="settings pull-left"><a href="#" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></p>
+  <p class="pull-right"><strong>{{(mac.alertList | filter:timeFilter).length}} alerts</strong> last week.</p>
+</div>
+-->
+
+<div class="alerts-activity">
+  <div ng-repeat="alert in mac.alertList | filter:timeFilter | orderBy: '-start'">
+
+    <div class="panel panel-default alert alert-danger" ng-if="alert.type=='AVAILABILITY'">
+      <div class="alert-icon">
+        <i class="fa fa-arrow-down"></i>
+      </div>
+      <div class="date">
+        {{alert.start | date:'medium' }}
+      </div>
+      <div class="event">
+        Server <strong>down</strong> for {{(alert.end - alert.start)/1000 | number: 0}} seconds (until
+        <span ng-if="alert.isThisYear && alert.isToday">{{alert.end | date:'shortTime' }}).</span>
+        <span ng-if="alert.isThisYear && !alert.isToday">{{alert.end | date:'MMM d, h:mm:ss a' }}).</span>
+        <span ng-if="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
+      </div>
+    </div>
+
+    <div class="panel panel-default alert alert-danger" ng-if="alert.type=='THRESHOLD'">
+      <div class="alert-icon">
+        <i class="fa fa-line-chart"></i>
+      </div>
+      <div class="date">
+        {{alert.start | date:'medium' }}
+      </div>
+      <div class="event">
+        <strong>Response time</strong> was above the threshold ({{alert.threshold | number: 0}} ms) for {{(alert.end - alert.start) / 1000.0 | number: 0}} seconds (until
+        <span ng-if="alert.isThisYear && alert.isToday">{{alert.end | date:'shortTime' }}).</span>
+        <span ng-if="alert.isThisYear && !alert.isToday">{{alert.end | date:'MMM d, h:mm:ss a' }}).</span>
+        <span ng-if="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
+        The average response time was {{alert.avg  | number: 0}} ms.
+      </div>
+    </div>
+
+  </div>
+
+
+</div>

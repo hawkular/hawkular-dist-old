@@ -32,62 +32,16 @@ directory, please use the `cache` profile:
 In that case, the http://nodejs.org/[Node.js] is not deleted and doesn't have to be downloaded again, together with
 npm modules and bower packages. Be aware, this causes the libraries not being updated.
 
-After the console is built, you can access it by traversing to the the build target (./console/target/gulp-build) directory:
-
-`cd console/target/gulp-build`
-
-and running the appropriate gulp (default) target:
-
-`gulp`
-
-After those steps, the console is available on http://localhost:2772/[http://localhost:2772/], but be aware that
-it's only a front-end and you need the server running for console to work properly. The advantage of this approach is,
-that is scans for file changes in the source directory and apply them directly into the target directory, which is
-suitable for console developing since it doesn't require the whole maven build to see the actual changes in the console UI.
-
 == Hawkular-ui-components development
 
-If you want to use your local version of hawkular-ui-components, you can use the `link` profile and the
-https://oncletom.io/2013/live-development-bower-component/[bower link functionality]. In the hawkular-ui-components,
-link your bower package with:
+For the ease of development we're using the watch feature of the gulp tool. Gulp can watch for changes in source files
+and update the compiled console accordingly. To use this feature, you must start the kettle from the 
+`$HAWKULAR_ROOT/kettle/target/wildfly-8.2.0.Final/` directory. Once the server is up and running you have to 
+start the actual gulp task responsible for watching the changes. To achieve this, traverse to the 
+`$HAWKULAR_ROOT/ui/console/target/gulp-build/` directory and run:
 
-`bower link`
+`gulp watch-server`
 
-and then build the kettle with:
-
-`mvn clean install -Plink`
-
-== Dev Install
-
-You can still re-build the console using only java-script based tools. Please do that only after maven build and
-only within the build target (./console/target/gulp-build) directory. These steps are rarely used and if you're not
-an hawkular console developer you most probably won't need it.
-
-Assuming the node.js is already installed:
-
-`npm install -g bower gulp typescript`
-
-Install the cli commands globally
-
-`cd console/target`
-
-`npm install`
-
-Install the local npm packages
-
-`bower install`
-
-Install the local bower packages for the application
-
-`gulp`
-
-Run the application and 'watch' the source tree for any changes refreshing the browser if any changes
-
-In browser: Navigate to http://localhost:2772/
-
-Profit!
-
-For further detail the hawt.io plugin structure is described https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[here].
-
-
-_The maven plugin for running frontend npm/bower installs is underway as well_
+The advantage of this approach is, that is scans for file changes in the source directory and apply them directly 
+into the target directory (`$HAWKULAR_ROOT/kettle/target/wildfly-8.2.0.Final/`), which is suitable for console 
+developing since it doesn't require the whole maven build to see the actual changes in the console UI.
