@@ -16,7 +16,17 @@
  */
 package org.hawkular.component.pinger;
 
-import org.hawkular.metrics.client.common.SingleMetric;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -25,104 +35,169 @@ import javax.ejb.LockType;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import javax.inject.Inject;
+
+import org.hawkular.inventory.api.Action;
+import org.hawkular.inventory.api.EntityAlreadyExistsException;
+import org.hawkular.inventory.api.Interest;
+import org.hawkular.inventory.api.Inventory;
+import org.hawkular.inventory.api.Tenants.Single;
+import org.hawkular.inventory.api.filters.With;
+import org.hawkular.inventory.api.model.Environment;
+import org.hawkular.inventory.api.model.Resource;
+import org.hawkular.inventory.api.model.ResourceType;
+import org.hawkular.inventory.api.model.Tenant;
+import org.hawkular.inventory.cdi.Observable;
+
+import rx.functions.Action1;
 
 /**
  * A SLSB that coordinates the pinging of resources
  *
  * @author Heiko W. Rupp
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 @Startup
 @Singleton
 public class PingManager {
+
+    /**
+     * Collects new URLs reported by {@link PingManager#inventory} and synchronizes the various threads reporting the
+     * new URLs and those ones consuming them.
+     *
+     * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
+     */
+    static class NewUrlsCollector implements Action1<Resource> {
+        private List<PingDestination> newUrls = new ArrayList<>();
+
+        /**
+         * A callback for the {@link Inventory} that collects newly added URLs. It is safe to call this method
+         * concurrently from any random thread.
+         *
+         * @see rx.functions.Action1#call(java.lang.Object)
+         */
+        @Override
+        public void call(Resource r) {
+            if (PingDestination.isUrl(r)) {
+                synchronized (this) {
+                    newUrls.add(PingDestination.from(r));
+                }
+            }
+        }
+
+        /**
+         * Returns the list of {@link PingDestination}s collected by this {@link NewUrlsCollector}. It is safe to call
+         * this method concurrently from any random thread.
+         *
+         * @return the list of {@link PingDestination}s
+         */
+        public List<PingDestination> getNewUrls() {
+            synchronized (this) {
+                if (this.newUrls.isEmpty()) {
+                    return Collections.emptyList();
+                } else {
+                    List<PingDestination> result = this.newUrls;
+                    this.newUrls = new ArrayList<>();
+                    return result;
+                }
+            }
+        }
+    }
+
     /** How many rounds a WAIT_MILLIS do we wait for results to come in? */
     private static final int ROUNDS = 15;
     /** How long do we wait between each round in milliseconds */
     private static final int WAIT_MILLIS = 500;
-    /** Rough timeout in milliseconds for the pings afher which the pings are cancelled and reported as timeouted.
-     * Note that in practice, the real time given to pings can be longer. */
+    /**
+     * Rough timeout in milliseconds for the pings after which the pings are cancelled and reported as timeouted. Note
+     * that in practice, the real time given to pings can be longer.
+     */
     private static final int TIMEOUT_MILLIS = ROUNDS * WAIT_MILLIS;
 
-    private final String tenantId = "test";
+    @EJB
+    Pinger pinger;
+
+    private final Set<PingDestination> destinations = new HashSet<>();
 
     @EJB
-    public Pinger pinger;
-
-    Set<PingDestination> destinations = new HashSet<>();
+    MetricPublisher metricPublisher;
 
     @EJB
-    public MetricPublisher metricPublisher;
+    TraitsPublisher traitsPublisher;
 
-    private final PingerConfiguration configuration = PingerConfiguration.defaults();
+    @Inject
+    @Observable
+    private Inventory.Mixin.Observable inventory;
+
+    final NewUrlsCollector newUrlsCollector = new NewUrlsCollector();
+
+    private void addUrl(String tenantId, String envId, String url) {
+        Log.LOG.infof("Putting url to inventory: %s", url);
+
+        Single tenant = null;
+        try {
+            tenant = inventory.tenants().create(Tenant.Blueprint.builder().withId(tenantId).build());
+        } catch (EntityAlreadyExistsException e) {
+            tenant = inventory.tenants().get(tenantId);
+        }
+        try {
+            tenant.resourceTypes().create(ResourceType.Blueprint.builder().withId("URL").withVersion("1").build());
+        } catch (EntityAlreadyExistsException e) {
+        }
+        org.hawkular.inventory.api.Environments.Single env = null;
+        try {
+            env = tenant.environments().create(
+            Environment.Blueprint.builder().withId(envId).build());
+        } catch (EntityAlreadyExistsException e) {
+            env = tenant.environments().get(envId);
+        }
+        env.feedlessResources().create(
+                Resource.Blueprint.builder().withId(UUID.randomUUID().toString()).withResourceType("URL")
+                        .withProperty("url", url).build());
+
+    }
 
     @PostConstruct
     public void startUp() {
-        int attempts = 0;
-        while (attempts++ < 10) {
-            try {
-                Client client = ClientBuilder.newClient();
-                final String inventoryUrl = configuration.getInventoryBaseUri();
-                WebTarget target = client.target(inventoryUrl +"/"+ tenantId + "/resourceTypes/URL/resources");
-                Response response = target.request().get();
 
-                if (isResponseOk(response.getStatus())) {
-                    List<?> list = response.readEntity(List.class);
-                    if (list.isEmpty()) {
-                    } else {
-                        for (Object o : list) {
-                            if (o instanceof Map) {
-                                Map<?, ?> m = (Map<?, ?>) o;
-                                String id = (String) m.get("id");
-                                @SuppressWarnings("unchecked")
-                                Map<String, String> params = (Map<String, String>) m.get("properties");
-                                String url = params.get("url");
-                                String method = params.get("method");
-                                destinations.add(new PingDestination(id, url, method));
-                            }
-                        }
-                    }
-                    response.close();
-                    client.close();
-                    return;
-                } else {
-                    Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
-                }
-            } catch (Exception e) {
-                Log.LOG.wNoInventoryFound(-1, "Exception while trying to reach or read response of inventory: "
-                        + e.getMessage());
-            }
+        /*
+         * Add the observer before reading the existing URLs from the inventory so that we do not loose the URLs that
+         * could have been added between those two calls.
+         */
+        inventory.observable(Interest.in(Resource.class).being(Action.created())).subscribe(newUrlsCollector);
 
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
-            }
+        Set<Resource> urls = inventory.tenants().getAll().resourceTypes().getAll(With.id(PingDestination.URL_TYPE))
+                .resources().getAll().entities();
+        Log.LOG.infof("About to initialize Hawkular Pinger with %d URLs", urls.size());
+
+        for (Resource r : urls) {
+            destinations.add(PingDestination.from(r));
         }
 
-        Log.LOG.wNoInventoryFound(-1,
-                "Inventory was not found on the configured location in 20s. Pinger won't function properly.");
+        if (destinations.isEmpty()) {
+            /* for test purposes */
+            addUrl("jdoe", "test", "http://hawkular.github.io");
+        }
+
     }
 
     /**
-     * This method triggers the actual work by starting pingers,
-     * collecting their return values and then publishing them.
+     * This method triggers the actual work by starting pingers, collecting their return values and then publishing
+     * them.
+     * <p>
+     * Concurrency assumptions:
+     * <ul>
+     * <li>{@link #scheduleWork()} will not overlap with {@link #startUp()} - we assume this to be granted by the EE
+     * container.
+     * <li>Individual {@link #scheduleWork()} invocations will not overlap each other - we also assume this to be
+     * granted by the EE container.
      */
     @Lock(LockType.READ)
     @Schedule(minute = "*", hour = "*", second = "0,20,40", persistent = false)
     public void scheduleWork() {
+
+        List<PingDestination> newUrls = newUrlsCollector.getNewUrls();
+        destinations.addAll(newUrls);
 
         if (destinations.size() == 0) {
             return;
@@ -132,11 +207,11 @@ public class PingManager {
     }
 
     /**
-     * Runs the pinging work on the provided list of destinations.
-     * The actual pings are scheduled to run in parallel in a thread pool.
-     * After ROUNDS*WAIT_MILLIS, remaining pings are cancelled and
-     * an error
-     * @param destinations Set of destinations to ping
+     * Runs the pinging work on the provided list of destinations. The actual pings are scheduled to run in parallel in
+     * a thread pool. After ROUNDS*WAIT_MILLIS, remaining pings are cancelled and an error
+     *
+     * @param destinations
+     *            Set of destinations to ping
      */
     private void doThePing(Set<PingDestination> destinations) {
         List<PingStatus> results = new ArrayList<>(destinations.size());
@@ -158,7 +233,7 @@ public class PingManager {
                     try {
                         results.add(f.get());
                     } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();  // TODO: Customise this generated block
+                        e.printStackTrace(); // TODO: Customise this generated block
                     }
                     iterator.remove();
                 }
@@ -189,60 +264,12 @@ public class PingManager {
             return;
         }
 
-        List<SingleMetric> singleMetrics = new ArrayList<>(results.size());
-        List<Map<String, Object>> mMetrics = new ArrayList<>();
-
         for (PingStatus status : results) {
-
-            addDataItem(mMetrics, status, status.duration, "duration");
-            addDataItem(mMetrics, status, status.code, "code");
-
-            // for the topic to alerting
-            SingleMetric singleMetric = new SingleMetric(status.destination.resourceId + ".status.duration",
-                    status.getTimestamp(), (double) status.getDuration());
-            singleMetrics.add(singleMetric);
-            singleMetric = new SingleMetric(status.destination.resourceId + ".status.code",
-                    status.getTimestamp(), (double) status.getCode());
-            singleMetrics.add(singleMetric);
-
+            metricPublisher.sendToMetricsViaRest(status);
+            metricPublisher.publishToTopic(status);
+            traitsPublisher.publish(status);
         }
 
-        // Send them away
-        metricPublisher.sendToMetricsViaRest(tenantId, mMetrics);
-        metricPublisher.publishToTopic(tenantId, singleMetrics);
-
     }
 
-    private void addDataItem(List<Map<String, Object>> mMetrics, PingStatus status, Number value, String name) {
-        Map<String, Number> dataMap = new HashMap<>(2);
-        dataMap.put("timestamp", status.getTimestamp());
-        dataMap.put("value", value);
-        List<Map<String, Number>> data = new ArrayList<>(1);
-        data.add(dataMap);
-        Map<String, Object> outer = new HashMap<>(2);
-        outer.put("id", status.destination.resourceId + ".status." + name);
-        outer.put("data", data);
-        mMetrics.add(outer);
-    }
-
-    /**
-     * Add a new destination into the system. This triggers an immediate
-     * ping and then adding to the list of destinations.
-     * @param pd new Destination
-     */
-    public void addDestination(PingDestination pd) {
-        destinations.add(pd);
-    }
-
-    public List<PingDestination> getDestinations() {
-        return new ArrayList<>(destinations);
-    }
-
-    public void removeDestination(PingDestination url) {
-        destinations.remove(url);
-    }
-
-    private boolean isResponseOk(int code) {
-        return code >= 200 && code < 300;
-    }
 }
