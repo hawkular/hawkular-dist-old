@@ -42,7 +42,7 @@ public interface Log extends BasicLogger {
     void wPingExeption(String message);
 
     @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5002, value = "Post to metrics faild with post status : %s")
+    @Message(id = 5002, value = "Post to metrics failed with post status : %s")
     void metricPostStatus(String s);
 
     @LogMessage(level = Logger.Level.WARN)
@@ -53,4 +53,5 @@ public interface Log extends BasicLogger {
     @Message(id = 5004, value = "Could not contact inventory - there will be no resources to start pinging. " +
             "Code %d, message= %s")
     void wNoInventoryFound(int status, String reasonPhrase);
+
 }

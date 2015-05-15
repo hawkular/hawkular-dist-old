@@ -14,17 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.component.pinger.test;
+package org.hawkular.component.pinger;
 
-import java.util.List;
-import java.util.Map;
-
-import org.hawkular.component.pinger.MetricPublisher;
-import org.hawkular.component.pinger.PingDestination;
-import org.hawkular.component.pinger.PingManager;
-import org.hawkular.component.pinger.PingStatus;
-import org.hawkular.component.pinger.Pinger;
-import org.hawkular.metrics.client.common.SingleMetric;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,14 +23,23 @@ import org.junit.Test;
  * Simple test for the pinger
  *
  * @author Heiko W. Rupp
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 public class PingerTest {
+
+    private static final String TEST_RESOURCE_ID = "test-rsrc";
+    private static final String TEST_TENANT_ID = "test-tenat";
+    private static final String TEST_ENVIRONMENT_ID = "test-env";
+
+    private static PingDestination newDestination(String url, String method) {
+        return new PingDestination(TEST_TENANT_ID, TEST_ENVIRONMENT_ID, TEST_RESOURCE_ID, url, method);
+    }
 
     @Test
     public void testPinger() throws Exception {
 
         Pinger pinger = new Pinger();
-        PingDestination destination = new PingDestination("123","http://hawkular.github.io");
+        PingDestination destination = newDestination("http://hawkular.github.io", "GET");
         PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
@@ -51,7 +51,7 @@ public class PingerTest {
     public void testHeadPinger() throws Exception {
 
         Pinger pinger = new Pinger();
-        PingDestination destination = new PingDestination("123","http://hawkular.github.io", "HEAD");
+        PingDestination destination = newDestination("http://hawkular.github.io", "HEAD");
         PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
@@ -63,7 +63,7 @@ public class PingerTest {
     public void testPostPinger() throws Exception {
 
         Pinger pinger = new Pinger();
-        PingDestination destination = new PingDestination("123","https://www.perfcake.org", "POST");
+        PingDestination destination = newDestination("https://www.perfcake.org", "POST");
         PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
@@ -75,39 +75,11 @@ public class PingerTest {
     public void testSslPinger() throws Exception {
 
         Pinger pinger = new Pinger();
-        PingDestination destination = new PingDestination("123","https://www.perfcake.org");
+        PingDestination destination = newDestination("https://www.perfcake.org", "GET");
         PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
         Assert.assertFalse(status.isTimedOut());
     }
 
-    @Test
-    public void testPingManagerSimple() throws Exception {
-
-        PingManager manager = new PingManager();
-        manager.pinger = new Pinger();
-        manager.metricPublisher = new NoOpMetricPublisher();
-        PingDestination destination = new PingDestination("123","http://hawkular.github.io");
-        manager.addDestination(destination);
-        manager.metricPublisher = new MetricPublisher();
-        try {
-            manager.scheduleWork();
-        } catch (javax.ws.rs.ProcessingException e) {
-            // It's ok, as we may not have the full Jax-RS client stack available
-        }
-
-    }
-
-    private static class NoOpMetricPublisher extends MetricPublisher {
-        @Override
-        public void sendToMetricsViaRest(String tenantId, List<Map<String, Object>> metrics) {
-
-        }
-
-        @Override
-        public void publishToTopic(String tenantId, List<SingleMetric> metrics) {
-
-        }
-    }
 }
