@@ -1,25 +1,25 @@
-<div ng-controller="HawkularMetrics.AppServerListController as vm">
+<div class="sc-application-servers" ng-controller="HawkularMetrics.AppServerListController as vm">
 
       <h1 class="text-center">{{userDetails.firstName}}'s application servers</h1>
       <h3 class="pull-left">Aggregate Status (Last 24 hrs)</h3>
       <span class="update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
       <div class="panel panel-default summary">
         <div class="row">
-          <div class="col-md-3 summary-item">
+          <div class="col-sm-3 summary-item">
             <a href="#">
               <span class="data">4</span>
               <span class="item">Alerts</span>
             </a>
           </div>
-          <div class="col-md-3 summary-item">
+          <div class="col-sm-3 summary-item">
             <span class="data">43 running</span>
             <span class="item">Up</span>
           </div>
-          <div class="col-md-3 summary-item">
+          <div class="col-sm-3 summary-item">
             <span class="data">1 Failed</span>
             <span class="item">Down</span>
           </div>
-          <div class="col-md-3 summary-item">
+          <div class="col-sm-3 summary-item">
             <span class="data">1 Stopped</span>
             <span class="item">Down</span>
           </div>

@@ -24,37 +24,10 @@
 @body-bg:                                                           #f5f5f5;
 @danger-bg:                                                         rgba(204,0,0,0.07);
 
-//navbar changes to make it taller
-
-@media (min-width: @grid-float-breakpoint) {
-
-  .navbar-header{
-    padding: 5px 0;
-  }
-
-  .navbar-pf .navbar-utility  > li > a {
-    padding: 12px 10px;
-  }
-
-  .navbar-pf .navbar-utility li.dropdown > .dropdown-toggle .pficon-user{
-    top: 12px;
-  }
-}
-
-@media (max-width: @grid-float-breakpoint-max) {
-  .navbar-pf {
-    padding-top: 1px;
-  }
-}
-
 //content general styles
 
 body {
   line-height: 1.4;
-}
-
-.navbar-pf {
-  margin-bottom: 15px;
 }
 
 .container {
@@ -159,7 +132,7 @@ a:hover .fa-flag {
   padding: 2px 4px;
 }
 
-// Tables
+// tables
 
 .table > thead > tr > th,
 .table > tbody > tr > td {
@@ -183,18 +156,11 @@ a:hover .fa-flag {
   margin-top: 4px;
 }
 
-// LANDING SCREEN
-
-.sc-insert-url.container {
-  margin-top: 29px;
-  padding-top: @grid-gutter-width/4*3;
-}
+// landing screen
 
 .sec-urls-list {
 
-  &.container {
-    margin-top: @grid-gutter-width*3;
-  }
+margin-top: @grid-gutter-width*4;
 
   h1 {
     margin-bottom: @grid-gutter-width/2;
@@ -300,7 +266,6 @@ a:hover .fa-flag {
   -webkit-animation-delay: 0.5s;
   -moz-animation-delay: 0.5s;
 }
-
 
 // URLs list section
 
@@ -434,7 +399,6 @@ a:hover .fa-flag {
 
   .delete {
     margin-bottom: 3px;
-    visibility: hidden;
   }
 
   &:hover .delete {
@@ -505,67 +469,7 @@ hr.panel-expanded {
   }
 }
 
-// DATE RANGE
-
-.date-range {
-
-  text-align: right;
-
-  .fa {
-    margin-right: @grid-gutter-width/4;
-  }
-
-  .input {
-    border-bottom-color: #dddddd;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    display: inline-block;
-    font-size: ceil(@font-size-base + 1);
-    min-width: 200px;
-    text-align: left;
-
-    @media (max-width: @screen-sm-max) {
-      min-width: 190px;
-    }
-
-    &:hover {
-      cursor: pointer;
-      border-bottom: 2px solid @link-color;
-    }
-
-    span {
-      color: @gray-light;
-      font-size: ceil(@font-size-base - 1);
-    }
-  }
-
-  &.open .input {
-    border-bottom: 2px solid @link-color;
-  }
-
-  .dropdown-menu {
-    left: auto;
-    margin-top: @grid-gutter-width/4;
-    min-width: 305px;
-    right: 0;
-  }
-
-  .dropdown-menu-content {
-    padding: 15px;
-
-    .label {
-      color: @gray-dark;
-      display: inline-block;
-      padding-left: 0;
-    }
-
-    .btn-group {
-      display: inline-block;
-    }
-  }
-}
-
-// ALERTS ACTIVITY SECTION
+// alerts activity screen
 
 .info-top {
   font-size: ceil(@font-size-base + 1);
@@ -612,7 +516,7 @@ hr.panel-expanded {
   }
 }
 
-// ALERT SETTINGS MODAL
+// alert settings modal
 
 .modal-body fieldset p {
   margin-top: -10px;
@@ -786,7 +690,7 @@ hr.panel-expanded {
 }
 
 
-// URL SCREEN
+// URL screen
 
 .graph {
   padding: @grid-gutter-width/2*1.5;
@@ -824,7 +728,7 @@ hr.panel-expanded {
 }
 
 
-// APPLICATION SERVERS SCREEN
+// application servers screen
 
 .sc-application-servers {
 
@@ -841,59 +745,7 @@ hr.panel-expanded {
   }
 }
 
-// APPLICATION SERVER SCREEN
-
-.screen-top-nav {
-
-  margin-bottom: @grid-gutter-width/2;
-
-  .top-row {
-    margin-bottom: @grid-gutter-width/4;
-  }
-
-  .back {
-    display: inline-block;
-    font-size: @font-size-base + 1;
-  }
-
-  h1 {
-    text-align: center;
-    margin-bottom: 0;
-  }
-
-  .back,
-  .date-range {
-    margin-top: 5px;
-  }
-
-  .nav-tabs-container {
-    border-bottom: 1px solid @table-border-color;
-    text-align: center;
-  }
-
-  .nav-tabs {
-    border-bottom: none;
-    display: inline-block;
-    margin-bottom: -5px;
-    text-align: center;
-  }
-
-  .nav-tabs-pf > li > a {
-    padding-bottom: 13px;
-    padding-top: 13px;
-
-    .label-alert {
-      margin-left: 8px;
-    }
-  }
-
-  .nav-tabs > li.active > a,
-  .nav-tabs > li.active > a:active,
-  .nav-tabs > li.active > a:focus,
-  .nav-tabs > li.active > a:hover {
-    background-color: transparent;
-  }
-}
+// application server screen
 
 .btn-link.trigger {
   color: #333333;
@@ -926,14 +778,13 @@ section {
   margin-top: @grid-gutter-width/4;
 }
 
-// MODAL
+// modal
 
 .modal-backdrop {
   width: 100%!important;
 }
 
-
-// DEV STYLES
+// dev styles
 
 // metrics response
 
@@ -945,7 +796,7 @@ section {
   height: 270px;
 }
 
-// Bootstrap select quick&dirty workaround
+// bootstrap select quick&dirty workaround
 
 .hk-alerts {
   .input-group-btn {

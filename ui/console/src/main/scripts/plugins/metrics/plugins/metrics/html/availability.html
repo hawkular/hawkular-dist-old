@@ -1,4 +1,4 @@
-<div ng-controller="MetricsAvailabilityController as vm">
+<div class="screen-content" ng-controller="MetricsAvailabilityController as vm">
   <hawkular-sidebar ng-controller="Sidebar.SidebarController">
     <div class="nav-tabs-container">
       <ul class="nav nav-tabs nav-tabs-pf">
@@ -16,21 +16,21 @@
     <span class="update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
     <div class="panel panel-default summary">
       <div class="row">
-        <div class="col-md-3 summary-item">
+        <div class="col-sm-3 summary-item">
           <span class="data" ng-show="vm.uptimeRatio < 1">{{vm.uptimeRatio * 100 | number:3}} %</span>
           <span class="data" ng-show="vm.uptimeRatio === 1">{{vm.uptimeRatio * 100}} %</span>
           <span class="item">Availability</span>
         </div>
-        <div class="col-md-3 summary-item">
+        <div class="col-sm-3 summary-item">
           <span class="data">{{vm.downtimeDuration / 1000 | number:0}} s</span>
           <span class="item">Total Downtime Duration</span>
         </div>
-        <div class="col-md-3 summary-item">
+        <div class="col-sm-3 summary-item">
           <span class="data" ng-show="vm.lastDowntime.valueOf() !== 0">{{vm.lastDowntime | date:'mediumDate'}}</span>
           <span class="data" ng-show="!vm.lastDowntime || vm.lastDowntime.valueOf() === 0">Always Up</span>
           <span class="item">Last Downtime</span>
         </div>
-        <div class="col-md-3 summary-item">
+        <div class="col-sm-3 summary-item">
           <span class="data">{{vm.downtimeCount}}</span>
           <span class="item">Downtime Events</span>
         </div>

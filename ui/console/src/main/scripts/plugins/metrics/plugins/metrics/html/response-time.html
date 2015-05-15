@@ -1,4 +1,4 @@
-<div ng-controller="MetricsViewController as vm">
+<div class="screen-content" ng-controller="MetricsViewController as vm">
 
   <hawkular-sidebar ng-controller="Sidebar.SidebarController">
     <div class="nav-tabs-container">
@@ -17,15 +17,15 @@
     <span class="update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
     <div class="panel panel-default summary">
       <div class="row">
-        <div class="col-md-4 summary-item">
+        <div class="col-sm-4 summary-item">
           <span class="data">{{vm.average}} <span>ms</span></span>
           <span class="item">Average</span>
         </div>
-        <div class="col-md-4 summary-item">
+        <div class="col-sm-4 summary-item">
           <span class="data">{{vm.median}} <span>ms</span></span>
           <span class="item">Median</span>
         </div>
-        <div class="col-md-4 summary-item">
+        <div class="col-sm-4 summary-item">
           <span class="data">{{vm.percentile95th}} <span>ms</span></span>
           <span class="item">95th percentile</span>
         </div>

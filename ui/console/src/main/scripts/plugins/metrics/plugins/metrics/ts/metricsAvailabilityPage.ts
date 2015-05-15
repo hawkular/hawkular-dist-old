@@ -185,7 +185,7 @@ module HawkularMetrics {
     }
 
     refreshAlerts(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      var alertType = this.$routeParams.resourceId + '_trigger_thres';
+      var alertType = this.$routeParams.resourceId + '_trigger_avail';
       this.HawkularAlert.Alert.query({}, (anAlertList) => {
         var filteredAlerts = [];
         for(var i = 0; i < anAlertList.length; i++) {

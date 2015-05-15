@@ -16,14 +16,11 @@
 <div class="screen-top-nav">
   <div>
     <div class="row top-row">
-      <div class="col-sm-4">
+      <div class="col-xs-6">
         <a ng-show="isAppServerPage()" href="/hawkular-ui/app/app-list" class="back">« All Application Servers</a>
         <a ng-hide="isAppServerPage()" href="/hawkular-ui/url/url-list" class="back">« All URLs</a>
       </div>
-      <div class="col-sm-4">
-        <h1 ng-init="isAppServerPage() ? getAppServerFromId(hkParams.resourceId) : getUrlFromId(hkParams.resourceId)">{{resourceName}}</h1>
-      </div>
-      <div class="col-sm-4">
+      <div class="col-xs-6">
         <div class="date-range dropdown">
           <i class="fa fa-calendar"></i>
           <div class="input" dropdown-toggle>
@@ -45,6 +42,9 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="heading">
+      <h1 ng-init="isAppServerPage() ? getAppServerFromId(hkParams.resourceId) : getUrlFromId(hkParams.resourceId)">{{resourceName}}</h1>
     </div>
     <div ng-transclude></div>
   </div>
