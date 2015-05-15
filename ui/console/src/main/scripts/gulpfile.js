@@ -47,7 +47,9 @@ var config = {
         module: 'commonjs',
         declarationFiles: true,
         noExternalResolve: false
-    })
+    }),
+    srcPrefix: '../../src/main/scripts/',
+    serverPath: '../../../../kettle/target/wildfly-8.2.0.Final/modules/system/layers/base/org/hawkular/nest/main/deployments/hawkular-console.war/dist/'
 };
 
 gulp.task('bower', function () {
@@ -94,29 +96,37 @@ gulp.task('git-sha', function(cb) {
   });
 });
 
-gulp.task('tsc', ['clean-defs'], function () {
-    var cwd = process.cwd();
-    var tsResult = gulp.src(config.ts)
-        .pipe(plugins.typescript(config.tsProject))
-        .on('error', plugins.notify.onError({
-            message: '#{ error.message }',
-            title: 'Typescript compilation error'
-        }));
+var gulpTsc = function() {
+  var cwd = process.cwd();
+  var tsResult = gulp.src(config.ts)
+    .pipe(plugins.typescript(config.tsProject))
+    .on('error', plugins.notify.onError({
+      message: '#{ error.message }',
+      title: 'Typescript compilation error'
+    }));
 
-    return eventStream.merge(
-        tsResult.js
-            .pipe(plugins.concat('compiled.js'))
-            .pipe(gulp.dest('.')),
-        tsResult.dts
-            .pipe(gulp.dest('d.ts')))
-        .pipe(map(function (buf, filename) {
-            if (!s.endsWith(filename, 'd.ts')) {
-                return buf;
-            }
-            var relative = path.relative(cwd, filename);
-            fs.appendFileSync('defs.d.ts', '/// <reference path="' + relative + '"/>\n');
-            return buf;
-        }));
+  return eventStream.merge(
+    tsResult.js
+      .pipe(plugins.concat('compiled.js'))
+      .pipe(gulp.dest('.')),
+    tsResult.dts
+      .pipe(gulp.dest('d.ts')))
+    .pipe(map(function (buf, filename) {
+      if (!s.endsWith(filename, 'd.ts')) {
+        return buf;
+      }
+      var relative = path.relative(cwd, filename);
+      fs.appendFileSync('defs.d.ts', '/// <reference path="' + relative + '"/>\n');
+      return buf;
+    }));
+};
+
+gulp.task('tsc', ['clean-defs'], function () {
+  gulpTsc();
+});
+
+gulp.task('tsc-live', ['copy-sources','clean-defs'], function () {
+  gulpTsc();
 });
 
 gulp.task('tslint', function () {
@@ -125,7 +135,7 @@ gulp.task('tslint', function () {
         .pipe(tslint.report('verbose'));
 });
 
-gulp.task('tslint-watch', function () {
+gulp.task('tslint-watch', ['copy-sources'], function () {
     gulp.src(config.ts)
         .pipe(tslint())
         .pipe(tslint.report('prose', {
@@ -133,71 +143,98 @@ gulp.task('tslint-watch', function () {
         }));
 });
 
+var gulpTemplate = function(){
+  return gulp.src(config.templates)
+    .pipe(plugins.angularTemplatecache({
+      filename: 'templates.js',
+      root: '',
+      base: function(file){
+        var filename = /[^/]*$/.exec( file.relative).input;
+        var prefixIndex = filename.indexOf('/') + 1;
+        return filename.substring(prefixIndex, filename.length);
+      },
+      standalone: true,
+      module: config.templateModule,
+      templateFooter: '}]); hawtioPluginLoader.addModule("' + config.templateModule + '");'
+    }))
+    .pipe(gulp.dest('.'));
+};
+
 gulp.task('template', ['tsc', 'less'], function () {
-    return gulp.src(config.templates)
-        .pipe(plugins.angularTemplatecache({
-            filename: 'templates.js',
-            root: '',
-            base: function(file){
-              var filename = /[^/]*$/.exec( file.relative).input;
-              var prefixIndex = filename.indexOf('/') + 1;
-              return filename.substring(prefixIndex, filename.length);
-            },
-            standalone: true,
-            module: config.templateModule,
-            templateFooter: '}]); hawtioPluginLoader.addModule("' + config.templateModule + '");'
-        }))
-        .pipe(gulp.dest('.'));
+  return gulpTemplate();
 });
+
+gulp.task('template-live', ['tsc', 'less-live', 'copy-sources'], function () {
+  return gulpTemplate();
+});
+
+var gulpLess = function(done) {
+  gulp.src(['plugins/**/*.less'])
+    .pipe(plugins.less())
+    .pipe(plugins.concat('hawkular-console.css'))
+    .pipe(gulp.dest(config.dist))
+    .on('end', function(){
+      done && done();
+    });
+};
 
 gulp.task('less', function(){
-  return gulp.src(['plugins/**/*.less'])
-    .pipe(plugins.less())
-    .pipe(plugins.concat('console-style.css'))
-    .pipe(gulp.dest(config.dist));
+  gulpLess();
 });
 
-gulp.task('concat', ['template', 'git-sha'], function () {
-    var gZipSize = size(gZippedSizeOptions);
+gulp.task('less-live', ['copy-sources'], function(done){
+  gulpLess(done);
+});
 
-    return gulp.src(['compiled.js', 'templates.js', 'version.js'])
-        .pipe(plugins.concat(config.js))
-        .pipe(gulp.dest(config.dist))
-        .pipe(size(normalSizeOptions))
-        .pipe(gZipSize);
+var gulpConcat = function() {
+  var gZipSize = size(gZippedSizeOptions);
+
+  return gulp.src(['compiled.js', 'templates.js', 'version.js'])
+    .pipe(plugins.concat(config.js))
+    .pipe(gulp.dest(config.dist))
+    .pipe(size(normalSizeOptions))
+    .pipe(gZipSize);
+};
+
+gulp.task('concat', ['template', 'git-sha'], function () {
+  return gulpConcat();
+});
+
+gulp.task('concat-live', ['template-live', 'git-sha'], function () {
+  return gulpConcat();
 });
 
 gulp.task('clean', ['concat'], function () {
     del(['templates.js', 'compiled.js']);
 });
 
-gulp.task('watch', ['build'], function () {
-    plugins.watch(['libs/**/*.js', 'libs/**/*.css', config.dist + '/**/*'], function () {
-        gulp.start('reload');
-    });
-    plugins.watch(['index.html'], function () {
-        gulp.start('bower', 'reload');
-    });
-    plugins.watch(['libs/**/*.d.ts', config.ts, config.templates], function () {
-        gulp.start(['tslint-watch', 'tsc', 'template', 'concat', 'clean']);
+gulp.task('watch-server', ['build-live'], function () {
+    plugins.watch([config.srcPrefix + 'plugins/**/*.ts', config.srcPrefix + '/plugins/**/*.html'], function () {
+        gulp.start('copy-kettle-js');
     });
 
-    /* If something in the src folder changes, just copy it and let the handlers above handle the situation */
-    plugins.watch(['../../src/main/scripts/**/*'], function () {
-        gulp.src('../../src/main/scripts/**/*')
-        .pipe(gulp.dest('.'));
+    plugins.watch([config.srcPrefix + '/plugins/**/*.less'], function () {
+      gulp.start('copy-kettle-css');
     });
+});
 
-    plugins.watch(['../../src/main/webapp/resources/**/*'], function () {
-        gulp.src('../../src/main/webapp/resources/**/*')
-        .pipe(gulp.dest('./resources/'));
-    });
+gulp.task('copy-sources', function(done) {
+  var src = [config.srcPrefix + 'plugins/**/*'];
 
-    plugins.watch(['../../src/main/webapp/index.html'], function () {
-        gulp.src('../../src/main/webapp/index.html')
-        .pipe(plugins.replace('${hawkular.console.index.html.base.href}', '/'))
-        .pipe(gulp.dest('.'));
+  gulp.src(src)
+    .pipe(gulp.dest('./plugins')).on('end', function(){
+      done();
     });
+});
+
+gulp.task('copy-kettle-js', ['build-live'] , function() {
+  gulp.src(['dist/hawkular-console.js'])
+    .pipe(gulp.dest(config.serverPath));
+});
+
+gulp.task('copy-kettle-css', ['less-live'] , function() {
+  gulp.src(['dist/hawkular-console.css'])
+    .pipe(gulp.dest(config.serverPath));
 });
 
 gulp.task('connect', ['watch'], function () {
@@ -215,8 +252,5 @@ gulp.task('reload', function () {
 });
 
 gulp.task('build', ['bower', 'path-adjust', 'tslint', 'tsc', 'template', 'concat', 'clean']);
-
+gulp.task('build-live', ['copy-sources', 'bower', 'path-adjust', 'tslint-watch', 'tsc', 'template-live', 'concat-live']);
 gulp.task('default', ['connect']);
-
-
-
