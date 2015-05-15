@@ -53,6 +53,7 @@ public class MetricPublisher {
     @javax.annotation.Resource (lookup = "java:/HawkularBusConnectionFactory")
     ConnectionFactory connectionFactory;
 
+    private final PingerConfiguration configuration = PingerConfiguration.defaults();
 
     /**
      * Send a list of metric data for a tenant to the Hawkular-metrics service via REST
@@ -64,7 +65,7 @@ public class MetricPublisher {
         // Send it to metrics via rest
         String payload = new Gson().toJson(metrics);
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost request = new HttpPost("http://localhost:8080/hawkular-metrics/" + tenantId +
+        HttpPost request = new HttpPost(configuration.getMetricsBaseUri() +"/" + tenantId +
                         "/metrics/numeric/data");
         request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
 

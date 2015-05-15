@@ -65,16 +65,16 @@ public class PingManager {
     @EJB
     public MetricPublisher metricPublisher;
 
+    private final PingerConfiguration configuration = PingerConfiguration.defaults();
+
     @PostConstruct
     public void startUp() {
         int attempts = 0;
         while (attempts++ < 10) {
             try {
                 Client client = ClientBuilder.newClient();
-                // TODO: inventory does not have to be co-located
-                final String host = "http://localhost:8080";
-                final String inventoryUrl = host + "/hawkular/inventory/";
-                WebTarget target = client.target(inventoryUrl + tenantId + "/resourceTypes/URL/resources");
+                final String inventoryUrl = configuration.getInventoryBaseUri();
+                WebTarget target = client.target(inventoryUrl +"/"+ tenantId + "/resourceTypes/URL/resources");
                 Response response = target.request().get();
 
                 if (isResponseOk(response.getStatus())) {
