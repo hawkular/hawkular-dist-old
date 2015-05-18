@@ -29,9 +29,6 @@ module HawkularMetrics {
 
   /// These are plugin globals used across several screens (think session vars from server side programming)
 
-  /// @todo: this will go away once we have KeyCloak integration
-  export var globalTenantId = "test";
-
   export var globalEnvironmentId = "test";
 
 }

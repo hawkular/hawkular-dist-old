@@ -31,36 +31,47 @@ module Topbar {
       // default time period set to 24 hours
       var defaultOffset = 1 * 60 * 60  * 1000;
 
-      HawkularInventory.Resource.query({tenantId: globalTenantId, environmentId: globalEnvironmentId}, (resourceList) => {
-        $rootScope.hkResources = resourceList;
-        for (var i = 0; i < resourceList.length; i++) {
-          if(resourceList[i].id === $rootScope.hkParams.resourceId) {
-            $rootScope.selectedResource = resourceList[i];
-          }
-        }
-      });
-
-      $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
-      $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
-      $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
-
-      $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
-        $rootScope.hkParams = current.params;
-
-        $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
-        $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
-        $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
-
-        HawkularInventory.Resource.query({tenantId: globalTenantId, environmentId: globalEnvironmentId}, (resourceList) => {
+      var init = (tenantId: string) => {
+        HawkularInventory.Resource.query({tenantId: tenantId, environmentId: globalEnvironmentId}, (resourceList) => {
           $rootScope.hkResources = resourceList;
           for (var i = 0; i < resourceList.length; i++) {
             if(resourceList[i].id === $rootScope.hkParams.resourceId) {
               $rootScope.selectedResource = resourceList[i];
             }
           }
-        });
+          });
 
-      }, this);
+        $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
+        $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
+        $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
+
+        $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
+          $rootScope.hkParams = current.params;
+
+          $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
+          $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
+          $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
+
+          HawkularInventory.Resource.query({tenantId: tenantId, environmentId: globalEnvironmentId}, (resourceList) => {
+            $rootScope.hkResources = resourceList;
+            for (var i = 0; i < resourceList.length; i++) {
+              if(resourceList[i].id === $rootScope.hkParams.resourceId) {
+                $rootScope.selectedResource = resourceList[i];
+              }
+            }
+            });
+
+          }, this);
+      };
+      var tenantId = this.$rootScope.currentPersona && this.$rootScope.currentPersona.id;
+      if (tenantId) {
+        init(tenantId);
+      } else {
+        // currentPersona hasn't been injected to the rootScope yet, wait for it..
+        $rootScope.$on('UserInitialized', (tenantId) => {
+          init(tenantId);
+        });
+      }
     }
 
     public setTimestamp(offset, end) {
