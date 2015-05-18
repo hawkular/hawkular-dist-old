@@ -93,7 +93,7 @@ module Sidebar {
 
     $scope.getUrlFromId = function(id) {
       if(!$scope.resource) {
-        $scope.resource = HawkularInventory.Resource.get({tenantId: globalTenantId, environmentId: globalEnvironmentId, resourceId: id}, function(data) {
+        $scope.resource = HawkularInventory.Resource.get({tenantId: $rootScope.currentPersona.id, environmentId: globalEnvironmentId, resourceId: id}, function(data) {
           $scope.resourceName = data.properties.url;
           });
       }
