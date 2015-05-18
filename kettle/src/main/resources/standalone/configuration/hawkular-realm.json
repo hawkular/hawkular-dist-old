@@ -8,6 +8,9 @@
   "requiredCredentials" : [ "password" ],
   "defaultRoles" : [ "user" ],
   "passwordPolicy" : "length(8) and lowerCase(1) and upperCase(1) and specialChars(1) and digits(1) and hashIterations(1024)",
+  "loginTheme" : "hawkular",
+  "accountTheme" : "hawkular",
+  "adminTheme" : "hawkular",
   "roles" : {
     "realm" : [
       {

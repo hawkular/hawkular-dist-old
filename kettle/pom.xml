@@ -48,7 +48,7 @@
     <version.org.hawkular.accounts>1.0.0-SNAPSHOT</version.org.hawkular.accounts>
     <version.org.hawkular.pinger>1.0.0-SNAPSHOT</version.org.hawkular.pinger>
     <version.org.hawkular.availCreator>1.0.0-SNAPSHOT</version.org.hawkular.availCreator>
-    <version.org.keycloak>1.1.0.Final</version.org.keycloak>
+    <version.org.keycloak>1.2.0.CR1</version.org.keycloak>
   </properties>
 
   <dependencies>
@@ -126,20 +126,42 @@
       <version>${version.org.hawkular.accounts}</version>
       <type>war</type>
     </dependency>
-
-    <!-- Keycloak-related dependencies -->
     <dependency>
-      <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-wildfly-adapter-dist</artifactId>
-      <version>${version.org.keycloak}</version>
-      <type>zip</type>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-keycloak-theme</artifactId>
+      <version>${version.org.hawkular.accounts}</version>
+      <type>jar</type>
     </dependency>
-
   </dependencies>
 
   <build>
 
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.keycloak</groupId>
+                  <artifactId>keycloak-server-overlay</artifactId>
+                  <type>zip</type>
+                  <version>${version.org.keycloak}</version>
+                  <outputDirectory>${project.build.directory}/keycloak</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- unpack the nest distribution to get its configuration that we need to customize -->
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
