@@ -125,7 +125,8 @@
         <artifactId>hawkular-monitor</artifactId>
         <version>${version.org.hawkular.agent}</version>
         <classifier>module</classifier>
-      </dependency>      
+        <type>zip</type>
+      </dependency>
 
       <dependency>
         <groupId>org.wildfly</groupId>
