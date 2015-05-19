@@ -36,6 +36,13 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
+      <directory>src/main/resources/wildfly/modules</directory>
+      <outputDirectory>/${wildfly.dist.zip.root.dir}/modules</outputDirectory>
+      <filtered>false</filtered>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    <fileSet>
       <directory>src/main/resources/wildfly/bin</directory>
       <outputDirectory>/${wildfly.dist.zip.root.dir}/bin</outputDirectory>
       <filtered>false</filtered>
@@ -73,7 +80,7 @@
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/keycloak/</directory>
-      <outputDirectory>${nest.dist.zip.root.dir}/</outputDirectory>
+      <outputDirectory>/${wildfly.dist.zip.root.dir}</outputDirectory>
     </fileSet>
   </fileSets>
 
@@ -90,21 +97,11 @@
         <include>org.hawkular.alerts:hawkular-actions-email</include>
         <include>org.hawkular.metrics:hawkular-metrics-api-jaxrs</include>
         <include>org.hawkular.metrics:hawkular-metrics-embedded-cassandra-ear</include>
+        <!-- TODO Make the unpacking conditional == only for the dev profile -->
+        <include>org.hawkular:hawkular-console</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </dependencySet>
-
-    <!-- TODO Make the unpacking conditional == only for the dev profile -->
-    <dependencySet>
-      <outputDirectory>${nest.dist.zip.root.dir}/modules/system/layers/base/org/hawkular/nest/main/deployments/${artifact.artifactId}.war</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
-      <includes>
-        <include>org.hawkular:hawkular-console</include>
-      </includes>
-      <unpack>true</unpack>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
@@ -147,7 +144,6 @@
         <include>org.hawkular.accounts:hawkular-accounts-keycloak-theme:jar</include>
       </includes>
       <outputFileNameMapping>hawkular-accounts-keycloak-theme.jar</outputFileNameMapping>
-      <useProjectArtifact>false</useProjectArtifact>
       <useProjectAttachments>false</useProjectAttachments>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useTransitiveFiltering>false</useTransitiveFiltering>
