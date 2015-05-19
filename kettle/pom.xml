@@ -38,92 +38,69 @@
 
     <checkstyle.suppressions.file>${basedir}/src/main/scripts/checkstyle-suppressions.xml</checkstyle.suppressions.file>
 
-    <!-- The versions of the components that go into our integration distribution -->
-    <version.org.hawkular.agent>0.0.1-SNAPSHOT</version.org.hawkular.agent>
-    <version.org.hawkular.nest>0.0.1-SNAPSHOT</version.org.hawkular.nest>
-    <version.org.hawkular.inventory>0.0.1-SNAPSHOT</version.org.hawkular.inventory>
-    <version.org.hawkular.alerts>1.0.0-SNAPSHOT</version.org.hawkular.alerts>
-    <version.org.hawkular.metrics>0.3.2-SNAPSHOT</version.org.hawkular.metrics>
-    <version.org.hawkular.console>1.0.0-SNAPSHOT</version.org.hawkular.console>
-    <version.org.hawkular.accounts>1.0.0-SNAPSHOT</version.org.hawkular.accounts>
-    <version.org.hawkular.pinger>1.0.0-SNAPSHOT</version.org.hawkular.pinger>
-    <version.org.hawkular.availCreator>1.0.0-SNAPSHOT</version.org.hawkular.availCreator>
-    <version.org.keycloak>1.2.0.CR1</version.org.keycloak>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.hawkular.agent</groupId>
       <artifactId>hawkular-monitor</artifactId>
-      <version>${version.org.hawkular.agent}</version>
       <classifier>module</classifier>
       <type>zip</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.nest</groupId>
       <artifactId>hawkular-nest-distro</artifactId>
-      <version>${version.org.hawkular.nest}</version>
       <classifier>distribution</classifier>
       <type>zip</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
       <artifactId>inventory-rest-api</artifactId>
-      <version>${version.org.hawkular.inventory}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-pinger</artifactId>
-      <version>${version.org.hawkular.pinger}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-avail-creator</artifactId>
-      <version>${version.org.hawkular.availCreator}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.alerts</groupId>
       <artifactId>hawkular-alerts-ear</artifactId>
-      <version>${version.org.hawkular.alerts}</version>
       <type>ear</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.alerts</groupId>
       <artifactId>example-alerts-ui</artifactId>
-      <version>${version.org.hawkular.alerts}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.alerts</groupId>
       <artifactId>hawkular-actions-email</artifactId>
-      <version>${version.org.hawkular.alerts}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
       <artifactId>hawkular-metrics-api-jaxrs</artifactId>
-      <version>${version.org.hawkular.metrics}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
       <artifactId>hawkular-metrics-embedded-cassandra-ear</artifactId>
-      <version>${version.org.hawkular.metrics}</version>
       <type>ear</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-console</artifactId>
-      <version>${version.org.hawkular.console}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.accounts</groupId>
       <artifactId>hawkular-accounts</artifactId>
-      <version>${version.org.hawkular.accounts}</version>
       <type>war</type>
     </dependency>
     <dependency>
@@ -209,7 +186,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
-        <version>1.0</version> <!-- TODO remove after moving to parent pom 8 -->
         <executions>
           <execution>
             <id>transform-standalone-xml</id>
