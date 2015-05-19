@@ -21,12 +21,12 @@ FROM jboss/base-jdk:8
 
 MAINTAINER Viet Nguyen <vnguyen@redhat.com>
 
-ADD hawkular-kettle-*-distribution.zip /opt/hawkular-kettle.zip
+ADD hawkular-*.zip /opt/hawkular.zip
 
 USER root
 
-RUN unzip -qq -d /opt /opt/hawkular-kettle.zip;\
-    rm /opt/hawkular-kettle.zip;\
+RUN unzip -qq -d /opt /opt/hawkular.zip;\
+    rm /opt/hawkular.zip;\
     /opt/wildfly-8.2.0.Final/bin/add-user.sh hawkularadmin hawkularadmin --silent
 
 EXPOSE 8080 9990

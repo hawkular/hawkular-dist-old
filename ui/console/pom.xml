@@ -27,8 +27,8 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>hawkular-console</artifactId>
-  <name>hawkular-console</name>
+  <artifactId>hawkular-admin-console</artifactId>
+  <name>Hawkular: Admin console</name>
   <packaging>war</packaging>
 
   <properties>
