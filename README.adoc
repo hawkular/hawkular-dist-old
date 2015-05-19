@@ -28,7 +28,7 @@ endif::[]
 == Building
 
 To build Hawkular, clone this repository and build from the top level. After this has finished,
-you will find a runnable build inside the `kettle/target` directory.
+you will find a runnable build inside the `dist/target` directory.
 
 [source,shell]
 ----
