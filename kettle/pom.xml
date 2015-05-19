@@ -249,6 +249,10 @@
           <descriptors>
             <descriptor>src/main/scripts/distro-assembly.xml</descriptor>
           </descriptors>
+          <formats>
+            <format>zip</format>
+            <format>tar.gz</format>
+          </formats>
         </configuration>
         <executions>
           <execution>
@@ -260,6 +264,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>docker-maven-plugin</artifactId>
@@ -306,7 +311,6 @@
   </build>
 
   <profiles>
-    <!-- unzips the assembly so devs can run it right out of target/ -->
     <profile>
       <id>dev</id>
       <properties>
@@ -317,24 +321,14 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>unzip-distro</id>
-                <phase>install</phase>
-                <configuration>
-                  <target>
-                    <unzip src="${project.build.directory}/${project.build.finalName}-distribution.zip" dest="${project.build.directory}" />
-                    <chmod dir="${project.build.directory}/${nest.dist.zip.root.dir}/bin" includes="*.sh"
-                      perm="u+x" type="file" />
-                  </target>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <formats>
+                <format>dir</format>
+                <format>zip</format>
+                <format>tar.gz</format>
+              </formats>
+            </configuration>
           </plugin>
         </plugins>
       </build>
