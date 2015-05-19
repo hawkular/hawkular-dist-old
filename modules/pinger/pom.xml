@@ -40,26 +40,27 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-client</artifactId>
-      <version>3.0.10.Final</version> <!-- TODO move to parent -->
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
       <artifactId>inventory-api</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
       <artifactId>inventory-bus-api</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
       <artifactId>clients-common</artifactId>
-      <version>0.3.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.bus</groupId>
+      <artifactId>hawkular-bus-common</artifactId>
     </dependency>
 
     <dependency>
@@ -67,6 +68,7 @@
       <artifactId>jboss-ejb-api_3.1_spec</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>jms-api</artifactId>
@@ -79,30 +81,28 @@
       <artifactId>httpclient</artifactId>
       <version>4.3.1</version> <!-- TODO move to parent -->
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.2.4</version> <!-- TODO move to parent -->
+      <version>${version.com.google.code.gson}</version> <!-- TODO move to parent -->
     </dependency>
-    <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-bus-common</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging-annotations</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging-processor</artifactId>
@@ -126,7 +126,7 @@
                 <artifactItem>
                   <groupId>com.google.code.gson</groupId>
                   <artifactId>gson</artifactId>
-                  <version>2.2.4</version>
+                  <version>${version.com.google.code.gson}</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.apache.httpcomponents</groupId>

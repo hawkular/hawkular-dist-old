@@ -18,7 +18,7 @@ package org.hawkular.component.pinger;
 
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 import org.hawkular.inventory.api.model.Resource;
-import org.hawkular.inventory.api.observable.Action;
+//import org.hawkular.inventory.api.observable.Action;
 import org.hawkular.inventory.bus.api.ResourceEvent;
 
 import javax.ejb.ActivationConfigProperty;
@@ -72,11 +72,11 @@ public class NotificationReceiver extends BasicMessageListener<ResourceEvent> {
             String method = (String) props.get("method");
             PingDestination destination = new PingDestination(resource.getId(), url, method);
 
-            if (message.getAction() == Action.Enumerated.CREATED) {
-                pingManager.addDestination(destination);
-            } else if (message.getAction() == Action.Enumerated.DELETED) {
-                pingManager.removeDestination(destination);
-            }
+//            if (message.getAction() == Action.Enumerated.CREATED) {
+//                pingManager.addDestination(destination);
+//            } else if (message.getAction() == Action.Enumerated.DELETED) {
+//                pingManager.removeDestination(destination);
+//            }
 
         } catch (Exception e) {
             e.printStackTrace();  // TODO: Customise this generated block

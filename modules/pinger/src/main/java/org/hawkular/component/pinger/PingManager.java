@@ -18,12 +18,17 @@ package org.hawkular.component.pinger;
 
 import org.hawkular.metrics.client.common.SingleMetric;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,10 +47,13 @@ import java.util.concurrent.Future;
 @Startup
 @Singleton
 public class PingManager {
-    // How many rounds a WAIT_MILLIS do we wait for results to come in?
+    /** How many rounds a WAIT_MILLIS do we wait for results to come in? */
     private static final int ROUNDS = 15;
-    // How long do we wait between each round
+    /** How long do we wait between each round in milliseconds */
     private static final int WAIT_MILLIS = 500;
+    /** Rough timeout in milliseconds for the pings afher which the pings are cancelled and reported as timeouted.
+     * Note that in practice, the real time given to pings can be longer. */
+    private static final int TIMEOUT_MILLIS = ROUNDS * WAIT_MILLIS;
 
     private final String tenantId = "test";
 
@@ -56,6 +64,57 @@ public class PingManager {
 
     @EJB
     public MetricPublisher metricPublisher;
+
+    private final PingerConfiguration configuration = PingerConfiguration.defaults();
+
+    @PostConstruct
+    public void startUp() {
+        int attempts = 0;
+        while (attempts++ < 10) {
+            try {
+                Client client = ClientBuilder.newClient();
+                final String inventoryUrl = configuration.getInventoryBaseUri();
+                WebTarget target = client.target(inventoryUrl +"/"+ tenantId + "/resourceTypes/URL/resources");
+                Response response = target.request().get();
+
+                if (isResponseOk(response.getStatus())) {
+                    List<?> list = response.readEntity(List.class);
+                    if (list.isEmpty()) {
+                    } else {
+                        for (Object o : list) {
+                            if (o instanceof Map) {
+                                Map<?, ?> m = (Map<?, ?>) o;
+                                String id = (String) m.get("id");
+                                @SuppressWarnings("unchecked")
+                                Map<String, String> params = (Map<String, String>) m.get("properties");
+                                String url = params.get("url");
+                                String method = params.get("method");
+                                destinations.add(new PingDestination(id, url, method));
+                            }
+                        }
+                    }
+                    response.close();
+                    client.close();
+                    return;
+                } else {
+                    Log.LOG.wNoInventoryFound(response.getStatus(), response.getStatusInfo().getReasonPhrase());
+                }
+            } catch (Exception e) {
+                Log.LOG.wNoInventoryFound(-1, "Exception while trying to reach or read response of inventory: "
+                        + e.getMessage());
+            }
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+
+        Log.LOG.wNoInventoryFound(-1,
+                "Inventory was not found on the configured location in 20s. Pinger won't function properly.");
+    }
 
     /**
      * This method triggers the actual work by starting pingers,
@@ -83,12 +142,11 @@ public class PingManager {
         List<PingStatus> results = new ArrayList<>(destinations.size());
         // In case of timeouts we will not be able to get the PingStatus from the Future, so use a Map
         // to keep track of what destination's ping actually hung.
-        Map<Future<PingStatus>, PingStatus> futures = new HashMap<>(destinations.size());
+        Map<Future<PingStatus>, PingDestination> futures = new HashMap<>(destinations.size());
 
         for (PingDestination destination : destinations) {
-            PingStatus request = new PingStatus(destination);
-            Future<PingStatus> result = pinger.ping(request);
-            futures.put(result, request);
+            Future<PingStatus> result = pinger.ping(destination);
+            futures.put(result, destination);
         }
 
         int round = 1;
@@ -114,16 +172,11 @@ public class PingManager {
         }
 
         // Cancel hanging pings and report them as timeouts
-        for (Map.Entry<Future<PingStatus>, PingStatus> entry : futures.entrySet()) {
+        for (Map.Entry<Future<PingStatus>, PingDestination> entry : futures.entrySet()) {
             entry.getKey().cancel(true);
-            PingStatus ps = entry.getValue();
-            ps.code = 503; // unavailable
-            ps.timedOut = true;
-            long now = System.currentTimeMillis();
-            // (jshaughn) This used to be set explicitly to 10000, but I don't know why.  It seemed
-            // dangerous because that could be in the future given that ROUNDS*WAIT_MILLIS < 10000.
-            ps.duration = (int) (now - ps.getTimestamp());
-            ps.setTimestamp(now);
+            PingDestination destination = entry.getValue();
+            final long now = System.currentTimeMillis();
+            PingStatus ps = PingStatus.timeout(destination, now, TIMEOUT_MILLIS);
             results.add(ps);
         }
 

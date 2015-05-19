@@ -40,7 +40,7 @@ public class PingerTest {
 
         Pinger pinger = new Pinger();
         PingDestination destination = new PingDestination("123","http://hawkular.github.io");
-        PingStatus status = pinger.ping(new PingStatus(destination)).get();
+        PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
         Assert.assertFalse(status.isTimedOut());
@@ -52,7 +52,7 @@ public class PingerTest {
 
         Pinger pinger = new Pinger();
         PingDestination destination = new PingDestination("123","http://hawkular.github.io", "HEAD");
-        PingStatus status = pinger.ping(new PingStatus(destination)).get();
+        PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
         Assert.assertFalse(status.isTimedOut());
@@ -64,7 +64,7 @@ public class PingerTest {
 
         Pinger pinger = new Pinger();
         PingDestination destination = new PingDestination("123","https://www.perfcake.org", "POST");
-        PingStatus status = pinger.ping(new PingStatus(destination)).get();
+        PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
         Assert.assertFalse(status.isTimedOut());
@@ -76,7 +76,7 @@ public class PingerTest {
 
         Pinger pinger = new Pinger();
         PingDestination destination = new PingDestination("123","https://www.perfcake.org");
-        PingStatus status = pinger.ping(new PingStatus(destination)).get();
+        PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
         Assert.assertFalse(status.isTimedOut());

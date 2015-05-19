@@ -76,16 +76,157 @@
 
     <!-- CONVENTIONS: -->
     <!-- - A version property must be specified in the format "version.{groupId}" -->
-    <!-- - If groupId is not unique, append the property name with "-{artifactId}" -->
+    <!-- - If groupId is not unique, append the property name with ".{artifactId}" -->
     <!-- - Version properties must be sorted alphabetically -->
 
     <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
     <version.com.google.guava>16.0.1</version.com.google.guava>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
+    <version.org.hawkular.accounts>1.0.0-SNAPSHOT</version.org.hawkular.accounts>
+    <version.org.hawkular.agent>0.0.1-SNAPSHOT</version.org.hawkular.agent>
+    <version.org.hawkular.alerts>1.0.0-SNAPSHOT</version.org.hawkular.alerts>
+    <version.org.hawkular.availCreator>${project.version}</version.org.hawkular.availCreator>
+    <version.org.hawkular.bus>0.0.1-SNAPSHOT</version.org.hawkular.bus>
+    <version.org.hawkular.console>1.0.0-SNAPSHOT</version.org.hawkular.console>
+    <version.org.hawkular.inventory>0.0.1-SNAPSHOT</version.org.hawkular.inventory>
+    <version.org.hawkular.metrics>0.3.2-SNAPSHOT</version.org.hawkular.metrics>
+    <version.org.hawkular.nest>0.0.1-SNAPSHOT</version.org.hawkular.nest>
+    <version.org.hawkular.pinger>${project.version}</version.org.hawkular.pinger>
+    <version.org.keycloak>1.2.0.CR1</version.org.keycloak>
     <version.org.testng>6.5.2</version.org.testng>
     <version.org.wildfly>8.2.0.Final</version.org.wildfly>
 
+
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <dependency>
+        <groupId>org.hawkular.accounts</groupId>
+        <artifactId>hawkular-accounts</artifactId>
+        <version>${version.org.hawkular.accounts}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.agent</groupId>
+        <artifactId>hawkular-monitor</artifactId>
+        <version>${version.org.hawkular.agent}</version>
+        <classifier>module</classifier>
+        <type>zip</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.alerts</groupId>
+        <artifactId>hawkular-actions-email</artifactId>
+        <version>${version.org.hawkular.alerts}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.alerts</groupId>
+        <artifactId>hawkular-alerts-ear</artifactId>
+        <version>${version.org.hawkular.alerts}</version>
+        <type>ear</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.alerts</groupId>
+        <artifactId>example-alerts-ui</artifactId>
+        <version>${version.org.hawkular.alerts}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular</groupId>
+        <artifactId>hawkular-avail-creator</artifactId>
+        <version>${version.org.hawkular.availCreator}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.bus</groupId>
+        <artifactId>hawkular-bus-common</artifactId>
+        <version>${version.org.hawkular.bus}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular</groupId>
+        <artifactId>hawkular-console</artifactId>
+        <version>${version.org.hawkular.console}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.inventory</groupId>
+        <artifactId>inventory-api</artifactId>
+        <version>${version.org.hawkular.inventory}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.inventory</groupId>
+        <artifactId>inventory-bus-api</artifactId>
+        <version>${version.org.hawkular.inventory}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.inventory</groupId>
+        <artifactId>inventory-rest-api</artifactId>
+        <version>${version.org.hawkular.inventory}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.rhq.metrics</groupId>
+        <artifactId>rhq-metrics-api</artifactId>
+        <version>${version.org.hawkular.metrics}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.metrics</groupId>
+        <artifactId>hawkular-metrics-api-jaxrs</artifactId>
+        <version>${version.org.hawkular.metrics}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.metrics</groupId>
+        <artifactId>clients-common</artifactId>
+        <version>${version.org.hawkular.metrics}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.metrics</groupId>
+        <artifactId>hawkular-metrics-embedded-cassandra-ear</artifactId>
+        <version>${version.org.hawkular.metrics}</version>
+        <type>ear</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.nest</groupId>
+        <artifactId>hawkular-nest-distro</artifactId>
+        <version>${version.org.hawkular.nest}</version>
+        <classifier>distribution</classifier>
+        <type>zip</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular</groupId>
+        <artifactId>hawkular-pinger</artifactId>
+        <version>${version.org.hawkular.pinger}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.keycloak</groupId>
+        <artifactId>keycloak-wildfly-adapter-dist</artifactId>
+        <version>${version.org.keycloak}</version>
+        <type>zip</type>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
 
 </project>
