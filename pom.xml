@@ -97,7 +97,7 @@
     <version.org.keycloak>1.2.0.CR1</version.org.keycloak>
     <version.org.testng>6.5.2</version.org.testng>
     <version.commons.io>2.4</version.commons.io>
-
+    <version.org.wildfly.wildfly-cassandra>0.0.1-SNAPSHOT</version.org.wildfly.wildfly-cassandra>
 
   </properties>
 
@@ -124,6 +124,15 @@
         <version>${version.org.wildfly}</version>
         <type>zip</type>
       </dependency>
+
+      <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-cassandra</artifactId>
+        <version>${version.org.wildfly.wildfly-cassandra}</version>
+        <type>zip</type>
+        <classifier>module</classifier>
+      </dependency>
+
       <dependency>
         <groupId>org.hawkular.alerts</groupId>
         <artifactId>hawkular-actions-email</artifactId>
@@ -201,13 +210,6 @@
         <groupId>org.hawkular.metrics</groupId>
         <artifactId>clients-common</artifactId>
         <version>${version.org.hawkular.metrics}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.hawkular.metrics</groupId>
-        <artifactId>hawkular-metrics-embedded-cassandra-ear</artifactId>
-        <version>${version.org.hawkular.metrics}</version>
-        <type>ear</type>
       </dependency>
 
       <dependency>
