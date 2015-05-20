@@ -27,8 +27,7 @@ endif::[]
 
 == Building
 
-To build Hawkular, clone this repository and build from the top level. After this has finished,
-you will find a runnable build inside the `dist/target` directory.
+To build Hawkular, clone this repository and build from the top level.
 
 [source,shell]
 ----
@@ -36,6 +35,11 @@ $ git clone https://github.com/hawkular/hawkular.git
 $ cd hawkular
 $ mvn install
 ----
+Once those steps are achieved, .zip and .tgz archives will be available in `dist/target` directory.
+
+TIP: If you build with `mvn install -Pdev` an uncompressed directory will be created in `dist/target`.
+A default user will be created, the username is `jdoe` and the password is `password`. This can be convenient
+when you are working on the project as you won't have to unzip/untar and register a new user.
 
 Please have a look at the
 http://www.hawkular.org/docs/dev/development.html[developer documentation] for more information
