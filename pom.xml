@@ -78,10 +78,9 @@
     <!-- - A version property must be specified in the format "version.{groupId}" -->
     <!-- - If groupId is not unique, append the property name with ".{artifactId}" -->
     <!-- - Version properties must be sorted alphabetically -->
-
-    <version.org.keycloak>1.2.0.CR1</version.org.keycloak>
     <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
     <version.com.google.guava>16.0.1</version.com.google.guava>
+    <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
     <version.org.hawkular.accounts>1.0.0-SNAPSHOT</version.org.hawkular.accounts>
@@ -90,15 +89,12 @@
     <version.org.hawkular.availCreator>${project.version}</version.org.hawkular.availCreator>
     <version.org.hawkular.bus>0.0.1-SNAPSHOT</version.org.hawkular.bus>
     <version.org.hawkular.console>1.0.0-SNAPSHOT</version.org.hawkular.console>
-    <version.org.hawkular.inventory>0.0.1-SNAPSHOT</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>0.0.2-SNAPSHOT</version.org.hawkular.inventory>
     <version.org.hawkular.metrics>0.3.2-SNAPSHOT</version.org.hawkular.metrics>
     <version.org.hawkular.nest>0.0.1-SNAPSHOT</version.org.hawkular.nest>
     <version.org.hawkular.pinger>${project.version}</version.org.hawkular.pinger>
     <version.org.keycloak>1.2.0.CR1</version.org.keycloak>
     <version.org.testng>6.5.2</version.org.testng>
-    <version.commons.io>2.4</version.commons.io>
-
-
   </properties>
 
   <dependencyManagement>
@@ -179,7 +175,7 @@
 
       <dependency>
         <groupId>org.hawkular.inventory</groupId>
-        <artifactId>inventory-rest-api</artifactId>
+        <artifactId>hawkular-integrated-inventory-rest</artifactId>
         <version>${version.org.hawkular.inventory}</version>
         <type>war</type>
       </dependency>
