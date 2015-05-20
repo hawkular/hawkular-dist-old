@@ -50,7 +50,7 @@ var config = {
         noExternalResolve: false
     }),
     srcPrefix: '../../src/main/scripts/',
-    serverPath: '../../../../kettle/target/wildfly-8.2.0.Final/modules/system/layers/base/org/hawkular/nest/main/deployments/hawkular-console.war/dist/'
+    serverPath: '../../../../dist/target/hawkular-1.0.0-SNAPSHOT/wildfly-8.2.0.Final/modules/org/hawkular/nest/main/deployments/hawkular-console.war/dist/'
 };
 
 gulp.task('bower', function () {
