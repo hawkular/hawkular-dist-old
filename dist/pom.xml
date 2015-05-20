@@ -167,13 +167,6 @@
               </artifactItems>
             </configuration>
           </execution>
-        </executions>
-      </plugin>
-
-      <!-- unpack the wildfly distribution and copy our hawkular modules in a tmp location -->
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
           <execution>
             <id>unpack-wildfly</id>
             <phase>prepare-package</phase>
