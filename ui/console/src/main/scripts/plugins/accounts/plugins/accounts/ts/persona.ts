@@ -19,8 +19,8 @@
 module HawkularAccounts {
 
     export var PersonaController = _module.controller("HawkularAccounts.PersonaController", [
-        '$rootScope', '$scope', 'HawkularAccounts.PersonaService', '$log',
-        ($rootScope, $scope, PersonaService, $log) => {
+        '$rootScope', '$scope', '$log', 'HawkularAccount',
+        ($rootScope, $scope, $log, HawkularAccount) => {
             $scope.personas = [];
             $scope.currentPersona = null;
 
@@ -29,7 +29,7 @@ module HawkularAccounts {
             };
 
             $scope.loadCurrentPersona = () => {
-                $scope.currentPersona = PersonaService.get({id: "current"},
+                $scope.currentPersona = HawkularAccount.Persona.get({id: "current"},
                     () => {
                         $scope.$emit("CurrentPersonaLoaded", $scope.currentPersona);
                     },
@@ -40,7 +40,7 @@ module HawkularAccounts {
             };
 
             $scope.loadPersonas = () => {
-                $scope.personas = PersonaService.query({},
+                $scope.personas = HawkularAccount.Persona.query({},
                     () => {
                         $scope.personas = $scope.personas.filter((persona) => {
                             return persona.id !== $scope.currentPersona.id;
@@ -77,10 +77,4 @@ module HawkularAccounts {
 
             $scope.load();
         }]);
-
-    export var PersonaService = _module.service("HawkularAccounts.PersonaService", ["$resource", ($resource) => {
-        return $resource('http://localhost:8080/hawkular-accounts/personas/:id', {id:'@id'});
-    }]);
-
-    _module.requires.push("ngResource");
 }
