@@ -30,21 +30,21 @@
   <fileSets>
     <fileSet>
       <directory>src/main/resources/wildfly/configuration</directory>
-      <outputDirectory>/${wildfly.dist.zip.root.dir}/standalone/configuration</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/standalone/configuration</outputDirectory>
       <filtered>false</filtered>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>src/main/resources/wildfly/modules</directory>
-      <outputDirectory>/${wildfly.dist.zip.root.dir}/modules</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/modules</outputDirectory>
       <filtered>false</filtered>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>src/main/resources/wildfly/bin</directory>
-      <outputDirectory>/${wildfly.dist.zip.root.dir}/bin</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/bin</outputDirectory>
       <filtered>false</filtered>
       <fileMode>0744</fileMode>
       <directoryMode>0755</directoryMode>
@@ -52,7 +52,7 @@
      <!-- non-binary files -->
     <fileSet>
       <directory>${assembly.dir}</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <excludes>
         <exclude>**/*.sh</exclude>
       </excludes>
@@ -63,7 +63,7 @@
     <!-- all scripts and other files that go in the /bin directory - will have u+x file perm set-->
     <fileSet>
       <directory>${assembly.dir}</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <includes>
         <include>**/*.sh</include>
       </includes>
@@ -73,14 +73,14 @@
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/wildfly</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <filtered>false</filtered>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/keycloak/</directory>
-      <outputDirectory>/${wildfly.dist.zip.root.dir}</outputDirectory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}</outputDirectory>
     </fileSet>
   </fileSets>
 
@@ -97,11 +97,21 @@
         <include>org.hawkular.alerts:hawkular-actions-email</include>
         <include>org.hawkular.metrics:hawkular-metrics-api-jaxrs</include>
         <include>org.hawkular.metrics:hawkular-metrics-embedded-cassandra-ear</include>
-        <!-- TODO Make the unpacking conditional == only for the dev profile -->
-        <include>org.hawkular:hawkular-console</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+
+    <!-- TODO Make the unpacking conditional == only for the dev profile -->
+    <dependencySet>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments/${artifact.artifactId}.war</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular:hawkular-console</include>
+      </includes>
+      <unpack>true</unpack>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
