@@ -8,7 +8,7 @@ This console application pulls in various bower packages (libs) and Hawt.io 2 pl
 
 * ui - directory for various Hawkular UIs (currently only one)
 
-** ui/console - The Hawkular UI console - which consumes bower components from https://github.com/hawkular/hawkular-ui-components[hawkular-ui-components]
+** ui/console - The main angular.js Hawkular UI console. For more info please see: http://www.hawkular.org/docs/dev/ui-dev.html[Hawkular UI Dev Guide]
 
 The general idea here being hawt.io UIs which are composed of plugins (that can swapped around like legos between the various UIs)
 
@@ -36,12 +36,12 @@ npm modules and bower packages. Be aware, this causes the libraries not being up
 
 For the ease of development we're using the watch feature of the gulp tool. Gulp can watch for changes in source files
 and update the compiled console accordingly. To use this feature, you must start the kettle from the 
-`$HAWKULAR_ROOT/kettle/target/wildfly-8.2.0.Final/` directory. Once the server is up and running you have to 
+`$HAWKULAR_ROOT/dist/target/wildfly-8.2.0.Final/` directory. Once the server is up and running you have to 
 start the actual gulp task responsible for watching the changes. To achieve this, traverse to the 
 `$HAWKULAR_ROOT/ui/console/target/gulp-build/` directory and run:
 
 `gulp watch-server`
 
 The advantage of this approach is, that is scans for file changes in the source directory and apply them directly 
-into the target directory (`$HAWKULAR_ROOT/kettle/target/wildfly-8.2.0.Final/`), which is suitable for console 
+into the target directory (`$HAWKULAR_ROOT/dist/target/wildfly-8.2.0.Final/`), which is suitable for console 
 developing since it doesn't require the whole maven build to see the actual changes in the console UI.
