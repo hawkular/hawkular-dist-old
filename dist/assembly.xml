@@ -74,8 +74,21 @@
     <fileSet>
       <directory>${project.build.directory}/wildfly</directory>
       <outputDirectory></outputDirectory>
+      <excludes>
+        <exclude>**/*.sh</exclude>
+      </excludes>
       <filtered>false</filtered>
       <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/wildfly</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>**/*.sh</include>
+      </includes>
+      <filtered>false</filtered>
+      <fileMode>0744</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
