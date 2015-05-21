@@ -80,15 +80,25 @@ module HawkularMetrics {
         this.refreshChartDataNow(this.getMetricId());
       });
 
-      $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
+      var waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
           this.resourceId = resourceId;
           this.refreshChartDataNow(this.getMetricId());
         }
       });
-
+      
+      if ($rootScope.currentPersona) {
+        waitForResourceId();
+      } else {
+        $rootScope.$watch('currentPersona', (currentPersona) => {
+          if (currentPersona) {
+            waitForResourceId();
+          }
+        });
+      }
       this.autoRefresh(20);
+
     }
 
     private bucketedDataPoints:IChartDataPoint[] = [];
@@ -144,7 +154,6 @@ module HawkularMetrics {
     getMetricId():ResourceId {
       return this.resourceId + '.status.duration';
     }
-
 
     retrieveThreshold() {
       this.HawkularAlert.Condition.query({triggerId: this.$routeParams.resourceId + '_trigger_thres'}).$promise
