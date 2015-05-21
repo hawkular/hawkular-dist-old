@@ -19,6 +19,7 @@ var gulp = require('gulp'),
     wiredep = require('wiredep').stream,
     eventStream = require('event-stream'),
     gulpLoadPlugins = require('gulp-load-plugins'),
+    libxmljs = require('libxmljs'),
     map = require('vinyl-map'),
     fs = require('fs'),
     path = require('path'),
@@ -26,6 +27,12 @@ var gulp = require('gulp'),
     s = require('underscore.string'),
     tslint = require('gulp-tslint'),
     jsString;
+
+// CONSTANTS
+
+var POM_MAIN_PATH = '../../../../pom.xml';
+var DIST_TARGET_PATH = '../../../../dist/target/';
+var WF_CONSOLE_PATH = 'wildfly-8.2.0.Final/modules/org/hawkular/nest/main/deployments/hawkular-console.war/dist/';
 
 var plugins = gulpLoadPlugins({});
 var pkg = require('./package.json');
@@ -50,8 +57,20 @@ var config = {
         noExternalResolve: false
     }),
     srcPrefix: '../../src/main/scripts/',
-    serverPath: '../../../../dist/target/hawkular-1.0.0-SNAPSHOT/wildfly-8.2.0.Final/modules/org/hawkular/nest/main/deployments/hawkular-console.war/dist/'
+    serverPath: DIST_TARGET_PATH + 'hawkular-1.0.0-SNAPSHOT/' + WF_CONSOLE_PATH
 };
+
+gulp.task('set-server-path', function(done) {
+  fs.readFile(POM_MAIN_PATH, 'utf8', function (err, data) {
+    if (err) throw err;
+    var xmlData = data;
+
+    var xmlDoc = libxmljs.parseXml(xmlData);
+    var version = xmlDoc.get('/xmlns:project/xmlns:version', 'http://maven.apache.org/POM/4.0.0').text();
+    config.serverPath = DIST_TARGET_PATH + 'hawkular-' + version + '/' + WF_CONSOLE_PATH;
+    done();
+  });
+});
 
 gulp.task('bower', function () {
     var cacheBuster = Date.now();
@@ -240,12 +259,12 @@ gulp.task('copy-sources', function(done) {
     });
 });
 
-gulp.task('copy-kettle-js', ['build-live'] , function() {
+gulp.task('copy-kettle-js', ['build-live','set-server-path'] , function() {
   gulp.src(['dist/hawkular-console.js'])
     .pipe(gulp.dest(config.serverPath));
 });
 
-gulp.task('copy-kettle-css', ['less-live'] , function() {
+gulp.task('copy-kettle-css', ['less-live','set-server-path'] , function() {
   gulp.src(['dist/hawkular-console.css'])
     .pipe(gulp.dest(config.serverPath));
 });
