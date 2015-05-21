@@ -93,7 +93,7 @@
     <version.org.hawkular.metrics>0.3.2-SNAPSHOT</version.org.hawkular.metrics>
     <version.org.hawkular.nest>0.0.1-SNAPSHOT</version.org.hawkular.nest>
     <version.org.hawkular.pinger>${project.version}</version.org.hawkular.pinger>
-    <version.org.keycloak>1.2.0.CR1</version.org.keycloak>
+    <version.org.keycloak>1.2.0.Final</version.org.keycloak>
     <version.org.testng>6.5.2</version.org.testng>
   </properties>
 
