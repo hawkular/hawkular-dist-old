@@ -96,7 +96,7 @@
       "secret": "${uuid.hawkular.ui}",
       "fullScopeAllowed" : false,
       "redirectUris": ["/*"],
-      "webOrigins": [],
+      "webOrigins": ["http://localhost:8080", "http://127.0.0.1:8080"],
       "claims": {
         "username": true,
         "name": true,
