@@ -60,19 +60,29 @@ module HawkularMetrics {
 
       this.resourceId = $scope.hkParams.resourceId;
 
-      $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
+      var waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
           this.resourceId = resourceId;
           this.refreshAvailPageNow(this.getResourceId());
         }
       });
+      
+      if ($rootScope.currentPersona) {
+        waitForResourceId();
+      } else {
+        $rootScope.$watch('currentPersona', (currentPersona) => {
+          if (currentPersona) {
+            waitForResourceId();
+          }
+        });
+      }
+      this.autoRefreshAvailability(20);
 
       $scope.$on('RefreshAvailabilityChart', (event) => {
         this.refreshAvailPageNow(this.getResourceId());
       });
 
-      this.autoRefreshAvailability(20);
     }
 
     private availabilityDataPoints:IChartDataPoint[] = [];
@@ -104,7 +114,6 @@ module HawkularMetrics {
     autoRefreshAvailability(intervalInSeconds:TimestampInMillis):void {
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.startTimeStamp = this.$scope.hkStartTimestamp;
-      this.refreshAvailPageNow(this.getResourceId());
       this.autoRefreshPromise = this.$interval(()  => {
         console.info('Autorefresh Availabilty for: ' + this.getResourceId());
         this.$scope.hkEndTimestamp = +moment();
