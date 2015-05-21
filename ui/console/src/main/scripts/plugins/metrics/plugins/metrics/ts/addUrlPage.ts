@@ -51,18 +51,17 @@ module HawkularMetrics {
       $scope.vm = this;
       this.resourceUrl = this.httpUriPart;
 
-      if (this.$rootScope.currentPersona) {
+      if ($rootScope.currentPersona) {
         this.getResourceList(this.$rootScope.currentPersona.id);
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
-        $rootScope.$on('UserInitialized', (tenantId) => {
-          this.getResourceList(tenantId);
-        });
+        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.getResourceList(currentPersona.id));
       }
 
       this.autoRefresh(20);
     }
     private autoRefreshPromise:ng.IPromise<number>;
+
 
     cancelAutoRefresh():void {
       this.$interval.cancel(this.autoRefreshPromise);
@@ -96,7 +95,7 @@ module HawkularMetrics {
       var metricId: string;
       var defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
       var err = (error: any, msg: string): void => this.HawkularErrorManager.errorHandler(error, msg);
-      var currentTenantId = this.$rootScope.currentPersona.id;
+      var currentTenantId: TenantId = this.$rootScope.currentPersona.id;
 
       /// Add the Resource and its metrics
       this.HawkularInventory.Resource.save({tenantId: currentTenantId, environmentId: globalEnvironmentId}, resource).$promise
@@ -166,8 +165,8 @@ module HawkularMetrics {
         });
     }
 
-    getResourceList(currentTenantId?: string):any {
-      var tenantId:string = currentTenantId || this.$rootScope.currentPersona.id;
+    getResourceList(currentTenantId?: TenantId):any {
+      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.Resource.query({tenantId: tenantId, environmentId: globalEnvironmentId, per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
         // FIXME: hack.. make expanded out of list
         var pages = getResponseHeaders().link ? getResponseHeaders().link.split(', ') : [];
