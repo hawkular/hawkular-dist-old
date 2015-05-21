@@ -147,7 +147,7 @@ module HawkularAccounts {
 
         request = (request) => {
             if (currentPersona) {
-                request.headers['X-Hawkular-Persona'] = currentPersona.id;
+                request.headers['Hawkular-Persona'] = currentPersona.id;
             }
             return request;
         };
