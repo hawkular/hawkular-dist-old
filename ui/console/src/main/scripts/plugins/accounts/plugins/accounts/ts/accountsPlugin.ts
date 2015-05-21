@@ -38,7 +38,7 @@ module HawkularAccounts {
     }]);
 
     _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails', 'HawtioNav', 'HawkularInventory', ($rootScope, $log, $modal, $document, userDetails, HawtioNav:HawtioMainNav.Registry, hawkularInventory) => {
-        //HawtioNav.add(accountsTab);
+        HawtioNav.add(accountsTab);
         $rootScope.userDetails = userDetails;
 
         $rootScope.$on('IdleStart', () => {

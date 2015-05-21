@@ -23,7 +23,7 @@
     "d3": "3.4.8",
     "event-drops": "0.1.1",
     "hawkular-charts": "^0.2.4",
-    "hawkular-ui-services": "^0.2.0",
+    "hawkular-ui-services": "^0.2.4",
     "hawtio-core-navigation": "2.0.39",
     "hawtio-core": "2.0.16",
     "hawtio-template-cache": "2.0.2",

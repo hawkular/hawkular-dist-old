@@ -19,8 +19,8 @@
 module HawkularAccounts {
 
     export var OrganizationsController = _module.controller("HawkularAccounts.OrganizationsController", [
-        '$rootScope', '$scope', 'HawkularAccounts.OrganizationService', '$log', '$location',
-        ($rootScope, $scope, OrganizationService, $log, $location) => {
+        '$rootScope', '$scope', '$log', '$location', 'HawkularAccount',
+        ($rootScope, $scope, $log, $location, HawkularAccount) => {
 
             $scope.organizations = [];
             $scope.loading = true;
@@ -32,7 +32,7 @@ module HawkularAccounts {
             $scope.loadOrganizations = () => {
                 $scope.organizations = [];
                 $scope.loading = true;
-                $scope.organizations = OrganizationService.query({},
+                $scope.organizations = HawkularAccount.Organization.query({},
                     ()=> {
                         $scope.loading = false;
                     },
@@ -62,10 +62,10 @@ module HawkularAccounts {
         }]);
 
     export var OrganizationNewController = _module.controller("HawkularAccounts.OrganizationNewController", [
-        '$scope', 'HawkularAccounts.OrganizationService', '$log', '$location',
-        ($scope, OrganizationService, $log, $location) => {
+        '$scope', '$log', '$location', 'HawkularAccount',
+        ($scope, $log, $location, HawkularAccount) => {
 
-            $scope.organizationNew = new OrganizationService({});
+            $scope.organizationNew = new HawkularAccount.Organization({});
             $scope.persist = () => {
                 $scope.organizationNew.$save({},
                     () => {
@@ -80,10 +80,4 @@ module HawkularAccounts {
                 $log.debug("Trying to persist the organization");
             };
         }]);
-
-    export var OrganizationService = _module.service("HawkularAccounts.OrganizationService", ["$resource", ($resource) => {
-        return $resource('http://localhost:8080/hawkular-accounts/organizations/:id', {id:'@id'});
-    }]);
-
-    _module.requires.push("ngResource");
 }
