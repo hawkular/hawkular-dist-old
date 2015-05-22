@@ -18,16 +18,16 @@
 @import "../../../../../libs/patternfly/components/bootstrap/less/mixins.less";
 @import "../../../../../libs/patternfly/less/variables.less";
 
-.screen-top-nav {
+.hk-screen-top-nav {
 
   margin-bottom: @grid-gutter-width/2;
 
-  .back {
+  .hk-back {
     display: inline-block;
     font-size: @font-size-base + 1;
   }
 
-  .heading {
+  .hk-heading {
     margin-bottom: @grid-gutter-width/4;
   }
 
@@ -36,7 +36,7 @@
     margin-bottom: 0;
   }
 
-  .nav-tabs-container {
+  .hk-nav-tabs-container {
     border-bottom: 1px solid @table-border-color;
     text-align: center;
   }
@@ -67,7 +67,7 @@
 
 // date range
 
-.date-range {
+.hk-date-range {
 
   text-align: right;
 
@@ -75,7 +75,7 @@
     margin-right: @grid-gutter-width/4;
   }
 
-  .input {
+  .hk-input {
     border-bottom-color: #dddddd;
     border-bottom-width: 1px;
     border-bottom-style: solid;
@@ -102,8 +102,9 @@
     }
   }
 
-  &.open .input {
+  &.open .hk-input {
     border-bottom: 2px solid @link-color;
+    margin-bottom: 0;
   }
 
   .dropdown-menu {
@@ -116,9 +117,10 @@
   .dropdown-menu-content {
     padding: 15px;
 
-    .label {
+    .hk-label {
       color: @gray-dark;
       display: inline-block;
+      margin-right: @grid-gutter-width/4;
       padding-left: 0;
     }
 

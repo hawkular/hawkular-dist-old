@@ -13,23 +13,23 @@
   </nav>
 </div> -->
 
-<div class="screen-top-nav">
+<div class="hk-screen-top-nav">
   <div>
-    <div class="row top-row">
+    <div class="row hk-top-row">
       <div class="col-xs-6">
         <a ng-show="isAppServerPage()" href="/hawkular-ui/app/app-list" class="back">« All Application Servers</a>
         <a ng-hide="isAppServerPage()" href="/hawkular-ui/url/url-list" class="back">« All URLs</a>
       </div>
       <div class="col-xs-6">
-        <div class="date-range dropdown">
+        <div class="hk-date-range dropdown">
           <i class="fa fa-calendar"></i>
-          <div class="input" dropdown-toggle>
+          <div class="hk-input" dropdown-toggle>
             {{offsetName}} <span class="additional-info">({{getFormattedDate()}})</span>
           </div>
           <div class="dropdown-menu infotip bottom-right">
             <div class="arrow"></div>
             <div class="dropdown-menu-content">
-              <span class="label">Last</span>
+              <span class="hk-label">Last</span>
               <div class="btn-group">
                 <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Hour'}" ng-click="setRange({hour: 1})">1h</button>
                 <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last 12 Hours'}" ng-click="setRange({hours: 12})">12h</button>
@@ -43,7 +43,7 @@
         </div>
       </div>
     </div>
-    <div class="heading">
+    <div class="hk-heading">
       <h1 ng-init="isAppServerPage() ? getAppServerFromId(hkParams.resourceId) : getUrlFromId(hkParams.resourceId)">{{resourceName}}</h1>
     </div>
     <div ng-transclude></div>
