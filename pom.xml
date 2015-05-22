@@ -169,6 +169,12 @@
 
       <dependency>
         <groupId>org.hawkular.inventory</groupId>
+        <artifactId>hawkular-inventory-cdi</artifactId>
+        <version>${version.org.hawkular.inventory}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.inventory</groupId>
         <artifactId>inventory-bus-api</artifactId>
         <version>${version.org.hawkular.inventory}</version>
       </dependency>
