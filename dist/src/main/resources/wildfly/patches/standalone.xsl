@@ -210,7 +210,9 @@
   <!-- add system properties -->
   <xsl:template name="system-properties">
     <system-properties>
-      <property name="hawkular-metrics.backend" value="embedded_cass" />
+      <xsl:text disable-output-escaping="yes">
+        &lt;property name="hawkular-metrics.backend" value="${hawkular-metrics.backend:embedded_cass}" /&gt;
+      </xsl:text>
     </system-properties>
   </xsl:template>
 
