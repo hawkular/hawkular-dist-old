@@ -36,9 +36,10 @@ import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
 /**
- * Bean that does the pinging. Runs async.
+ * Bean that does the pinging. {@link #ping(PingDestination)} runs asynchronously.
  *
  * @author Heiko W. Rupp
  * @author Martin Večeřa
@@ -75,27 +76,36 @@ public class Pinger {
     }
 
     private CloseableHttpClient getHttpClient(final String url) {
-        if (url != null && url.startsWith("https") && sslContext != null) {
+        if (url != null && url.startsWith("https://") && sslContext != null) {
             return HttpClientBuilder.create().setSslcontext(sslContext).build();
         } else {
             return HttpClientBuilder.create().build();
         }
     }
 
+    /**
+     * Performs a test request against the given {@link PingDestination}.
+     *
+     * @param destination the destination to ping
+     * @return a {@link Future}
+     */
     @Asynchronous
     public Future<PingStatus> ping(final PingDestination destination) {
+        Log.LOG.debugf("About to ping %s", destination.getUrl());
+        HttpUriRequest request = RequestBuilder.create(destination.getMethod()).setUri(destination.getUrl()).build();
 
-        HttpUriRequest request = RequestBuilder.create(destination.method).setUri(destination.url).build();
-
-        try (CloseableHttpClient client = getHttpClient(destination.url)) {
+        try (CloseableHttpClient client = getHttpClient(destination.getUrl())) {
             long start = System.currentTimeMillis();
             HttpResponse httpResponse = client.execute(request);
             StatusLine statusLine = httpResponse.getStatusLine();
+            EntityUtils.consumeQuietly(httpResponse.getEntity());
             long now = System.currentTimeMillis();
 
             final int code = statusLine.getStatusCode();
             final int duration = (int) (now - start);
-            PingStatus result = new PingStatus(destination, code, now, duration);
+            Traits traits = Traits.collect(httpResponse, now);
+            PingStatus result = new PingStatus(destination, code, now, duration, traits);
+            Log.LOG.debugf("Pinged %d %s", code, destination.getUrl());
             return new AsyncResult<>(result);
         } catch (UnknownHostException e) {
             PingStatus result = PingStatus.error(destination, 404, System.currentTimeMillis());
