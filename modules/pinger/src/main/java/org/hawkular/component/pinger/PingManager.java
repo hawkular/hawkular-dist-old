@@ -21,8 +21,6 @@ import org.hawkular.inventory.api.Interest;
 import org.hawkular.inventory.api.Inventory;
 import org.hawkular.inventory.api.filters.With;
 import org.hawkular.inventory.api.model.Resource;
-import org.hawkular.inventory.cdi.Observable;
-import org.hawkular.inventory.cdi.ObservableAutoTenant;
 import rx.functions.Action1;
 
 import javax.annotation.PostConstruct;
@@ -32,7 +30,6 @@ import javax.ejb.LockType;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,7 +38,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -119,25 +115,10 @@ public class PingManager {
     @EJB
     TraitsPublisher traitsPublisher;
 
-    @Inject
-    @Observable
+    @javax.annotation.Resource(lookup = "java:global/Hawkular/ObservableInventory")
     private Inventory.Mixin.Observable inventory;
 
-    @Inject
-    @ObservableAutoTenant
-    private Inventory.Mixin.AutoTenantAndObservable autotenantInventory;
-
     final NewUrlsCollector newUrlsCollector = new NewUrlsCollector();
-
-    private void addUrl(String tenantId, String envId, String url) {
-        Log.LOG.infof("Putting url to inventory: %s", url);
-
-        //we want the magic to happen, so using the autotenant here
-        autotenantInventory.tenants().get(tenantId).environments().get(envId).feedlessResources().create(
-                Resource.Blueprint.builder().withId(UUID.randomUUID().toString()).withResourceType("URL")
-                        .withProperty("url", url).build());
-
-    }
 
     @PostConstruct
     public void startUp() {
@@ -148,8 +129,9 @@ public class PingManager {
          */
         inventory.observable(Interest.in(Resource.class).being(Action.created())).subscribe(newUrlsCollector);
 
-        //we must not use the autotenantInventory here, because it would disallow us from "seeing" all the tenants.
-        //We need that though and at the same time we don't need any of the features offered by autotenant, so it's ok.
+        //we use just an observable inventory here, because it allows us to see all the tenants. This essentially
+        //circumvents any authz present on the inventory.
+        //We need that though because pinger doesn't have storage of its own and is considered "trusted", so it's ok.
         Set<Resource> urls = inventory.tenants().getAll().resourceTypes().getAll(With.id(PingDestination.URL_TYPE))
                 .resources().getAll().entities();
         Log.LOG.infof("About to initialize Hawkular Pinger with %d URLs", urls.size());
@@ -157,13 +139,6 @@ public class PingManager {
         for (Resource r : urls) {
             destinations.add(PingDestination.from(r));
         }
-
-//eff testing purposes, this causes order-of-initialization problems...
-//        if (destinations.isEmpty()) {
-//            /* for test purposes */
-//            addUrl("jdoe", "test", "http://hawkular.github.io");
-//        }
-//
     }
 
     /**
