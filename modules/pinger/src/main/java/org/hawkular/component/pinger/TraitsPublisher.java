@@ -16,17 +16,15 @@
  */
 package org.hawkular.component.pinger;
 
-import java.util.Map.Entry;
+import org.hawkular.component.pinger.Traits.TraitHeader;
+import org.hawkular.inventory.api.Inventory;
+import org.hawkular.inventory.api.Resources;
+import org.hawkular.inventory.api.model.Resource;
+import org.hawkular.inventory.api.model.Resource.Update.Builder;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
-
-import org.hawkular.component.pinger.Traits.TraitHeader;
-import org.hawkular.inventory.api.Inventory;
-import org.hawkular.inventory.api.model.Resource;
-import org.hawkular.inventory.api.model.Resource.Update.Builder;
-import org.hawkular.inventory.cdi.Observable;
+import java.util.Map.Entry;
 
 /**
  * Stores ping results to Hawkular Inventory.
@@ -35,8 +33,8 @@ import org.hawkular.inventory.cdi.Observable;
  */
 @Stateless
 public class TraitsPublisher {
-    @Inject
-    @Observable
+
+    @javax.annotation.Resource(lookup = "java:global/Hawkular/ObservableInventory")
     private Inventory.Mixin.Observable inventory;
 
     /**
@@ -48,15 +46,27 @@ public class TraitsPublisher {
     @Asynchronous
     public void publish(PingStatus status) {
         final Traits traits = status.getTraits();
-        Builder resourceBuilder = Resource.Update.builder();
-        resourceBuilder.withProperty("traits-collected-on", traits.getTimestamp());
-        for (Entry<TraitHeader, String> entry : traits.getItems().entrySet()) {
-            resourceBuilder.withProperty("trait-" + entry.getKey().toString(), entry.getValue());
-        }
 
         PingDestination dest = status.getDestination();
+
+        Resources.ReadWrite resourceAccess = inventory.tenants().get(dest.getTenantId()).environments()
+                .get(dest.getEnvironmentId()).feedlessResources();
+
+        Resource resource = resourceAccess.get(dest.getResourceId()).entity();
+
+        Builder updateBuilder = Resource.Update.builder();
+
+        //keep the properties already present on the resource
+        updateBuilder.withProperties(resource.getProperties());
+
+        //add/modify our own
+        updateBuilder.withProperty("traits-collected-on", traits.getTimestamp());
+        for (Entry<TraitHeader, String> entry : traits.getItems().entrySet()) {
+            updateBuilder.withProperty("trait-" + entry.getKey().toString(), entry.getValue());
+        }
+
         inventory.tenants().get(dest.getTenantId()).environments().get(dest.getEnvironmentId()).feedlessResources()
-                .update(dest.getResourceId(), resourceBuilder.build());
+                .update(dest.getResourceId(), updateBuilder.build());
     }
 
 }
