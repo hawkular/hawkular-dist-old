@@ -211,14 +211,9 @@ a:hover .fa-spinner {
     margin-top: @grid-gutter-width*4;
   }
 
-  h1 {
-    margin-bottom: @grid-gutter-width/2;
-    margin-top: @grid-gutter-width/2;
-
-    + .fa {
-      color: @gray-light;
-      font-size: ceil(@font-size-base * 4);
-    }
+  h1 + .fa {
+    color: @gray-light;
+    font-size: ceil(@font-size-base * 4);
   }
 }
 
@@ -685,6 +680,7 @@ a:hover .fa-spinner {
 // URL screen
 
 .hk-graph {
+  clear: left;
   padding: @grid-gutter-width/2*1.5;
   text-align: center;
 
@@ -696,7 +692,7 @@ a:hover .fa-spinner {
     }
 
     .fa {
-      font-size: ceil(@font-size-base * 0.58333333333333);
+      font-size: ceil(@font-size-base * 0.75);
       margin-right: 5px;
       vertical-align: middle;
 
@@ -706,6 +702,14 @@ a:hover .fa-spinner {
 
       &.hk-danger {
         color: @brand-danger;
+      }
+
+      &.hk-orange {
+        color: #f57f20;
+      }
+
+      &.hk-gray {
+        color: #515252;
       }
     }
   }
@@ -775,8 +779,15 @@ section {
   }
 }
 
-.hk-info-top .hk-settings {
-  margin-top: @grid-gutter-width/4;
+.hk-info-top {
+  .hk-settings {
+    margin-top: @grid-gutter-width/4;
+  }
+
+  .btn-link {
+    margin-top: -7px;
+    margin-right: -11px;
+  }
 }
 
 // modal
