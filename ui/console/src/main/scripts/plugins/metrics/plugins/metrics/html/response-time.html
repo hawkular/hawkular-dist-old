@@ -61,8 +61,7 @@
         <span><i class="fa fa-circle hk-danger"></i>Response Time (above the threshold)</span>
       </div>
       <div class="hk-update pull-right" ng-show="vm.chartData.dataPoints.length > 0" >
-        <i class="fa fa-clock-o"></i><a ng-click="vm.refreshChartDataNow(vm.getMetricId())"><strong>Last
-        update</strong> 20 seconds ago</a>
+        <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart" ng-click="vm.refreshChartDataNow(vm.getMetricId())"><i class="fa fa-refresh"></i></button>
       </div>
 
       <p class="label label-info waiting-label" ng-hide="vm.chartData.dataPoints.length > 0" >We are

@@ -87,13 +87,19 @@ h3 {
 .btn-link, a {
 
   .fa {
-    color: @gray-light;
+    color: @gray;
     vertical-align: middle;
   }
 
   &:hover .fa {
     color: @link-hover-color;
   }
+}
+
+.btn-default .fa {
+  color: @gray;
+  margin-right: 0;
+  vertical-align: middle;
 }
 
 .fa .meaning {
@@ -135,8 +141,8 @@ a:hover .fa-arrow-down {
   padding: 2px 4px;
 }
 
-a .label-alert {
-  padding: 0 4px;
+.help-block {
+
 }
 
 // tables
@@ -159,8 +165,22 @@ a .label-alert {
   }
 }
 
-.table .label-alert {
-  margin-top: 4px;
+.table {
+  .label-alert {
+    margin-top: 4px;
+  }
+
+  a .label-alert {
+    padding: 0 4px;
+  }
+}
+
+
+
+// transitions
+
+.btn-primary {
+  transition: background 0.5s ease, border-color 0.5s ease, color 0.5s ease;
 }
 
 // landing screen
@@ -202,9 +222,16 @@ a .label-alert {
   }
 }
 
-.ng-dirty {
+.ng-dirty,
+.hk-fade-in {
   .help-block {
     color: @brand-danger;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+
+    &.ng-hide {
+      opacity: 0;
+    }
   }
 }
 
@@ -655,6 +682,15 @@ a .label-alert {
       &.hk-danger {
         color: @brand-danger;
       }
+    }
+  }
+
+  .hk-update {
+    margin-right: -7px;
+    margin-top: -3px;
+
+    .fa {
+      margin-right: 0;
     }
   }
 
