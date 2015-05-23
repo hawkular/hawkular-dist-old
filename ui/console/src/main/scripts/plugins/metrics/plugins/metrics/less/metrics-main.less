@@ -124,10 +124,22 @@ a:hover .fa-arrow-up {
   color: @brand-success;
 }
 
+.fa-repeat,
+a .fa-repeat,
+a:hover .fa-repeat {
+  color: @brand-success;
+}
+
 .fa-arrow-down,
 a .fa-arrow-down,
 a:hover .fa-arrow-down {
-  color: @brand-danger;
+  color: @gray-light;
+}
+
+.fa-spinner,
+a .fa-spinner,
+a:hover .fa-spinner {
+  color: @gray-light;
 }
 
 .label {
@@ -149,7 +161,7 @@ a:hover .fa-arrow-down {
 
 .table > thead > tr > th,
 .table > tbody > tr > td {
-  padding: 4px 10px 5px;
+  padding: 7px 10px 8px;
 }
 
 .table-striped > tbody > tr:nth-child(odd) > td {
@@ -173,9 +185,15 @@ a:hover .fa-arrow-down {
   a .label-alert {
     padding: 0 4px;
   }
+
+  td.state .fa {
+    font-size: 20px;
+  }
 }
 
-
+.dataTables_header {
+  padding: 5px 5px 7px 5px;
+}
 
 // transitions
 
@@ -374,6 +392,11 @@ a:hover .fa-arrow-down {
 
 .hk-summary {
   clear: both;
+
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
 .hk-summary-item {
@@ -417,7 +440,9 @@ a:hover .fa-arrow-down {
   }
 
   a:hover,
-  a:hover .hk-item {
+  a:hover .hk-item,
+  a:focus,
+  a:focus .hk-item {
     color: @link-hover-color;
     text-decoration: none;
   }
