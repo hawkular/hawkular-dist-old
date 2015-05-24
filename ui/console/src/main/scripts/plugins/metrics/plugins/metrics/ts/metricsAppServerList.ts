@@ -82,7 +82,7 @@ module HawkularMetrics {
           tenant: 'test', environment: 'test', feed: null, id: 'f5087d5d26aeff90cc92c738a10d8bba',
           properties: { name: 'Eavy Machine', url: 'eavy.corp.redhat.com' },
           type: { tenant: 'test', id: 'EAP', version: '1.0', properties: {} },
-          state: 'Running',
+          state: 'Down',
           alerts: ['SLOW'],
           tags: ['Production']
         },
@@ -90,7 +90,7 @@ module HawkularMetrics {
           tenant: 'test', environment: 'test', feed: null, id: '5c4785a7a304d32e5f404242666895f5',
           properties: { name: 'Tori Machine', url: 'tori.corp.redhat.com' },
           type: { tenant: 'test', id: 'Tomcat', version: '1.0', properties: {} },
-          state: 'Running',
+          state: 'Up',
           alerts: [],
           tags: ['Development']
         },
@@ -98,7 +98,7 @@ module HawkularMetrics {
           tenant: 'test', environment: 'test', feed: null, id: '21193e7941642baa1285cd7edd8af62e',
           properties: { name: 'Wiko Machine', url: 'wiko.corp.redhat.com' },
           type: { tenant: 'test', id: 'Wildfly', version: '1.0', properties: {} },
-          state: 'Failed',
+          state: 'Starting',
           alerts: ['DOWN'],
           tags: []
         },
@@ -106,7 +106,7 @@ module HawkularMetrics {
           tenant: 'test', environment: 'test', feed: null, id: '20a0e9f5d777a16ad40928dd3ba1bef9',
           properties: { name: 'Tomy Machine', url: 'tomy.corp.redhat.com' },
           type: { tenant: 'test', id: 'Tomcat', version: '1.0', properties: {} },
-          state: 'Stopped',
+          state: 'Restart Required',
           alerts: [],
           tags: ['QE']
         }
