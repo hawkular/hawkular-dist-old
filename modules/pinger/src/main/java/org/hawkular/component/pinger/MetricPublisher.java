@@ -52,12 +52,12 @@ public class MetricPublisher {
 
     private static void addDataItem(List<Map<String, Object>> mMetrics, String resourceId, long timestamp,
             Number value, String name) {
-        Map<String, Number> dataMap = new HashMap<>(4);
+        Map<String, Number> dataMap = new HashMap<>(2);
         dataMap.put("timestamp", timestamp);
         dataMap.put("value", value);
         List<Map<String, Number>> data = new ArrayList<>(1);
         data.add(dataMap);
-        Map<String, Object> outer = new HashMap<>(4);
+        Map<String, Object> outer = new HashMap<>(2);
         outer.put("id", resourceId + ".status." + name);
         outer.put("data", data);
         mMetrics.add(outer);

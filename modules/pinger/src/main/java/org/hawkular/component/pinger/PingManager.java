@@ -58,6 +58,7 @@ public class PingManager {
      * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
      */
     static class NewUrlsCollector implements Action1<Resource> {
+        private final Object lock = new Object();
         private List<PingDestination> newUrls = new ArrayList<>();
 
         /**
@@ -69,7 +70,7 @@ public class PingManager {
         @Override
         public void call(Resource r) {
             if (PingDestination.isUrl(r)) {
-                synchronized (this) {
+                synchronized (lock) {
                     newUrls.add(PingDestination.from(r));
                 }
             }
@@ -82,7 +83,7 @@ public class PingManager {
          * @return the list of {@link PingDestination}s
          */
         public List<PingDestination> getNewUrls() {
-            synchronized (this) {
+            synchronized (lock) {
                 if (this.newUrls.isEmpty()) {
                     return Collections.emptyList();
                 } else {
