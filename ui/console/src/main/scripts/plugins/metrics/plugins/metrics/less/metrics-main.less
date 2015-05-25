@@ -823,3 +823,79 @@ section {
     margin-right: 35px;
   }
 }
+
+/* Toastr Overrides */
+
+#toast-container > div {
+  border-radius: 1px;
+  border-style: solid;
+  border-width: 2px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+  color: #333333;
+  filter: alpha(opacity=80);
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  opacity: 0.95;
+  transition: opacity 0.5s ease;
+}
+
+#toast-container > div:hover {
+  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+}
+
+#toast-container > .toast-info,
+#toast-container > .toast-success,
+#toast-container > .toast-warning,
+#toast-container > .toast-error {
+  background-image: none!important;
+}
+
+#toast-container > .toast-info:after,
+#toast-container > .toast-success:after,
+#toast-container > .toast-warning:after,
+#toast-container > .toast-error:after {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  font-family: "FontAwesome";
+  font-size: 20px;
+}
+
+.toast-info {
+  background-color: #ffffff;
+  border-color: #999999;
+}
+
+#toast-container > .toast-info:after {
+  content: "";
+  color: #999999;
+}
+
+.toast-success {
+  background-color: #ebf5ea;
+  border-color: #3f9c35;
+}
+
+#toast-container > .toast-success:after {
+  content: "";
+  color: #3f9c35;
+}
+
+.toast-warning {
+  background-color: #fdf1e6;
+  border-color: #ec7a08;
+}
+
+#toast-container > .toast-warning:after {
+  content: "";
+  color: #ec7a08;
+}
+
+.toast-error {
+  background-color: #fbebeb;
+  border-color: #cc0000;
+}
+
+#toast-container > .toast-error:after {
+  content: "";
+  color: #cc0000;
+}
