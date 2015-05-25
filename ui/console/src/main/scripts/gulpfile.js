@@ -240,7 +240,7 @@ gulp.task('clean', ['concat'], function () {
     del(['templates.js', 'compiled.js']);
 });
 
-gulp.task('watch-server', ['build-live'], function () {
+gulp.task('watch-server', ['build-live', 'copy-kettle-js', 'copy-kettle-css'], function () {
     plugins.watch([config.srcPrefix + 'plugins/**/*.ts', config.srcPrefix + '/plugins/**/*.html'], function () {
         gulp.start('copy-kettle-js');
     });
