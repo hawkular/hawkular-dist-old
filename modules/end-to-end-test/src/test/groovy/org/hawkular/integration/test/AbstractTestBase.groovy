@@ -18,16 +18,31 @@ package org.hawkular.integration.test
 
 import groovyx.net.http.ContentType
 import groovyx.net.http.RESTClient
+
 import org.junit.BeforeClass
 
 class AbstractTestBase {
 
-  static baseURI = System.getProperty('hawkular.base-uri') ?: '127.0.0.1:8080/hawkular/'
+  static testUser = 'jdoe'
+  static testPasword = 'password'
+  static baseURI = 'http://localhost:8080'
+  //static baseURI = System.getProperty('hawkular.base-uri') ?: 'http://localhost:8080/hawkular'
   static RESTClient client
 
   @BeforeClass
   static void initClient() {
-    client = new RESTClient("http://$baseURI", ContentType.JSON)
+    client = new RESTClient(baseURI, ContentType.JSON)
+
+    /* http://en.wikipedia.org/wiki/Basic_access_authentication#Client_side :
+     * The Authorization header is constructed as follows:
+     *  * Username and password are combined into a string "username:password"
+     *  * The resulting string is then encoded using the RFC2045-MIME variant of Base64,
+     *    except not limited to 76 char/line[9]
+     *  * The authorization method and a space i.e. "Basic " is then put before the encoded string.
+     */
+    String encodedCredentials = Base64.getMimeEncoder().encodeToString("$testUser:$testPasword".getBytes("utf-8"))
+    client.defaultRequestHeaders.Authorization = "Basic "+ encodedCredentials
+
   }
 
 }

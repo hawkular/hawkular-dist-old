@@ -57,6 +57,7 @@
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
     <module>dist</module>
+    <module>modules/end-to-end-test</module>
   </modules>
 
   <scm>
@@ -104,6 +105,12 @@
         <artifactId>hawkular-accounts</artifactId>
         <version>${version.org.hawkular.accounts}</version>
         <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.accounts</groupId>
+        <artifactId>hawkular-accounts-api</artifactId>
+        <version>${version.org.hawkular.accounts}</version>
       </dependency>
 
       <dependency>
