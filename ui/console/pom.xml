@@ -36,6 +36,10 @@
     <hawkular.console.timestamp>${maven.build.timestamp}</hawkular.console.timestamp>
     <hawkular.console.context>/</hawkular.console.context>
     <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+    <bower.link.package>hawkular-ui-components</bower.link.package>
+    <node.version>v0.10.33</node.version>
+    <node.npm.version>2.1.10</node.npm.version>
+    <node.maven.plugin.version>0.0.23</node.maven.plugin.version>
   </properties>
 
   <dependencies>
@@ -159,7 +163,7 @@
           <plugin>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
-            <version>0.0.23</version>
+            <version>${node.maven.plugin.version}</version>
 
             <configuration>
               <workingDirectory>target/gulp-build/</workingDirectory>
@@ -173,8 +177,8 @@
                 </goals>
                 <phase>prepare-package</phase>
                 <configuration>
-                  <nodeVersion>v0.10.33</nodeVersion>
-                  <npmVersion>2.1.10</npmVersion>
+                  <nodeVersion>${node.version}</nodeVersion>
+                  <npmVersion>${node.npm.version}</npmVersion>
                 </configuration>
               </execution>
 
@@ -197,6 +201,74 @@
                 <phase>prepare-package</phase>
                 <configuration>
                   <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>gulp build</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>build</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>link</id>
+      <properties>
+        <hawkular.console.context>/</hawkular.console.context>
+        <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>${node.maven.plugin.version}</version>
+
+            <configuration>
+              <workingDirectory>target/gulp-build/</workingDirectory>
+            </configuration>
+
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <nodeVersion>${node.version}</nodeVersion>
+                  <npmVersion>${node.npm.version}</npmVersion>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>bower link</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>link ${bower.link.package}</arguments>
                 </configuration>
               </execution>
 
