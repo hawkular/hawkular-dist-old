@@ -35,6 +35,7 @@
     </div>
     <div class="col-sm-6 text-right">
       Last update
+      <span class="hk-update pull-right" data-toggle="tooltip" data-placement="top" title="Last update"><i class="fa fa-clock-o"></i>{{vm.lastUpdateTimestamp| date:"HH:mm" }}</span>
     </div>
   </div>
 
@@ -42,7 +43,6 @@
     <div class="hk-url-item" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">
       <div class="hk-url-heading">
         <a href="/hawkular-ui/url/availability/{{res.id}}">{{res.properties.url}}</a>
-        <span class="hk-update pull-right" data-toggle="tooltip" data-placement="top" title="Last update"><i class="fa fa-clock-o"></i>{{res.updateTime| date:"HH:mm" }}</span>
       </div>
       <div class="panel panel-default hk-summary">
         <div class="row">
