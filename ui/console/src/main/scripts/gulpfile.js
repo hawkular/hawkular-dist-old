@@ -19,7 +19,7 @@ var gulp = require('gulp'),
     wiredep = require('wiredep').stream,
     eventStream = require('event-stream'),
     gulpLoadPlugins = require('gulp-load-plugins'),
-    libxmljs = require('libxmljs'),
+    xml2js = require('xml2js'),
     map = require('vinyl-map'),
     fs = require('fs'),
     path = require('path'),
@@ -61,14 +61,15 @@ var config = {
 };
 
 gulp.task('set-server-path', function(done) {
-  fs.readFile(POM_MAIN_PATH, 'utf8', function (err, data) {
-    if (err) throw err;
-    var xmlData = data;
-
-    var xmlDoc = libxmljs.parseXml(xmlData);
-    var version = xmlDoc.get('/xmlns:project/xmlns:version', 'http://maven.apache.org/POM/4.0.0').text();
-    config.serverPath = DIST_TARGET_PATH + 'hawkular-' + version + '/' + WF_CONSOLE_PATH;
+  var parser = new xml2js.Parser();
+  parser.addListener('end', function(result) {
+    config.serverPath = DIST_TARGET_PATH + 'hawkular-' + result.project.version + '/' + WF_CONSOLE_PATH;
     done();
+  });
+
+  fs.readFile(POM_MAIN_PATH, 'utf8', function (err, xmlString) {
+    if (err) throw err;
+    parser.parseString(xmlString);
   });
 });
 
