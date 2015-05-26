@@ -37,6 +37,9 @@
     <hawkular.console.context>/</hawkular.console.context>
     <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
     <bower.link.package>hawkular-ui-components</bower.link.package>
+    <node.version>v0.10.33</node.version>
+    <node.npm.version>2.1.10</node.npm.version>
+    <node.maven.plugin.version>0.0.23</node.maven.plugin.version>
   </properties>
 
   <dependencies>
@@ -160,7 +163,7 @@
           <plugin>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
-            <version>0.0.23</version>
+            <version>${node.maven.plugin.version}</version>
 
             <configuration>
               <workingDirectory>target/gulp-build/</workingDirectory>
@@ -174,8 +177,8 @@
                 </goals>
                 <phase>prepare-package</phase>
                 <configuration>
-                  <nodeVersion>v0.10.33</nodeVersion>
-                  <npmVersion>2.1.10</npmVersion>
+                  <nodeVersion>${node.version}</nodeVersion>
+                  <npmVersion>${node.npm.version}</npmVersion>
                 </configuration>
               </execution>
 
@@ -228,7 +231,7 @@
           <plugin>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
-            <version>0.0.23</version>
+            <version>${node.maven.plugin.version}</version>
 
             <configuration>
               <workingDirectory>target/gulp-build/</workingDirectory>
@@ -242,8 +245,8 @@
                 </goals>
                 <phase>prepare-package</phase>
                 <configuration>
-                  <nodeVersion>v0.10.33</nodeVersion>
-                  <npmVersion>2.1.10</npmVersion>
+                  <nodeVersion>${node.version}</nodeVersion>
+                  <npmVersion>${node.npm.version}</npmVersion>
                 </configuration>
               </execution>
 
