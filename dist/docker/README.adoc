@@ -1,5 +1,5 @@
 == Build the Kettle Docker image
-Make sure you are in hawkular/kettle directory
+Make sure you are in hawkular/dist directory
 [source,shell]
 ----
 mvn package docker:build

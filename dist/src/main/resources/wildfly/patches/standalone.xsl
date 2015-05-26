@@ -308,7 +308,8 @@
           <web-context>auth</web-context>
         </auth-server>
         <realm name="hawkular">
-          <auth-server-url>http://localhost:8080/auth</auth-server-url>
+          <auth-server-url>/auth</auth-server-url>
+          <auth-server-url-for-backend-requests>http://localhost:8080/auth</auth-server-url-for-backend-requests>
           <ssl-required>none</ssl-required>
         </realm>
         <secure-deployment name="hawkular-accounts.war">
