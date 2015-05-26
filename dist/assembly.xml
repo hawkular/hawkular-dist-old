@@ -180,6 +180,12 @@
       <filtered>true</filtered>
       <destName>hawkular-realm.json</destName>
     </file>
+    <file>
+      <source>src/main/resources/configuration/hawkular-realm-for-dev.json</source>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/standalone/configuration/</outputDirectory>
+      <filtered>true</filtered>
+      <destName>hawkular-realm-for-dev.json</destName>
+    </file>
   </files>
 
 </assembly>
