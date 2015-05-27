@@ -243,8 +243,9 @@
 
         <storage-adapter type="HAWKULAR"
                          username="jdoe"
-                         password="password"
-                         url="http://127.0.0.1:8080"/>
+                         password="password">
+                         <xsl:attribute name="url">http://${jboss.bind.address:127.0.0.1}:${jboss.http.port:8080}</xsl:attribute>
+        </storage-adapter>
 
         <metric-set-dmr name="WildFly Memory Metrics" enabled="true">
           <metric-dmr name="Heap Used"
