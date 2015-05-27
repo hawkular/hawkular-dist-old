@@ -9,8 +9,7 @@ Sub-projects are currently:
 * https://github.com/hawkular/hawkular-metrics[Hawkular-metrics]: metric storage and retrieval engine
 * https://github.com/hawkular/hawkular-bus[Hawkular-bus]: asynchronous bus to connect the various parts
 * https://github.com/hawkular/hawkular-alerts[Hawkular-alerts]: alerting on events.
-* Hawkular UI
-** https://github.com/hawkular/hawkular-ui-components[Hawkular-ui-components]: ui components such as https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[Hawt.io 2] plugins and Angular directives that make up  the _Hawkular Console_
+* Hawkular UI Console (a https://github.com/hawtio[hawt.io 2 plugin])
 ** https://github.com/hawkular/hawkular-ui-services[Hawkular-ui-services]: common services and ngResource wrappers for Hawkular REST Apis.
 ** https://github.com/hawkular/hawkular-charts[Hawkular-charts]: Charts and other Angular visualization components used to graphically render data in _Hawkular._
 * https://github.com/hawkular/hawkular-build-tools[Hawkular build tools]: Helpers and definitions to build Hawkular
@@ -39,7 +38,9 @@ Once those steps are achieved, .zip and .tgz archives will be available in `dist
 
 TIP: If you build with `mvn install -Pdev` an uncompressed directory will be created in `dist/target`.
 A default user will be created, the username is `jdoe` and the password is `password`. This can be convenient
-when you are working on the project as you won't have to unzip/untar and register a new user.
+when you are working on the project as you won't have to unzip/untar and register a new user. The uncompressed directory
+can be found in 'dist/target/hawkular-1.0.0-SNAPSHOT/wildfly-8.2.0.Final/' and run with 'bin/standalone.sh' as normally
+starting a WildFly server.
 
 Please have a look at the
 http://www.hawkular.org/docs/dev/development.html[developer documentation] for more information

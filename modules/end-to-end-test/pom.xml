@@ -17,15 +17,15 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <artifactId>hawkular-end-to-end-tests</artifactId>
@@ -36,11 +36,14 @@
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
       <artifactId>inventory-api</artifactId>
+      <scope>test</scope>
     </dependency>
 
+
     <dependency>
-      <groupId>org.rhq.metrics</groupId>
-      <artifactId>rhq-metrics-api</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -58,9 +61,101 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- because integration tests are run by maven-failsafe-plugin -->
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>itest</id>
+      <properties>
+        <hawkular.host>localhost</hawkular.host>
+        <hawkular.port>8080</hawkular.port>
+        <hawkular.path>/hawkular</hawkular.path>
+        <hawkular.base-uri>http://${hawkular.host}:${hawkular.port}${hawkular.path}</hawkular.base-uri>
+        <hawkular.management.port>9999</hawkular.management.port>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/*ITest*</include>
+              </includes>
+              <systemPropertyVariables>
+                <hawkular.host>${hawkular.host}</hawkular.host>
+                <hawkular.port>${hawkular.port}</hawkular.port>
+                <hawkular.base-uri>${hawkular.base-uri}</hawkular.base-uri>
+              </systemPropertyVariables>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+<!-- prepared for HAWKULAR-257 Run end to end tests by Travis
+          <plugin>
+            <groupId>org.wildfly.plugins</groupId>
+            <artifactId>wildfly-maven-plugin</artifactId>
+            <configuration>
+              <groupId>org.hawkular</groupId>
+              <artifactId>hawkular-dist</artifactId>
+              <version>${project.version}</version>
+              <skip>${skipTests}</skip>
+              <startupTimeout>240</startupTimeout>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start-wildfly</id>
+                <phase>pre-integration-test</phase>
+                <configuration>
+                  <javaOpts>
+                    <javaOpt>-server</javaOpt>
+                    <javaOpt>-Xms64m</javaOpt>
+                    <javaOpt>-Xmx512m</javaOpt>
+                    <javaOpt>-XX:MaxPermSize=256m</javaOpt>
+                    <javaOpt>-Djava.net.preferIPv4Stack=true</javaOpt>
+                    <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman </javaOpt>
+                    <javaOpt>-Djava.awt.headless=true </javaOpt>
+                    <javaOpt>-Dkeycloak.import=/home/ppalaga/scratch/hawkular-master/wildFly/standalone/configuration/hawkular-realm.json</javaOpt>
+                  </javaOpts>
+                </configuration>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-wildfly</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>shutdown</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin> -->
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

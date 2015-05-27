@@ -30,6 +30,7 @@ module HawkularMetrics {
     public addProgress: boolean = false;
     private resourceList;
     public alertList;
+    public lastUpdateTimestamp:Date = new Date();
     private resPerPage = 5;
     public resCurPage = 0;
 
@@ -203,7 +204,7 @@ module HawkularMetrics {
             res['availability'] = resource[0].uptimeRatio * 100;
             res['downTime'] = Math.round(resource[0].downtimeDuration / 1000 / 60);
           }).$promise);
-          res['updateTime'] = new Date();
+          this.lastUpdateTimestamp = new Date();
         }, this);
         this.$q.all(promises).then((result) => {
           this.resourceList = aResourceList;
@@ -238,8 +239,6 @@ module HawkularMetrics {
     }
   }
 
-  _module.controller('HawkularMetrics.AddUrlController', AddUrlController);
-
   class DeleteResourceModalController {
 
     static $inject = ['$scope', '$rootScope', '$modalInstance', 'HawkularInventory', 'resource'];
@@ -264,5 +263,6 @@ module HawkularMetrics {
     }
 
   }
+  _module.controller('HawkularMetrics.AddUrlController', AddUrlController);
 
 }

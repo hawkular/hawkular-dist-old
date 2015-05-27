@@ -210,7 +210,9 @@
   <!-- add system properties -->
   <xsl:template name="system-properties">
     <system-properties>
-      <property name="hawkular-metrics.backend" value="embedded_cass" />
+      <xsl:text disable-output-escaping="yes">
+        &lt;property name="hawkular-metrics.backend" value="${hawkular-metrics.backend:embedded_cass}" /&gt;
+      </xsl:text>
     </system-properties>
   </xsl:template>
 
@@ -735,7 +737,8 @@
           <web-context>auth</web-context>
         </auth-server>
         <realm name="hawkular">
-          <auth-server-url>http://localhost:8080/auth</auth-server-url>
+          <auth-server-url>/auth</auth-server-url>
+          <auth-server-url-for-backend-requests>http://localhost:8080/auth</auth-server-url-for-backend-requests>
           <ssl-required>none</ssl-required>
         </realm>
         <secure-deployment name="hawkular-accounts.war">

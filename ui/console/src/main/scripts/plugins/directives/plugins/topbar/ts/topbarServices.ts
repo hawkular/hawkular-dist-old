@@ -68,7 +68,7 @@ module Topbar {
         init(tenantId);
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
-        $rootScope.watch('currentPersona', (currentPersona) => currentPersona && init(currentPersona.id));
+        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && init(currentPersona.id));
       }
     }
 
