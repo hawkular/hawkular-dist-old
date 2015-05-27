@@ -47,7 +47,7 @@
       <div class="panel panel-default hk-summary">
         <div class="row">
           <div class="col-sm-3 hk-summary-item">
-            <a href="/hawkular-ui/url/availability/{{res.id}}">
+            <a href="/hawkular-ui/url/alerts/{{res.id}}">
               <span class="hk-data">{{(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length || 0}} <i class="fa fa-flag" ng-show="(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length > 0"></i></span>
               <span class="hk-item">Unresolved Alerts</span>
             </a>
@@ -66,7 +66,7 @@
             </a>
           </div>
           <div class="col-sm-3 hk-summary-item">
-            <a href="/hawkular-ui/url/availability/{{res.id}}">
+            <a href="/hawkular-ui/url/response-time/{{res.id}}">
               <span class="hk-data" ng-show="res.responseTime.length > 0">{{res.responseTime[0].value}} <span>ms</span></span>
               <span class="hk-data spinner" ng-hide="res.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
               <span class="hk-item">Response Time</span>
