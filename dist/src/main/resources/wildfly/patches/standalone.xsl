@@ -210,9 +210,30 @@
   <!-- add system properties -->
   <xsl:template name="system-properties">
     <system-properties>
-      <xsl:text disable-output-escaping="yes">
-        &lt;property name="hawkular-metrics.backend" value="${hawkular-metrics.backend:embedded_cass}" /&gt;
-      </xsl:text>
+      <property>
+        <xsl:attribute name="name">hawkular-metrics.backend</xsl:attribute>
+        <xsl:attribute name="value">&#36;{hawkular-metrics.backend:embedded_cass}</xsl:attribute>
+      </property>
+
+      <xsl:choose>
+        <xsl:when test="$kettle.build.type='dev'">
+        <property>
+          <xsl:attribute name="name">keycloak.import</xsl:attribute>
+          <xsl:attribute name="value">&#36;{jboss.home.dir}/standalone/configuration/hawkular-realm-for-dev.json</xsl:attribute>
+        </property>
+        </xsl:when>
+        <xsl:when test="$kettle.build.type='production'">
+        <property>
+          <xsl:attribute name="name">keycloak.import</xsl:attribute>
+          <xsl:attribute name="value">&#36;{jboss.home.dir}/standalone/configuration/hawkular-realm.json</xsl:attribute>
+        </property>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:message terminate="yes">
+            Unexpected value of &#36;kettle.build.type: '$kettle.build.type'. Expected 'dev' or 'production'
+          </xsl:message>
+        </xsl:otherwise>
+      </xsl:choose>
     </system-properties>
   </xsl:template>
 
