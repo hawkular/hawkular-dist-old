@@ -254,20 +254,31 @@
 
       <!-- Hawkular Monitor agent subsystem -->
       <subsystem xmlns="urn:org.hawkular.agent.monitor:monitor:1.0"
-                 enabled="true"
                  apiJndiName="java:global/hawkular/agent/monitor/api"
                  numMetricSchedulerThreads="3"
                  numAvailSchedulerThreads="3">
+        <xsl:if test="$kettle.build.type='dev'">
+          <xsl:attribute name="enabled">true</xsl:attribute>
+        </xsl:if>
+        <xsl:if test="$kettle.build.type='production'">
+          <xsl:attribute name="enabled">false</xsl:attribute>
+        </xsl:if>
 
         <diagnostics enabled="true"
                      reportTo="LOG"
                      interval="1"
                      timeUnits="minutes"/>
 
-        <storage-adapter type="HAWKULAR"
-                         username="jdoe"
-                         password="password">
-                         <xsl:attribute name="url">http://&#36;{jboss.bind.address:127.0.0.1}:&#36;{jboss.http.port:8080}</xsl:attribute>
+        <storage-adapter type="HAWKULAR">
+          <xsl:if test="$kettle.build.type='dev'">
+            <xsl:attribute name="username">jdoe</xsl:attribute>
+            <xsl:attribute name="password">password</xsl:attribute>
+          </xsl:if>
+          <xsl:if test="$kettle.build.type='production'">
+            <xsl:attribute name="username">SET_ME</xsl:attribute>
+            <xsl:attribute name="password">SET_ME</xsl:attribute>
+          </xsl:if>
+          <xsl:attribute name="url">http://&#36;{jboss.bind.address:127.0.0.1}:&#36;{jboss.http.port:8080}</xsl:attribute>
         </storage-adapter>
 
         <metric-set-dmr name="WildFly Memory Metrics" enabled="true">
