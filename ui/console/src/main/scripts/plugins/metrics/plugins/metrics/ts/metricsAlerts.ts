@@ -57,7 +57,7 @@ module HawkularMetrics {
 
       this.metricId = $routeParams.resourceId;
 
-      $scope.alertsTimeOffset = $routeParams.timeOffset;
+      $scope.alertsTimeOffset = $routeParams.timeOffset || 3600000;
       // If the end time is not specified in URL use current time as end time
       $scope.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : (new Date()).getTime();
       $scope.alertsTimeStart = $scope.alertsTimeEnd - $scope.alertsTimeOffset;

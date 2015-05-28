@@ -79,24 +79,7 @@
     </div>
   </div>
 
-  <div class="text-center hk-fade-in">
-    <ul class="pagination" ng-show="vm.resourceList.length > 0">
-      <li>
-        <a href="#" ng-click="vm.setPage(vm.resCurPage-1)">
-          <span class="i fa fa-angle-left"></span>
-        </a>
-      </li>
-      <li ng-class="{'active' : vm.resCurPage === 0}"><a href="#" ng-click="vm.setPage(0)">1</a></li>
-      <li ng-class="{'active' : vm.resCurPage === 1}"><a href="#" ng-click="vm.setPage(1)">2</a></li>
-      <li ng-class="{'active' : vm.resCurPage === 2}"><a href="#" ng-click="vm.setPage(2)">3</a></li>
-      <li ng-class="{'active' : vm.resCurPage === 3}"><a href="#" ng-click="vm.setPage(3)">4</a></li>
-      <li ng-class="{'active' : vm.resCurPage === 4}"><a href="#" ng-click="vm.setPage(4)">5</a></li>
-      <li>
-        <a href="#" ng-click="vm.setPage(vm.resCurPage+1)">
-          <span class="i fa fa-angle-right"></span>
-        </a>
-      </li>
-    </ul>
-  </div>
+  <hk-pagination resource-list="vm.resourceList" current-page="vm.resCurPage" page-setter="vm.setPage(pageNumber)"
+      per-page="vm.resPerPage" headers="vm.headerLinks"></hk-pagination>
 
 </div>

@@ -1,0 +1,18 @@
+<div class="text-center hk-fade-in">
+  <ul class="pagination" ng-show="goTos.length > 1">
+    <li>
+      <a href="#" ng-click="setPage(currentPage - 1)">
+        <span class="i fa fa-angle-left"></span>
+      </a>
+    </li>
+    <li ng-repeat="i in goTos track by $index"
+        ng-class="{'active' : currentPage === {{$index}}}">
+      <a href="#" ng-click="setPage($index)">{{$index+1}}</a>
+    </li>
+    <li>
+      <a href="#" ng-click="setPage(currentPage + 1)">
+        <span class="i fa fa-angle-right"></span>
+      </a>
+    </li>
+  </ul>
+</div>
