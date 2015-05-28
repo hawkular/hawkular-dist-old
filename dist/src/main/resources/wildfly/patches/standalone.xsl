@@ -56,41 +56,53 @@
     <xsl:choose>
       <xsl:when test="$kettle.build.type='dev'">
         <logger category="org.hawkular">
-          <level name="DEBUG"/>
+          <level name="INFO"/>
         </logger>
-        <logger category="org.hawkular.bus">
-          <level name="DEBUG"/>
+        <logger category="org.hawkular.accounts">
+          <level name="INFO"/>
         </logger>
-        <logger category="org.hawkular.nest">
-          <level name="DEBUG"/>
+        <logger category="org.hawkular.agent">
+          <level name="INFO"/>
         </logger>
         <logger category="org.hawkular.alerts">
-          <level name="DEBUG"/>
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.bus">
+          <level name="INFO"/>
         </logger>
         <logger category="org.hawkular.inventory">
-          <level name="DEBUG"/>
+          <level name="INFO"/>
         </logger>
         <logger category="org.hawkular.metrics">
-          <level name="DEBUG"/>
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.nest">
+          <level name="INFO"/>
         </logger>
       </xsl:when>
       <xsl:otherwise>
         <logger category="org.hawkular">
           <level name="INFO"/>
         </logger>
-        <logger category="org.hawkular.bus">
+        <logger category="org.hawkular.accounts">
           <level name="INFO"/>
         </logger>
-        <logger category="org.hawkular.nest">
+        <logger category="org.hawkular.agent">
           <level name="INFO"/>
         </logger>
         <logger category="org.hawkular.alerts">
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.bus">
           <level name="INFO"/>
         </logger>
         <logger category="org.hawkular.inventory">
           <level name="INFO"/>
         </logger>
         <logger category="org.hawkular.metrics">
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.nest">
           <level name="INFO"/>
         </logger>
       </xsl:otherwise>
