@@ -1,0 +1,32 @@
+<div class="hk-screen-content" ng-controller="HawkularMetrics.AppServerDetailsController as vm">
+
+  <hawkular-sidebar ng-controller="Sidebar.SidebarController">
+    <div class="hk-nav-tabs-container">
+      <ul class="nav nav-tabs nav-tabs-pf" ng-init="vm.activeTab = vm.activeTab || 'jvm-metrics'">
+        <!--
+        <li ng-class="vm.activeTab === 'alerts' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'alerts'" class="hk-alerts">Alerts</a></li>
+        <li ng-class="vm.activeTab === 'jvm-metrics' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'jvm-metrics'" class="hk-jvm-metrics">JVM <span class="label label-danger label-alert pull-right">3</span></a></li>
+        -->
+        <li ng-class="vm.activeTab === 'jvm-metrics' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'jvm-metrics'" class="hk-jvm-metrics">JVM</a></li>
+        <li ng-class="vm.activeTab === 'web' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'web'" class="hk-web">Web</a></li>
+
+        <!--
+        <li ng-class="vm.activeTab === 'jms' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'jms'" class="hk-jms">JMS</a></li>
+        <li ng-class="vm.activeTab === 'transactions' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'transactions'" class="hk-transactions">Transactions</a></li>
+        <li ng-class="vm.activeTab === 'datasources' ? 'active' : ''"><a href="#" ng-click="vm.activeTab = 'datasources'" class="hk-datasources">Datasources</a></li>
+        -->
+      </ul>
+    </div>
+  </hawkular-sidebar>
+
+
+  <ng-include src="'plugins/metrics/html/app-details/detail-alerts.html'"></ng-include>
+  <ng-include src="'plugins/metrics/html/app-details/detail-jvm.html'"></ng-include>
+  <ng-include src="'plugins/metrics/html/app-details/detail-web.html'"></ng-include>
+  <ng-include src="'plugins/metrics/html/app-details/detail-jms.html'"></ng-include>
+  <ng-include src="'plugins/metrics/html/app-details/detail-transactions.html'"></ng-include>
+  <ng-include src="'plugins/metrics/html/app-details/detail-deployments.html'"></ng-include>
+  <ng-include src="'plugins/metrics/html/app-details/detail-datasources.html'"></ng-include>
+
+
+</div>

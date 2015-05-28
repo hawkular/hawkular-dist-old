@@ -1,0 +1,45 @@
+
+<section id="hk-deployments" class="hk-tab-content" ng-if="vm.activeTab === 'deployments'">
+
+    <h3 class="pull-left">Deployments</h3>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
+    <div class="panel panel-default hk-summary">
+        <div class="row">
+            <div class="col-sm-3 hk-summary-item">
+                <span class="hk-data">-Xmx</span>
+                <span class="hk-item">Max. Heap</span>
+            </div>
+            <div class="col-sm-3 hk-summary-item">
+                <span class="hk-data">20 GB</span>
+                <span class="hk-item">Avg. Heap Usage</span>
+            </div>
+            <div class="col-sm-3 hk-summary-item">
+                <span class="hk-data">22:00</span>
+                <span class="hk-item">Last Garbage Collection</span>
+            </div>
+            <div class="col-sm-3 hk-summary-item">
+                <span class="hk-data">3</span>
+                <span class="hk-item">Alerts</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="hk-info-top clearfix">
+        <h3 class="pull-left" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><button class="btn btn-link hk-trigger"><i class="fa fa-plus-square-o"></i> Alerts <span>(1)</span></button></h3>
+        <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    </div>
+    <div class="alerts-activity clearfix">
+        <div class="panel panel-default alert alert-danger">
+            <div class="hk-alert-icon">
+                <i class="fa fa-flag"></i>
+            </div>
+            <div class="hk-date">
+                12 Feb, 5:35 PM
+            </div>
+            <div class="hk-event">
+                Server <strong>down</strong> for 4 minutes (until 5:39 PM).
+            </div>
+        </div>
+    </div>
+
+</section>

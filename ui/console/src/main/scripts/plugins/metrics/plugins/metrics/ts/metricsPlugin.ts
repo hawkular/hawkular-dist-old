@@ -100,7 +100,7 @@ module HawkularMetrics {
 
             when('/hawkular-ui/app/app-list', {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
             when('/hawkular-ui/app/app-details/:resourceId/:timeOffset?/:endTime?', {
-                templateUrl: 'plugins/metrics/html/app-server-details.html',
+                templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
                 resolve: {
                     hideSubNav: function () {
                         return true;
