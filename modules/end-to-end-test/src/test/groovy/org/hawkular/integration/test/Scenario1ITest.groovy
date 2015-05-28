@@ -111,11 +111,11 @@ class Scenario1ITest extends AbstractTestBase {
         def start = end - 4 * 3600 * 1000 // 4h earlier
         response = client.get(path: "/hawkular-metrics/$tenantId/metrics/numeric/${resourceId}.$statusCodeId/data",
                 query: [start: start, end: end])
-        Assert.assertEquals(31, response.data.size());
+        assertEquals(31, response.data.size());
 
         response = client.get(path: "/hawkular-metrics/$tenantId/metrics/numeric/${resourceId}.$durationId/data",
                 query: [start: start, end: end])
-        Assert.assertEquals(27, response.data.size());
+        assertEquals(27, response.data.size());
 
         /* TODO: define an alert */
         // response = client.post(path: "alerts/triggers/")

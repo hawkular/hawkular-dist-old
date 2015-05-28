@@ -1,10 +1,13 @@
 language: java
+# Enable container-based infrastructure
+# see http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+sudo: false
 jdk:
 - oraclejdk8
 install:
 - mvn -s .travis.maven.settings.xml -version -B
 script:
-- mvn -fae -s .travis.maven.settings.xml clean install
+- mvn -fae -s .travis.maven.settings.xml -Pitest clean install
 notifications:
   email: false
 env:
