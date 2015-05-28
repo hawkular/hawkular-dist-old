@@ -202,7 +202,8 @@ module HawkularMetrics {
             end: moment().valueOf(),
             buckets: 1}, (resource) => {
             res['availability'] = resource[0].uptimeRatio * 100;
-            res['downTime'] = Math.round(resource[0].downtimeDuration / 1000 / 60);
+            res['downtimeDuration'] = Math.round(resource[0].downtimeDuration / 1000 / 60);
+            res['lastDowntime'] = resource[0].lastDowntime;
           }).$promise);
           this.lastUpdateTimestamp = new Date();
         }, this);
