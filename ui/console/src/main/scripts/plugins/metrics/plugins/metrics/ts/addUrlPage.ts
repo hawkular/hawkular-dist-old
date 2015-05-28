@@ -253,7 +253,7 @@ module HawkularMetrics {
         environmentId: globalEnvironmentId,
         resourceId: this.resource.id
       }).$promise.then((res) => {
-          toastr.info('The site ' + this.resource.properties.url + ' is no longer being monitored.');
+          toastr.success('The site ' + this.resource.properties.url + ' is no longer being monitored.');
           this.$modalInstance.close(res);
       });
     }
