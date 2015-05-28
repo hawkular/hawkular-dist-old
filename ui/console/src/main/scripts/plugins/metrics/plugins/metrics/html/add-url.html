@@ -61,7 +61,8 @@
           </div>
           <div class="col-sm-3 hk-summary-item">
             <a href="/hawkular-ui/url/availability/{{res.id}}">
-              <span class="hk-data">n/a</span>
+              <span class="hk-data" ng-show="res.lastDowntime > 0" am-time-ago="res.lastDowntime"></span>
+              <span class="hk-data" ng-show="res.lastDowntime <= 0">n/a</span>
               <span class="hk-item">Last Downtime</span>
             </a>
           </div>
