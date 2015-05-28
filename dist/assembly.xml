@@ -42,13 +42,6 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
-    <fileSet>
-      <directory>src/main/resources/wildfly/bin</directory>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/bin</outputDirectory>
-      <filtered>false</filtered>
-      <fileMode>0744</fileMode>
-      <directoryMode>0755</directoryMode>
-    </fileSet>
      <!-- non-binary files -->
     <fileSet>
       <directory>${assembly.dir}</directory>

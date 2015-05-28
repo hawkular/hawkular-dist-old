@@ -262,6 +262,7 @@
             </goals>
             <configuration>
               <transformationSets>
+                <!-- standalone.xml -->
                 <transformationSet>
                   <dir>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}/standalone/configuration</dir>
                   <stylesheet>src/main/resources/wildfly/patches/standalone.xsl</stylesheet>
@@ -272,7 +273,32 @@
                   <parameters>
                     <parameter>
                       <name>kettle.build.type</name>
-                      <value>${kettle.build.type}</value>
+                      <value>production</value>
+                    </parameter>
+                    <parameter>
+                      <name>uuid.hawkular.accounts.backend</name>
+                      <value>${uuid.hawkular.accounts.backend}</value>
+                    </parameter>
+                  </parameters>
+                </transformationSet>
+                <!-- standalone-itest.xml -->
+                <transformationSet>
+                  <dir>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}/standalone/configuration</dir>
+                  <stylesheet>src/main/resources/wildfly/patches/standalone.xsl</stylesheet>
+                  <fileMappers>
+                    <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+                      <pattern>\.xml$</pattern>
+                      <replacement>-itest.xml</replacement>
+                    </fileMapper>
+                  </fileMappers>
+                  <includes>
+                    <include>standalone.xml</include>
+                  </includes>
+                  <outputDir>${assembly.dir}/${wildfly.dist.zip.root.dir}/standalone/configuration</outputDir>
+                  <parameters>
+                    <parameter>
+                      <name>kettle.build.type</name>
+                      <value>dev</value>
                     </parameter>
                     <parameter>
                       <name>uuid.hawkular.accounts.backend</name>
