@@ -168,7 +168,7 @@ module HawkularMetrics {
 
     getResourceList(currentTenantId?: TenantId):any {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.Resource.query({tenantId: tenantId, environmentId: globalEnvironmentId, per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
+      this.HawkularInventory.ResourceOfType.query({tenantId: tenantId, resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
         // FIXME: hack.. make expanded out of list
         var pages = getResponseHeaders().link ? getResponseHeaders().link.split(', ') : [];
         for (var p = 0; p < pages.length; p++) {
