@@ -20,76 +20,95 @@
 
 module HawkularMetrics {
 
-  export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkularCharts',
-    'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5']);
+    export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkularCharts',
+        'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5']);
 
-  var metricsTab:any;
+    var metricsTab:any;
 
-  _module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
+    _module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
 
-    metricsTab = navBuilder.create()
-      .id(HawkularMetrics.pluginName)
-      .title(() => 'Metrics')
-      .href(() => '/metrics')
-      .subPath('Add Url', 'add-url', navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
-      .subPath('Response Time', 'response-time', navBuilder.join(HawkularMetrics.templatePath, 'response-time.html'))
-      .subPath('Availability', 'availability', navBuilder.join(HawkularMetrics.templatePath, 'availability.html'))
-      .subPath('Alerts', 'alerts', navBuilder.join(HawkularMetrics.templatePath, 'alerts.html'))
-      .build();
+        metricsTab = navBuilder.create()
+            .id(HawkularMetrics.pluginName)
+            .title(() => 'Metrics')
+            .href(() => '/metrics')
+            .subPath('Add Url', 'add-url', navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
+            .subPath('Response Time', 'response-time', navBuilder.join(HawkularMetrics.templatePath, 'response-time.html'))
+            .subPath('Availability', 'availability', navBuilder.join(HawkularMetrics.templatePath, 'availability.html'))
+            .subPath('Alerts', 'alerts', navBuilder.join(HawkularMetrics.templatePath, 'alerts.html'))
+            .build();
 
-    navBuilder.configureRouting($routeProvider, metricsTab);
+        navBuilder.configureRouting($routeProvider, metricsTab);
 
-    $locationProvider.html5Mode(true);
-  }]);
+        $locationProvider.html5Mode(true);
+    }]);
 
-  _module.run(['HawtioNav', (HawtioNav:HawtioMainNav.Registry) => {
-    HawtioNav.add(metricsTab);
-    log.debug('loaded Metrics Plugin');
-  }]);
+    _module.run(['HawtioNav', (HawtioNav:HawtioMainNav.Registry) => {
+        HawtioNav.add(metricsTab);
+        log.debug('loaded Metrics Plugin');
+    }]);
 
-  ///@todo: move this someplace common
-  _module.directive('hkEnter', () => {
-    return function (scope, element, attrs) {
-      element.bind('keydown keypress', (event) => {
-        if (event.which === 13) {
-          scope.$apply(() => {
-            scope.$eval(attrs.hkEnter);
-          });
+    _module.directive('hkEnter', () => {
+        return function (scope, element, attrs) {
+            element.bind('keydown keypress', (event) => {
+                if (event.which === 13) {
+                    scope.$apply(() => {
+                        scope.$eval(attrs.hkEnter);
+                    });
 
-          event.preventDefault();
-        }
-      });
-    };
-  });
-
-  _module.config(["$routeProvider", ($routeProvider) => {
-    $routeProvider.
-        // this was for single page.. remove ?
-        when('/hawkular/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/single-page.html'}).
-        when('/metrics/response-time', {templateUrl: 'plugins/metrics/html/response-time.html',
-        resolve: {
-          hkResourceList : function($filter, $location, $rootScope, $q, HawkularInventory) {
-            var resPromise = HawkularInventory.Resource.query({tenantId: $rootScope.currentPersona.id, environmentId: globalEnvironmentId}).$promise;
-            resPromise.then(function(hkResourceList){
-              $location.path('/metrics/response-time/' + hkResourceList[0].id);
-            }, function(){
-              $location.url('/error');
+                    event.preventDefault();
+                }
             });
+        };
+    });
 
-            // Returning a promise which would never be resolved, so that the page would not render.
-            // The page will be redirected before rendering based on the resource list loaded above.
-            return $q.defer().promise;
-          }
-        }}).
-        when('/hawkular-ui/url/url-list', { templateUrl: 'plugins/metrics/html/add-url.html'}).
-        when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/response-time.html'}).
-        when('/hawkular-ui/url/availability/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/availability.html'}).
-        when('/hawkular-ui/url/alerts/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/alerts.html'}).
+    _module.filter('capitalize', function () {
+        return function (input, all) {
+            return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            }) : '';
+        };
+    });
 
-        when('/hawkular-ui/app/app-list', { templateUrl: 'plugins/metrics/html/app-server-list.html' }).
-        when('/hawkular-ui/app/app-details/:resourceId/:timeOffset?/:endTime?', { templateUrl: 'plugins/metrics/html/app-server-details.html', resolve: { hideSubNav: function() { return true; } } }).
-        otherwise({redirectTo: '/hawkular-ui/url/url-list'});
-  }]);
+    _module.config(["$routeProvider", ($routeProvider) => {
+        $routeProvider.
+            // this was for single page.. remove ?
+            when('/hawkular/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/single-page.html'}).
+            when('/metrics/response-time', {
+                templateUrl: 'plugins/metrics/html/response-time.html',
+                resolve: {
+                    hkResourceList: function ($filter, $location, $rootScope, $q, HawkularInventory) {
+                        var resPromise = HawkularInventory.Resource.query({
+                            tenantId: $rootScope.currentPersona.id,
+                            environmentId: globalEnvironmentId
+                        }).$promise;
+                        resPromise.then(function (hkResourceList) {
+                            $location.path('/metrics/response-time/' + hkResourceList[0].id);
+                        }, function () {
+                            $location.url('/error');
+                        });
 
-  hawtioPluginLoader.addModule(HawkularMetrics.pluginName);
+                        // Returning a promise which would never be resolved, so that the page would not render.
+                        // The page will be redirected before rendering based on the resource list loaded above.
+                        return $q.defer().promise;
+                    }
+                }
+            }).
+            when('/hawkular-ui/url/url-list', {templateUrl: 'plugins/metrics/html/add-url.html'}).
+            when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/response-time.html'}).
+            when('/hawkular-ui/url/availability/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/availability.html'}).
+            when('/hawkular-ui/url/alerts/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/alerts.html'}).
+
+            when('/hawkular-ui/app/app-list', {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
+            when('/hawkular-ui/app/app-details/:resourceId/:timeOffset?/:endTime?', {
+                templateUrl: 'plugins/metrics/html/app-server-details.html',
+                resolve: {
+                    hideSubNav: function () {
+                        return true;
+                    }
+                }
+            }).
+            otherwise({redirectTo: '/hawkular-ui/url/url-list'});
+    }]);
+
+    hawtioPluginLoader.addModule(HawkularMetrics.pluginName);
 }
