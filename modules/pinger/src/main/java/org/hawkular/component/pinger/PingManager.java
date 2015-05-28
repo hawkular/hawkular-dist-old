@@ -21,7 +21,6 @@ import org.hawkular.inventory.api.Interest;
 import org.hawkular.inventory.api.Inventory;
 import org.hawkular.inventory.api.filters.With;
 import org.hawkular.inventory.api.model.Resource;
-import rx.functions.Action1;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -30,8 +29,8 @@ import javax.ejb.LockType;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,50 +49,6 @@ import java.util.concurrent.Future;
 @Startup
 @Singleton
 public class PingManager {
-
-    /**
-     * Collects new URLs reported by {@link PingManager#inventory} and synchronizes the various threads reporting the
-     * new URLs and those ones consuming them.
-     *
-     * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
-     */
-    static class NewUrlsCollector implements Action1<Resource> {
-        private final Object lock = new Object();
-        private List<PingDestination> newUrls = new ArrayList<>();
-
-        /**
-         * A callback for the {@link Inventory} that collects newly added URLs. It is safe to call this method
-         * concurrently from any random thread.
-         *
-         * @see rx.functions.Action1#call(java.lang.Object)
-         */
-        @Override
-        public void call(Resource r) {
-            if (PingDestination.isUrl(r)) {
-                synchronized (lock) {
-                    newUrls.add(PingDestination.from(r));
-                }
-            }
-        }
-
-        /**
-         * Returns the list of {@link PingDestination}s collected by this {@link NewUrlsCollector}. It is safe to call
-         * this method concurrently from any random thread.
-         *
-         * @return the list of {@link PingDestination}s
-         */
-        public List<PingDestination> getNewUrls() {
-            synchronized (lock) {
-                if (this.newUrls.isEmpty()) {
-                    return Collections.emptyList();
-                } else {
-                    List<PingDestination> result = this.newUrls;
-                    this.newUrls = new ArrayList<>();
-                    return result;
-                }
-            }
-        }
-    }
 
     /** How many rounds a WAIT_MILLIS do we wait for results to come in? */
     private static final int ROUNDS = 15;
@@ -117,22 +72,25 @@ public class PingManager {
     TraitsPublisher traitsPublisher;
 
     @javax.annotation.Resource(lookup = "java:global/Hawkular/ObservableInventory")
-    private Inventory.Mixin.Observable inventory;
+    Inventory.Mixin.Observable inventory;
 
-    final NewUrlsCollector newUrlsCollector = new NewUrlsCollector();
+    final UrlChangesCollector urlChangesCollector = new UrlChangesCollector();
 
     @PostConstruct
     public void startUp() {
 
         /*
-         * Add the observer before reading the existing URLs from the inventory so that we do not loose the URLs that
-         * could have been added between those two calls.
+         * Add the observers before reading the existing URLs from the inventory so that we do not loose the URLs that
+         * could have been added or removed between those two calls.
          */
-        inventory.observable(Interest.in(Resource.class).being(Action.created())).subscribe(newUrlsCollector);
+        inventory.observable(Interest.in(Resource.class).being(Action.created())).subscribe(
+                urlChangesCollector.getUrlCreatedAction());
+        inventory.observable(Interest.in(Resource.class).being(Action.deleted())).subscribe(
+                urlChangesCollector.getUrlDeletedAction());
 
-        //we use just an observable inventory here, because it allows us to see all the tenants. This essentially
-        //circumvents any authz present on the inventory.
-        //We need that though because pinger doesn't have storage of its own and is considered "trusted", so it's ok.
+        // we use just an observable inventory here, because it allows us to see all the tenants. This essentially
+        // circumvents any authz present on the inventory.
+        // We need that though because pinger doesn't have storage of its own and is considered "trusted", so it's ok.
         Set<Resource> urls = inventory.tenants().getAll().resourceTypes().getAll(With.id(PingDestination.URL_TYPE))
                 .resources().getAll().entities();
         Log.LOG.infof("About to initialize Hawkular Pinger with %d URLs", urls.size());
@@ -157,8 +115,8 @@ public class PingManager {
     @Schedule(minute = "*", hour = "*", second = "0,20,40", persistent = false)
     public void scheduleWork() {
 
-        List<PingDestination> newUrls = newUrlsCollector.getNewUrls();
-        destinations.addAll(newUrls);
+        /* Apply URL additions and removals collected in between. */
+        urlChangesCollector.apply(this.destinations);
 
         if (destinations.size() == 0) {
             return;
@@ -171,8 +129,7 @@ public class PingManager {
      * Runs the pinging work on the provided list of destinations. The actual pings are scheduled to run in parallel in
      * a thread pool. After ROUNDS*WAIT_MILLIS, remaining pings are cancelled and an error
      *
-     * @param destinations
-     *            Set of destinations to ping
+     * @param destinations Set of destinations to ping
      */
     private void doThePing(Set<PingDestination> destinations) {
         List<PingStatus> results = new ArrayList<>(destinations.size());

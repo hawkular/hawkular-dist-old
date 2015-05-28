@@ -16,13 +16,10 @@
  */
 package org.hawkular.component.pinger;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.hawkular.component.pinger.PingDestination.ResourceField;
 import org.hawkular.component.pinger.Traits.TraitHeader;
 import org.hawkular.inventory.api.model.Resource;
-import org.hawkular.inventory.api.model.ResourceType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -38,31 +35,22 @@ import com.google.common.collect.ImmutableMap;
  */
 public class PingManagerTest {
 
-    private static final String TEST_RESOURCE_ID = "test-rsrc";
-    private static final String TEST_TENANT_ID = "test-tenat";
-    private static final String TEST_ENVIRONMENT_ID = "test-env";
-    private static final String TEST_URL = "http://hawkular.github.io";
-    private static final String GET_METHOD = "GET";
-
     @Test
     public void testScheduleWork() throws Exception {
 
         PingManager manager = new PingManager();
         manager.pinger = new Pinger();
-        Map<String, Object> props = new HashMap<>();
-        props.put(ResourceField.url.name(), TEST_URL);
-        props.put(ResourceField.method.name(), GET_METHOD);
-        ResourceType urlType = new ResourceType(TEST_TENANT_ID, PingDestination.URL_TYPE, "0");
-        Resource urlResource = new Resource(TEST_TENANT_ID, TEST_ENVIRONMENT_ID, null, TEST_RESOURCE_ID, urlType,
-                props);
-        manager.newUrlsCollector.call(urlResource);
+
+        Resource urlResource = PingerTestUtils.createTestResource();
+
+        manager.urlChangesCollector.getUrlCreatedAction().call(urlResource);
+
         manager.metricPublisher = Mockito.mock(MetricPublisher.class);
         manager.traitsPublisher = Mockito.mock(TraitsPublisher.class);
 
         manager.scheduleWork();
 
-        PingDestination expectedDest = new PingDestination(TEST_TENANT_ID, TEST_ENVIRONMENT_ID, TEST_RESOURCE_ID,
-                TEST_URL, GET_METHOD);
+        PingDestination expectedDest = PingerTestUtils.createTestPingDestination();
 
         Map<TraitHeader, String> expectedTraitsItems = new ImmutableMap.Builder<TraitHeader, String>().put(
                 TraitHeader.SERVER, "GitHub.com").build();
