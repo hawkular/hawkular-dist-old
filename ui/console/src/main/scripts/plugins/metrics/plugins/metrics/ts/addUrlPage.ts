@@ -17,6 +17,7 @@
 
 /// <reference path="metricsPlugin.ts"/>
 /// <reference path="alertsManager.ts"/>
+/// <reference path="pagination.ts"/>
 /// <reference path="errorManager.ts"/>
 
 module HawkularMetrics {
@@ -24,7 +25,7 @@ module HawkularMetrics {
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q', 'md5'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q', 'md5', 'HkHeaderParser'];
 
     private httpUriPart = 'http://';
     public addProgress: boolean = false;
@@ -33,6 +34,7 @@ module HawkularMetrics {
     public lastUpdateTimestamp:Date = new Date();
     private resPerPage = 5;
     public resCurPage = 0;
+    public headerLinks = {};
 
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
@@ -48,7 +50,9 @@ module HawkularMetrics {
                 private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
                 private $q: ng.IQService,
                 private md5: any,
-                public resourceUrl:string) {
+                private HkHeaderParser: HawkularMetrics.IHkHeaderParser,
+                public resourceUrl:string
+                ) {
       $scope.vm = this;
       this.resourceUrl = this.httpUriPart;
 
@@ -170,6 +174,8 @@ module HawkularMetrics {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.ResourceOfType.query({tenantId: tenantId, resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
         // FIXME: hack.. make expanded out of list
+        this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
+
         var pages = getResponseHeaders().link ? getResponseHeaders().link.split(', ') : [];
         for (var p = 0; p < pages.length; p++) {
           if (pages[p].indexOf('')) {
