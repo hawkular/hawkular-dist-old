@@ -23,6 +23,7 @@
                 xmlns:ds="urn:jboss:domain:datasources:2.0"
                 xmlns:ra="urn:jboss:domain:resource-adapters:2.0"
                 xmlns:ejb3="urn:jboss:domain:ejb3:2.0"
+                xmlns:logging="urn:jboss:domain:logging:2.0"
                 version="2.0"
                 exclude-result-prefixes="xalan ds ra ejb3">
 
@@ -35,12 +36,12 @@
 
   <!-- enable/disable deployment scanner -->
   <xsl:template name="deployment-scanner">
-    <xsl:if test="$kettle.build.type='dev'">
-      <xsl:attribute name="scan-enabled">true</xsl:attribute>
-    </xsl:if>
-    <xsl:if test="$kettle.build.type='production'">
-      <xsl:attribute name="scan-enabled">false</xsl:attribute>
-    </xsl:if>
+    <xsl:attribute name="scan-enabled">
+      <xsl:choose>
+        <xsl:when test="$kettle.build.type='dev'">true</xsl:when>
+        <xsl:otherwise>false</xsl:otherwise>
+      </xsl:choose>
+    </xsl:attribute>
   </xsl:template>
 
   <xsl:template match="node()[name(.)='deployment-scanner']">
@@ -52,28 +53,48 @@
 
   <!-- add some logger categories -->
   <xsl:template name="loggers">
-    <xsl:if test="$kettle.build.type='dev'">
-      <logger category="org.hawkular">
-        <level name="DEBUG"/>
-      </logger>
-      <logger category="org.hawkular.bus">
-        <level name="DEBUG"/>
-      </logger>
-      <logger category="org.hawkular.nest">
-        <level name="DEBUG"/>
-      </logger>
-    </xsl:if>
-    <xsl:if test="$kettle.build.type='production'">
-      <logger category="org.hawkular">
-        <level name="INFO"/>
-      </logger>
-      <logger category="org.hawkular.bus">
-        <level name="INFO"/>
-      </logger>
-      <logger category="org.hawkular.nest">
-        <level name="INFO"/>
-      </logger>
-    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="$kettle.build.type='dev'">
+        <logger category="org.hawkular">
+          <level name="DEBUG"/>
+        </logger>
+        <logger category="org.hawkular.bus">
+          <level name="DEBUG"/>
+        </logger>
+        <logger category="org.hawkular.nest">
+          <level name="DEBUG"/>
+        </logger>
+        <logger category="org.hawkular.alerts">
+          <level name="DEBUG"/>
+        </logger>
+        <logger category="org.hawkular.inventory">
+          <level name="DEBUG"/>
+        </logger>
+        <logger category="org.hawkular.metrics">
+          <level name="DEBUG"/>
+        </logger>
+      </xsl:when>
+      <xsl:otherwise>
+        <logger category="org.hawkular">
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.bus">
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.nest">
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.alerts">
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.inventory">
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.metrics">
+          <level name="INFO"/>
+        </logger>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="node()[name(.)='periodic-rotating-file-handler']">
@@ -81,6 +102,14 @@
       <xsl:apply-templates select="node()|@*"/>
     </xsl:copy>
     <xsl:call-template name="loggers"/>
+  </xsl:template>
+
+  <!-- set the console log level -->
+  <xsl:template match="logging:console-handler[@name='CONSOLE']/logging:level">
+    <xsl:choose>
+      <xsl:when test="$kettle.build.type='dev'"><level name="DEBUG"/></xsl:when>
+      <xsl:otherwise><level name="INFO"/></xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!-- add bus resource adapter -->
@@ -257,12 +286,12 @@
                  apiJndiName="java:global/hawkular/agent/monitor/api"
                  numMetricSchedulerThreads="3"
                  numAvailSchedulerThreads="3">
-        <xsl:if test="$kettle.build.type='dev'">
-          <xsl:attribute name="enabled">true</xsl:attribute>
-        </xsl:if>
-        <xsl:if test="$kettle.build.type='production'">
-          <xsl:attribute name="enabled">false</xsl:attribute>
-        </xsl:if>
+        <xsl:attribute name="enabled">
+          <xsl:choose>
+            <xsl:when test="$kettle.build.type='dev'">true</xsl:when>
+            <xsl:otherwise>false</xsl:otherwise>
+          </xsl:choose>
+        </xsl:attribute>
 
         <diagnostics enabled="true"
                      reportTo="LOG"
@@ -270,14 +299,16 @@
                      timeUnits="minutes"/>
 
         <storage-adapter type="HAWKULAR">
-          <xsl:if test="$kettle.build.type='dev'">
-            <xsl:attribute name="username">jdoe</xsl:attribute>
-            <xsl:attribute name="password">password</xsl:attribute>
-          </xsl:if>
-          <xsl:if test="$kettle.build.type='production'">
-            <xsl:attribute name="username">SET_ME</xsl:attribute>
-            <xsl:attribute name="password">SET_ME</xsl:attribute>
-          </xsl:if>
+          <xsl:choose>
+            <xsl:when test="$kettle.build.type='dev'">
+              <xsl:attribute name="username">jdoe</xsl:attribute>
+              <xsl:attribute name="password">password</xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:attribute name="username">SET_ME</xsl:attribute>
+              <xsl:attribute name="password">SET_ME</xsl:attribute>
+            </xsl:otherwise>
+          </xsl:choose>
           <xsl:attribute name="url">http://&#36;{jboss.bind.address:127.0.0.1}:&#36;{jboss.http.port:8080}</xsl:attribute>
         </storage-adapter>
 
