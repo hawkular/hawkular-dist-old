@@ -33,7 +33,6 @@
 
   <properties>
     <kettle.build.type>production</kettle.build.type>
-    <hawkular.realm.template>hawkular-realm.json</hawkular.realm.template>
     <checkstyle.suppressions.file>checkstyle-suppressions.xml</checkstyle.suppressions.file>
     <assembly.dir>${project.build.directory}/assembly</assembly.dir>
     <wildfly.dist.zip.root.dir>wildfly-${version.org.wildfly}</wildfly.dist.zip.root.dir>
@@ -386,8 +385,6 @@
       <id>dev</id>
       <properties>
         <kettle.build.type>dev</kettle.build.type>
-        <!-- This special realm for dev purposes has a default user 'jdoe' with password 'password' -->
-        <hawkular.realm.template>hawkular-realm-for-dev.json</hawkular.realm.template>
       </properties>
       <build>
         <plugins>
