@@ -29,6 +29,7 @@
   </parent>
 
   <artifactId>hawkular-end-to-end-tests</artifactId>
+  <name>Hawkular: End-To-End integration tests</name>
   <description>A module for some End-To-End integration tests on Rest-API level</description>
 
   <dependencies>
