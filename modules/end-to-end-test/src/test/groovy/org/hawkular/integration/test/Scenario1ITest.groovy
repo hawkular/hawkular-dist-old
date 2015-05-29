@@ -109,12 +109,12 @@ class Scenario1ITest extends AbstractTestBase {
         /* Get values for a chart - last 4h data */
         def end = System.currentTimeMillis()
         def start = end - 4 * 3600 * 1000 // 4h earlier
-        response = client.get(path: "/hawkular-metrics/$tenantId/metrics/numeric/${resourceId}.$statusCodeId/data",
-                query: [start: start, end: end])
+        response = client.get(path: "/hawkular/metrics/gauges/${resourceId}.$statusCodeId/data",
+                query: [start: start, end: end], headers: ["Hawkular-Tenant": tenantId])
         assertEquals(31, response.data.size());
 
-        response = client.get(path: "/hawkular-metrics/$tenantId/metrics/numeric/${resourceId}.$durationId/data",
-                query: [start: start, end: end])
+        response = client.get(path: "/hawkular/metrics/gauges/${resourceId}.$durationId/data",
+                query: [start: start, end: end], headers: ["Hawkular-Tenant": tenantId])
         assertEquals(27, response.data.size());
 
         /* TODO: define an alert */
@@ -134,10 +134,11 @@ class Scenario1ITest extends AbstractTestBase {
 
         long time = now + (timeSkewMinutes * 60 * 1000)
 
-        response = client.post(path: "/hawkular-metrics/$tenantId/metrics/numeric/$tmp/data",
-        body: [
-            [timestamp: time, value: value]
-        ])
+        response = client.post(path: "/hawkular/metrics/gauges/$tmp/data",
+            headers: ["Hawkular-Tenant": tenantId],
+            body: [
+                [timestamp: time, value: value]
+            ])
         assertResponseOk(response.status)
     }
 }

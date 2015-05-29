@@ -53,7 +53,7 @@ public class AvailPublisher {
     static {
         String host = System.getProperty("jboss.bind.address", "localhost");
         String port = System.getProperty("jboss.http.port", "8080");
-        METRICS_BASE_URI = "http://"+ host + ":"+ port + "/hawkular-metrics";
+        METRICS_BASE_URI = "http://"+ host + ":"+ port + "/hawkular/metrics";
     }
 
     // Avoid concurrent Asynchronous calls to REST services. There seems to be a serious issue with undertow and
@@ -71,8 +71,8 @@ public class AvailPublisher {
             String rid = avr.id;
             String tenantId = avr.tenantId;
 
-            HttpPost request = new HttpPost(METRICS_BASE_URI + "/" + tenantId +
-                    "/metrics/availability/" + rid + "/data");
+            HttpPost request = new HttpPost(METRICS_BASE_URI + "/availability/" + rid + "/data");
+            request.addHeader("Hawkular-Tenant", tenantId);
 
             Availability availability = new Availability(avr.timestamp, avr.avail.toLowerCase());
             List<Availability> list = new ArrayList<>(1);

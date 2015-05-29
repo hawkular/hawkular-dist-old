@@ -92,12 +92,8 @@ public class MetricPublisher {
         String payload = new Gson().toJson(mMetrics);
         HttpClient client = HttpClientBuilder.create().build();
 
-        // TODO replace for metrics 0.3.3
-        HttpPost request = new HttpPost(configuration.getMetricsBaseUri() + "/" + status.getDestination().getTenantId()
-                + "/metrics/numeric/data");
-        // HttpPost request = new HttpPost(configuration.getMetricsBaseUri() + "/metrics/numeric/data");
-        // request.addHeader("tenantId", status.getDestination().getTenantId());
-        // TODO end replace for metrics 0.3.3
+        HttpPost request = new HttpPost(configuration.getMetricsBaseUri() + "/gauges/data");
+        request.addHeader("Hawkular-Tenant", status.getDestination().getTenantId());
 
         request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
 
