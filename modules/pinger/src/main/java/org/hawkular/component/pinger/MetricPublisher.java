@@ -69,7 +69,7 @@ public class MetricPublisher {
     @javax.annotation.Resource(lookup = "java:/HawkularBusConnectionFactory")
     ConnectionFactory connectionFactory;
 
-    private final PingerConfiguration configuration = PingerConfiguration.defaults();
+    private final PingerConfiguration configuration = PingerConfiguration.getInstance();
 
     /**
      * Serializes the given {@link PingStatus} and then submits it to Hawkular-metrics service via REST

@@ -23,10 +23,19 @@ import org.junit.BeforeClass
 
 class AbstractTestBase {
 
-  static testUser = 'jdoe'
-  static testPasword = 'password'
-  static baseURI = 'http://localhost:8080'
-  //static baseURI = System.getProperty('hawkular.base-uri') ?: 'http://localhost:8080/hawkular'
+  protected static final String testUser = 'jdoe'
+  protected static final String testPasword = 'password'
+
+  protected static final String baseURI
+  static {
+      String host = System.getProperty('hawkular.bind.address') ?: 'localhost'
+      if ("0.0.0.0".equals(host)) {
+          host = "localhost"
+      }
+      int portOffset = Integer.parseInt(System.getProperty('hawkular.port.offset') ?: '0')
+      int httpPort = portOffset + 8080
+      baseURI = "http://${host}:${httpPort}"
+  }
   static RESTClient client
 
   @BeforeClass
