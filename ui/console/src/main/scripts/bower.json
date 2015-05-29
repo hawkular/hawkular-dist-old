@@ -30,7 +30,7 @@
     "hawtio-utilities": "2.0.21",
     "hawtio-oauth": "2.0.7",
     "lodash": "3.2.0",
-    "moment": "2.9.0",
+    "moment": "2.10.3",
     "toastr": "2.1.1",
     "patternfly": "1.1.3"
   },
