@@ -28,7 +28,7 @@ public class PingerConfiguration {
     static {
         String host = System.getProperty("jboss.bind.address", "localhost");
         String port = System.getProperty("jboss.http.port", "8080");
-        INSTANCE = new PingerConfiguration("http://"+ host + ":"+ port + "/hawkular-metrics");
+        INSTANCE = new PingerConfiguration("http://"+ host + ":"+ port + "/hawkular/metrics");
     }
 
     /**
