@@ -321,7 +321,6 @@
               <xsl:attribute name="password">SET_ME</xsl:attribute>
             </xsl:otherwise>
           </xsl:choose>
-          <xsl:attribute name="url">http://&#36;{jboss.bind.address:127.0.0.1}:&#36;{jboss.http.port:8080}</xsl:attribute>
         </storage-adapter>
 
         <metric-set-dmr name="WildFly Memory Metrics" enabled="true">
