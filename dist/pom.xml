@@ -272,7 +272,7 @@
                   <parameters>
                     <parameter>
                       <name>kettle.build.type</name>
-                      <value>production</value>
+                      <value>${kettle.build.type}</value>
                     </parameter>
                     <parameter>
                       <name>uuid.hawkular.accounts.backend</name>
