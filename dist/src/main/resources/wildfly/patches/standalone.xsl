@@ -23,7 +23,6 @@
                 xmlns:ds="urn:jboss:domain:datasources:2.0"
                 xmlns:ra="urn:jboss:domain:resource-adapters:2.0"
                 xmlns:ejb3="urn:jboss:domain:ejb3:2.0"
-                xmlns:logging="urn:jboss:domain:logging:2.0"
                 version="2.0"
                 exclude-result-prefixes="xalan ds ra ejb3">
 
@@ -117,7 +116,8 @@
   </xsl:template>
 
   <!-- set the console log level -->
-  <xsl:template match="logging:console-handler[@name='CONSOLE']/logging:level">
+  <xsl:template match="logging:console-handler[@name='CONSOLE']/logging:level"
+                xmlns:logging="urn:jboss:domain:logging:2.0">
     <xsl:choose>
       <xsl:when test="$kettle.build.type='dev'"><level name="DEBUG"/></xsl:when>
       <xsl:otherwise><level name="INFO"/></xsl:otherwise>
