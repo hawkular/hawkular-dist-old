@@ -36,6 +36,13 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
+      <directory>src/main/resources/configuration</directory>
+      <outputDirectory>${wildfly.dist.zip.root.dir}/standalone/configuration</outputDirectory>
+      <filtered>true</filtered>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    <fileSet>
       <directory>src/main/resources/wildfly/modules</directory>
       <outputDirectory>${wildfly.dist.zip.root.dir}/modules</outputDirectory>
       <filtered>false</filtered>
@@ -165,21 +172,6 @@
       <useTransitiveFiltering>false</useTransitiveFiltering>
     </dependencySet>
   </dependencySets>
-
-  <files>
-    <file>
-      <source>src/main/resources/configuration/${hawkular.realm.template}</source>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/standalone/configuration/</outputDirectory>
-      <filtered>true</filtered>
-      <destName>hawkular-realm.json</destName>
-    </file>
-    <file>
-      <source>src/main/resources/configuration/hawkular-realm-for-dev.json</source>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/standalone/configuration/</outputDirectory>
-      <filtered>true</filtered>
-      <destName>hawkular-realm-for-dev.json</destName>
-    </file>
-  </files>
 
 </assembly>
 
