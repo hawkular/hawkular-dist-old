@@ -716,7 +716,7 @@
 
         <resource-type-set-dmr name="Main" enabled="true">
           <resource-type-dmr name="WildFly Server"
-                             resourceNameTemplate="WildFly Server"
+                             resourceNameTemplate="WildFly Server [${{jboss.node.name}}]"
                              path="/"
                              metricSets="WildFly Memory Metrics,WildFly Threading Metrics"
                              availSets="Server Availability" />
@@ -797,7 +797,8 @@
                       password="adminPass"
                       resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,Transaction Manager" />
 
-          <local-dmr enabled="true"
+          <local-dmr name="Local"
+                     enabled="true"
                      resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,Transaction Manager" />
 
         </managed-servers>
