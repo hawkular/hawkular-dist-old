@@ -90,7 +90,7 @@
     <version.org.hawkular.availCreator>${project.version}</version.org.hawkular.availCreator>
     <version.org.hawkular.bus>0.0.6</version.org.hawkular.bus>
     <version.org.hawkular.console>${project.version}</version.org.hawkular.console>
-    <version.org.hawkular.inventory>0.0.7</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>0.0.9</version.org.hawkular.inventory>
     <version.org.hawkular.metrics>0.3.2-SNAPSHOT</version.org.hawkular.metrics>
     <version.org.hawkular.nest>0.0.6</version.org.hawkular.nest>
     <version.org.hawkular.pinger>${project.version}</version.org.hawkular.pinger>
