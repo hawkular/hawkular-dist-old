@@ -88,11 +88,6 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.alerts</groupId>
-      <artifactId>example-alerts-ui</artifactId>
-      <type>war</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.alerts</groupId>
       <artifactId>hawkular-actions-email</artifactId>
       <type>war</type>
     </dependency>
