@@ -57,10 +57,10 @@ module HawkularMetrics {
         id: triggerName,
         description: 'Created on ' + Date(),
         firingMatch: 'ALL',
-        safetyMatch: 'ALL',
+        autoResolveMatch: 'ALL',
         enabled: enabled,
-        safetyEnabled: false,
-        actions: [email]
+        autoResolve: false,
+        actions: {email: [email]}
       }).$promise.then((trigger)=> {
 
           triggerId = trigger.id;
@@ -98,6 +98,7 @@ module HawkularMetrics {
 
     getAction(email: string): ng.IPromise<void> {
       return this.HawkularAlert.Action.get({
+        pluginId: 'email',
         actionId: email
       }).$promise;
     }
@@ -112,15 +113,14 @@ module HawkularMetrics {
     }
 
     addEmailAction(email: string): ng.IPromise<void> {
-      return this.getAction(email).then((data: any)=> {
+      return this.getAction(email).then((promiseValue: any) => {
+        return promiseValue;
+      }, (reason: any) => {
         // Create a default email action
-        this.$log.debug('Action', data, ' for email ', email);
-        if (!data.actionId) {
+        if (reason.status === 404) {
           this.$log.debug('Action does not exist, creating one');
           return this.createAction(email);
         }
-
-        this.$log.debug('Action does already exist');
       });
     }
 
