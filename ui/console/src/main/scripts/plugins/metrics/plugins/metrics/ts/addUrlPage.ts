@@ -152,11 +152,11 @@ module HawkularMetrics {
           (e) => err(e, 'Error during saving metrics.'))
 
         // Create threshold trigger for newly created metrics
-        .then(() => this.HawkularAlertsManager.createTrigger(currentTenantId + '/' + metricId + '_trigger_thres', true, 'THRESHOLD', defaultEmail),
+        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', defaultEmail),
           (e) => err(e, 'Error saving email action.'))
 
         // Create availability trigger for newly created metrics
-        .then((alert) => this.HawkularAlertsManager.createTrigger(currentTenantId + '/' + metricId + '_trigger_avail', false, 'AVAILABILITY', defaultEmail),
+        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', defaultEmail),
           (e) => err(e, 'Error saving threshold trigger.'))
 
         //this.$location.url('/hawkular/' + metricId);
