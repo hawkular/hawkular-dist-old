@@ -17,30 +17,32 @@
 package org.hawkular.component.pinger;
 
 /**
- * A class to have the REST end point URLs on one place.
+ * A class to have the REST end point URLs in one place.
  *
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 public class PingerConfiguration {
 
-    private static final PingerConfiguration DEFAULTS = new PingerConfiguration(
-            "http://localhost:8080/hawkular/inventory", "http://localhost:8080/hawkular-metrics");
-
-    public static PingerConfiguration defaults() {
-        return DEFAULTS;
+    /** The singleton */
+    private static final PingerConfiguration INSTANCE;
+    static {
+        String host = System.getProperty("jboss.bind.address", "localhost");
+        String port = System.getProperty("jboss.http.port", "8080");
+        INSTANCE = new PingerConfiguration("http://"+ host + ":"+ port + "/hawkular-metrics");
     }
 
-    private final String inventoryBaseUri;
+    /**
+     * @return the singleton instance
+     */
+    public static PingerConfiguration getInstance() {
+        return INSTANCE;
+    }
+
     private final String metricsBaseUri;
 
-    public PingerConfiguration(String inventoryBaseUri, String metricsBaseUri) {
+    private PingerConfiguration(String metricsBaseUri) {
         super();
-        this.inventoryBaseUri = inventoryBaseUri;
         this.metricsBaseUri = metricsBaseUri;
-    }
-
-    public String getInventoryBaseUri() {
-        return inventoryBaseUri;
     }
 
     public String getMetricsBaseUri() {

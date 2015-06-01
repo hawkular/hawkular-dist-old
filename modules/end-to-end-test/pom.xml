@@ -29,6 +29,7 @@
   </parent>
 
   <artifactId>hawkular-end-to-end-tests</artifactId>
+  <name>Hawkular: End-To-End integration tests</name>
   <description>A module for some End-To-End integration tests on Rest-API level</description>
 
   <dependencies>
@@ -84,11 +85,10 @@
       <!-- Integration tests -->
       <id>itest</id>
       <properties>
-        <hawkular.host>localhost</hawkular.host>
-        <hawkular.port>8080</hawkular.port>
-        <hawkular.path>/hawkular</hawkular.path>
-        <hawkular.base-uri>http://${hawkular.host}:${hawkular.port}${hawkular.path}</hawkular.base-uri>
-        <hawkular.management.port>9999</hawkular.management.port>
+        <hawkular.bind.address>127.0.0.1</hawkular.bind.address>
+        <hawkular.port.offset>0</hawkular.port.offset>
+        <!-- $hawkular.management.port must be equal to $hawkular.port.offset + 9990 -->
+        <hawkular.management.port>9990</hawkular.management.port>
       </properties>
       <build>
         <plugins>
@@ -101,9 +101,8 @@
                 <include>**/*ITest*</include>
               </includes>
               <systemPropertyVariables>
-                <hawkular.host>${hawkular.host}</hawkular.host>
-                <hawkular.port>${hawkular.port}</hawkular.port>
-                <hawkular.base-uri>${hawkular.base-uri}</hawkular.base-uri>
+                <hawkular.bind.address>${hawkular.bind.address}</hawkular.bind.address>
+                <hawkular.port.offset>${hawkular.port.offset}</hawkular.port.offset>
               </systemPropertyVariables>
             </configuration>
             <executions>
@@ -125,6 +124,17 @@
               <version>${project.version}</version>
               <skip>${skipTests}</skip>
               <startupTimeout>240</startupTimeout>
+              <port>${hawkular.management.port}</port>
+              <javaOpts>
+                <javaOpt>-server</javaOpt>
+                <javaOpt>-Xms64m</javaOpt>
+                <javaOpt>-Xmx512m</javaOpt>
+                <javaOpt>-Djava.net.preferIPv4Stack=true</javaOpt>
+                <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman</javaOpt>
+                <javaOpt>-Djava.awt.headless=true</javaOpt>
+                <javaOpt>-Djboss.bind.address=${hawkular.bind.address}</javaOpt>
+                <javaOpt>-Djboss.socket.binding.port-offset=${hawkular.port.offset}</javaOpt>
+              </javaOpts>
             </configuration>
             <executions>
               <execution>

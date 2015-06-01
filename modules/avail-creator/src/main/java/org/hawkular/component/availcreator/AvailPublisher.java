@@ -49,6 +49,13 @@ import com.google.gson.Gson;
 @Stateless
 public class AvailPublisher {
 
+    private static final String METRICS_BASE_URI;
+    static {
+        String host = System.getProperty("jboss.bind.address", "localhost");
+        String port = System.getProperty("jboss.http.port", "8080");
+        METRICS_BASE_URI = "http://"+ host + ":"+ port + "/hawkular-metrics";
+    }
+
     // Avoid concurrent Asynchronous calls to REST services. There seems to be a serious issue with undertow and
     // concurrent async calls, which hangs the thread.  (note - this is a pooled MDB, not a singleton)
     //@Asynchronous
@@ -64,7 +71,7 @@ public class AvailPublisher {
             String rid = avr.id;
             String tenantId = avr.tenantId;
 
-            HttpPost request = new HttpPost("http://localhost:8080/hawkular-metrics/" + tenantId +
+            HttpPost request = new HttpPost(METRICS_BASE_URI + "/" + tenantId +
                     "/metrics/availability/" + rid + "/data");
 
             Availability availability = new Availability(avr.timestamp, avr.avail.toLowerCase());

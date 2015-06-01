@@ -321,7 +321,6 @@
               <xsl:attribute name="password">SET_ME</xsl:attribute>
             </xsl:otherwise>
           </xsl:choose>
-          <xsl:attribute name="url">http://&#36;{jboss.bind.address:127.0.0.1}:&#36;{jboss.http.port:8080}</xsl:attribute>
         </storage-adapter>
 
         <metric-set-dmr name="WildFly Memory Metrics" enabled="true">
@@ -813,7 +812,7 @@
         </auth-server>
         <realm name="hawkular">
           <auth-server-url>/auth</auth-server-url>
-          <auth-server-url-for-backend-requests>http://localhost:8080/auth</auth-server-url-for-backend-requests>
+          <auth-server-url-for-backend-requests><xsl:text disable-output-escaping="yes">http://${jboss.bind.address:127.0.0.1}:${jboss.http.port:8080}/auth</xsl:text></auth-server-url-for-backend-requests>
           <ssl-required>none</ssl-required>
         </realm>
         <secure-deployment name="hawkular-accounts.war">
