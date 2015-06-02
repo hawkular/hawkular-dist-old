@@ -25,6 +25,7 @@ module HawkularMetrics {
     createAction(email: string): ng.IPromise<void>;
     updateTrigger(triggerId: string, data: any): ng.IPromise<void>;
     createTrigger(triggerName: string, enabled: boolean, conditionType: string, email: string): ng.IPromise<void>;
+    deleteTrigger(triggerId: string): ng.IPromise<void>;
     createCondition(triggerId: string, condition: any): ng.IPromise<void>;
     updateCondition(triggerId: string, conditionId: string, condition: any): ng.IPromise<void>;
     createDampening(triggerId: string, duration: number): ng.IPromise<void>;
@@ -89,6 +90,10 @@ module HawkularMetrics {
           // Create dampening for that trigger
           return this.createDampening(triggerId, 7 * 60000);
         });
+    }
+
+    public deleteTrigger(triggerId: string): ng.IPromise<void> {
+      return this.HawkularAlert.Trigger.delete({triggerId: triggerId}).$promise;
     }
 
     public updateTrigger(triggerId: string, data: any): ng.IPromise<void> {
