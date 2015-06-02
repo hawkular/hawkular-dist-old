@@ -88,8 +88,10 @@ module HawkularMetrics {
             tenantId: tenantId,
             availabilityId: 'AI~R~' + res.id + '~AT~App Server'}, (resource) => {
               var latestData = resource[resource.length-1];
-              res['state'] = latestData.value;
-              res['updateTimestamp'] = latestData.timestamp;
+              if (latestData) {
+                res['state'] = latestData['value'];
+                res['updateTimestamp'] = latestData['timestamp'];
+              }
           }).$promise);
           this.lastUpdateTimestamp = new Date();
         }, this);
