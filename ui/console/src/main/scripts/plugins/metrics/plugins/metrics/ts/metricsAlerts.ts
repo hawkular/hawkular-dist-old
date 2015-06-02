@@ -75,6 +75,7 @@ module HawkularMetrics {
       HawkularAlertsManager.queryConsoleAlerts(this.metricId).then((data)=> {
         this.$log.debug('queryConsoleAlerts', data);
         this.alertList = data;
+        this.alertList.$resolved = true; // FIXME
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
   }

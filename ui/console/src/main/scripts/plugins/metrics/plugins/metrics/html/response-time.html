@@ -3,9 +3,9 @@
   <hawkular-sidebar ng-controller="Sidebar.SidebarController">
     <div class="hk-nav-tabs-container">
       <ul class="nav nav-tabs nav-tabs-pf">
+        <li><a href="/hawkular-ui/url/alerts/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-alerts">All Alerts</a></li>
         <li><a href="/hawkular-ui/url/availability/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-availability">Availability</a></li>
         <li class="active"><a href="/hawkular-ui/url/response-time/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-response-time">Response Time</a></li>
-        <li><a href="/hawkular-ui/url/alerts/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-alerts">Alerts</a></li>
       </ul>
     </div>
   </hawkular-sidebar>
