@@ -33,30 +33,32 @@ module HawkularMetrics {
     private resCurPage = 0;
 
     constructor(private $location: ng.ILocationService,
-      private $scope: any,
-      private $rootScope: any,
-      private $interval: ng.IIntervalService,
-      private $log: ng.ILogService,
-      private $filter: ng.IFilterService,
-      private $modal: any,
-      private HawkularInventory: any,
-      private HawkularMetric: any,
-      private HawkularAlert: any,
-      private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-      private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
-      private $q: ng.IQService,
-      private md5: any,
-      public startTimeStamp:TimestampInMillis,
-      public endTimeStamp:TimestampInMillis,
-      public resourceUrl: string) {
-        $scope.vm = this;
+                private $scope: any,
+                private $rootScope: any,
+                private $interval: ng.IIntervalService,
+                private $log: ng.ILogService,
+                private $filter: ng.IFilterService,
+                private $modal: any,
+                private HawkularInventory: any,
+                private HawkularMetric: any,
+                private HawkularAlert: any,
+                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
+                private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
+                private $q: ng.IQService,
+                private md5: any,
+                public startTimeStamp:TimestampInMillis,
+                public endTimeStamp:TimestampInMillis,
+                public resourceUrl: string) {
+      $scope.vm = this;
 
-        this.startTimeStamp = +moment().subtract(1, 'hours');
-        this.endTimeStamp = +moment();
-        this.resourceUrl = this.httpUriPart;
+      if ($rootScope.currentPersona) {
+        this.getResourceList(this.$rootScope.currentPersona.id);
+      } else {
+        // currentPersona hasn't been injected to the rootScope yet, wait for it..
+        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.getResourceList(currentPersona.id));
+      }
 
-        this.getResourceList();
-        this.autoRefresh(20);
+      this.autoRefresh(20);
     }
 
     private autoRefreshPromise: ng.IPromise<number>;
@@ -76,13 +78,33 @@ module HawkularMetrics {
       });
     }
 
-    getResourceList(): any {
+    getResourceList(currentTenantId?: TenantId):any {
+      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      this.HawkularInventory.ResourceOfType.query({tenantId: tenantId, resourceTypeId: 'WildFly Server', per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
+        var promises = [];
+        angular.forEach(aResourceList, function(res, idx) {
+          promises.push(this.HawkularMetric.AvailabilityMetricData.query({
+            tenantId: tenantId,
+            availabilityId: 'AI~R~' + res.id + '~AT~App Server'}, (resource) => {
+              var latestData = resource[resource.length-1];
+              res['state'] = latestData.value;
+              res['updateTimestamp'] = latestData.timestamp;
+          }).$promise);
+          this.lastUpdateTimestamp = new Date();
+        }, this);
+        this.$q.all(promises).then((result) => {
+          this.resourceList = aResourceList;
+        });
+      });
+    }
+
+    getResourceListFake(currentTenantId?: TenantId): any {
       this.resourceList = [
         {
           tenant: 'test', environment: 'test', feed: null, id: 'f5087d5d26aeff90cc92c738a10d8bba',
           properties: { name: 'Eavy Machine', url: 'eavy.corp.redhat.com' },
           type: { tenant: 'test', id: 'EAP', version: '1.0', properties: {} },
-          state: 'Down',
+          state: 'down',
           alerts: ['SLOW'],
           tags: ['Production']
         },
@@ -90,7 +112,7 @@ module HawkularMetrics {
           tenant: 'test', environment: 'test', feed: null, id: '5c4785a7a304d32e5f404242666895f5',
           properties: { name: 'Tori Machine', url: 'tori.corp.redhat.com' },
           type: { tenant: 'test', id: 'Tomcat', version: '1.0', properties: {} },
-          state: 'Up',
+          state: 'up',
           alerts: [],
           tags: ['Development']
         },
@@ -98,7 +120,7 @@ module HawkularMetrics {
           tenant: 'test', environment: 'test', feed: null, id: '21193e7941642baa1285cd7edd8af62e',
           properties: { name: 'Wiko Machine', url: 'wiko.corp.redhat.com' },
           type: { tenant: 'test', id: 'Wildfly', version: '1.0', properties: {} },
-          state: 'Starting',
+          state: 'starting',
           alerts: ['DOWN'],
           tags: []
         },
@@ -106,7 +128,7 @@ module HawkularMetrics {
           tenant: 'test', environment: 'test', feed: null, id: '20a0e9f5d777a16ad40928dd3ba1bef9',
           properties: { name: 'Tomy Machine', url: 'tomy.corp.redhat.com' },
           type: { tenant: 'test', id: 'Tomcat', version: '1.0', properties: {} },
-          state: 'Restart Required',
+          state: 'restart required',
           alerts: [],
           tags: ['QE']
         }
