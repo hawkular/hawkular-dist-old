@@ -41,7 +41,6 @@ module HawkularMetrics {
 
       this.$log.debug('querying data');
       this.$log.debug('$routeParams', $routeParams);
-
       this.openSetup = () => {
         var modalInstance = $modal.open({
           templateUrl: 'plugins/metrics/html/alerts-setup.html',
@@ -78,6 +77,19 @@ module HawkularMetrics {
         this.alertList.$resolved = true; // FIXME
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
+
+    public alertResolve(alert: any, index: number): void {
+      for (var i = 0; i< this.alertList.length; i++) {
+        if (this.alertList[i].$$hashKey === alert.$$hashKey) {
+          console.log(this.alertList[i]);
+          this.HawkularAlert.Alert.resolve({alertIds: alert.id}, {}).$promise.then( () => {
+            this.alertList.splice(i, 1);
+          });
+          break;
+        }
+      }
+    }
+
   }
 
   _module.controller('MetricsAlertController', MetricsAlertController);

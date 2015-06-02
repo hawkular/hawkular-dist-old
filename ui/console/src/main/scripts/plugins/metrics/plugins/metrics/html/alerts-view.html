@@ -62,6 +62,18 @@
         <span ng-if="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
         The average response time was {{alert.avg  | number: 0}} ms.
       </div>
+
+      <div class="alert-resolver">
+        <a ng-click="mac.alertResolve(alert, $index)" tooltip="Mark as resolved"
+           tooltip-placement="top"
+           tooltip-trigger="mouseenter"
+           tooltip-popup-delay="500">
+          <i class="fa" ng-class="{'fa-check-square-o': hover, 'fa-square-o': !hover}"
+             ng-mouseenter="hover = true"
+             ng-mouseleave="hover = false">
+          </i>
+        </a>
+      </div>
     </div>
 
   </div>
