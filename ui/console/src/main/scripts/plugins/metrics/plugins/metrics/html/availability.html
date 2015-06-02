@@ -63,26 +63,19 @@
     <div class="hk-info-top clearfix">
       <h3 class="pull-left">Metrics</h3>
       <div class="hk-update pull-right">
-        <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart"><i class="fa fa-refresh"></i></button>
+        <button ng-click="vm.refreshAvailPageNow(vm.getRawMetricId())" class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart"><i class="fa fa-refresh"></i></button>
       </div>
     </div>
 
     <div class="panel panel-default hk-graph">
       <h2>Availability</h2>
-      <img src="img/graph-availability.png" alt="graph" width="944" height="197">
-    </div>
-    <!--<div class="panel panel-default graph">-->
-      <!--<div class="update pull-right" ng-show="vm.availabilityDataPoints.length > 0" >-->
-        <!--<i class="fa fa-clock-o"></i><a ng-click="vm.refreshAvailPageNow(vm.getRawMetricId())"><strong>Last update</strong> 20 seconds ago</a>-->
-      <!--</div>-->
+      <availability-chart
+              data="{{vm.availabilityDataPoints}}"
+              chart-type="availability">
+      </availability-chart>
 
-      <!--<h2>Avail points: {{vm.availabilityDataPoints.length}}</h2>-->
-      <!--<availability-chart-->
-        <!--data="{{vm.availabilityDataPoints}}"-->
-        <!--chart-type="availability"-->
-        <!--chart-height="250">-->
-      <!--</availability-chart>-->
-    <!--</div>-->
+    </div>
+
 
   </section>
 </div>

@@ -140,11 +140,9 @@ module HawkularMetrics {
             }, metricsIds).$promise;
 
           /// For right now we will just Register a couple of metrics automatically
-          return createMetric(metrics[0])
-            .then(createMetric(metrics[1]), errMetric)
+          return this.$q.all([createMetric(metrics[0]), createMetric(metrics[1])])
             .then(associateResourceWithMetrics, errMetric)
-            .catch('Error associating metrics with resource.');
-            // .catch(err('Error adding availability.'));
+            .catch((e) => err(e, 'Error associating metrics with resource.'));
         })
 
         // Find if a default email exists
@@ -152,11 +150,11 @@ module HawkularMetrics {
           (e) => err(e, 'Error during saving metrics.'))
 
         // Create threshold trigger for newly created metrics
-        .then(() => this.HawkularAlertsManager.createTrigger(currentTenantId + '/' + metricId + '_trigger_thres', true, 'THRESHOLD', defaultEmail),
+        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', defaultEmail),
           (e) => err(e, 'Error saving email action.'))
 
         // Create availability trigger for newly created metrics
-        .then((alert) => this.HawkularAlertsManager.createTrigger(currentTenantId + '/' + metricId + '_trigger_avail', false, 'AVAILABILITY', defaultEmail),
+        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', defaultEmail),
           (e) => err(e, 'Error saving threshold trigger.'))
 
         //this.$location.url('/hawkular/' + metricId);
@@ -248,18 +246,36 @@ module HawkularMetrics {
 
   class DeleteResourceModalController {
 
-    static $inject = ['$scope', '$rootScope', '$modalInstance', 'HawkularInventory', 'resource'];
+    static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularInventory', 'resource'];
 
-    constructor(private $scope, private $rootScope, private $modalInstance: any, private HawkularInventory, public resource) {
+    constructor(private $scope: any,
+                private $rootScope: any,
+                private $modalInstance: any,
+                private $q: ng.IQService,
+                private HawkularInventory,
+                public resource) {
       $scope.vm = this;
     }
 
     deleteResource() {
-      this.HawkularInventory.Resource.delete({
-        tenantId: this.$rootScope.currentPersona.id,
-        environmentId: globalEnvironmentId,
-        resourceId: this.resource.id
-      }).$promise.then((res) => {
+      var metricsIds: string[] = [this.resource.id + '.status.duration', this.resource.id + '.status.code'];
+      var deleteMetric = (metricId: string) =>
+        this.HawkularInventory.Metric.delete({
+          tenantId: this.$rootScope.currentPersona.id,
+          environmentId: globalEnvironmentId,
+          metricId: metricId
+        }).$promise;
+
+      var removeResource = () =>
+        this.HawkularInventory.Resource.delete({
+          tenantId: this.$rootScope.currentPersona.id,
+          environmentId: globalEnvironmentId,
+          resourceId: this.resource.id
+        }).$promise;
+
+      this.$q.all([deleteMetric(metricsIds[0]), deleteMetric(metricsIds[1])])
+      .then(removeResource)
+      .then((res) => {
           toastr.success('The site ' + this.resource.properties.url + ' is no longer being monitored.');
           this.$modalInstance.close(res);
       });

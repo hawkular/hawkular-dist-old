@@ -212,7 +212,7 @@ module HawkularMetrics {
       this.saveProgress = true;
       var isError = false;
       // Check if email action exists
-      this.HawkularAlertsManager.addEmailAction(this.trigger_thres.actions[0]).then(()=> {
+      this.HawkularAlertsManager.addEmailAction(this.trigger_thres.actions.email[0]).then(()=> {
         if(!angular.equals(this.alertSetupBackup.trigger_thres, this.trigger_thres)) {
           return this.HawkularAlertsManager.updateTrigger(this.trigger_thres.id, this.trigger_thres);
         }

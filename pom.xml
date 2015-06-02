@@ -87,10 +87,12 @@
     <version.org.hawkular.accounts>1.0.4</version.org.hawkular.accounts>
     <version.org.hawkular.agent>0.0.8</version.org.hawkular.agent>
     <version.org.hawkular.alerts>1.0.0-SNAPSHOT</version.org.hawkular.alerts>
+    <version.org.hawkular.agent>0.0.8</version.org.hawkular.agent>
+    <version.org.hawkular.alerts>0.0.4</version.org.hawkular.alerts>
     <version.org.hawkular.availCreator>${project.version}</version.org.hawkular.availCreator>
     <version.org.hawkular.bus>0.0.6</version.org.hawkular.bus>
     <version.org.hawkular.console>${project.version}</version.org.hawkular.console>
-    <version.org.hawkular.inventory>0.0.7</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>0.0.9</version.org.hawkular.inventory>
     <version.org.hawkular.metrics>0.3.2-SNAPSHOT</version.org.hawkular.metrics>
     <version.org.hawkular.nest>0.0.6</version.org.hawkular.nest>
     <version.org.hawkular.pinger>${project.version}</version.org.hawkular.pinger>
@@ -139,13 +141,6 @@
         <artifactId>hawkular-alerts-ear</artifactId>
         <version>${version.org.hawkular.alerts}</version>
         <type>ear</type>
-      </dependency>
-
-      <dependency>
-        <groupId>org.hawkular.alerts</groupId>
-        <artifactId>example-alerts-ui</artifactId>
-        <version>${version.org.hawkular.alerts}</version>
-        <type>war</type>
       </dependency>
 
       <dependency>
