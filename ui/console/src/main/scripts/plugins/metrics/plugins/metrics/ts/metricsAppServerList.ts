@@ -31,6 +31,7 @@ module HawkularMetrics {
     public alertList;
     private resPerPage = 5;
     private resCurPage = 0;
+    private autoRefreshPromise: ng.IPromise<number>;
 
     constructor(private $location: ng.ILocationService,
                 private $scope: any,
@@ -61,7 +62,7 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private autoRefreshPromise: ng.IPromise<number>;
+
 
     cancelAutoRefresh(): void {
       this.$interval.cancel(this.autoRefreshPromise);

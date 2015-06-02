@@ -1,6 +1,6 @@
 <div class="hk-application-servers" ng-controller="HawkularMetrics.AppServerListController as vm">
 
-  <h1 class="text-center">{{userDetails.firstName}}'s application servers</h1>
+  <h1 class="text-center">{{userDetails.firstName| firstUpper}}'s application servers</h1>
   <h3 class="pull-left">Current Status</h3>
   <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.lastUpdateTimestamp | date:'mediumTime'}}</span>
 

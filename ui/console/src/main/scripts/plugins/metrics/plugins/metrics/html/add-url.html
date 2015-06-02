@@ -1,6 +1,6 @@
 <div ng-controller="HawkularMetrics.AddUrlController as vm">
   <div class="hk-fade-in" ng-class="{'hk-urls-list text-center': vm.resourceList.length === 0}">
-    <h1 class="text-center">Hello {{userDetails.firstName | capitalize}}!</h1>
+    <h1 class="text-center">Hello {{userDetails.firstName | firstUpper}}!</h1>
     <i class="fa fa-line-chart" ng-show="vm.resourceList.length === 0"></i>
     <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a website that you want to monitor.</h2>
     <form class="form-horizontal hk-add-url" name="addUrlForm" role="form" novalidate ng-submit="vm.addUrl(vm.resourceUrl)">
