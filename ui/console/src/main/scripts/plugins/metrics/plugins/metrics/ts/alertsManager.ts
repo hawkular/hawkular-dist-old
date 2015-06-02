@@ -213,18 +213,18 @@ module HawkularMetrics {
 
        */
 
-      return this.HawkularAlert.Alert.query({triggerIds:metricId+'_trigger_avail,' + metricId+'_trigger_thres'}).$promise.then((serverAlerts: any) => {
+      return this.HawkularAlert.Alert.query({
+            triggerIds:metricId+'_trigger_avail,' + metricId+'_trigger_thres',
+            statuses:'OPEN'
+          }).$promise.then((serverAlerts: any) => {
 
         var momentNow = this.$moment();
-
-        this.$log.debug('querying data finished', serverAlerts);
 
         for (var i = 0; i < serverAlerts.length; i++) {
           var consoleAlert: any = {};
           var serverAlert = serverAlerts[i];
 
-          this.$log.debug('server Alert to inspect: ', serverAlert);
-
+          consoleAlert.id = serverAlert.alertId;
           consoleAlert.end = serverAlert.ctime;
 
           var sum: number = 0.0;

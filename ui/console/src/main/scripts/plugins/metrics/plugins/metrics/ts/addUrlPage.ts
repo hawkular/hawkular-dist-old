@@ -182,7 +182,7 @@ module HawkularMetrics {
         }
         var expanded = this.resourceList ? this.resourceList.expanded : [];
         aResourceList.expanded = expanded;
-        this.HawkularAlert.Alert.query({}, (anAlertList) => {
+        this.HawkularAlert.Alert.query({statuses:'OPEN'}, (anAlertList) => {
           this.alertList = anAlertList;
         }, this);
         var promises = [];

@@ -113,7 +113,6 @@ module HawkularMetrics {
         scope.goTos = [0];
         scope.$watchGroup(['headers', 'perPage'], () => {
           var pagesNumber = Math.ceil((scope.headers.total || 1) / scope.perPage);
-          console.log('pagesNumber', pagesNumber);
           scope.goTos = new Array(pagesNumber);
         });
 
