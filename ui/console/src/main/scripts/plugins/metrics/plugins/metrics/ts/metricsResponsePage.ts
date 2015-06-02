@@ -56,7 +56,18 @@ module HawkularMetrics {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams'];
 
-    public math;
+    private bucketedDataPoints:IChartDataPoint[] = [];
+    private contextDataPoints:IChartDataPoint[] = [];
+    private chartData:any;
+    private autoRefreshPromise:ng.IPromise<number>;
+
+    private resourceId:ResourceId;
+    threshold = 5000; // default to 5 seconds some high number
+
+    median = 0;
+    percentile95th = 0;
+    average = 0;
+    math;
 
     constructor(private $scope:any,
                 private $rootScope:any,
@@ -101,17 +112,7 @@ module HawkularMetrics {
 
     }
 
-    private bucketedDataPoints:IChartDataPoint[] = [];
-    private contextDataPoints:IChartDataPoint[] = [];
-    private chartData:any;
-    private autoRefreshPromise:ng.IPromise<number>;
 
-    private resourceId:ResourceId;
-    threshold = 5000; // default to 5 seconds some high number
-
-    median = 0;
-    percentile95th = 0;
-    average = 0;
 
 
     cancelAutoRefresh():void {

@@ -40,7 +40,16 @@ module HawkularMetrics {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams'];
 
-    public math;
+    private availabilityDataPoints:IChartDataPoint[] = [];
+    private autoRefreshPromise:ng.IPromise<number>;
+    private resourceId:ResourceId;
+
+    uptimeRatio = 0;
+    downtimeDuration = 0;
+    lastDowntime:Date;
+    downtimeCount = 0;
+    empty = true;
+    math;
 
     constructor(private $scope:any,
                 private $rootScope:any,
@@ -85,23 +94,16 @@ module HawkularMetrics {
 
     }
 
-    private availabilityDataPoints:IChartDataPoint[] = [];
-    private autoRefreshPromise:ng.IPromise<number>;
-    private resourceId:ResourceId;
 
-    uptimeRatio = 0;
-    downtimeDuration = 0;
-    lastDowntime:Date;
-    downtimeCount = 0;
-    empty = true;
 
     refreshAvailPageNow(resourceId:ResourceId, startTime?:number):void {
       this.$scope.hkEndTimestamp = +moment();
       var adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       if (resourceId) {
+        console.log('*** Updating Availability Page');
         this.refreshSummaryAvailabilityData(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
-        this.refreshAvailDataForTimestamp(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+        this.refreshAvailChartData(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
         this.refreshAlerts(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       }
     }
@@ -170,7 +172,7 @@ module HawkularMetrics {
     }
 
 
-    refreshAvailDataForTimestamp(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+    refreshAvailChartData(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
 
       if (metricId) {
         this.HawkularMetric.AvailabilityMetricData.query({
