@@ -86,7 +86,8 @@ module HawkularMetrics {
         angular.forEach(aResourceList, function(res, idx) {
           promises.push(this.HawkularMetric.AvailabilityMetricData.query({
             tenantId: tenantId,
-            availabilityId: 'AI~R~' + res.id + '~AT~App Server'}, (resource) => {
+            availabilityId: 'AI~R~' + res.id + '~AT~App Server',
+            distinct: true}, (resource) => {
               var latestData = resource[resource.length-1];
               if (latestData) {
                 res['state'] = latestData['value'];
