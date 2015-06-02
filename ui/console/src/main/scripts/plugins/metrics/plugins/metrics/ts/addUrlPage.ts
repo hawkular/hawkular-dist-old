@@ -246,19 +246,21 @@ module HawkularMetrics {
 
   class DeleteResourceModalController {
 
-    static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularInventory', 'resource'];
+    static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularInventory', 'HawkularAlertsManager', 'resource'];
 
     constructor(private $scope: any,
                 private $rootScope: any,
                 private $modalInstance: any,
                 private $q: ng.IQService,
                 private HawkularInventory,
+                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 public resource) {
       $scope.vm = this;
     }
 
     deleteResource() {
       var metricsIds: string[] = [this.resource.id + '.status.duration', this.resource.id + '.status.code'];
+      var triggerIds: string[] = [this.resource.id + '_trigger_thres', this.resource.id + '_trigger_avail'];
       var deleteMetric = (metricId: string) =>
         this.HawkularInventory.Metric.delete({
           tenantId: this.$rootScope.currentPersona.id,
@@ -273,7 +275,10 @@ module HawkularMetrics {
           resourceId: this.resource.id
         }).$promise;
 
-      this.$q.all([deleteMetric(metricsIds[0]), deleteMetric(metricsIds[1])])
+      this.$q.all([deleteMetric(metricsIds[0]),
+                   deleteMetric(metricsIds[1]),
+                   this.HawkularAlertsManager.deleteTrigger(triggerIds[0]),
+                   this.HawkularAlertsManager.deleteTrigger(triggerIds[1])])
       .then(removeResource)
       .then((res) => {
           toastr.success('The site ' + this.resource.properties.url + ' is no longer being monitored.');
