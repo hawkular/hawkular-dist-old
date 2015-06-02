@@ -189,20 +189,19 @@ module HawkularMetrics {
         angular.forEach(aResourceList, function(res, idx) {
           promises.push(this.HawkularMetric.NumericMetricData.queryMetrics({
             tenantId: tenantId, resourceId: res.id, numericId: (res.id + '.status.duration'),
-            start: moment().subtract(24, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
+            start: moment().subtract(1, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
             // FIXME: Work data so it works for chart ?
             res['responseTime'] = resource;
           }).$promise);
-          promises.push(this.HawkularMetric.NumericMetricData.queryMetrics({
-            tenantId: tenantId, resourceId: res.id, numericId: (res.id + '.status.code'),
-            start: moment().subtract(24, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
-            // FIXME: Use availability instead..
-            res['isUp'] = (resource[0] && resource[0].value >= 200 && resource[0].value < 300);
+          promises.push(this.HawkularMetric.AvailabilityMetricData.query({
+            tenantId: tenantId, availabilityId: res.id, distinct: true,
+            start: 1, end: moment().valueOf()}, (resource) => {
+            res['isUp'] = (resource[0] && resource[0].value === 'up');
           }).$promise);
           promises.push(this.HawkularMetric.AvailabilityMetricData.query({
             tenantId: tenantId,
             availabilityId: res.id,
-            start: moment().subtract(24, 'hours').valueOf(),
+            start: 1,
             end: moment().valueOf(),
             buckets: 1}, (resource) => {
             res['availability'] = resource[0].uptimeRatio * 100;

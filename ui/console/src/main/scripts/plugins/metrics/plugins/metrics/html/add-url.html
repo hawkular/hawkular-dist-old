@@ -33,9 +33,8 @@
         URL (A-Z) <i class="fa" ng-class="vm.reverse ? 'fa-angle-up' : 'fa-angle-down'"></i>
       </button>
     </div>
-    <div class="col-sm-6 text-right">
-      Last update
-      <span class="hk-update pull-right" data-toggle="tooltip" data-placement="top" title="Last update"><i class="fa fa-clock-o"></i>{{vm.lastUpdateTimestamp| date:"HH:mm" }}</span>
+    <div class="col-sm-6">
+      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.lastUpdateTimestamp | date:'mediumTime'}}</span>
     </div>
   </div>
 
