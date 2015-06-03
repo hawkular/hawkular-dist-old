@@ -29,7 +29,6 @@
   <p class="pull-right"><strong>{{(mac.alertList | filter:timeFilter).length}} alerts</strong> last week.</p>
 </div>
 -->
-
 <div class="clearfix">
   <div ng-repeat="alert in mac.alertList | filter:timeFilter | orderBy: '-start'">
 
@@ -75,8 +74,10 @@
         </a>
       </div>
     </div>
-
   </div>
-
-
+</div>
+<div class="clearfix" ng-show="mac.alertList.length > 0">
+  <button class="btn btn-danger pull-right" ng-click="mac.resolveAll()" ng-disabled="mac.isResolvingAll">
+    <span class="fa fa-check-square-o" style="color:white"></span>
+    Resolve all</button>
 </div>
