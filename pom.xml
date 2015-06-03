@@ -27,13 +27,14 @@
     <version>14</version>
   </parent>
 
+  <groupId>org.hawkular</groupId>
   <artifactId>hawkular</artifactId>
   <!-- Important a released version should always follow any of these patterns: -->
   <!-- major.minor.micro.Alpha[n] -->
   <!-- major.minor.micro.Beta[n] -->
   <!-- major.minor.micro.CR[n] -->
   <!-- major.minor.micro.Final -->
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0.Alpha1</version>
   <packaging>pom</packaging>
 
   <name>Hawkular</name>
