@@ -7,10 +7,12 @@
 
   <div class="panel panel-default hk-summary">
     <div class="row">
+      <!--
       <div class="col-sm-2 hk-summary-item">
         <span class="hk-data">0 <i class="fa fa-flag" ng-show="alertsNumTBD > 0"></i></span>
         <span class="hk-item">Alerts</span>
       </div>
+      -->
       <div class="col-sm-2 hk-summary-item">
         <span class="hk-data">{{vm.resourceList.length}}</span>
         <span class="hk-item">Servers</span>
@@ -23,8 +25,14 @@
       </div>
       <div class="col-sm-2 hk-summary-item">
         <a href="#">
-          <span class="hk-data">{{(vm.resourceList|filter:{state: 'down'}:true).length + (vm.resourceList|filter:{state: 'unknown'}:true).length}} <i class="fa fa-arrow-down"></i></span>
-          <span class="hk-item">Down / Unknown</span>
+          <span class="hk-data">{{(vm.resourceList|filter:{state: 'down'}:true).length}} <i class="fa fa-arrow-down"></i></span>
+          <span class="hk-item">Down</span>
+        </a>
+      </div>
+      <div class="col-sm-2 hk-summary-item">
+        <a href="#">
+          <span class="hk-data">{{(vm.resourceList|filter:{state: 'unknown'}:true).length}} <i class="fa fa-chain-broken"></i></span>
+          <span class="hk-item">Unknown</span>
         </a>
       </div>
       <div class="col-sm-2 hk-summary-item">
@@ -70,7 +78,8 @@
         <tr ng-repeat="res in vm.resourceList | filter:vm.search | orderBy:'properties.url':vm.reverse">
           <td class="state">
             <i class="fa fa-arrow-up" ng-show="res.state === 'up'"></i>
-            <i class="fa fa-arrow-down" ng-show="res.state === 'down' || res.state === 'unknown'"></i>
+            <i class="fa fa-arrow-down" ng-show="res.state === 'down'"></i>
+            <i class="fa fa-chain-broken" ng-show="res.state === 'unknown'"></i>
             <i class="fa fa-spinner fa-spin" ng-show="res.state === 'starting'"></i>
             <i class="fa fa-repeat" ng-show="res.state === 'restart required'"></i>
             <p ng-hide="res.state"><span class="spinner spinner-sm spinner-inline"></span> <span class="fetching">Fetching state...</span></p>
