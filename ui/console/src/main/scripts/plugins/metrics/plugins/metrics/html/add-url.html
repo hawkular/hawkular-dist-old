@@ -55,7 +55,7 @@
             <a href="/hawkular-ui/url/availability/{{res.id}}">
               <span class="hk-data" ng-show="res.responseTime.length > 0"><i class="fa " ng-class="res.isUp ? 'fa-arrow-up' : 'fa-arrow-down'"></i>{{res.isUp ? 'Up' : 'Down'}}</span>
               <span class="hk-data spinner" ng-hide="res.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-              <span class="hk-item">Availability</span>
+              <span class="hk-item">Current Availability</span>
             </a>
           </div>
           <div class="col-sm-3 hk-summary-item">
@@ -70,7 +70,7 @@
               <span class="hk-data" ng-show="res.responseTime.length > 0 && res.responseTime[0].value >= 0">{{res.responseTime[0].value}} <span>ms</span></span>
               <span class="hk-data" ng-show="res.responseTime.length > 0 && res.responseTime[0].value < 0">n/a</span>
               <span class="hk-data spinner" ng-hide="res.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-              <span class="hk-item">Response Time</span>
+              <span class="hk-item">Current Response Time</span>
             </a>
           </div>
         </div>
