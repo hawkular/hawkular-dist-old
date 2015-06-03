@@ -16,10 +16,12 @@
  */
 package org.hawkular.component.availcreator;
 
+import org.jboss.logging.BasicLogger;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
 import org.jboss.logging.MessageLogger;
+import org.jboss.logging.annotations.Cause;
 
 /**
  * Log messages of the creator
@@ -27,7 +29,7 @@ import org.jboss.logging.MessageLogger;
  * @author Heiko W. Rupp
  */
 @MessageLogger(projectCode = "HAWKULAR")
-public interface Log {
+public interface Log extends BasicLogger {
 
     Log LOG = Logger.getMessageLogger(Log.class, "org.hawkular.component.availcreator");
 
@@ -36,6 +38,15 @@ public interface Log {
     void wNoTopicConnection(String topicName);
 
     @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5101, value = "Problem sending availabiliy to Hawkular-Metrics: %s")
-    void availPostStatus(String s);
+    @Message(id = 5101, value = "Problem sending availabiliy to Hawkular Metrics: %s")
+    void wAvailPostStatus(String s);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 5102, value = "Could not send a message to Hawkular Bus")
+    void eCouldNotSendMessage(@Cause Throwable e);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 5103, value = "Could not handle a message from Hawkular Bus")
+    void eCouldNotHandleBusMessage(@Cause Exception e);
+
 }

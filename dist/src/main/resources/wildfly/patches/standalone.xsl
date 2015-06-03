@@ -69,6 +69,12 @@
         <logger category="org.hawkular.bus">
           <level name="INFO"/>
         </logger>
+        <logger category="org.hawkular.component.availcreator">
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.component.pinger">
+          <level name="INFO"/>
+        </logger>
         <logger category="org.hawkular.inventory">
           <level name="INFO"/>
         </logger>
@@ -93,6 +99,12 @@
           <level name="INFO"/>
         </logger>
         <logger category="org.hawkular.bus">
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.component.availcreator">
+          <level name="INFO"/>
+        </logger>
+        <logger category="org.hawkular.component.pinger">
           <level name="INFO"/>
         </logger>
         <logger category="org.hawkular.inventory">

@@ -83,10 +83,10 @@ public class AvailPublisher {
             try {
                 HttpResponse response = client.execute(request);
                 if (response.getStatusLine().getStatusCode() > 399) {
-                    Log.LOG.availPostStatus(response.getStatusLine().toString());
+                    Log.LOG.wAvailPostStatus(response.getStatusLine().toString());
                 }
             } catch (IOException e) {
-                e.printStackTrace();  // TODO: Customize this generated block
+                Log.LOG.wAvailPostStatus(e.getMessage());
             }
         }
     }
@@ -105,7 +105,7 @@ public class AvailPublisher {
                 MessageProcessor processor = new MessageProcessor();
                 processor.send(pc, msg);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.LOG.eCouldNotSendMessage(e);
             }
         }
         else {

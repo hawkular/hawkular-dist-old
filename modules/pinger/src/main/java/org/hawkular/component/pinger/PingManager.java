@@ -93,10 +93,12 @@ public class PingManager {
         // We need that though because pinger doesn't have storage of its own and is considered "trusted", so it's ok.
         Set<Resource> urls = inventory.tenants().getAll().resourceTypes().getAll(With.id(PingDestination.URL_TYPE))
                 .resources().getAll().entities();
-        Log.LOG.infof("About to initialize Hawkular Pinger with %d URLs", urls.size());
+        Log.LOG.iInitializedWithUrls(urls.size());
 
         for (Resource r : urls) {
-            destinations.add(PingDestination.from(r));
+            PingDestination dest = PingDestination.from(r);
+            destinations.add(dest);
+            Log.LOG.debugf("Added initial URL to ping: %s", dest.getUrl());
         }
     }
 
@@ -115,10 +117,13 @@ public class PingManager {
     @Schedule(minute = "*", hour = "*", second = "0,20,40", persistent = false)
     public void scheduleWork() {
 
+        Log.LOG.debugf("Pinger awake to ping");
+
         /* Apply URL additions and removals collected in between. */
         urlChangesCollector.apply(this.destinations);
 
         if (destinations.size() == 0) {
+            Log.LOG.debugf("Nothing to ping");
             return;
         }
 
@@ -132,6 +137,8 @@ public class PingManager {
      * @param destinations Set of destinations to ping
      */
     private void doThePing(Set<PingDestination> destinations) {
+        Log.LOG.debugf("About to ping %d URLs", destinations.size());
+
         List<PingStatus> results = new ArrayList<>(destinations.size());
         // In case of timeouts we will not be able to get the PingStatus from the Future, so use a Map
         // to keep track of what destination's ping actually hung.
@@ -171,6 +178,7 @@ public class PingManager {
             final long now = System.currentTimeMillis();
             PingStatus ps = PingStatus.timeout(destination, now, TIMEOUT_MILLIS);
             results.add(ps);
+            Log.LOG.debugf("Timed out: %s", destination.getUrl());
         }
 
         reportResults(results);

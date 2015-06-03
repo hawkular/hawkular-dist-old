@@ -74,7 +74,9 @@ public class UrlChangesCollector {
         public void call(Resource r) {
             if (PingDestination.isUrl(r)) {
                 synchronized (lock) {
-                    changes.add(new UrlChange(Action.created(), PingDestination.from(r)));
+                    PingDestination dest = PingDestination.from(r);
+                    changes.add(new UrlChange(Action.created(), dest));
+                    Log.LOG.debugf("Observed an URL creation: %s", dest.getUrl());
                 }
             }
         }
@@ -93,7 +95,9 @@ public class UrlChangesCollector {
         public void call(Resource r) {
             if (PingDestination.isUrl(r)) {
                 synchronized (lock) {
-                    changes.add(new UrlChange(Action.deleted(), PingDestination.from(r)));
+                    PingDestination dest = PingDestination.from(r);
+                    changes.add(new UrlChange(Action.deleted(), dest));
+                    Log.LOG.debugf("Observed an URL deletion: %s", dest.getUrl());
                 }
             }
         }
@@ -111,11 +115,16 @@ public class UrlChangesCollector {
     public void apply(Set<PingDestination> destinations) {
         List<UrlChange> changesCopy = getChanges();
 
+        Log.LOG.debugf("About to apply %d changes to ping list", changesCopy.size());
+
         for (UrlChange change : changesCopy) {
+            final PingDestination dest = change.destination;
             if (Action.created().equals(change.action)) {
-                destinations.add(change.destination);
+                destinations.add(dest);
+                Log.LOG.debugf("Added to ping list: %s", dest.getUrl());
             } else if (Action.deleted().equals(change.action)) {
-                destinations.remove(change.destination);
+                destinations.remove(dest);
+                Log.LOG.debugf("Removed from ping list: %s", dest.getUrl());
             } else {
                 throw new IllegalStateException("Unexpected action '" + change.action
                         + "'; expected Action.created() or Action.deleted()");
