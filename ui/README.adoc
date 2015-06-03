@@ -35,15 +35,15 @@ npm modules and bower packages. Be aware, this causes the libraries not being up
 == Hawkular-ui-components development
 
 For the ease of development we're using the watch feature of the gulp tool. Gulp can watch for changes in source files
-and update the compiled console accordingly. To use this feature, you must start the kettle from the 
-`$HAWKULAR_ROOT/dist/target/wildfly-8.2.0.Final/` directory. Once the server is up and running you have to 
+and update the compiled console accordingly. To use this feature, you must start Hawkular from the 
+`$HAWKULAR_ROOT/dist/target/hawkular-x.y.x-SNAPSHOT/wildfly-x.x.z.Final/` directory. Once the server is up and running you have to 
 start the actual gulp task responsible for watching the changes. To achieve this, traverse to the 
 `$HAWKULAR_ROOT/ui/console/target/gulp-build/` directory and run:
 
 `gulp watch-server`
 
 The advantage of this approach is, that is scans for file changes in the source directory and apply them directly 
-into the target directory (`$HAWKULAR_ROOT/dist/target/wildfly-8.2.0.Final/`), which is suitable for console 
+into the target directory (`$HAWKULAR_ROOT/dist/target/wildfly-x.y.z.Final/`), which is suitable for console 
 developing since it doesn't require the whole maven build to see the actual changes in the console UI.
 
 If you want to use your local version of hawkular-ui-components, you can use the `link` profile and the
@@ -52,7 +52,7 @@ link your bower package with:
 
 `bower link`
 
-and then build the kettle with:
+and then build Hawkular with:
 
 `mvn clean install -Plink`
 
