@@ -23,7 +23,7 @@ module HawkularMetrics {
 
   export class AppServerListController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5', 'HkHeaderParser'];
 
     private httpUriPart = 'http://';
     public addProgress: boolean = false;
@@ -32,6 +32,7 @@ module HawkularMetrics {
     private resPerPage = 5;
     private resCurPage = 0;
     private autoRefreshPromise: ng.IPromise<number>;
+    public headerLinks = {};
 
     constructor(private $location: ng.ILocationService,
                 private $scope: any,
@@ -47,6 +48,7 @@ module HawkularMetrics {
                 private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
                 private $q: ng.IQService,
                 private md5: any,
+                private HkHeaderParser: HawkularMetrics.IHkHeaderParser,
                 public startTimeStamp:TimestampInMillis,
                 public endTimeStamp:TimestampInMillis,
                 public resourceUrl: string) {
@@ -62,7 +64,10 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-
+    public setPage(page): void {
+      this.resCurPage = page;
+      this.getResourceList();
+    }
 
     cancelAutoRefresh(): void {
       this.$interval.cancel(this.autoRefreshPromise);
@@ -82,6 +87,7 @@ module HawkularMetrics {
     getResourceList(currentTenantId?: TenantId):any {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.ResourceOfType.query({tenantId: tenantId, resourceTypeId: 'WildFly Server', per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
+        this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
         var promises = [];
         angular.forEach(aResourceList, function(res, idx) {
           promises.push(this.HawkularMetric.AvailabilityMetricData.query({

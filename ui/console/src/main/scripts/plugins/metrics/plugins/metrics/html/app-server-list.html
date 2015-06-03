@@ -84,6 +84,9 @@
         </tr>
       </tbody>
     </table>
-    <div class="dataTables_footer"><div class="dataTables_paginate paging_bootstrap_input" id="DataTables_Table_0_paginate"><ul class="pagination"><li class="first disabled"><span class="i fa fa-angle-double-left"></span></li><li class="prev disabled"><span class="i fa fa-angle-left"></span></li></ul><div class="pagination-input"><input type="text" class="paginate_input"><span class="paginate_of">of <b>1</b></span></div><ul class="pagination"><li class="next disabled"><span class="i fa fa-angle-right"></span></li><li class="last disabled"><span class="i fa fa-angle-double-right"></span></li></ul></div></div>
+    <div class="dataTables_footer">
+      <hk-data-pagination resource-list="vm.resourceList" current-page="vm.resCurPage" page-setter="vm.setPage(pageNumber)"
+                     per-page="vm.resPerPage" headers="vm.headerLinks"></hk-data-pagination>
+    </div>
   </div>
 </div>

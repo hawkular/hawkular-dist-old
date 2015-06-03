@@ -28,6 +28,7 @@ module HawkularMetrics {
     private metricId: string;
     public alertList: any  = [];
     public openSetup: any;
+    public isResolvingAll: boolean = false;
 
     constructor(private $scope:any,
                 private HawkularAlert:any,
@@ -88,6 +89,20 @@ module HawkularMetrics {
           break;
         }
       }
+    }
+
+    public resolveAll(): void {
+      this.isResolvingAll = true;
+      var alertIdList = '';
+      for (var i = 0; i < this.alertList.length; i++) {
+        alertIdList = alertIdList + this.alertList[i].id + ',';
+      }
+      alertIdList = alertIdList.slice(0, - 1);
+
+      this.HawkularAlert.Alert.resolve({alertIds: alertIdList}, {}).$promise.then( () => {
+        this.alertList.length = 0;
+        this.isResolvingAll = false;
+      });
     }
 
   }

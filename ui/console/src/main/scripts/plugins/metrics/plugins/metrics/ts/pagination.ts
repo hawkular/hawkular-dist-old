@@ -82,8 +82,58 @@ module HawkularMetrics {
 
   _module.service('HkHeaderParser', HkHeaderParser);
 
+  var paginationController = ($scope: any) => {
+
+    $scope.currentPageView = $scope.currentPage + 1;
+    $scope.pagesNumber = getPagesNumber();
+
+    function getPagesNumber() {
+      return Math.ceil(($scope.headers.total || 1) / $scope.perPage);
+    }
+
+    $scope.setPage = (pageNumber: number) => {
+      $scope.pagesNumber = getPagesNumber();
+
+      if ($scope.pagesNumber === 1) {
+        $scope.currentPageView = 1;
+        return;
+      }
+
+      if (pageNumber < 1) {
+        $scope.pageSetter({pageNumber: 0});
+        $scope.currentPageView = 1;
+      } else if (pageNumber >= $scope.pagesNumber) {
+        $scope.pageSetter({pageNumber: $scope.pagesNumber - 1});
+        $scope.currentPageView = pageNumber;
+      } else {
+        $scope.pageSetter({pageNumber: pageNumber});
+      }
+    };
+
+    $scope.goToFirst = () => {
+      $scope.pageSetter({pageNumber: 0});
+    };
+
+    $scope.goToLast = () => {
+      $scope.pagesNumber = getPagesNumber();
+      $scope.pageSetter({pageNumber: $scope.pagesNumber - 1});
+    };
+
+    $scope.goTos = [0];
+
+    $scope.$watch('currentPage', (recentCurrentPage) => {
+      $scope.currentPageView = parseInt(recentCurrentPage, 10) + 1;
+    });
+
+    $scope.$watchGroup(['headers', 'perPage'], () => {
+      $scope.pagesNumber = getPagesNumber();
+      $scope.goTos = new Array($scope.pagesNumber);
+    });
+
+  };
+
   class HkPagination {
-    public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+    public controller: ($scope: any) => void;
     public templateUrl = 'plugins/metrics/html/url-pagination.html';
     public scope = {
       resourceList: '=',
@@ -95,28 +145,8 @@ module HawkularMetrics {
     };
     public replace = 'true';
 
-    constructor(/*list of dependencies*/) {
-      this.link = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
-
-        scope.setPage = function(pageNumber){
-          var pagesNumber = Math.ceil((scope.headers.total || 1) / scope.perPage);
-
-          if (pageNumber < 1) {
-            scope.pageSetter({pageNumber: 0});
-          } else if (pageNumber >= pagesNumber) {
-            scope.pageSetter({pageNumber: pagesNumber - 1});
-          } else {
-            scope.pageSetter({pageNumber: pageNumber});
-          }
-        };
-
-        scope.goTos = [0];
-        scope.$watchGroup(['headers', 'perPage'], () => {
-          var pagesNumber = Math.ceil((scope.headers.total || 1) / scope.perPage);
-          scope.goTos = new Array(pagesNumber);
-        });
-
-      };
+    constructor() {
+      this.controller = paginationController;
     }
 
     public static Factory() {
@@ -131,4 +161,34 @@ module HawkularMetrics {
   }
 
   _module.directive('hkPagination', HkPagination.Factory());
+
+  class HkDataPagination {
+    public controller: (scope: ng.IScope) => void;
+    public templateUrl = 'plugins/metrics/html/data-pagination.html';
+    public scope = {
+      resourceList: '=',
+      currentPage: '=',
+      linkHeader: '=',
+      pageSetter: '&',
+      perPage: '=',
+      headers: '='
+    };
+    public replace = 'true';
+
+    constructor() {
+      this.controller = paginationController;
+    }
+
+    public static Factory() {
+      var directive = () => {
+        return new HkDataPagination();
+      };
+
+      directive['$inject'] = [];
+
+      return directive;
+    }
+  }
+
+  _module.directive('hkDataPagination', HkDataPagination.Factory());
 }
