@@ -67,6 +67,9 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
+              <nonFilteredFileExtensions>
+                <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+              </nonFilteredFileExtensions>
               <outputDirectory>${basedir}/target/gulp-build/</outputDirectory>
               <resources>
                 <resource>
