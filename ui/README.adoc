@@ -43,7 +43,7 @@ start the actual gulp task responsible for watching the changes. To achieve this
 `gulp watch-server`
 
 The advantage of this approach is, that is scans for file changes in the source directory and apply them directly 
-into the target directory (`$HAWKULAR_ROOT/dist/target/wildfly-x.y.z.Final/`), which is suitable for console 
+into the target directory (`$HAWKULAR_ROOT/dist/target/hawkular-x.y.x-SNAPSHOT/wildfly-x.y.z.Final/`), which is suitable for console 
 developing since it doesn't require the whole maven build to see the actual changes in the console UI.
 
 If you want to use your local version of hawkular-ui-components, you can use the `link` profile and the
