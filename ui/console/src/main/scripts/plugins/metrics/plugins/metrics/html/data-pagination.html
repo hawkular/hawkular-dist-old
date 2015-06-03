@@ -1,0 +1,16 @@
+<div class="dataTables_paginate paging_bootstrap_input" id="DataTables_Table_0_paginate">
+  <ul class="pagination">
+    <li ng-class="{disabled: pagesNumber === 1}" class="first" ng-click="goToFirst()"><span class="i fa fa-angle-double-left"></span></li>
+    <li ng-class="{disabled: pagesNumber === 1}" class="prev" ng-click="setPage(currentPage - 1)"><span class="i fa fa-angle-left"></span></li>
+  </ul>
+  <div class="pagination-input">
+    <form ng-submit="setPage(currentPageView - 1)">
+      <input type="text" class="paginate_input" ng-model="currentPageView">
+    <span class="paginate_of">of <b>{{goTos.length}}</b></span>
+    </form>
+  </div>
+  <ul class="pagination">
+    <li ng-class="{disabled: pagesNumber === 1}" class="next" ng-click="setPage(currentPage + 1)"><span class="i fa fa-angle-right"></span></li>
+    <li ng-class="{disabled: pagesNumber === 1}" class="last" ng-click="goToLast()"><span class="i fa fa-angle-double-right"></span></li>
+  </ul>
+</div>
