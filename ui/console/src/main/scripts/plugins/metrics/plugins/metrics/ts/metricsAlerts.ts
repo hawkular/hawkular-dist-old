@@ -123,7 +123,7 @@ module HawkularMetrics {
     public saveProgress: boolean = false;
     public responseDuration: number;
     public downtimeDuration: number;
-    public responseUnit: number = 60000;
+    public responseUnit: number = 1;
     public downtimeUnit: number = 1;
     public thresDampDurationEnabled = false;
 
@@ -133,14 +133,14 @@ module HawkularMetrics {
       {value: 1, label: 'miliseconds'},
       {value: 1000, label: 'seconds'},
       {value: 60000, label: 'minutes'},
-      {value: 360000, label: 'hours'}
+      {value: 3600000, label: 'hours'}
     ];
 
     public timeUnitsDict = {
       '1': 'miliseconds',
       '1000': 'seconds',
       '60000': 'minutes',
-      '360000': 'hours'
+      '3600000': 'hours'
     };
 
     constructor(public $scope:any,
@@ -171,6 +171,7 @@ module HawkularMetrics {
         this.trigger_thres_damp = data;
         this.alertSetupBackup.trigger_thres_damp = angular.copy(this.trigger_thres_damp);
 
+        this.responseUnit = this.getTimeUnit(data[0].evalTimeSetting);
         this.responseDuration = data[0].evalTimeSetting / this.responseUnit;
         this.alertSetupBackup.responseDuration = angular.copy(this.responseDuration);
 
@@ -199,7 +200,11 @@ module HawkularMetrics {
       }).then((data)=> {
         this.trigger_avail_damp = data;
         this.alertSetupBackup.trigger_avail_damp = angular.copy(this.trigger_avail_damp);
-        this.downtimeDuration = data[0].evalTimeSetting;
+
+        this.downtimeUnit = this.getTimeUnit(data[0].evalTimeSetting);
+        this.downtimeDuration = data[0].evalTimeSetting / this.downtimeUnit;
+        this.alertSetupBackup.downtimeDuration = angular.copy(this.downtimeDuration);
+
         this.$log.debug('this.trigger_avail_damp', this.trigger_avail_damp);
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error fetching availability trigger dampening.');
@@ -209,14 +214,26 @@ module HawkularMetrics {
       this.$log.debug('this.metricId', this.metricId);
     }
 
+    // Get the most meaningful time unit (so that time value is not a very long fraction).
+    private getTimeUnit(timeValue: number): number {
+      var timeUnit = 1;
+
+      for (var i = 0; i < this.timeUnits.length; i++) {
+        var unit = this.timeUnits[i].value;
+        if (timeValue % unit === 0 && unit > timeUnit) {
+          timeUnit = unit;
+        }
+      }
+
+      return timeUnit;
+    }
+
     public changeResponseTimeUnits():void {
-      this.trigger_thres_damp[0].evalTimeSetting = this.responseDuration * this.responseUnit;
-      this.alertSettingTouch();
+      this.responseDuration = this.trigger_thres_damp[0].evalTimeSetting / this.responseUnit;
     }
 
     public changeDowntimeTimeUnits():void {
-      this.trigger_avail_damp[0].evalTimeSetting = this.downtimeDuration * this.downtimeUnit;
-      this.alertSettingTouch();
+      this.downtimeDuration = this.trigger_avail_damp[0].evalTimeSetting / this.downtimeUnit;
     }
 
     public cancel(): void {
@@ -254,8 +271,6 @@ module HawkularMetrics {
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger.', errorCallback);
       }).then(()=> {
-        this.changeResponseTimeUnits();
-
         if (!this.thresDampDurationEnabled) {
           this.trigger_thres_damp[0].evalTimeSetting = 0;
         }
@@ -296,6 +311,8 @@ module HawkularMetrics {
     }
 
     public alertSettingTouch(): void {
+      this.trigger_thres_damp[0].evalTimeSetting = this.responseDuration * this.responseUnit;
+      this.trigger_avail_damp[0].evalTimeSetting = this.downtimeDuration * this.downtimeUnit;
 
       if (!angular.equals(!!this.alertSetupBackup.thresDampDurationEnabled,!!this.thresDampDurationEnabled) ||
         !angular.equals(this.alertSetupBackup.responseDuration, this.responseDuration) ||

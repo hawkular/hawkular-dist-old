@@ -102,8 +102,7 @@
           <div class="col-md-6 inline-row">
             <div class="input-group duration">
               <input type="number" class="form-control" placeholder="Duration" ng-model="mas.downtimeDuration"
-                     ng-change="mas.changeDowntimeTimeUnits()" id="downtimeDuration"
-                     ng-change="mas.alertSettingTouch()">
+                     id="downtimeDuration" ng-change="mas.alertSettingTouch()">
               <select pf-select ng-model="mas.downtimeUnit" id="downtimeUnit"
                       ng-options="item.value as item.label for item in mas.timeUnits"
                       ng-change="mas.changeDowntimeTimeUnits()"></select>
