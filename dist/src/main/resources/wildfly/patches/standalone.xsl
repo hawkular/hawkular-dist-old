@@ -52,72 +52,82 @@
 
   <!-- add some logger categories -->
   <xsl:template name="loggers">
-    <xsl:choose>
-      <xsl:when test="$kettle.build.type='dev'">
-        <logger category="org.hawkular">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.accounts">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.agent">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.alerts">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.bus">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.component.availcreator">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.component.pinger">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.inventory">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.metrics">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.nest">
-          <level name="INFO"/>
-        </logger>
-      </xsl:when>
-      <xsl:otherwise>
-        <logger category="org.hawkular">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.accounts">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.agent">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.alerts">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.bus">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.component.availcreator">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.component.pinger">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.inventory">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.metrics">
-          <level name="INFO"/>
-        </logger>
-        <logger category="org.hawkular.nest">
-          <level name="INFO"/>
-        </logger>
-      </xsl:otherwise>
-    </xsl:choose>
+    <logger category="org.hawkular">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.hawkular.accounts">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.accounts:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.hawkular.agent">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.agent:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.hawkular.alerts">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.alerts:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.hawkular.bus">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.bus:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.hawkular.component.availcreator">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.availcreator:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.hawkular.component.pinger">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.pinger:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.hawkular.inventory">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.inventory:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.hawkular.metrics">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.metrics:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.hawkular.nest">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.nest:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+
+    <logger category="com.datastax.driver">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.datastax.driver:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="liquibase">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.liquibase:WARN}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.apache.cassandra">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.cassandra:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.jboss.as.ejb3">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.ejb3:WARN}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.ocpsoft.rewrite">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.rewrite:WARN}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
   </xsl:template>
 
   <xsl:template match="node()[name(.)='periodic-rotating-file-handler']">
