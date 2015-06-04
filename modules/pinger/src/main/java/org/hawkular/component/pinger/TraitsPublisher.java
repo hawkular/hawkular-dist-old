@@ -17,6 +17,7 @@
 package org.hawkular.component.pinger;
 
 import org.hawkular.component.pinger.Traits.TraitHeader;
+import org.hawkular.inventory.api.EntityNotFoundException;
 import org.hawkular.inventory.api.Inventory;
 import org.hawkular.inventory.api.Resources;
 import org.hawkular.inventory.api.model.Resource;
@@ -49,24 +50,28 @@ public class TraitsPublisher {
 
         PingDestination dest = status.getDestination();
 
-        Resources.ReadWrite resourceAccess = inventory.tenants().get(dest.getTenantId()).environments()
-                .get(dest.getEnvironmentId()).feedlessResources();
+        try {
+            Resources.ReadWrite resourceAccess = inventory.tenants().get(dest.getTenantId()).environments()
+                    .get(dest.getEnvironmentId()).feedlessResources();
 
-        Resource resource = resourceAccess.get(dest.getResourceId()).entity();
+            Resource resource = resourceAccess.get(dest.getResourceId()).entity();
 
-        Builder updateBuilder = Resource.Update.builder();
+            Builder updateBuilder = Resource.Update.builder();
 
-        //keep the properties already present on the resource
-        updateBuilder.withProperties(resource.getProperties());
+            //keep the properties already present on the resource
+            updateBuilder.withProperties(resource.getProperties());
 
-        //add/modify our own
-        updateBuilder.withProperty("traits-collected-on", traits.getTimestamp());
-        for (Entry<TraitHeader, String> entry : traits.getItems().entrySet()) {
-            updateBuilder.withProperty("trait-" + entry.getKey().toString(), entry.getValue());
+            //add/modify our own
+            updateBuilder.withProperty("traits-collected-on", traits.getTimestamp());
+            for (Entry<TraitHeader, String> entry : traits.getItems().entrySet()) {
+                updateBuilder.withProperty("trait-" + entry.getKey().toString(), entry.getValue());
+            }
+
+            inventory.tenants().get(dest.getTenantId()).environments().get(dest.getEnvironmentId()).feedlessResources()
+                    .update(dest.getResourceId(), updateBuilder.build());
+        } catch (EntityNotFoundException e) {
+            Log.LOG.iResourceNotFound(dest.getResourceId(), dest.getTenantId());
         }
-
-        inventory.tenants().get(dest.getTenantId()).environments().get(dest.getEnvironmentId()).feedlessResources()
-                .update(dest.getResourceId(), updateBuilder.build());
     }
 
 }

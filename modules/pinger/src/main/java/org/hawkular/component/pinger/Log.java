@@ -54,4 +54,7 @@ public interface Log extends BasicLogger {
             "Code %d, message= %s")
     void wNoInventoryFound(int status, String reasonPhrase);
 
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 5005, value = "Resource '%s' of tenant '%s' is no longer present in inventory.")
+    void iResourceNotFound(String resourceId, String tenantId);
 }
