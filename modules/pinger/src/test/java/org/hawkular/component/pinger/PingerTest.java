@@ -17,7 +17,12 @@
 package org.hawkular.component.pinger;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**
  * Simple test for the pinger
@@ -30,16 +35,40 @@ public class PingerTest {
     private static final String TEST_RESOURCE_ID = "test-rsrc";
     private static final String TEST_TENANT_ID = "test-tenat";
     private static final String TEST_ENVIRONMENT_ID = "test-env";
+    public static final String HTTP_PORT_PROPERTY = "org.hawkular.component.pinger.PingerTest.http.port";
+    public static final String HTTPS_PORT_PROPERTY = "org.hawkular.component.pinger.PingerTest.https.port";
+    public static final String TEST_HOST = "localhost";
+    private static final int HTTP_PORT;
+    private static final int HTTPS_PORT;
+    static {
+        HTTP_PORT = Integer.parseInt(System.getProperty(HTTP_PORT_PROPERTY, "8877"));
+        HTTPS_PORT = Integer.parseInt(System.getProperty(HTTPS_PORT_PROPERTY, "8878"));
+    }
+
+    @Rule
+    public WireMockRule testServer = new WireMockRule(WireMockConfiguration.wireMockConfig().port(HTTP_PORT)
+            .httpsPort(HTTPS_PORT));
 
     private static PingDestination newDestination(String url, String method) {
         return new PingDestination(TEST_TENANT_ID, TEST_ENVIRONMENT_ID, TEST_RESOURCE_ID, url, method);
     }
 
+    private static String httpUrl() {
+        return "http://" + TEST_HOST + ":" + HTTP_PORT;
+    }
+
+    private static String httpsUrl() {
+        return "https://" + TEST_HOST + ":" + HTTPS_PORT;
+    }
+
     @Test
     public void testPinger() throws Exception {
 
+        testServer.stubFor(WireMock.get(WireMock.urlMatching(".*")).willReturn(
+                WireMock.aResponse().withHeader("Content-Type", "text/plain").withBody("Hello world!")));
+
         Pinger pinger = new Pinger();
-        PingDestination destination = newDestination("http://hawkular.github.io", "GET");
+        PingDestination destination = newDestination(httpUrl(), "GET");
         PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
@@ -49,9 +78,11 @@ public class PingerTest {
 
     @Test
     public void testHeadPinger() throws Exception {
+        testServer.stubFor(WireMock.head(WireMock.urlMatching(".*")).willReturn(
+                WireMock.aResponse().withHeader("Content-Type", "text/plain")));
 
         Pinger pinger = new Pinger();
-        PingDestination destination = newDestination("http://hawkular.github.io", "HEAD");
+        PingDestination destination = newDestination(httpUrl(), "HEAD");
         PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
@@ -61,9 +92,11 @@ public class PingerTest {
 
     @Test
     public void testPostPinger() throws Exception {
+        testServer.stubFor(WireMock.post(WireMock.urlMatching(".*")).willReturn(
+                WireMock.aResponse().withHeader("Content-Type", "text/plain").withBody("Hello world!")));
 
         Pinger pinger = new Pinger();
-        PingDestination destination = newDestination("https://www.perfcake.org", "POST");
+        PingDestination destination = newDestination(httpUrl(), "POST");
         PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
@@ -74,8 +107,11 @@ public class PingerTest {
     @Test
     public void testSslPinger() throws Exception {
 
+        testServer.stubFor(WireMock.get(WireMock.urlMatching(".*")).willReturn(
+                WireMock.aResponse().withHeader("Content-Type", "text/plain").withBody("Hello world!")));
+
         Pinger pinger = new Pinger();
-        PingDestination destination = newDestination("https://www.perfcake.org", "GET");
+        PingDestination destination = newDestination(httpsUrl(), "GET");
         PingStatus status = pinger.ping(destination).get();
 
         Assert.assertEquals(200, status.getCode());
