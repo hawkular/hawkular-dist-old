@@ -31,6 +31,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -61,8 +62,7 @@ public class Pinger {
             SSLContextBuilder builder = SSLContexts.custom();
             builder.loadTrustMaterial(null, new TrustStrategy() {
                 @Override
-                public boolean isTrusted(X509Certificate[] chain, String authType)
-                      throws CertificateException {
+                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
                     return true;
                 }
             });
@@ -77,7 +77,9 @@ public class Pinger {
 
     private CloseableHttpClient getHttpClient(final String url) {
         if (url != null && url.startsWith("https://") && sslContext != null) {
-            return HttpClientBuilder.create().setSslcontext(sslContext).build();
+            return HttpClientBuilder.create()
+                    .setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
+                    .setSslcontext(sslContext).build();
         } else {
             return HttpClientBuilder.create().build();
         }
