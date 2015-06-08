@@ -130,14 +130,14 @@ module HawkularMetrics {
     public isSettingChange = false;
 
     public timeUnits = [
-      {value: 1, label: 'miliseconds'},
+      {value: 1, label: 'milliseconds'},
       {value: 1000, label: 'seconds'},
       {value: 60000, label: 'minutes'},
       {value: 3600000, label: 'hours'}
     ];
 
     public timeUnitsDict = {
-      '1': 'miliseconds',
+      '1': 'milliseconds',
       '1000': 'seconds',
       '60000': 'minutes',
       '3600000': 'hours'
