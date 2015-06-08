@@ -14,7 +14,7 @@
 
     <!-- Summary -->
     <h3 class="pull-left">Response Time Status</h3>
-    <span class="update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
     <div class="panel panel-default hk-summary">
       <div class="row">
         <div class="col-sm-4 hk-summary-item">
@@ -42,8 +42,8 @@
     <div class="clearfix">
       <!-- No Alerts -->
       <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
-        <div class="hk-alert-icon"><i class="fa fa-flag-o"></i></div>
-        <div>No Alerts have been fired in this category and time range.</div>
+        <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
+        <div>No alerts have been fired in this category and time range.</div>
       </div>
       <!-- Alerts exist -->
       <div class="panel panel-default alert alert-danger" ng-repeat="alert in vm.alertList | limitTo: (showAllAlerts ? 100000 : 3) track by $index">
@@ -63,7 +63,7 @@
 
     <div class="panel panel-default hk-graph">
       <h2>Response Time</h2>
-      <div class="hk-legend center-block" ng-show="vm.chartData.dataPoints.length > 0">
+      <div class="hk-legend text-left" ng-show="vm.chartData.dataPoints.length > 0">
         <span><i class="fa fa-circle hk-blue"></i>Response Time</span>
         <span><i class="fa fa-circle hk-red"></i>Response Time (above the threshold)</span>
       </div>
