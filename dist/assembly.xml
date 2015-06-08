@@ -106,6 +106,7 @@
         <include>org.hawkular.inventory:hawkular-integrated-inventory-rest</include>
         <include>org.hawkular:hawkular-pinger</include>
         <include>org.hawkular:hawkular-avail-creator</include>
+        <include>org.hawkular.accounts:hawkular-accounts:war</include>
         <include>org.hawkular.alerts:hawkular-alerts-ear</include>
         <include>org.hawkular.alerts:hawkular-actions-email</include>
         <include>org.hawkular.metrics:hawkular-metrics-api-jaxrs</include>
@@ -138,23 +139,6 @@
         <include>org.hawkular.bus:hawkular-bus-ra-wf-module:zip:module</include>
       </includes>
       <unpack>true</unpack>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </dependencySet>
-
-    <!--
-    hawkular-accounts is separated from the others because we need a stable name to the war, without the
-    version number. This is because we use the Keycloak's "secure-deployment" to configure the integration, and that
-    requires the war name.
-    -->
-    <dependencySet>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
-      <includes>
-        <include>org.hawkular.accounts:hawkular-accounts:war</include>
-      </includes>
-      <outputFileNameMapping>hawkular-accounts.war</outputFileNameMapping>
-      <unpack>false</unpack>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
