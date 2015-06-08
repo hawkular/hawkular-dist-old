@@ -107,13 +107,14 @@ public class Pinger {
             final int duration = (int) (now - start);
             Traits traits = Traits.collect(httpResponse, now);
             PingStatus result = new PingStatus(destination, code, now, duration, traits);
-            Log.LOG.debugf("Pinged %d %s", code, destination.getUrl());
+            Log.LOG.debugf("Got status code %d from %s", code, destination.getUrl());
             return new AsyncResult<>(result);
         } catch (UnknownHostException e) {
             PingStatus result = PingStatus.error(destination, 404, System.currentTimeMillis());
+            Log.LOG.debugf("Got UnknownHostException for %s", destination.getUrl());
             return new AsyncResult<>(result);
         } catch (IOException e) {
-            Log.LOG.wPingExeption(e.getMessage());
+            Log.LOG.dCouldNotPingUrl(destination.getUrl(), e.getMessage());
             PingStatus result = PingStatus.error(destination, 500, System.currentTimeMillis());
             return new AsyncResult<>(result);
         }

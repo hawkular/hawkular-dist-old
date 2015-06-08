@@ -104,10 +104,10 @@ public class MetricPublisher {
         try {
             HttpResponse response = client.execute(request);
             if (response.getStatusLine().getStatusCode() > 399) {
-                Log.LOG.metricPostStatus(response.getStatusLine().toString());
+                Log.LOG.wMetricPostStatus(response.getStatusLine().toString());
             }
         } catch (IOException e) {
-            e.printStackTrace(); // TODO: Customise this generated block
+            Log.LOG.eMetricsIoException(e);
         }
     }
 
@@ -149,7 +149,7 @@ public class MetricPublisher {
                 MessageProcessor processor = new MessageProcessor();
                 processor.send(pc, msg);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.LOG.eCouldNotSendMessage(e);
             }
         } else {
             Log.LOG.wNoTopicConnection("HawkularMetricData");

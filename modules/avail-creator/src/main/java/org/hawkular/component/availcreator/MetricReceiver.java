@@ -99,7 +99,7 @@ public class MetricReceiver implements MessageListener {
             availPublisher.publishToTopic(outer, this);
 
         } catch (Exception e) {
-            e.printStackTrace();  // TODO: Customise this generated block
+            Log.LOG.eCouldNotHandleBusMessage(e);
         }
 
     }
