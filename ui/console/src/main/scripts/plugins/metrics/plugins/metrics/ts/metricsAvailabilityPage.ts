@@ -137,8 +137,7 @@ module HawkularMetrics {
     refreshSummaryAvailabilityData(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
 
       if (metricId) {
-        this.HawkularMetric.AvailabilityMetricData.query({
-          tenantId: this.$rootScope.currentPersona.id,
+        this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
           availabilityId: metricId,
           start: startTime,
           end: endTime,
@@ -171,8 +170,7 @@ module HawkularMetrics {
 
     refreshAvailChartData(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       if (metricId) {
-        this.HawkularMetric.AvailabilityMetricData.query({
-          tenantId: this.$rootScope.currentPersona.id,
+        this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
           availabilityId: metricId,
           start: startTime,
           end: endTime,
