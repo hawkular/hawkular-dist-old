@@ -185,8 +185,7 @@ module HawkularMetrics {
       }
 
       if (metricId) {
-        this.HawkularMetric.NumericMetricData.queryMetrics({
-          tenantId: this.$rootScope.currentPersona.id,
+        this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
           numericId: metricId,
           start: startTime,
           end: endTime,
@@ -219,8 +218,7 @@ module HawkularMetrics {
       }
 
       if (metricId) {
-        this.HawkularMetric.NumericMetricData.queryMetrics({
-          tenantId: this.$rootScope.currentPersona.id,
+        this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
           numericId: metricId,
           start: startTime,
           end: endTime,

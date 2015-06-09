@@ -187,19 +187,18 @@ module HawkularMetrics {
         }, this);
         var promises = [];
         angular.forEach(aResourceList, function(res, idx) {
-          promises.push(this.HawkularMetric.NumericMetricData.queryMetrics({
-            tenantId: tenantId, resourceId: res.id, numericId: (res.id + '.status.duration'),
+          promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+            resourceId: res.id, numericId: (res.id + '.status.duration'),
             start: moment().subtract(1, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
             // FIXME: Work data so it works for chart ?
             res['responseTime'] = resource;
           }).$promise);
-          promises.push(this.HawkularMetric.AvailabilityMetricData.query({
-            tenantId: tenantId, availabilityId: res.id, distinct: true,
+          promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
+            availabilityId: res.id, distinct: true,
             start: 1, end: moment().valueOf()}, (resource) => {
             res['isUp'] = (resource[0] && resource[0].value === 'up');
           }).$promise);
-          promises.push(this.HawkularMetric.AvailabilityMetricData.query({
-            tenantId: tenantId,
+          promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
             availabilityId: res.id,
             start: 1,
             end: moment().valueOf(),
