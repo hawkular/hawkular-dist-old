@@ -90,8 +90,7 @@ module HawkularMetrics {
         this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
         var promises = [];
         angular.forEach(aResourceList, function(res, idx) {
-          promises.push(this.HawkularMetric.AvailabilityMetricData.query({
-            tenantId: tenantId,
+          promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
             availabilityId: 'AI~R~' + res.id + '~AT~App Server',
             distinct: true}, (resource) => {
               var latestData = resource[resource.length-1];
