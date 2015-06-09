@@ -20,7 +20,7 @@
     "angular-scroll": "0.6.5",
     "angular-ui-select": "0.11.2",
     "bootstrap-select": "1.6",
-    "d3": "3.4.8",
+    "d3": "3.5.5",
     "event-drops": "0.1.1",
     "hawkular-charts": "^0.3.5",
     "hawkular-ui-services": "^0.3.1",
