@@ -50,6 +50,19 @@
         <div class="hk-alert-icon"><i class="fa fa-flag"></i></div>
         <div class="hk-date">{{alert.evalSets[0][0].evalTimestamp | date:'medium' }}</div>
         <div class="hk-event"><strong>Response time</strong> was above the threshold ({{alert.evalSets[0][0].condition.threshold}}ms) for {{(alert.ctime - alert.evalSets[0][0].evalTimestamp) / 1000 | number:0}} seconds (until {{alert.ctime | date:'mediumTime'}}).</div>
+
+        <div class="alert-resolver">
+          <a ng-click="vm.alertResolve(alert, $index)" tooltip="Mark as resolved"
+             tooltip-placement="top"
+             tooltip-trigger="mouseenter"
+             tooltip-popup-delay="500">
+            <i class="fa" ng-class="{'fa-check-square-o': hover, 'fa-square-o': !hover}"
+               ng-mouseenter="hover = true"
+               ng-mouseleave="hover = false">
+            </i>
+          </a>
+        </div>
+
       </div>
     </div>
 

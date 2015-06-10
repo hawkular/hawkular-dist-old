@@ -172,7 +172,7 @@ module HawkularMetrics {
 
     refreshAlerts(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       var alertType = this.$routeParams.resourceId + '_trigger_thres';
-      this.HawkularAlert.Alert.query({}, (anAlertList) => {
+      this.HawkularAlert.Alert.query({ statuses:'OPEN'}, (anAlertList) => {
         var filteredAlerts = [];
         for(var i = 0; i < anAlertList.length; i++) {
           if((anAlertList[i].triggerId === alertType) && (anAlertList[i].ctime >= (+moment() - this.$scope.hkParams.timeOffset))) {
@@ -183,6 +183,17 @@ module HawkularMetrics {
         }
         this.alertList = filteredAlerts.reverse();
       }, this);
+    }
+
+    public alertResolve(alert: any, index: number): void {
+      for (var i = 0; i< this.alertList.length; i++) {
+        if (this.alertList[i].$$hashKey === alert.$$hashKey) {
+          this.HawkularAlert.Alert.resolve({alertIds: alert.alertId}, {}).$promise.then( () => {
+            this.alertList.splice(i, 1);
+          });
+          break;
+        }
+      }
     }
 
     refreshSummaryData(metricId:string, startTime?:TimestampInMillis, endTime?:TimestampInMillis):void {

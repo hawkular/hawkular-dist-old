@@ -82,7 +82,6 @@ module HawkularMetrics {
     public alertResolve(alert: any, index: number): void {
       for (var i = 0; i< this.alertList.length; i++) {
         if (this.alertList[i].$$hashKey === alert.$$hashKey) {
-          console.log(this.alertList[i]);
           this.HawkularAlert.Alert.resolve({alertIds: alert.id}, {}).$promise.then( () => {
             this.alertList.splice(i, 1);
           });
