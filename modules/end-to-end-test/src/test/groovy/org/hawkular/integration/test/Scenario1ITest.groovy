@@ -33,6 +33,7 @@ import org.hawkular.inventory.api.model.Tenant
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Assert;
 import org.junit.Test
 
 
@@ -52,8 +53,29 @@ class Scenario1ITest extends AbstractTestBase {
         // println "tenantId = $tenantId"
 
         /* assert the test environment exists */
-        response = client.get(path: "/hawkular/inventory/$tenantId/environments/$environmentId")
-        assertResponseOk(response.status)
+        /* There is a race condition when WildFly agent is enabled:
+           both this test and Agent trigger the autocreation of test entities simultaneously,
+           and one of them may get only a partially initialized state.
+           That is why we do several delayed attempts do perform the first request.
+         */
+        String path = "/hawkular/inventory/$tenantId/environments/$environmentId";
+        int attemptCount = 5;
+        int delay = 500;
+        for (int i = 0; i < attemptCount; i++) {
+            try {
+                response = client.get(path: path)
+                /* all is well, we can leave the loop */
+                break;
+            } catch (groovyx.net.http.HttpResponseException e) {
+                /* some initial attempts may fail */
+            }
+            println "'$path' not ready yet, about to retry after $delay ms"
+            /* sleep one second */
+            Thread.sleep(delay);
+        }
+        if (response.status != 200) {
+            Assert.fail("Getting path '$path' returned status ${response.status}, tried $attemptCount times");
+        }
         assertEquals(environmentId, response.data.id)
 
         /* assert the URL resource type exists */
