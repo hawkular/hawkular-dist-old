@@ -118,6 +118,31 @@ class Scenario1ITest extends AbstractTestBase {
         /* Pinger should start pinging now but we do not want to wait */
 
         // 9 simulate ping + response - metrics for ~ the last 30 minutes
+
+        /* Wait till metrics gets initialized */
+        path = "/hawkular/metrics/status"
+        delay = 1000
+        attemptCount = 30
+        String metricsServiceStatus;
+        for (int i = 0; i < attemptCount; i++) {
+            response = client.get(path: path)
+            if (response.status == 200) {
+                metricsServiceStatus = response.data.MetricsService
+                if ("STARTED".equals(metricsServiceStatus)) {
+                    /* the service has started - we can leave the loop */
+                    break;
+                }
+            }
+            println "'MetricsService' not ready yet, about to retry after $delay ms"
+            /* sleep one second */
+            Thread.sleep(delay);
+        }
+        if (!"STARTED".equals(metricsServiceStatus)) {
+            Assert.fail("MetricsService status still '$metricsServiceStatus' after trying $attemptCount times" +
+                " with delay $delay ms.")
+        }
+
+
         for (int i = -30 ; i <-3 ; i++ ) {
             postMetricValue(tenantId, resourceId, statusCodeId, 100 + i, i)
             postMetricValue(tenantId, resourceId, durationId, 200, i)
