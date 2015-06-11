@@ -128,6 +128,7 @@ module HawkularMetrics {
         this.startTimeStamp = this.$scope.hkStartTimestamp;
         this.refreshSummaryData(this.getMetricId());
         this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
+        this.refreshAlerts(this.getMetricId(), this.$scope.hkStartTimestamp, this.endTimeStamp);
         this.retrieveThreshold();
       }, intervalInSeconds * 1000);
 
