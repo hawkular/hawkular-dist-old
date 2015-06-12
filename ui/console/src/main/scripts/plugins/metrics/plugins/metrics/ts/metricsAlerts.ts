@@ -23,7 +23,8 @@
 module HawkularMetrics {
 
   export class MetricsAlertController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q', '$rootScope', '$routeParams', '$modal'];
+    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q',
+      '$rootScope', '$routeParams', '$modal', '$interval'];
 
     private metricId: string;
     public alertList: any  = [];
@@ -38,7 +39,8 @@ module HawkularMetrics {
                 private $q: ng.IQService,
                 private $rootScope: any,
                 private $routeParams: any,
-                private $modal: any) {
+                private $modal: any,
+                private $interval: ng.IIntervalService) {
 
       this.$log.debug('querying data');
       this.$log.debug('$routeParams', $routeParams);
@@ -72,11 +74,26 @@ module HawkularMetrics {
         return !!((value.start > $scope.alertsTimeStart) && (value.start < $scope.alertsTimeEnd));
       };
 
-      HawkularAlertsManager.queryConsoleAlerts(this.metricId).then((data)=> {
+      this.getAlerts();
+      this.autoRefresh(20);
+    }
+
+    private getAlerts():void {
+      this.HawkularAlertsManager.queryConsoleAlerts(this.metricId).then((data)=> {
         this.$log.debug('queryConsoleAlerts', data);
         this.alertList = data;
         this.alertList.$resolved = true; // FIXME
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
+    }
+
+    private autoRefresh(intervalInSeconds:number):void {
+      var autoRefreshPromise = this.$interval(()  => {
+        this.getAlerts();
+      }, intervalInSeconds * 1000);
+
+      this.$scope.$on('$destroy', () => {
+        this.$interval.cancel(autoRefreshPromise);
+      });
     }
 
     public alertResolve(alert: any, index: number): void {
