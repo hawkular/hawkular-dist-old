@@ -16,7 +16,10 @@
  */
 package org.hawkular.inventory.rest.test
 
+import java.util.Map;
+
 import org.junit.AfterClass
+import org.junit.Assert;
 import org.junit.BeforeClass
 import org.junit.Test
 import org.hawkular.integration.test.AbstractTestBase
@@ -24,213 +27,217 @@ import org.hawkular.integration.test.AbstractTestBase
 import static org.junit.Assert.assertEquals
 
 /**
- * Test some basic inventory functionality via REST
+ * Test the basic inventory functionality via REST.
+ *
  * @author Heiko W. Rupp
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 class InventoryITest extends AbstractTestBase {
+    private static final String urlTypeId = "URL"
+    static String environmentId = "itest-env-" + UUID.randomUUID().toString()
+    private static final String pingableHostRTypeId = "pingable-host-" + UUID.randomUUID().toString()
+    private static final String responseTimeMTypeId = "response-time-" + UUID.randomUUID().toString()
+    private static final String statusDurationMTypeId = "status.duration.type"
+    private static final String statusCodeMTypeId = "status.code.type"
+    private static final String host1ResourceId = "host1-" + UUID.randomUUID().toString();
+    private static final String host2ResourceId = "host2-" + UUID.randomUUID().toString();
+    private static final String responseTimeMetricId = "response-time-" + host1ResourceId;
+    private static final String feedId = "feed-" + UUID.randomUUID().toString();
+
+    private static List<String> pathsToDelete = new ArrayList();
 
     @BeforeClass
     static void setupData() {
-        def tenantId = "com.acme.tenant"
-        def environmentId = "production"
+        def response = null
+        int attemptCount = 5;
+        int delay = 500;
+        String path = "/hawkular-accounts/personas/current"
+        for (int i = 0; i < attemptCount; i++) {
+            try {
+                response = client.get(path: path)
+                /* all is well, we can leave the loop */
+                break;
+            } catch (groovyx.net.http.HttpResponseException e) {
+                /* some initial attempts may fail */
+            }
+            println "'$path' not ready yet, about to retry after $delay ms"
+            /* sleep one second */
+            Thread.sleep(delay);
+        }
+        if (response.status != 200) {
+            Assert.fail("Getting path '$path' returned status ${response.status}, tried $attemptCount times");
+        }
+        String tenantId = response.data.id
 
-        def response = client.post(path: "tenants", body: "{\"id\":\"$tenantId\"}")
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "tenants/$tenantId", response.headers.Location)
+// Env creation does not work
+//        response = client.post(path: "/hawkular/inventory/environments", body: [id : environmentId])
+//        assertEquals(201, response.status)
+//        assertEquals(baseURI + "/hawkular/inventory/environments/$environmentId", response.headers.Location)
 
-        response = client.post(path: "$tenantId/environments", body: "{\"id\":\"$environmentId\"}")
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/environments/$environmentId", response.headers.Location)
-
-        response = client.post(path: "$tenantId/resourceTypes", body: '{"id":"URL", "version":"1.0"}')
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/resourceTypes/URL", response.headers.Location)
-
-        response = client.post(path: "$tenantId/metricTypes", body: '{"id":"ResponseTime", "unit" : "MILLI_SECOND"}')
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/metricTypes/ResponseTime", response.headers.Location)
-
-        response = client.post(path: "$tenantId/resourceTypes/URL/metricTypes",
-                body: "{\"id\":\"ResponseTime\"}")
-        assertEquals(204, response.status)
-
-        response = client.post(path: "$tenantId/$environmentId/metrics",
-                body: "{\"id\": \"host1_ping_response\", \"metricTypeId\": \"ResponseTime\"}");
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/$environmentId/metrics/host1_ping_response", response.headers.Location)
-
-        response = client.post(path: "$tenantId/$environmentId/resources",
-            body: "{\"id\": \"host1\", \"resourceTypeId\": \"URL\"}")
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/$environmentId/resources/host1", response.headers.Location)
-
-        response = client.post(path: "$tenantId/$environmentId/resources/host1/metrics",
-            body: "[\"host1_ping_response\"]");
-        assertEquals(204, response.status)
-
-        response = client.post(path: "$tenantId/$environmentId/feeds", body: '{"id" : "feed1"}')
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/$environmentId/feeds/feed1", response.headers.Location)
-
-        tenantId = "com.example.tenant"
+        /* ensure the test env was autocreated */
         environmentId = "test"
+        path = "/hawkular/inventory/environments/$environmentId"
+        for (int i = 0; i < attemptCount; i++) {
+            try {
+                response = client.get(path: path)
+                /* all is well, we can leave the loop */
+                break;
+            } catch (groovyx.net.http.HttpResponseException e) {
+                /* some initial attempts may fail */
+            }
+            println "'$path' not ready yet, about to retry after $delay ms"
+            /* sleep one second */
+            Thread.sleep(delay);
+        }
+        if (response.status != 200) {
+            Assert.fail("Getting path '$path' returned status ${response.status}, tried $attemptCount times");
+        }
 
-        response = client.post(path: "tenants", body: "{\"id\":\"$tenantId\"}")
+        /* URL resource type should have been autocreated */
+        response = client.get(path: "/hawkular/inventory/resourceTypes/$urlTypeId")
+        assertEquals(200, response.status)
+        assertEquals(urlTypeId, response.data.id)
+
+        /* Create a custom resource type */
+        response = postDeletable(path: "/hawkular/inventory/resourceTypes", body: [id : pingableHostRTypeId, version : "1.0"])
         assertEquals(201, response.status)
-        assertEquals(baseURI + "tenants/$tenantId", response.headers.Location)
+        assertEquals(baseURI + "/hawkular/inventory/resourceTypes/$pingableHostRTypeId", response.headers.Location)
 
-        response = client.post(path: "$tenantId/environments", body: "{\"id\":\"$environmentId\"}")
+        /* Create a metric type */
+        response = postDeletable(path: "/hawkular/inventory/metricTypes", body: [id : responseTimeMTypeId, unit : "MILLI_SECOND"])
         assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/environments/$environmentId", response.headers.Location)
+        assertEquals(baseURI + "/hawkular/inventory/metricTypes/$responseTimeMTypeId", response.headers.Location)
 
-        response = client.post(path: "$tenantId/resourceTypes", body: '{"id":"Kachna", "version":"1.0"}')
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/resourceTypes/Kachna", response.headers.Location)
-
-        response = client.post(path: "$tenantId/resourceTypes", body: '{"id":"Playroom", "version":"1.0"}')
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/resourceTypes/Playroom", response.headers.Location)
-
-        response = client.post(path: "$tenantId/metricTypes", body: '{"id":"Size", "unit":"BYTE"}')
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/metricTypes/Size", response.headers.Location)
-
-        response = client.post(path: "$tenantId/resourceTypes/Playroom/metricTypes",
-                body: "{\"id\":\"Size\"}")
+        /* link pingableHostRTypeId with responseTimeMTypeId */
+        response = postDeletable(path: "/hawkular/inventory/resourceTypes/$pingableHostRTypeId/metricTypes",
+                body : [id : responseTimeMTypeId])
         assertEquals(204, response.status)
 
-        response = client.post(path: "$tenantId/$environmentId/metrics",
-                body: "{\"id\": \"playroom1_size\", \"metricTypeId\": \"Size\"}");
+        /* add a metric */
+        response = postDeletable(path: "/hawkular/inventory/$environmentId/metrics",
+                body: [ id : responseTimeMetricId, metricTypeId : responseTimeMTypeId ]);
         assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/$environmentId/metrics/playroom1_size", response.headers.Location)
+        assertEquals(baseURI + "/hawkular/inventory/$environmentId/metrics/$responseTimeMetricId", response.headers.Location)
 
-        response = client.post(path: "$tenantId/$environmentId/metrics",
-                body: "{\"id\": \"playroom2_size\", \"metricTypeId\": \"Size\"}");
+
+        /* add a resource */
+        response = postDeletable(path: "/hawkular/inventory/$environmentId/resources",
+            body: [ id : host1ResourceId, resourceTypeId: pingableHostRTypeId ])
         assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/$environmentId/metrics/playroom2_size", response.headers.Location)
+        assertEquals(baseURI + "/hawkular/inventory/$environmentId/resources/$host1ResourceId", response.headers.Location)
 
-        response = client.post(path: "$tenantId/$environmentId/resources",
-                body: "{\"id\": \"playroom1\", \"resourceTypeId\": \"Playroom\"}")
+        /* add another resource */
+        response = postDeletable(path: "/hawkular/inventory/$environmentId/resources",
+            body: [ id : host2ResourceId, resourceTypeId: pingableHostRTypeId ])
         assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/$environmentId/resources/playroom1", response.headers.Location)
+        assertEquals(baseURI + "/hawkular/inventory/$environmentId/resources/$host2ResourceId", response.headers.Location)
 
-        response = client.post(path: "$tenantId/$environmentId/resources",
-                body: "{\"id\": \"playroom2\", \"resourceTypeId\": \"Playroom\"}")
-        assertEquals(201, response.status)
-        assertEquals(baseURI + "$tenantId/$environmentId/resources/playroom2", response.headers.Location)
-
-        response = client.post(path: "$tenantId/$environmentId/resources/playroom1/metrics",
-                body: "[\"playroom1_size\"]");
+        /* link the metric to resource */
+        response = client.post(path: "/hawkular/inventory/$environmentId/resources/$host1ResourceId/metrics",
+            body: [ responseTimeMetricId ]);
         assertEquals(204, response.status)
 
-        response = client.post(path: "$tenantId/$environmentId/resources/playroom2/metrics",
-                body: "[\"playroom2_size\"]");
-        assertEquals(204, response.status)
+        /* add a feed */
+        response = postDeletable(path: "/hawkular/inventory/$environmentId/feeds", body: [ id : feedId ])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "/hawkular/inventory/$environmentId/feeds/$feedId", response.headers.Location)
+
     }
 
     @AfterClass
     static void deleteEverything() {
-        def response = client.delete(path : "tenants/com.acme.tenant")
-        assertEquals(204, response.status)
+        /* the following would delete all data of the present user. We cannot do that as long as we do not have
+         * a dedicated user for running this very single test class. */
+        // def response = client.delete(path : "/hawkular/inventory/tenant")
+        // assertEquals(204, response.status)
 
-        response = client.delete(path : "tenants/com.example.tenant")
-        assertEquals(204, response.status)
+        /* Let's delete the entities one after another in the inverted order as we created them */
+        for (int i = pathsToDelete.size() - 1; i >= 0; i--) {
+            String path = pathsToDelete.get(i);
+            def response = client.delete(path : path)
+            assertEquals(204, response.status)
+        }
+
+
     }
 
-    @Test
-    void ping() {
-        def response = client.get(path: "")
-        assertEquals(200, response.status)
-    }
-
-    @Test
-    void testTenantsCreated() {
-        assertEntitiesExist("tenants", ["com.acme.tenant", "com.example.tenant"])
-    }
+//    Off, see https://issues.jboss.org/browse/HWKINVENT-69
+//    @Test
+//    void ping() {
+//        def response = client.get(path: "")
+//        assertEquals(200, response.status)
+//    }
 
     @Test
     void testEnvironmentsCreated() {
-        assertEntitiesExist("com.acme.tenant/environments", ["production"])
-        assertEntitiesExist("com.example.tenant/environments", ["test"])
+        assertEntitiesExist("/hawkular/inventory/environments", [environmentId])
     }
 
     @Test
     void testResourceTypesCreated() {
-        assertEntityExists("com.acme.tenant/resourceTypes/URL", "URL")
-        assertEntitiesExist("com.acme.tenant/resourceTypes", ["URL"])
+        assertEntityExists("/hawkular/inventory/resourceTypes/$urlTypeId", urlTypeId)
+        assertEntityExists("/hawkular/inventory/resourceTypes/$pingableHostRTypeId", pingableHostRTypeId)
 
-        assertEntityExists("com.example.tenant/resourceTypes/Kachna", "Kachna")
-        assertEntityExists("com.example.tenant/resourceTypes/Playroom", "Playroom")
-        assertEntitiesExist("com.example.tenant/resourceTypes", ["Playroom", "Kachna"])
+        assertEntitiesExist("/hawkular/inventory/resourceTypes", [urlTypeId, pingableHostRTypeId])
+
     }
 
     @Test
     void testMetricTypesCreated() {
-        assertEntityExists("com.acme.tenant/metricTypes/ResponseTime", "ResponseTime")
-        assertEntitiesExist("com.acme.tenant/metricTypes", ["ResponseTime"])
-
-        assertEntityExists("com.example.tenant/metricTypes/Size", "Size")
-        assertEntitiesExist("com.example.tenant/metricTypes", ["Size"])
+        assertEntityExists("/hawkular/inventory/metricTypes/$responseTimeMTypeId", responseTimeMTypeId)
+        assertEntityExists("/hawkular/inventory/metricTypes/$statusDurationMTypeId", statusDurationMTypeId)
+        assertEntityExists("/hawkular/inventory/metricTypes/$statusCodeMTypeId", statusCodeMTypeId)
+        assertEntitiesExist("/hawkular/inventory/metricTypes", [responseTimeMTypeId, statusDurationMTypeId, statusCodeMTypeId])
     }
 
     @Test
     void testMetricTypesLinked() {
-        assertEntitiesExist("com.acme.tenant/resourceTypes/URL/metricTypes", ["ResponseTime"])
-        assertEntitiesExist("com.example.tenant/resourceTypes/Playroom/metricTypes", ["Size"])
+        assertEntitiesExist("/hawkular/inventory/resourceTypes/$pingableHostRTypeId/metricTypes", [responseTimeMTypeId])
     }
 
     @Test
     void testResourcesCreated() {
-        assertEntityExists("com.acme.tenant/production/resources/host1", "host1")
-        assertEntitiesExist("com.acme.tenant/production/resources", ["host1"])
-
-        assertEntityExists("com.example.tenant/test/resources/playroom1", "playroom1")
-        assertEntityExists("com.example.tenant/test/resources/playroom2", "playroom2")
-        assertEntitiesExist("com.example.tenant/test/resources", ["playroom1", "playroom2"])
+        assertEntityExists("/hawkular/inventory/$environmentId/resources/$host1ResourceId", host1ResourceId)
     }
 
     @Test
     void testMetricsCreated() {
-        assertEntityExists("com.acme.tenant/production/metrics/host1_ping_response", "host1_ping_response")
-        assertEntitiesExist("com.acme.tenant/production/metrics", ["host1_ping_response"])
-
-        assertEntityExists("com.example.tenant/test/metrics/playroom1_size", "playroom1_size")
-        assertEntityExists("com.example.tenant/test/metrics/playroom2_size", "playroom2_size")
-        assertEntitiesExist("com.example.tenant/test/metrics", ["playroom1_size", "playroom2_size"])
+        assertEntityExists("/hawkular/inventory/$environmentId/metrics/$responseTimeMetricId", responseTimeMetricId)
+        assertEntitiesExist("/hawkular/inventory/$environmentId/metrics", [ responseTimeMetricId ])
     }
 
     @Test
     void testMetricsLinked() {
-        assertEntitiesExist("com.acme.tenant/production/resources/host1/metrics", ["host1_ping_response"])
-        assertEntitiesExist("com.example.tenant/test/resources/playroom1/metrics", ["playroom1_size"])
-        assertEntitiesExist("com.example.tenant/test/resources/playroom2/metrics", ["playroom2_size"])
+        assertEntitiesExist("/hawkular/inventory/$environmentId/resources/$host1ResourceId/metrics", [ responseTimeMetricId ])
     }
 
     @Test
     void testPaging() {
-        def response = client.get(path: "com.example.tenant/test/metrics", query: [page: 0, per_page: 2, sort: "id"])
-        assert response.data.size() == 2
+        String path = "/hawkular/inventory/$environmentId/resources"
+        def response = client.get(path: path, query: [type: pingableHostRTypeId, page: 0, per_page: 2, sort: "id"])
+        assertEquals(2, response.data.size())
 
         def first = response.data.get(0)
         def second = response.data.get(1)
 
-        response = client.get(path: "com.example.tenant/test/metrics", query: [page: 0, per_page: 1, sort: "id"])
-        assert response.data.size() == 1
-        assert first.equals(response.data.get(0))
+        response = client.get(path: path, query: [type: pingableHostRTypeId, page: 0, per_page: 1, sort: "id"])
+        assertEquals(1, response.data.size())
+        assertEquals(first, response.data.get(0))
 
-        response = client.get(path: "com.example.tenant/test/metrics", query: [page: 1, per_page: 1, sort: "id"])
-        assert response.data.size() == 1
-        assert second.equals(response.data.get(0))
+        response = client.get(path: path, query: [type: pingableHostRTypeId, page: 1, per_page: 1, sort: "id"])
+        assertEquals(1, response.data.size())
+        assertEquals(second, response.data.get(0))
 
-        response = client.get(path: "com.example.tenant/test/metrics", query: [page : 1, per_page: 1, sort: "id",
+        response = client.get(path: path, query: [type: pingableHostRTypeId, page : 1, per_page: 1, sort: "id",
                                                                                order: "desc"])
-        assert response.data.size() == 1
-        assert first.equals(response.data.get(0))
+        assertEquals(1, response.data.size())
+        assertEquals(first, response.data.get(0))
     }
 
     private static void assertEntityExists(path, id) {
         def response = client.get(path: path)
-        assert id.equals(response.data.id)
+        assertEquals(200, response.status)
+        assertEquals(id, response.data.id)
     }
 
     private static void assertEntitiesExist(path, ids) {
@@ -241,7 +248,14 @@ class InventoryITest extends AbstractTestBase {
         def entityIds = response.data.collect{ it.id }
         ids.forEach{entityIds.remove(it); expectedIds.remove(it)}
 
-        assert entityIds.empty : "Unexpected entities with ids: " + entityIds
-        assert expectedIds.empty : "Following entities not found: " + expectedIds
+        Assert.assertTrue("Unexpected entities with ids: " + entityIds, entityIds.empty)
+        Assert.assertTrue("Following entities not found: " + expectedIds, expectedIds.empty)
+    }
+
+    /* Add the deletable path to {@link #pathsToDelete} and send a {@code POST} request using the given map of
+     * arguments. */
+    private static Object postDeletable(Map args) {
+        pathsToDelete.add(args.path + "/" + args.body.id)
+        return client.post(args)
     }
 }
