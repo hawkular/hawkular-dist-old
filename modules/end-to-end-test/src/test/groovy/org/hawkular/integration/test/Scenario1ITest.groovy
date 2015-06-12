@@ -48,7 +48,7 @@ class Scenario1ITest extends AbstractTestBase {
     public void testScenario() throws Exception {
         //def response = client.get(path: "/hawkular-accounts/organizations")
         def response = client.get(path: "/hawkular-accounts/personas/current")
-        assertResponseOk(response.status)
+        assertEquals(200, response.status)
         String tenantId = response.data.id
         // println "tenantId = $tenantId"
 
@@ -80,21 +80,21 @@ class Scenario1ITest extends AbstractTestBase {
 
         /* assert the URL resource type exists */
         response = client.get(path: "/hawkular/inventory/resourceTypes/$urlTypeId")
-        assertResponseOk(response.status)
+        assertEquals(200, response.status)
         assertEquals(urlTypeId, response.data.id)
 
         /* assert the metric types exist */
         response = client.get(path: "/hawkular/inventory/metricTypes/$statusCodeTypeId")
-        assertResponseOk(response.status)
+        assertEquals(200, response.status)
         response = client.get(path: "/hawkular/inventory/metricTypes/$durationTypeId")
-        assertResponseOk(response.status)
+        assertEquals(200, response.status)
 
         /* create a URL */
         String resourceId = UUID.randomUUID().toString();
         def newResource = Resource.Blueprint.builder().withId(resourceId)
                 .withResourceType(urlTypeId).withProperty("url", "http://hawkular.org").build()
         response = client.post(path: "/hawkular/inventory/$environmentId/resources", body : newResource)
-        assertResponseOk(response.status)
+        assertEquals(201, response.status)
 
         /* create the metrics */
         String statusCodeId = UUID.randomUUID().toString();
