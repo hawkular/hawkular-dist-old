@@ -58,7 +58,7 @@ class Scenario1ITest extends AbstractTestBase {
            and one of them may get only a partially initialized state.
            That is why we do several delayed attempts do perform the first request.
          */
-        String path = "/hawkular/inventory/$tenantId/environments/$environmentId";
+        String path = "/hawkular/inventory/environments/$environmentId";
         int attemptCount = 5;
         int delay = 500;
         for (int i = 0; i < attemptCount; i++) {
@@ -79,36 +79,36 @@ class Scenario1ITest extends AbstractTestBase {
         assertEquals(environmentId, response.data.id)
 
         /* assert the URL resource type exists */
-        response = client.get(path: "/hawkular/inventory/$tenantId/resourceTypes/$urlTypeId")
+        response = client.get(path: "/hawkular/inventory/resourceTypes/$urlTypeId")
         assertResponseOk(response.status)
         assertEquals(urlTypeId, response.data.id)
 
         /* assert the metric types exist */
-        response = client.get(path: "/hawkular/inventory/$tenantId/metricTypes/$statusCodeTypeId")
+        response = client.get(path: "/hawkular/inventory/metricTypes/$statusCodeTypeId")
         assertResponseOk(response.status)
-        response = client.get(path: "/hawkular/inventory/$tenantId/metricTypes/$durationTypeId")
+        response = client.get(path: "/hawkular/inventory/metricTypes/$durationTypeId")
         assertResponseOk(response.status)
 
         /* create a URL */
         String resourceId = UUID.randomUUID().toString();
         def newResource = Resource.Blueprint.builder().withId(resourceId)
                 .withResourceType(urlTypeId).withProperty("url", "http://hawkular.org").build()
-        response = client.post(path: "/hawkular/inventory/$tenantId/$environmentId/resources", body : newResource)
+        response = client.post(path: "/hawkular/inventory/$environmentId/resources", body : newResource)
         assertResponseOk(response.status)
 
         /* create the metrics */
         String statusCodeId = UUID.randomUUID().toString();
         def codeMetric = Metric.Blueprint.builder().withMetricTypeId(statusCodeTypeId).withId(statusCodeId).build();
-        response = client.post(path: "/hawkular/inventory/$tenantId/$environmentId/metrics", body: codeMetric)
+        response = client.post(path: "/hawkular/inventory/$environmentId/metrics", body: codeMetric)
         assertResponseOk(response.status)
 
         String durationId = UUID.randomUUID().toString();
         def durationMetric = Metric.Blueprint.builder().withMetricTypeId(durationTypeId).withId(durationId).build();
-        response = client.post(path: "/hawkular/inventory/$tenantId/$environmentId/metrics", body: durationMetric)
+        response = client.post(path: "/hawkular/inventory/$environmentId/metrics", body: durationMetric)
         assertResponseOk(response.status)
 
         /* assign metrics to the resource */
-        response = client.post(path: "/hawkular/inventory/$tenantId/$environmentId/resources/$resourceId/metrics",
+        response = client.post(path: "/hawkular/inventory/$environmentId/resources/$resourceId/metrics",
         body: [
             statusCodeId,
             durationId]
