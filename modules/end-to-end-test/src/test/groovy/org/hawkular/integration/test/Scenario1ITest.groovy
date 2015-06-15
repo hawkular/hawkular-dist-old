@@ -17,6 +17,7 @@
 
 package org.hawkular.integration.test
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.auth.AuthScope;
@@ -33,6 +34,7 @@ import org.hawkular.inventory.api.model.Tenant
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test
 
@@ -43,6 +45,8 @@ class Scenario1ITest extends AbstractTestBase {
     static final String environmentId = "test"
     static final String statusCodeTypeId = "status.code.type"
     static final String durationTypeId = "status.duration.type"
+
+    private static List<String> pathsToDelete = new ArrayList();
 
     @Test
     public void testScenario() throws Exception {
@@ -95,17 +99,21 @@ class Scenario1ITest extends AbstractTestBase {
                 .withResourceType(urlTypeId).withProperty("url", "http://hawkular.org").build()
         response = client.post(path: "/hawkular/inventory/$environmentId/resources", body : newResource)
         assertEquals(201, response.status)
+        pathsToDelete.add("/hawkular/inventory/$environmentId/resources/$resourceId")
+
 
         /* create the metrics */
         String statusCodeId = UUID.randomUUID().toString();
         def codeMetric = Metric.Blueprint.builder().withMetricTypeId(statusCodeTypeId).withId(statusCodeId).build();
         response = client.post(path: "/hawkular/inventory/$environmentId/metrics", body: codeMetric)
-        assertResponseOk(response.status)
+        assertEquals(201, response.status)
+        pathsToDelete.add("/hawkular/inventory/$environmentId/metrics/$statusCodeId")
 
         String durationId = UUID.randomUUID().toString();
         def durationMetric = Metric.Blueprint.builder().withMetricTypeId(durationTypeId).withId(durationId).build();
         response = client.post(path: "/hawkular/inventory/$environmentId/metrics", body: durationMetric)
-        assertResponseOk(response.status)
+        assertEquals(201, response.status)
+        pathsToDelete.add("/hawkular/inventory/$environmentId/metrics/$durationId")
 
         /* assign metrics to the resource */
         response = client.post(path: "/hawkular/inventory/$environmentId/resources/$resourceId/metrics",
@@ -165,10 +173,26 @@ class Scenario1ITest extends AbstractTestBase {
         assertEquals(27, response.data.size());
 
         /* TODO: define an alert */
-        // response = client.post(path: "alerts/triggers/")
+        // response = postDeletable(path: "alerts/triggers/")
 
     }
 
+    @AfterClass
+    static void cleanUp() {
+        /* Let's delete the entities one after another in the inverse order as we created them */
+        for (int i = pathsToDelete.size() - 1; i >= 0; i--) {
+            String path = pathsToDelete.get(i);
+            def response = client.delete(path : path)
+            assertEquals(204, response.status)
+
+            try {
+                response = client.get(path : path)
+                Assert.fail("The path '$path' should not exist after it was deleted")
+            } catch (groovyx.net.http.HttpResponseException e) {
+                assertEquals("Error message for path '$path'", "Not Found", e.getMessage())
+            }
+        }
+    }
     private void assertResponseOk(int responseCode) {
         assertTrue("Response code should be 2xx or 304 but was "+ responseCode,
                 (responseCode >= 200 && responseCode < 300) || responseCode == 304)
@@ -188,4 +212,5 @@ class Scenario1ITest extends AbstractTestBase {
             ])
         assertResponseOk(response.status)
     }
+
 }
