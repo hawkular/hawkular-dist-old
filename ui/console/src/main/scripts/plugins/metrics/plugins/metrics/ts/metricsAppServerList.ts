@@ -25,8 +25,6 @@ module HawkularMetrics {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5', 'HkHeaderParser'];
 
-    private httpUriPart = 'http://';
-    public addProgress: boolean = false;
     private resourceList;
     public alertList;
     private resPerPage = 10;

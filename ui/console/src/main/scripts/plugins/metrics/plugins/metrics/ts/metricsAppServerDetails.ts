@@ -23,11 +23,10 @@ module HawkularMetrics {
 
   export class AppServerDetailsController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5'];
 
-    private httpUriPart = 'http://';
-    public addProgress: boolean = false;
     private resourceList;
+    private metricsList;
     public alertList;
     private resPerPage = 5;
     private resCurPage = 0;
@@ -38,6 +37,7 @@ module HawkularMetrics {
       private $interval: ng.IIntervalService,
       private $log: ng.ILogService,
       private $filter: ng.IFilterService,
+      private $routeParams: any,
       private $modal: any,
       private HawkularInventory: any,
       private HawkularMetric: any,
@@ -53,9 +53,14 @@ module HawkularMetrics {
 
         this.startTimeStamp = +moment().subtract(1, 'hours');
         this.endTimeStamp = +moment();
-        this.resourceUrl = this.httpUriPart;
 
-        this.getResourceList();
+        if ($rootScope.currentPersona) {
+          this.getResourceList(this.$rootScope.currentPersona.id);
+        } else {
+          // currentPersona hasn't been injected to the rootScope yet, wait for it..
+          $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.getResourceList(currentPersona.id));
+        }
+
         this.autoRefresh(20);
     }
 
@@ -76,41 +81,40 @@ module HawkularMetrics {
       });
     }
 
-    getResourceList(): any {
-      this.resourceList = [
-        {
-          tenant: 'test', environment: 'test', feed: null, id: 'f5087d5d26aeff90cc92c738a10d8bba',
-          properties: { name: 'Eavy Machine', url: 'eavy.corp.redhat.com' },
-          type: { tenant: 'test', id: 'EAP', version: '1.0', properties: {} },
-          state: 'Running',
-          alerts: ['SLOW'],
-          tags: ['Production']
-        },
-        {
-          tenant: 'test', environment: 'test', feed: null, id: '5c4785a7a304d32e5f404242666895f5',
-          properties: { name: 'Tori Machine', url: 'tori.corp.redhat.com' },
-          type: { tenant: 'test', id: 'Tomcat', version: '1.0', properties: {} },
-          state: 'Running',
-          alerts: [],
-          tags: ['Development']
-        },
-        {
-          tenant: 'test', environment: 'test', feed: null, id: '21193e7941642baa1285cd7edd8af62e',
-          properties: { name: 'Wiko Machine', url: 'wiko.corp.redhat.com' },
-          type: { tenant: 'test', id: 'Wildfly', version: '1.0', properties: {} },
-          state: 'Failed',
-          alerts: ['DOWN'],
-          tags: []
-        },
-        {
-          tenant: 'test', environment: 'test', feed: null, id: '20a0e9f5d777a16ad40928dd3ba1bef9',
-          properties: { name: 'Tomy Machine', url: 'tomy.corp.redhat.com' },
-          type: { tenant: 'test', id: 'Tomcat', version: '1.0', properties: {} },
-          state: 'Stopped',
-          alerts: [],
-          tags: ['QE']
+    getResourceList(currentTenantId?: TenantId): any {
+      this.alertList = []; // FIXME: when we have alerts for app server
+      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      this.HawkularInventory.ResourceOfType.query({tenantId: tenantId, resourceTypeId: 'Deployment'}, (aResourceList, getResponseHeaders) => {
+        var promises = [];
+        var tmpResourceList = [];
+        angular.forEach(aResourceList, function(res, idx) {
+          if (res.id.startsWith(new RegExp('\\[' + this.$routeParams.resourceId + '~/'))) {
+            tmpResourceList.push(res);
+            promises.push(this.HawkularMetric.AvailabilityMetricData.query({
+              tenantId: tenantId,
+              availabilityId: 'AI~R~' + res.id + '~AT~Deployment Status',
+              distinct: true}, (resource) => {
+                var latestData = resource[resource.length-1];
+                if (latestData) {
+                  res['state'] = latestData['value'];
+                  res['updateTimestamp'] = latestData['timestamp'];
+                }
+            }).$promise);
+          }
+          this.lastUpdateTimestamp = new Date();
+        }, this);
+        this.$q.all(promises).then((result) => {
+          this.resourceList = tmpResourceList;
+          this.resourceList.$resolved = true;
+        });
+      },
+      () => { // error
+        if (!this.resourceList) {
+          this.resourceList = [];
+          this.resourceList.$resolved = true;
+          this['lastUpdateTimestamp'] = new Date();
         }
-      ];
+      });
     }
 
   }

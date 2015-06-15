@@ -159,6 +159,9 @@ a:hover .fa-spinner {
   padding: 2px 4px;
 }
 
+.help-block {
+
+}
 
 // tables
 
@@ -169,6 +172,18 @@ a:hover .fa-spinner {
 
 .table-striped > tbody > tr:nth-child(odd) > td {
   background-color: white;
+
+  &.success {
+    background-color: #dff0d8;
+  }
+
+  &.danger {
+    background-color: #f2dede;
+  }
+
+  &.warning {
+    background-color: #fcf8e3;
+  }
 }
 
 .table-striped > tbody > tr.selected > td {
@@ -194,6 +209,18 @@ a:hover .fa-spinner {
       font-size: 20px;
       text-align: center;
       width: 21px;
+
+      &.fa-square {
+        font-size: 18px;
+      }
+
+      &.fa-check-circle-o {
+        color: @brand-success;
+      }
+
+      &.fa-times-circle-o {
+        color: @brand-danger;
+      }
     }
 
     p {
@@ -209,12 +236,37 @@ a:hover .fa-spinner {
     span.fetching {
       color: @gray-light;
     }
+  }
 
+  td.actions {
+
+    min-width: 95px;
+
+    .dropdown {
+      position: absolute;
+      margin-top: -2px;
+    }
   }
 }
 
 .dataTables_header {
-  padding: 5px 5px 7px 5px;
+  padding: 7px 5px 9px 5px;
+}
+
+.actions-table {
+  position: absolute;
+  top: 46px;
+  z-index: 10;
+  right: 5px;
+
+  .add,
+  .dropdown {
+    display:inline-block;
+  }
+
+  .add {
+    margin-right: 8px;
+  }
 }
 
 
@@ -258,6 +310,7 @@ a:hover .fa-spinner {
   }
 }
 
+.ng-dirty,
 .hk-fade-in {
   .help-block {
     color: @brand-danger;
@@ -367,7 +420,7 @@ a:hover .fa-spinner {
   }
 
   .btn-link {
-    color: @gray;
+    color: @gray-light;
 
     &:hover {
       color: @link-hover-color;
@@ -530,7 +583,6 @@ a:hover .fa-spinner {
 }
 
 .blank-slate-pf {
-  // .panel;
   margin-bottom: 20px;
   background-color: #ffffff;
   border: 1px solid transparent;
@@ -929,6 +981,9 @@ section {
 }
 
 .hk-info-top {
+
+  position: relative;
+
   .hk-settings {
     margin-top: @grid-gutter-width/4;
   }
@@ -937,13 +992,19 @@ section {
     margin-top: -7px;
     margin-right: -11px;
   }
+
+  + .dataTables_wrapper {
+    margin-top: 0;
+  }
 }
+
 
 // modal
 
 .modal-backdrop {
   width: 100%!important;
 }
+
 
 // dev styles
 
