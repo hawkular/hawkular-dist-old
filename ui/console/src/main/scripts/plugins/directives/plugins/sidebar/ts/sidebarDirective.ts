@@ -102,20 +102,7 @@ module Sidebar {
 
     // FIXME: Mock data.. remove when we have real app servers
     $scope.getAppServerFromId = function(id) {
-      switch (id) {
-        case "f5087d5d26aeff90cc92c738a10d8bba":
-          $scope.resourceName = 'Eavy Machine';
-          break;
-        case "5c4785a7a304d32e5f404242666895f5":
-          $scope.resourceName = 'Tori Machine';
-          break;
-        case "21193e7941642baa1285cd7edd8af62e":
-          $scope.resourceName = 'Wiko Machine';
-          break;
-        case "20a0e9f5d777a16ad40928dd3ba1bef9":
-          $scope.resourceName = 'Tomy Machine';
-          break;
-      }
+      $scope.resourceName = id;
     };
 
     }]);
