@@ -29,7 +29,6 @@ import javax.ejb.LockType;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,8 +70,8 @@ public class PingManager {
     @EJB
     TraitsPublisher traitsPublisher;
 
-    @javax.annotation.Resource(lookup = "java:global/Hawkular/ObservableInventory")
-    Inventory.Mixin.Observable inventory;
+    @javax.annotation.Resource(lookup = "java:global/Hawkular/Inventory")
+    Inventory inventory;
 
     final UrlChangesCollector urlChangesCollector = new UrlChangesCollector();
 
