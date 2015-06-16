@@ -34,7 +34,8 @@ import static org.junit.Assert.assertEquals
  */
 class InventoryITest extends AbstractTestBase {
     private static final String urlTypeId = "URL"
-    static String environmentId = "itest-env-" + UUID.randomUUID().toString()
+    private static final String testEnvId = "test"
+    private static final String environmentId = "itest-env-" + UUID.randomUUID().toString()
     private static final String pingableHostRTypeId = "pingable-host-" + UUID.randomUUID().toString()
     private static final String responseTimeMTypeId = "response-time-" + UUID.randomUUID().toString()
     private static final String statusDurationMTypeId = "status.duration.type"
@@ -49,6 +50,11 @@ class InventoryITest extends AbstractTestBase {
 
     @BeforeClass
     static void setupData() {
+
+        /* Make sure we can access the tenant first.
+         * We will do several attempts because race conditions
+         * may happen between this script and WildFly Agent
+         * who may have triggered the same initial tasks in Accounts */
         def response = null
         int attemptCount = 5;
         int delay = 500;
@@ -70,14 +76,13 @@ class InventoryITest extends AbstractTestBase {
         }
         String tenantId = response.data.id
 
-// Env creation does not work see https://issues.jboss.org/browse/HWKINVENT-70
-//        response = client.post(path: "/hawkular/inventory/environments", body: [id : environmentId])
-//        assertEquals(201, response.status)
-//        assertEquals(baseURI + "/hawkular/inventory/environments/$environmentId", response.headers.Location)
-
-        /* ensure the test env was autocreated */
-        environmentId = "test"
-        path = "/hawkular/inventory/environments/$environmentId"
+        /* Ensure the "test" env was autocreated.
+         * We will do several attempts because race conditions
+         * may happen between this script and WildFly Agent
+         * who may have triggered the same initial tasks in Inventory.
+         * A successfull GET to /hawkular/inventory/environments/test
+         * should mean that all initial tasks are over */
+        path = "/hawkular/inventory/environments/$testEnvId"
         for (int i = 0; i < attemptCount; i++) {
             try {
                 response = client.get(path: path)
@@ -93,6 +98,11 @@ class InventoryITest extends AbstractTestBase {
         if (response.status != 200) {
             Assert.fail("Getting path '$path' returned status ${response.status}, tried $attemptCount times");
         }
+
+        /* Create an environment that will be used exclusively by this test */
+        response = postDeletable(path: "/hawkular/inventory/environments", body: [id : environmentId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "/hawkular/inventory/environments/$environmentId", response.headers.Location)
 
         /* URL resource type should have been autocreated */
         response = client.get(path: "/hawkular/inventory/resourceTypes/$urlTypeId")
@@ -183,7 +193,7 @@ class InventoryITest extends AbstractTestBase {
 
     @Test
     void testEnvironmentsCreated() {
-        assertEntitiesExist("/hawkular/inventory/environments", [environmentId])
+        assertEntitiesExist("/hawkular/inventory/environments", [testEnvId, environmentId])
     }
 
     @Test
