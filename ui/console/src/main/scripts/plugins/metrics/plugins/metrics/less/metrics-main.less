@@ -282,8 +282,18 @@ a:hover .fa-spinner {
 
   padding: 0 @grid-gutter-width 0 @grid-gutter-width/4;
 
-  &.hk-fade-in {
+  &.hk-urls-empty {
     margin-top: @grid-gutter-width*4;
+  }
+
+  &.hk-spinner-container {
+    margin-top: @grid-gutter-width*5.5;
+  }
+
+  .hk-spinner-legend-below {
+    color: @gray-light;
+    font-size: ceil(@font-size-base + 2);
+    margin-top: @grid-gutter-width/4;
   }
 
   h1 + .fa {
