@@ -1,5 +1,9 @@
 <div ng-controller="HawkularMetrics.AddUrlController as vm">
-  <div class="hk-fade-in" ng-class="{'hk-urls-list text-center': vm.resourceList.length === 0}">
+  <div class="text-center hk-urls-list hk-spinner-container" ng-hide="vm.resourceList">
+    <div class="spinner spinner-lg"></div>
+    <p class="hk-spinner-legend-below">Loading...</p>
+  </div>
+  <div class="hk-urls-list hk-fade-in" ng-class="{'hk-urls-empty text-center': vm.resourceList.length === 0}" ng-show="vm.resourceList">
     <h1 class="text-center">Hello {{userDetails.firstName}}!</h1>
     <i class="fa fa-line-chart" ng-show="vm.resourceList.length === 0"></i>
     <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a website that you want to monitor.</h2>
