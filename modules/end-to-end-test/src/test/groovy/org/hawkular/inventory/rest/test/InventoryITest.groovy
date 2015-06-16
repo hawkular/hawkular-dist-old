@@ -36,17 +36,19 @@ class InventoryITest extends AbstractTestBase {
     private static final String urlTypeId = "URL"
     private static final String testEnvId = "test"
     private static final String environmentId = "itest-env-" + UUID.randomUUID().toString()
-    private static final String pingableHostRTypeId = "pingable-host-" + UUID.randomUUID().toString()
-    private static final String responseTimeMTypeId = "response-time-" + UUID.randomUUID().toString()
+    private static final String pingableHostRTypeId = "itest-pingable-host-" + UUID.randomUUID().toString()
+    private static final String responseTimeMTypeId = "itest-response-time-" + UUID.randomUUID().toString()
+    private static final String responseStatusCodeMTypeId = "itest-response-status-code-" + UUID.randomUUID().toString()
     private static final String statusDurationMTypeId = "status.duration.type"
     private static final String statusCodeMTypeId = "status.code.type"
-    private static final String host1ResourceId = "host1-" + UUID.randomUUID().toString();
-    private static final String host2ResourceId = "host2-" + UUID.randomUUID().toString();
-    private static final String responseTimeMetricId = "response-time-" + host1ResourceId;
-    private static final String feedId = "feed-" + UUID.randomUUID().toString();
+    private static final String host1ResourceId = "itest-host1-" + UUID.randomUUID().toString();
+    private static final String host2ResourceId = "itest-host2-" + UUID.randomUUID().toString();
+    private static final String responseTimeMetricId = "itest-response-time-" + host1ResourceId;
+    private static final String responseStatusCodeMetricId = "itest-response-status-code-" + host1ResourceId;
+    private static final String feedId = "itest-feed-" + UUID.randomUUID().toString();
 
-    /* key is the path to delete while value says if the same endpoint can be used to verify the deletion */
-    private static Map<String, Boolean> pathsToDelete = new LinkedHashMap();
+    /* key is the path to delete while value is the path to GET to verify the deletion */
+    private static Map<String, String> pathsToDelete = new LinkedHashMap();
 
     @BeforeClass
     static void setupData() {
@@ -119,10 +121,18 @@ class InventoryITest extends AbstractTestBase {
         assertEquals(201, response.status)
         assertEquals(baseURI + "/hawkular/inventory/metricTypes/$responseTimeMTypeId", response.headers.Location)
 
-        /* link pingableHostRTypeId with responseTimeMTypeId */
-        response = postDeletable([path: "/hawkular/inventory/resourceTypes/$pingableHostRTypeId/metricTypes",
-                body : [id : responseTimeMTypeId]], false)
+        /* Create another metric type */
+        response = postDeletable(path: "/hawkular/inventory/metricTypes", body: [id : responseStatusCodeMTypeId, unit : "NONE"])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "/hawkular/inventory/metricTypes/$responseStatusCodeMTypeId", response.headers.Location)
+
+        /* link pingableHostRTypeId with responseTimeMTypeId and responseStatusCodeMTypeId */
+        path = "/hawkular/inventory/resourceTypes/$pingableHostRTypeId/metricTypes"
+        response = client.post(path: path,
+                body : [responseTimeMTypeId, responseStatusCodeMTypeId])
         assertEquals(204, response.status)
+        pathsToDelete.put("$path/$responseTimeMTypeId", "$path/$responseTimeMTypeId")
+        pathsToDelete.put("$path/$responseStatusCodeMTypeId", "$path/$responseStatusCodeMTypeId")
 
         /* add a metric */
         response = postDeletable(path: "/hawkular/inventory/$environmentId/metrics",
@@ -130,6 +140,11 @@ class InventoryITest extends AbstractTestBase {
         assertEquals(201, response.status)
         assertEquals(baseURI + "/hawkular/inventory/$environmentId/metrics/$responseTimeMetricId", response.headers.Location)
 
+        /* add another metric */
+        response = postDeletable(path: "/hawkular/inventory/$environmentId/metrics",
+                body: [ id : responseStatusCodeMetricId, metricTypeId : responseStatusCodeMTypeId ]);
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "/hawkular/inventory/$environmentId/metrics/$responseStatusCodeMetricId", response.headers.Location)
 
         /* add a resource */
         response = postDeletable(path: "/hawkular/inventory/$environmentId/resources",
@@ -144,9 +159,12 @@ class InventoryITest extends AbstractTestBase {
         assertEquals(baseURI + "/hawkular/inventory/$environmentId/resources/$host2ResourceId", response.headers.Location)
 
         /* link the metric to resource */
-        response = client.post(path: "/hawkular/inventory/$environmentId/resources/$host1ResourceId/metrics",
-            body: [ responseTimeMetricId ]);
+        path = "/hawkular/inventory/$environmentId/resources/$host1ResourceId/metrics"
+        response = client.post(path: path,
+            body: [responseTimeMetricId, responseStatusCodeMetricId]);
         assertEquals(204, response.status)
+        pathsToDelete.put("$path/$responseTimeMetricId", "$path/$responseTimeMetricId")
+        pathsToDelete.put("$path/$responseStatusCodeMetricId", "$path/$responseStatusCodeMetricId")
 
         /* add a feed */
         response = postDeletable(path: "/hawkular/inventory/$environmentId/feeds", body: [ id : feedId ])
@@ -167,14 +185,14 @@ class InventoryITest extends AbstractTestBase {
         Collections.reverse(entries)
         for (Map.Entry en : entries) {
             String path = en.getKey();
-            boolean validate = en.getValue();
+            String getValidationPath = en.getValue();
             def response = client.delete(path : path)
             assertEquals(204, response.status)
 
-            if (validate) {
+            if (getValidationPath != null) {
                 try {
-                    response = client.get(path : path)
-                    Assert.fail("The path '$path' should not exist after it was deleted")
+                    response = client.get(path : getValidationPath)
+                    Assert.fail("The path '$getValidationPath' should not exist after the entity was deleted")
                 } catch (groovyx.net.http.HttpResponseException e) {
                     assertEquals("Error message for path '$path'", "Not Found", e.getMessage())
                 }
@@ -210,12 +228,14 @@ class InventoryITest extends AbstractTestBase {
         assertEntityExists("/hawkular/inventory/metricTypes/$responseTimeMTypeId", responseTimeMTypeId)
         assertEntityExists("/hawkular/inventory/metricTypes/$statusDurationMTypeId", statusDurationMTypeId)
         assertEntityExists("/hawkular/inventory/metricTypes/$statusCodeMTypeId", statusCodeMTypeId)
-        assertEntitiesExist("/hawkular/inventory/metricTypes", [responseTimeMTypeId, statusDurationMTypeId, statusCodeMTypeId])
+        assertEntitiesExist("/hawkular/inventory/metricTypes",
+            [responseTimeMTypeId, responseStatusCodeMTypeId, statusDurationMTypeId, statusCodeMTypeId])
     }
 
     @Test
     void testMetricTypesLinked() {
-        assertEntitiesExist("/hawkular/inventory/resourceTypes/$pingableHostRTypeId/metricTypes", [responseTimeMTypeId])
+        assertEntitiesExist("/hawkular/inventory/resourceTypes/$pingableHostRTypeId/metricTypes",
+            [responseTimeMTypeId, responseStatusCodeMTypeId])
     }
 
     @Test
@@ -226,12 +246,14 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testMetricsCreated() {
         assertEntityExists("/hawkular/inventory/$environmentId/metrics/$responseTimeMetricId", responseTimeMetricId)
-        assertEntitiesExist("/hawkular/inventory/$environmentId/metrics", [ responseTimeMetricId ])
+        assertEntityExists("/hawkular/inventory/$environmentId/metrics/$responseStatusCodeMetricId", responseStatusCodeMetricId)
+        assertEntitiesExist("/hawkular/inventory/$environmentId/metrics", [ responseTimeMetricId, responseStatusCodeMetricId ])
     }
 
     @Test
     void testMetricsLinked() {
-        assertEntitiesExist("/hawkular/inventory/$environmentId/resources/$host1ResourceId/metrics", [ responseTimeMetricId ])
+        assertEntitiesExist("/hawkular/inventory/$environmentId/resources/$host1ResourceId/metrics",
+            [ responseTimeMetricId, responseStatusCodeMetricId ])
     }
 
     @Test
@@ -278,10 +300,12 @@ class InventoryITest extends AbstractTestBase {
     /* Add the deletable path to {@link #pathsToDelete} and send a {@code POST} request using the given map of
      * arguments. */
     private static Object postDeletable(Map args) {
-        postDeletable(args, true)
+        String getVerificationPath = args.path + "/" + args.body.id
+        postDeletable(args, getVerificationPath)
     }
-    private static Object postDeletable(Map args, boolean verify) {
-        pathsToDelete.put(args.path + "/" + args.body.id, verify)
+    private static Object postDeletable(Map args, String getVerificationPath) {
+        String path = args.path + "/" + args.body.id
+        pathsToDelete.put(path, getVerificationPath)
         return client.post(args)
     }
 }
