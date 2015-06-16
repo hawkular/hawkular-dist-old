@@ -89,6 +89,22 @@
         <hawkular.port.offset>0</hawkular.port.offset>
         <!-- $hawkular.management.port must be equal to $hawkular.port.offset + 9990 -->
         <hawkular.management.port>9990</hawkular.management.port>
+
+        <hawkular.log>INFO</hawkular.log>
+        <hawkular.log.accounts>INFO</hawkular.log.accounts>
+        <hawkular.log.agent>INFO</hawkular.log.agent>
+        <hawkular.log.alerts>INFO</hawkular.log.alerts>
+        <hawkular.log.bus>INFO</hawkular.log.bus>
+        <hawkular.log.availcreator>INFO</hawkular.log.availcreator>
+        <hawkular.log.pinger>INFO</hawkular.log.pinger>
+        <hawkular.log.inventory>INFO</hawkular.log.inventory>
+        <hawkular.log.metrics>INFO</hawkular.log.metrics>
+        <hawkular.log.nest>INFO</hawkular.log.nest>
+        <hawkular.log.datastax.driver>INFO</hawkular.log.datastax.driver>
+        <hawkular.log.liquibase>WARN</hawkular.log.liquibase>
+        <hawkular.log.cassandra>INFO</hawkular.log.cassandra>
+        <hawkular.log.ejb3>WARN</hawkular.log.ejb3>
+        <hawkular.log.rewrite>WARN</hawkular.log.rewrite>
       </properties>
       <build>
         <plugins>
@@ -134,6 +150,21 @@
                 <javaOpt>-Djava.awt.headless=true</javaOpt>
                 <javaOpt>-Djboss.bind.address=${hawkular.bind.address}</javaOpt>
                 <javaOpt>-Djboss.socket.binding.port-offset=${hawkular.port.offset}</javaOpt>
+                <javaOpt>-Dhawkular.log=${hawkular.log}</javaOpt>
+                <javaOpt>-Dhawkular.log.accounts=${hawkular.log.accounts}</javaOpt>
+                <javaOpt>-Dhawkular.log.agent=${hawkular.log.agent}</javaOpt>
+                <javaOpt>-Dhawkular.log.alerts=${hawkular.log.alerts}</javaOpt>
+                <javaOpt>-Dhawkular.log.bus=${hawkular.log.bus}</javaOpt>
+                <javaOpt>-Dhawkular.log.availcreator=${hawkular.log.availcreator}</javaOpt>
+                <javaOpt>-Dhawkular.log.pinger=${hawkular.log.pinger}</javaOpt>
+                <javaOpt>-Dhawkular.log.inventory=${hawkular.log.inventory}</javaOpt>
+                <javaOpt>-Dhawkular.log.metrics=${hawkular.log.metrics}</javaOpt>
+                <javaOpt>-Dhawkular.log.nest=${hawkular.log.nest}</javaOpt>
+                <javaOpt>-Dhawkular.log.datastax.driver=${hawkular.log.datastax.driver}</javaOpt>
+                <javaOpt>-Dhawkular.log.liquibase=${hawkular.log.liquibase}</javaOpt>
+                <javaOpt>-Dhawkular.log.cassandra=${hawkular.log.cassandra}</javaOpt>
+                <javaOpt>-Dhawkular.log.ejb3=${hawkular.log.ejb3}</javaOpt>
+                <javaOpt>-Dhawkular.log.rewrite=${hawkular.log.rewrite}</javaOpt>
               </javaOpts>
             </configuration>
             <executions>
