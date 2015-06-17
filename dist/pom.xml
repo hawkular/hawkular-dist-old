@@ -129,6 +129,12 @@
 
     <!-- Keycloak-related dependencies -->
     <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-wf9-modules</artifactId>
+      <version>${version.org.keycloak}</version>
+      <type>zip</type>
+    </dependency>
+    <dependency>
       <groupId>org.hawkular.accounts</groupId>
       <artifactId>hawkular-accounts-keycloak-theme</artifactId>
       <version>${version.org.hawkular.accounts}</version>
@@ -157,6 +163,12 @@
                   <type>zip</type>
                   <version>${version.org.keycloak}</version>
                   <outputDirectory>${project.build.directory}/keycloak</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.keycloak</groupId>
+                  <artifactId>keycloak-wf9-modules</artifactId>
+                  <type>zip</type>
+                  <outputDirectory>${project.build.directory}/keycloak/modules/system/layers/base</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
