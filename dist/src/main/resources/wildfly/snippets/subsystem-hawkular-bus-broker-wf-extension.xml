@@ -20,13 +20,13 @@
            enabled="true"
            configuration-file="default-broker.xml">
 
-  <org.hawkular.bus.broker.name>org.hawkular.bus.broker.${jboss.node.name}</org.hawkular.bus.broker.name>
-  <org.hawkular.bus.broker.persistent>false</org.hawkular.bus.broker.persistent>
-  <org.hawkular.bus.broker.use-jmx>false</org.hawkular.bus.broker.use-jmx>
+  <org-hawkular-bus-broker-name>org.hawkular.bus.broker.${jboss.node.name}</org-hawkular-bus-broker-name>
+  <org-hawkular-bus-broker-persistent>false</org-hawkular-bus-broker-persistent>
+  <org-hawkular-bus-broker-use-jmx>false</org-hawkular-bus-broker-use-jmx>
 
   <connector socket-binding="org.hawkular.bus.broker"
-             org.hawkular.bus.broker.connector.name="openwire"
-             org.hawkular.bus.broker.connector.protocol="tcp" />
+             org-hawkular-bus-broker-connector-name="openwire"
+             org-hawkular-bus-broker-connector-protocol="tcp" />
 
   <discovery-socket-binding>org.hawkular.bus.broker.discovery</discovery-socket-binding>
 
