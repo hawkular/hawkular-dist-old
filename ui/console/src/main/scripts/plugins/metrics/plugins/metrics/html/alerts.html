@@ -11,7 +11,7 @@
 
   <section id="hk-alerts" class="hk-tab-content">
     <div class="hk-info-top clearfix">
-      <h3 class="pull-left">Alerts <span>({{(mac.alertList | filter:timeFilter).length}})</span></h3>
+      <h3 class="pull-left">Alerts <span>({{(mac.alertList).length}})</span></h3>
       <span class="hk-settings pull-right"><a href="#" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
     </div>
     <div ng-include="'plugins/metrics/html/alerts-view.html'"></div>

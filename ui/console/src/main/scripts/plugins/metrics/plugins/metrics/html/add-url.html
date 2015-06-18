@@ -3,7 +3,7 @@
     <div class="spinner spinner-lg"></div>
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
-  <div class="hk-urls-list hk-fade-in" ng-class="{'hk-urls-empty text-center': vm.resourceList.length === 0}" ng-show="vm.resourceList">
+  <div class="hk-urls-list" ng-class="{'hk-urls-empty text-center': vm.resourceList.length === 0, 'hk-fade-in': vm.resourceList}" ng-show="vm.resourceList">
     <h1 class="text-center">Hello {{userDetails.firstName}}!</h1>
     <i class="fa fa-line-chart" ng-show="vm.resourceList.length === 0"></i>
     <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a website that you want to monitor.</h2>
@@ -31,7 +31,7 @@
 
   <h2 ng-show="vm.resourceList.length > 0" class="text-center hk-fade-in">Current status of your websites</h2>
 
-  <div class="row hk-urls-list-labels hk-fade-in" ng-show="vm.resourceList.length > 0">
+  <div class="row hk-urls-list-labels" ng-class="{'hk-fade-in': vm.resourceList}" ng-show="vm.resourceList.length > 0">
     <div class="col-sm-6 text-left">
       <button class="btn btn-link" tooltip="Sort" tooltip-trigger tooltip-placement="top" ng-click="vm.reverse = !vm.reverse">
         URL (A-Z) <i class="fa" ng-class="vm.reverse ? 'fa-angle-up' : 'fa-angle-down'"></i>
@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <div class="hk-fade-in">
+  <div ng-class="{'hk-fade-in': vm.resourceList}">
     <div class="hk-url-item" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">
       <div class="hk-url-heading">
         <a href="/hawkular-ui/url/availability/{{res.id}}">{{res.properties.url}}</a>

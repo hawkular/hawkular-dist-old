@@ -54,7 +54,7 @@ module HawkularMetrics {
    */
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams','HawkularAlertsManager' ,'HawkularErrorManager'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
@@ -76,6 +76,8 @@ module HawkularMetrics {
                 private HawkularMetric:any,
                 private HawkularAlert:any,
                 private $routeParams:any,
+                private HawkularAlertsManager: IHawkularAlertsManager,
+                private HawkularErrorManager: IHawkularErrorManager,
                 public alertList:any,
                 public startTimeStamp:TimestampInMillis,
                 public endTimeStamp:TimestampInMillis) {
@@ -109,18 +111,14 @@ module HawkularMetrics {
         });
       }
       this.autoRefresh(20);
-
     }
 
-
-
-
-    cancelAutoRefresh():void {
+    private cancelAutoRefresh():void {
       this.$interval.cancel(this.autoRefreshPromise);
       toastr.info('Canceling Auto Refresh');
     }
 
-    autoRefresh(intervalInSeconds:number):void {
+    private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(()  => {
         this.$scope.hkEndTimestamp = +moment();
         this.endTimeStamp = this.$scope.hkEndTimestamp;
@@ -128,7 +126,7 @@ module HawkularMetrics {
         this.startTimeStamp = this.$scope.hkStartTimestamp;
         this.refreshSummaryData(this.getMetricId());
         this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
-        this.refreshAlerts(this.getMetricId(), this.$scope.hkStartTimestamp, this.endTimeStamp);
+        this.getAlerts(this.resourceId, this.$scope.hkStartTimestamp, this.endTimeStamp);
         this.retrieveThreshold();
       }, intervalInSeconds * 1000);
 
@@ -142,14 +140,13 @@ module HawkularMetrics {
       ///toastr.warning('No Data found for id: ' + id);
     }
 
-
-    refreshChartDataNow(metricId:string, startTime?:TimestampInMillis):void {
+    private refreshChartDataNow(metricId:string, startTime?:TimestampInMillis):void {
       this.$scope.hkEndTimestamp = +moment();
       var adjStartTimeStamp:number = moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds').valueOf();
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.refreshSummaryData(metricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       this.refreshHistoricalChartDataForTimestamp(metricId, !startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
-      this.refreshAlerts(metricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+      this.getAlerts(this.resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       this.retrieveThreshold();
     }
 
@@ -171,30 +168,10 @@ module HawkularMetrics {
         });
     }
 
-    refreshAlerts(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      var alertType = this.$routeParams.resourceId + '_trigger_thres';
-      this.HawkularAlert.Alert.query({ statuses:'OPEN'}, (anAlertList) => {
-        var filteredAlerts = [];
-        for(var i = 0; i < anAlertList.length; i++) {
-          if((anAlertList[i].triggerId === alertType) && (anAlertList[i].ctime >= (+moment() - this.$scope.hkParams.timeOffset))) {
-            // cleaning a lot of data, we dont need at the template
-            anAlertList[i].evalSets.splice(1);
-            filteredAlerts.push(anAlertList[i]);
-          }
-        }
-        this.alertList = filteredAlerts.reverse();
-      }, this);
-    }
-
-    public alertResolve(alert: any, index: number): void {
-      for (var i = 0; i< this.alertList.length; i++) {
-        if (this.alertList[i].$$hashKey === alert.$$hashKey) {
-          this.HawkularAlert.Alert.resolve({alertIds: alert.alertId}, {}).$promise.then( () => {
-            this.alertList.splice(i, 1);
-          });
-          break;
-        }
-      }
+    private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime, HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
+        this.alertList = data;
+      }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
 
     refreshSummaryData(metricId:string, startTime?:TimestampInMillis, endTime?:TimestampInMillis):void {
@@ -232,7 +209,6 @@ module HawkularMetrics {
       }
     }
 
-
     refreshHistoricalChartDataForTimestamp(metricId:string, startTime?:TimestampInMillis, endTime?:TimestampInMillis):void {
       // calling refreshChartData without params use the model values
       if (!endTime) {
@@ -241,7 +217,6 @@ module HawkularMetrics {
       if (!startTime) {
         startTime = this.startTimeStamp;
       }
-
 
       if (metricId) {
         this.HawkularMetric.NumericMetricData.queryMetrics({
@@ -276,7 +251,6 @@ module HawkularMetrics {
             this.$log.error('Error Loading Chart data');
             toastr.error('Error Loading Chart Data: ' + error);
           });
-
       }
     }
 
@@ -300,6 +274,4 @@ module HawkularMetrics {
   }
 
   _module.controller('MetricsViewController', MetricsViewController);
-
-
 }

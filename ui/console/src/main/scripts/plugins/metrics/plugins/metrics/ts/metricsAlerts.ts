@@ -31,6 +31,10 @@ module HawkularMetrics {
     public openSetup: any;
     public isResolvingAll: boolean = false;
 
+    public alertsTimeStart: TimestampInMillis;
+    public alertsTimeEnd: TimestampInMillis;
+    public alertsTimeOffset: TimestampInMillis;
+
     constructor(private $scope:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
@@ -59,28 +63,16 @@ module HawkularMetrics {
 
       this.metricId = $routeParams.resourceId;
 
-      $scope.alertsTimeOffset = $routeParams.timeOffset || 3600000;
+      this.alertsTimeOffset = $routeParams.timeOffset || 3600000;
       // If the end time is not specified in URL use current time as end time
-      $scope.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : (new Date()).getTime();
-      $scope.alertsTimeStart = $scope.alertsTimeEnd - $scope.alertsTimeOffset;
-
-      $scope.timeFilter = function(value): boolean {
-
-        // If no time offset is specified we will return all alerts
-        if (!$scope.alertsTimeOffset) {
-          return true;
-        }
-
-        return !!((value.start > $scope.alertsTimeStart) && (value.start < $scope.alertsTimeEnd));
-      };
-
+      this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : (new Date()).getTime();
+      this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
       this.getAlerts();
       this.autoRefresh(20);
     }
 
-    private getAlerts():void {
-      this.HawkularAlertsManager.queryConsoleAlerts(this.metricId).then((data)=> {
-        this.$log.debug('queryConsoleAlerts', data);
+    public getAlerts():void {
+      this.HawkularAlertsManager.queryConsoleAlerts(this.metricId, this.alertsTimeStart, this.alertsTimeEnd).then((data)=> {
         this.alertList = data;
         this.alertList.$resolved = true; // FIXME
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
@@ -94,17 +86,6 @@ module HawkularMetrics {
       this.$scope.$on('$destroy', () => {
         this.$interval.cancel(autoRefreshPromise);
       });
-    }
-
-    public alertResolve(alert: any, index: number): void {
-      for (var i = 0; i< this.alertList.length; i++) {
-        if (this.alertList[i].$$hashKey === alert.$$hashKey) {
-          this.HawkularAlert.Alert.resolve({alertIds: alert.id}, {}).$promise.then( () => {
-            this.alertList.splice(i, 1);
-          });
-          break;
-        }
-      }
     }
 
     public resolveAll(): void {
