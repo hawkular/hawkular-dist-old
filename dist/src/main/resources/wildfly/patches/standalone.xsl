@@ -140,10 +140,7 @@
   <!-- set the console log level -->
   <xsl:template match="logging:console-handler[@name='CONSOLE']/logging:level"
                 xmlns:logging="urn:jboss:domain:logging:2.0">
-    <xsl:choose>
-      <xsl:when test="$kettle.build.type='dev'"><level name="DEBUG"/></xsl:when>
-      <xsl:otherwise><level name="INFO"/></xsl:otherwise>
-    </xsl:choose>
+    <xsl:if test="$kettle.build.type='production'"><level name="INFO"/></xsl:if>
   </xsl:template>
 
   <!-- add bus resource adapter -->
