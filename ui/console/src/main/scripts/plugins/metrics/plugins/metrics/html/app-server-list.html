@@ -5,7 +5,7 @@
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
 
-  <div ng-show="vm.resourceList">
+  <div ng-show="vm.resourceList" ng-class="{'hk-fade-in': vm.resourceList}">
     <h1 class="text-center">{{userDetails.firstName}}'s application servers</h1>
 
     <h3 class="pull-left">Current Status</h3>
