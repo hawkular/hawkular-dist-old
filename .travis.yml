@@ -20,5 +20,5 @@ after_success:
 - if [[ "$PROJECT_VERSION" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
   then
    mvn  -s .travis.maven.settings.xml deploy -DskipTests ;
-   curl --data "build=true" -X POST https://registry.hub.docker.com/u/hawkular/hawkular/trigger/a6f68889-7d87-4b50-9d60-d402a4051612/ ;
+   curl --data "build=true" -X POST http://209.132.178.88:8080/job/Build-Hawkular-Image/build?token=2d800d96bfe30f23b2c69337c30111e9/ ;
   fi
