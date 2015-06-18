@@ -20,6 +20,11 @@
 
 module HawkularMetrics {
 
+  export enum AlertType {
+    AVAILABILITY,
+    THRESHOLD,
+  }
+
   export interface IHawkularAlertsManager {
     addEmailAction(email: string): ng.IPromise<void>;
     createAction(email: string): ng.IPromise<void>;
@@ -36,7 +41,7 @@ module HawkularMetrics {
     setEmail(triggerId: string, email: string): ng.IPromise<void>;
     setResponseTime(triggerId: string, treshold: number, duration: number, enabled: boolean): ng.IPromise<void>;
     setDowntime(triggerId: string, duration: number, enabled: boolean): ng.IPromise<void>;
-    queryConsoleAlerts(metricId: string): ng.IPromise<void>;
+    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType): ng.IPromise<void>;
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
@@ -197,7 +202,7 @@ module HawkularMetrics {
       return undefined;
     }
 
-    queryConsoleAlerts(metricId: string): ng.IPromise<void> {
+    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, alertType?:AlertType): ng.IPromise<void> {
 
       var alertList = [];
 
@@ -213,10 +218,27 @@ module HawkularMetrics {
 
        */
 
-      return this.HawkularAlert.Alert.query({
-            triggerIds:metricId+'_trigger_avail,' + metricId+'_trigger_thres',
-            statuses:'OPEN'
-          }).$promise.then((serverAlerts: any) => {
+      var queryParams = {
+        statuses:'OPEN'
+      };
+
+      if (alertType === AlertType.AVAILABILITY) {
+        queryParams['triggerIds'] = metricId+'_trigger_avail';
+      } else if (alertType === AlertType.THRESHOLD) {
+        queryParams['triggerIds'] = metricId+'_trigger_thres';
+      } else {
+        queryParams['triggerIds'] = metricId+'_trigger_avail,' + metricId+'_trigger_thres';
+      }
+
+      if (startTime) {
+        queryParams[startTime] = startTime;
+      }
+
+      if (endTime) {
+        queryParams[endTime] = endTime;
+      }
+
+      return this.HawkularAlert.Alert.query(queryParams).$promise.then((serverAlerts: any) => {
 
         var momentNow = this.$moment();
 
