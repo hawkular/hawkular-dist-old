@@ -38,7 +38,7 @@ module HawkularMetrics {
 
   export class MetricsAvailabilityController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
@@ -58,6 +58,8 @@ module HawkularMetrics {
                 private HawkularMetric:any,
                 private HawkularAlert:any,
                 private $routeParams:any,
+                private HawkularAlertsManager: IHawkularAlertsManager,
+                private HawkularErrorManager: IHawkularErrorManager,
                 public alertList:any,
                 public startTimeStamp:TimestampInMillis,
                 public endTimeStamp:TimestampInMillis) {
@@ -91,10 +93,7 @@ module HawkularMetrics {
       $scope.$on('RefreshAvailabilityChart', (event) => {
         this.refreshAvailPageNow(this.getResourceId());
       });
-
     }
-
-
 
     refreshAvailPageNow(resourceId:ResourceId, startTime?:number):void {
       this.$scope.hkEndTimestamp = +moment();
@@ -104,7 +103,7 @@ module HawkularMetrics {
         console.log('*** Updating Availability Page');
         this.refreshSummaryAvailabilityData(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
         this.refreshAvailChartData(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
-        this.refreshAlerts(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+        this.getAlerts(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       }
     }
 
@@ -166,14 +165,11 @@ module HawkularMetrics {
       }
     }
 
-
     getResourceId():ResourceId {
       return this.resourceId;
     }
 
-
     refreshAvailChartData(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-
       if (metricId) {
         this.HawkularMetric.AvailabilityMetricData.query({
           tenantId: this.$rootScope.currentPersona.id,
@@ -192,23 +188,17 @@ module HawkularMetrics {
             this.$log.error('Error Loading Avail data');
             toastr.error('Error Loading Avail Data: ' + error);
           });
-
       }
     }
 
-    refreshAlerts(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      var alertType = this.$routeParams.resourceId + '_trigger_avail';
-      this.HawkularAlert.Alert.query({ statuses:'OPEN'}, (anAlertList) => {
-        var filteredAlerts = [];
-        for(var i = 0; i < anAlertList.length; i++) {
-          if((anAlertList[i].triggerId === alertType) && (anAlertList[i].ctime >= (+moment() - this.$scope.hkParams.timeOffset))) {
-            // cleaning a lot of data, we dont need at the template
-            anAlertList[i].evalSets.splice(1);
-            filteredAlerts.push(anAlertList[i]);
-          }
-        }
-        this.alertList = filteredAlerts.reverse();
-      }, this);
+    private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      console.log('1',HawkularMetrics);
+      console.log('2',HawkularMetrics.AlertType);
+      console.log('3',HawkularMetrics.AlertType.AVAILABILITY);
+
+      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime, HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
+        this.alertList = data;
+      }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
 
     public alertResolve(alert: any, index: number): void {
@@ -225,6 +215,4 @@ module HawkularMetrics {
   }
 
   _module.controller('MetricsAvailabilityController', MetricsAvailabilityController);
-
-
 }
