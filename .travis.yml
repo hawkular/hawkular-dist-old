@@ -18,8 +18,8 @@ env:
   - secure: MUL8e2UHwZkvPyHyghzzm+rJFXmlp9yjQkGsPkrWx0OFjd2G5FYvz/OJcoBP+6EUOupsCf0I75uC1T4iXOjmDl/DzXUybOAikVL5LHb6ISgBcLsYoh7JTtY3p0RV95Vw3rj6Mq7DjcLRowhEQ+Y9MCR6PtqCCdtpMYiYgQWkboFGzCO+9waabQe41JSPBKXmk308HgCcOPquIV011pqto1zOwjCnsyal5x1QJXr5YsWCfc3h9jNP8JcOh/LJrLgsMSLh6yQqEOEtktTpawYj3R+PytIpqUuu9kFF1a06eg+MkoeHLFHuTxLhR5oEvrnOKUZMs8/gkfJLG61KQx4K++JbF+rchxPuHfGbEfOC3Q8TJj3jNfuLyjwzkcbn6Ua41q+nhTynJBxVHWk6Daj91DkQRCfD34Egc0Rv6fx9DWph0OxoS4qp72NfD3Zcdwg7cRdjwVI5kTo3XfkGYlshgV60bO5p3021jiPowbD7eT5v6FXIiOsUTR+7qUscc+fQDuNHazbmKuXr2b0lakd7enCqe2uFcfDWaaqZzM9GoIR29BAtDOKAqrCimBBhBUuHjzSlXGBufgOJQizNzuDAnOw9HulvmQzYh6Hla8LMqTkRHx80y7yIoGdfa1QZbKN6h0lEHDzX+iNRMQSTTw9kZoCK8Cg6bgVJfvqnwp5YLG4=
 after_success:
 - PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
-- if [[ "$PROJECT_VERSION" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]]; 
-  then 
+- if [[ "$PROJECT_VERSION" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
+  then
    mvn  -s .travis.maven.settings.xml deploy -DskipTests ;
    curl -X GET http://${DEPLOYMENT_JENKINS}/job/Build-Hawkular-Image/build?token=${DEPLOYMENT_JENKINS_TOKEN} ;
   fi
