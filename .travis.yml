@@ -1,6 +1,4 @@
 language: java
-# Enable container-based infrastructure
-# see http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 sudo: false
 jdk:
 - oraclejdk8
@@ -14,11 +12,12 @@ env:
   global:
   - secure: h2UBs+L83eGd8+vTvd4B5sh+ixjp67JB/5Ko/zGAEt6a3hIgrhqyjiXJmaEH3+jzJZKXUcUC6uOuxXHwZ4ODeF+McHViOjqqUGEynJ7AsLXqSr5SSBKZuY/pb69phQnh7Br5w2D+5IFHWEcjrSo/kHDbeZBVAMFRDeGVwpHy2yA=
   - secure: BADgz+otMMO+gUlFNduU/mgFm1dOfv2ZWAYD3nO1nEwu7Y1QVUsqimHdlqntUcinILDVeD33oT27kElERvr7KyjfDEPSDAVUg5Y/5soezg/tBu0zi3iodAP2GynOMohS/Rfm4+3ajWuEe/Y2SYjFXgldMR9qjP+/31FsVtW8Op0=
-
+  - secure: IXgjLdBkeFu3Zu02ppFFdPSI9md2TgvOIkxx6mhHaoBp0lFQwLAmuF4Gr3cwUbx3cBq4+5IdWtsqjw+tk41xfbVrjX7KJNZ9476Z++ZtZyfLaOr+yrn7LkbBxmShAbI21rAc53HAS6VSGkfuGiOdj2iEhQ3xB6/m0hla3uLQYoKonXxbLzJvB57KRSKvlfSrqqchBzaZiYNs/BIm7FfRjUiswlDrzJz2rU5ezrNkghDFQkA6uXB7UWvPqDxKP+OGZ3fcMUb5LZLdadg8T60h0SH5DS9DrGB3XYLYqrvBO1nAUpWQCHqzSADqFfddp63xmACYYC9U0Ce2MuWVjxRVhTC5Pgf0JuLqD8uYuklnY1hy9QC10h6L8AffZ409IsLEW72ZTErJQH+U9ekayTMscQu3qzCU4t0r9WfPh1G+EYMhiCO4WRhYBZHJxGafMliqk7E3vgmmTxTqxH2I0S6pWkFBYPI1mHJjgsRZiqApkuMtDBHgpDz/SBWh7X2wRfEWAHTMnIE+8WOSasJvf0Jrx2Y/UIsqvMq6okxFTj251TQWQpyRHf5T6WeE7cbmN31PKhSPuO/UWd9hQoyMVbJT7K5v1FzRdrNaAKxgEjCfzgVPf7NW3fupqRmGs3KOEOfraRgqQpMX2IuQFdAawX3UjoaWY0f1vwEROOJ3yxqRwK8=
+  - secure: MUL8e2UHwZkvPyHyghzzm+rJFXmlp9yjQkGsPkrWx0OFjd2G5FYvz/OJcoBP+6EUOupsCf0I75uC1T4iXOjmDl/DzXUybOAikVL5LHb6ISgBcLsYoh7JTtY3p0RV95Vw3rj6Mq7DjcLRowhEQ+Y9MCR6PtqCCdtpMYiYgQWkboFGzCO+9waabQe41JSPBKXmk308HgCcOPquIV011pqto1zOwjCnsyal5x1QJXr5YsWCfc3h9jNP8JcOh/LJrLgsMSLh6yQqEOEtktTpawYj3R+PytIpqUuu9kFF1a06eg+MkoeHLFHuTxLhR5oEvrnOKUZMs8/gkfJLG61KQx4K++JbF+rchxPuHfGbEfOC3Q8TJj3jNfuLyjwzkcbn6Ua41q+nhTynJBxVHWk6Daj91DkQRCfD34Egc0Rv6fx9DWph0OxoS4qp72NfD3Zcdwg7cRdjwVI5kTo3XfkGYlshgV60bO5p3021jiPowbD7eT5v6FXIiOsUTR+7qUscc+fQDuNHazbmKuXr2b0lakd7enCqe2uFcfDWaaqZzM9GoIR29BAtDOKAqrCimBBhBUuHjzSlXGBufgOJQizNzuDAnOw9HulvmQzYh6Hla8LMqTkRHx80y7yIoGdfa1QZbKN6h0lEHDzX+iNRMQSTTw9kZoCK8Cg6bgVJfvqnwp5YLG4=
 after_success:
-- PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
-- if [[ "$PROJECT_VERSION" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
-  then
-   mvn  -s .travis.maven.settings.xml deploy -DskipTests ;
-   curl --data "build=true" -X POST http://209.132.178.88:8080/job/Build-Hawkular-Image/build?token=2d800d96bfe30f23b2c69337c30111e9/ ;
-  fi
+- PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version
+  | grep -v '\['`
+- if [[ "$PROJECT_VERSION" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]]
+  && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]]; then mvn  -s .travis.maven.settings.xml
+  deploy -DskipTests ; curl -X GET http://${DEPLOYMENT_JENKINS}/job/Build-Hawkular-Image/build?token=${DEPLOYMENT_JENKINS_TOKEN}
+  ; fi
