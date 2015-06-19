@@ -18,15 +18,18 @@
     <div class="panel panel-default hk-summary">
       <div class="row">
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data">{{vm.average}} <span>ms</span></span>
+          <span class="hk-data" ng-show="vm.average >= 0">{{vm.average}} <span>ms</span></span>
+          <span class="hk-data" ng-hide="vm.average >= 0">n/a</span>
           <span class="hk-item">Average</span>
         </div>
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data">{{vm.median}} <span>ms</span></span>
+          <span class="hk-data" ng-show="vm.median >= 0">{{vm.median}} <span>ms</span></span>
+          <span class="hk-data" ng-hide="vm.median >= 0">n/a</span>
           <span class="hk-item">Median</span>
         </div>
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data">{{vm.percentile95th}} <span>ms</span></span>
+          <span class="hk-data" ng-show="vm.percentile95th >= 0">{{vm.percentile95th}} <span>ms</span></span>
+          <span class="hk-data" ng-hide="vm.percentile95th >= 0">n/a</span>
           <span class="hk-item">95th percentile</span>
         </div>
       </div>
