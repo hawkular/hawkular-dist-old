@@ -37,12 +37,15 @@ class InventoryITest extends AbstractTestBase {
     private static final String testEnvId = "test"
     private static final String environmentId = "itest-env-" + UUID.randomUUID().toString()
     private static final String pingableHostRTypeId = "itest-pingable-host-" + UUID.randomUUID().toString()
+    private static final String roomRTypeId = "itest-room-type-" + UUID.randomUUID().toString()
+    private static final String typeVersion = "1.0"
     private static final String responseTimeMTypeId = "itest-response-time-" + UUID.randomUUID().toString()
     private static final String responseStatusCodeMTypeId = "itest-response-status-code-" + UUID.randomUUID().toString()
     private static final String statusDurationMTypeId = "status.duration.type"
     private static final String statusCodeMTypeId = "status.code.type"
     private static final String host1ResourceId = "itest-host1-" + UUID.randomUUID().toString();
     private static final String host2ResourceId = "itest-host2-" + UUID.randomUUID().toString();
+    private static final String room1ResourceId = "itest-room1-" + UUID.randomUUID().toString();
     private static final String responseTimeMetricId = "itest-response-time-" + host1ResourceId;
     private static final String responseStatusCodeMetricId = "itest-response-status-code-" + host1ResourceId;
     private static final String feedId = "itest-feed-" + UUID.randomUUID().toString();
@@ -112,9 +115,14 @@ class InventoryITest extends AbstractTestBase {
         assertEquals(urlTypeId, response.data.id)
 
         /* Create a custom resource type */
-        response = postDeletable(path: "/hawkular/inventory/resourceTypes", body: [id : pingableHostRTypeId, version : "1.0"])
+        response = postDeletable(path: "/hawkular/inventory/resourceTypes", body: [id : pingableHostRTypeId, version : typeVersion])
         assertEquals(201, response.status)
         assertEquals(baseURI + "/hawkular/inventory/resourceTypes/$pingableHostRTypeId", response.headers.Location)
+
+        /* Create another resource type */
+        response = postDeletable(path: "/hawkular/inventory/resourceTypes", body: [id : roomRTypeId, version : typeVersion])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "/hawkular/inventory/resourceTypes/$roomRTypeId", response.headers.Location)
 
         /* Create a metric type */
         response = postDeletable(path: "/hawkular/inventory/metricTypes", body: [id : responseTimeMTypeId, unit : "MILLI_SECOND"])
@@ -157,6 +165,12 @@ class InventoryITest extends AbstractTestBase {
             body: [ id : host2ResourceId, resourceTypeId: pingableHostRTypeId ])
         assertEquals(201, response.status)
         assertEquals(baseURI + "/hawkular/inventory/$environmentId/resources/$host2ResourceId", response.headers.Location)
+
+        /* add a room resource */
+        response = postDeletable(path: "/hawkular/inventory/$environmentId/resources",
+            body: [ id : room1ResourceId, resourceTypeId: roomRTypeId ])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "/hawkular/inventory/$environmentId/resources/$room1ResourceId", response.headers.Location)
 
         /* link the metric to resource */
         path = "/hawkular/inventory/$environmentId/resources/$host1ResourceId/metrics"
@@ -218,8 +232,9 @@ class InventoryITest extends AbstractTestBase {
     void testResourceTypesCreated() {
         assertEntityExists("/hawkular/inventory/resourceTypes/$urlTypeId", urlTypeId)
         assertEntityExists("/hawkular/inventory/resourceTypes/$pingableHostRTypeId", pingableHostRTypeId)
+        assertEntityExists("/hawkular/inventory/resourceTypes/$roomRTypeId", roomRTypeId)
 
-        assertEntitiesExist("/hawkular/inventory/resourceTypes", [urlTypeId, pingableHostRTypeId])
+        assertEntitiesExist("/hawkular/inventory/resourceTypes", [urlTypeId, pingableHostRTypeId, roomRTypeId])
 
     }
 
@@ -241,6 +256,20 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testResourcesCreated() {
         assertEntityExists("/hawkular/inventory/$environmentId/resources/$host1ResourceId", host1ResourceId)
+        assertEntityExists("/hawkular/inventory/$environmentId/resources/$host2ResourceId", host2ResourceId)
+        assertEntityExists("/hawkular/inventory/$environmentId/resources/$room1ResourceId", room1ResourceId)
+    }
+
+    @Test
+    void testResourcesFilters() {
+        def response = client.get(path: "/hawkular/inventory/$environmentId/resources",
+            query: [type: pingableHostRTypeId, typeVersion: typeVersion])
+        assertEquals(2, response.data.size())
+
+        response = client.get(path: "/hawkular/inventory/$environmentId/resources",
+            query: [type: roomRTypeId, typeVersion: typeVersion])
+        assertEquals(1, response.data.size())
+
     }
 
     @Test
@@ -259,21 +288,26 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testPaging() {
         String path = "/hawkular/inventory/$environmentId/resources"
-        def response = client.get(path: path, query: [type: pingableHostRTypeId, page: 0, per_page: 2, sort: "id"])
+        def response = client.get(path: path, query: [type: pingableHostRTypeId, typeVersion: typeVersion, page: 0, per_page: 2, sort: "id"])
         assertEquals(2, response.data.size())
 
         def first = response.data.get(0)
         def second = response.data.get(1)
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, page: 0, per_page: 1, sort: "id"])
+        response = client.get(path: path, query: [type: pingableHostRTypeId, typeVersion: typeVersion, page: 0, per_page: 1, sort: "id"])
         assertEquals(1, response.data.size())
         assertEquals(first, response.data.get(0))
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, page: 1, per_page: 1, sort: "id"])
+        response = client.get(path: path, query: [type: pingableHostRTypeId, typeVersion: typeVersion, page: 1, per_page: 1, sort: "id"])
         assertEquals(1, response.data.size())
         assertEquals(second, response.data.get(0))
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, page : 1, per_page: 1, sort: "id",
+        response = client.get(path: path, query: [type: pingableHostRTypeId, typeVersion: typeVersion, page : 0, per_page: 1, sort: "id",
+                                                                               order: "desc"])
+        assertEquals(1, response.data.size())
+        assertEquals(second, response.data.get(0))
+
+        response = client.get(path: path, query: [type: pingableHostRTypeId, typeVersion: typeVersion, page : 1, per_page: 1, sort: "id",
                                                                                order: "desc"])
         assertEquals(1, response.data.size())
         assertEquals(first, response.data.get(0))
