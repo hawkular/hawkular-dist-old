@@ -17,25 +17,14 @@
 
 package org.hawkular.integration.test
 
-import java.util.Map;
-
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.hawkular.inventory.api.model.Environment
 import org.hawkular.inventory.api.model.Metric
-import org.hawkular.inventory.api.model.MetricType
-import org.hawkular.inventory.api.model.MetricUnit;
 import org.hawkular.inventory.api.model.Resource
-import org.hawkular.inventory.api.model.ResourceType
-import org.hawkular.inventory.api.model.Tenant
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Assert;
+import org.junit.AfterClass
+import org.junit.Assert
 import org.junit.Test
 
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertTrue
 
 class Scenario1ITest extends AbstractTestBase {
 
@@ -44,11 +33,13 @@ class Scenario1ITest extends AbstractTestBase {
     static final String statusCodeTypeId = "status.code.type"
     static final String durationTypeId = "status.duration.type"
 
+    private static List<String> pathsToDelete = new ArrayList();
+
     @Test
     public void testScenario() throws Exception {
         //def response = client.get(path: "/hawkular-accounts/organizations")
         def response = client.get(path: "/hawkular-accounts/personas/current")
-        assertResponseOk(response.status)
+        assertEquals(200, response.status)
         String tenantId = response.data.id
         // println "tenantId = $tenantId"
 
@@ -58,7 +49,7 @@ class Scenario1ITest extends AbstractTestBase {
            and one of them may get only a partially initialized state.
            That is why we do several delayed attempts do perform the first request.
          */
-        String path = "/hawkular/inventory/$tenantId/environments/$environmentId";
+        String path = "/hawkular/inventory/environments/$environmentId";
         int attemptCount = 5;
         int delay = 500;
         for (int i = 0; i < attemptCount; i++) {
@@ -79,36 +70,40 @@ class Scenario1ITest extends AbstractTestBase {
         assertEquals(environmentId, response.data.id)
 
         /* assert the URL resource type exists */
-        response = client.get(path: "/hawkular/inventory/$tenantId/resourceTypes/$urlTypeId")
-        assertResponseOk(response.status)
+        response = client.get(path: "/hawkular/inventory/resourceTypes/$urlTypeId")
+        assertEquals(200, response.status)
         assertEquals(urlTypeId, response.data.id)
 
         /* assert the metric types exist */
-        response = client.get(path: "/hawkular/inventory/$tenantId/metricTypes/$statusCodeTypeId")
-        assertResponseOk(response.status)
-        response = client.get(path: "/hawkular/inventory/$tenantId/metricTypes/$durationTypeId")
-        assertResponseOk(response.status)
+        response = client.get(path: "/hawkular/inventory/metricTypes/$statusCodeTypeId")
+        assertEquals(200, response.status)
+        response = client.get(path: "/hawkular/inventory/metricTypes/$durationTypeId")
+        assertEquals(200, response.status)
 
         /* create a URL */
         String resourceId = UUID.randomUUID().toString();
         def newResource = Resource.Blueprint.builder().withId(resourceId)
                 .withResourceType(urlTypeId).withProperty("url", "http://hawkular.org").build()
-        response = client.post(path: "/hawkular/inventory/$tenantId/$environmentId/resources", body : newResource)
-        assertResponseOk(response.status)
+        response = client.post(path: "/hawkular/inventory/$environmentId/resources", body : newResource)
+        assertEquals(201, response.status)
+        pathsToDelete.add("/hawkular/inventory/$environmentId/resources/$resourceId")
+
 
         /* create the metrics */
         String statusCodeId = UUID.randomUUID().toString();
         def codeMetric = Metric.Blueprint.builder().withMetricTypeId(statusCodeTypeId).withId(statusCodeId).build();
-        response = client.post(path: "/hawkular/inventory/$tenantId/$environmentId/metrics", body: codeMetric)
-        assertResponseOk(response.status)
+        response = client.post(path: "/hawkular/inventory/$environmentId/metrics", body: codeMetric)
+        assertEquals(201, response.status)
+        pathsToDelete.add("/hawkular/inventory/$environmentId/metrics/$statusCodeId")
 
         String durationId = UUID.randomUUID().toString();
         def durationMetric = Metric.Blueprint.builder().withMetricTypeId(durationTypeId).withId(durationId).build();
-        response = client.post(path: "/hawkular/inventory/$tenantId/$environmentId/metrics", body: durationMetric)
-        assertResponseOk(response.status)
+        response = client.post(path: "/hawkular/inventory/$environmentId/metrics", body: durationMetric)
+        assertEquals(201, response.status)
+        pathsToDelete.add("/hawkular/inventory/$environmentId/metrics/$durationId")
 
         /* assign metrics to the resource */
-        response = client.post(path: "/hawkular/inventory/$tenantId/$environmentId/resources/$resourceId/metrics",
+        response = client.post(path: "/hawkular/inventory/$environmentId/resources/$resourceId/metrics",
         body: [
             statusCodeId,
             durationId]
@@ -140,10 +135,26 @@ class Scenario1ITest extends AbstractTestBase {
         assertEquals(27, response.data.size());
 
         /* TODO: define an alert */
-        // response = client.post(path: "alerts/triggers/")
+        // response = postDeletable(path: "alerts/triggers/")
 
     }
 
+    @AfterClass
+    static void cleanUp() {
+        /* Let's delete the entities one after another in the inverse order as we created them */
+        for (int i = pathsToDelete.size() - 1; i >= 0; i--) {
+            String path = pathsToDelete.get(i);
+            def response = client.delete(path : path)
+            assertEquals(204, response.status)
+
+            try {
+                response = client.get(path : path)
+                Assert.fail("The path '$path' should not exist after it was deleted")
+            } catch (groovyx.net.http.HttpResponseException e) {
+                assertEquals("Error message for path '$path'", "Not Found", e.getMessage())
+            }
+        }
+    }
     private void assertResponseOk(int responseCode) {
         assertTrue("Response code should be 2xx or 304 but was "+ responseCode,
                 (responseCode >= 200 && responseCode < 300) || responseCode == 304)
@@ -162,4 +173,5 @@ class Scenario1ITest extends AbstractTestBase {
         ])
         assertResponseOk(response.status)
     }
+
 }
