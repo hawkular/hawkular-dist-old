@@ -17,27 +17,14 @@
 
 package org.hawkular.integration.test
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.hawkular.inventory.api.model.Environment
 import org.hawkular.inventory.api.model.Metric
-import org.hawkular.inventory.api.model.MetricType
-import org.hawkular.inventory.api.model.MetricUnit;
 import org.hawkular.inventory.api.model.Resource
-import org.hawkular.inventory.api.model.ResourceType
-import org.hawkular.inventory.api.model.Tenant
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
+import org.junit.AfterClass
+import org.junit.Assert
 import org.junit.Test
 
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertTrue
 
 class Scenario1ITest extends AbstractTestBase {
 
