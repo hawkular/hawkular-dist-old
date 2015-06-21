@@ -51,7 +51,7 @@ class AbstractTestBase {
      */
     String encodedCredentials = Base64.getMimeEncoder().encodeToString("$testUser:$testPasword".getBytes("utf-8"))
     client.defaultRequestHeaders.Authorization = "Basic "+ encodedCredentials
-
+    client.defaultRequestHeaders.Accept = ContentType.JSON
   }
 
 }
