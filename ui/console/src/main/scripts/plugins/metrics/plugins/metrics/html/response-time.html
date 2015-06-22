@@ -18,15 +18,18 @@
     <div class="panel panel-default hk-summary">
       <div class="row">
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data">{{vm.average}} <span>ms</span></span>
+          <span class="hk-data" ng-show="vm.average >= 0">{{vm.average}} <span>ms</span></span>
+          <span class="hk-data" ng-hide="vm.average >= 0">n/a</span>
           <span class="hk-item">Average</span>
         </div>
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data">{{vm.median}} <span>ms</span></span>
+          <span class="hk-data" ng-show="vm.median >= 0">{{vm.median}} <span>ms</span></span>
+          <span class="hk-data" ng-hide="vm.median >= 0">n/a</span>
           <span class="hk-item">Median</span>
         </div>
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data">{{vm.percentile95th}} <span>ms</span></span>
+          <span class="hk-data" ng-show="vm.percentile95th >= 0">{{vm.percentile95th}} <span>ms</span></span>
+          <span class="hk-data" ng-hide="vm.percentile95th >= 0">n/a</span>
           <span class="hk-item">95th percentile</span>
         </div>
       </div>
@@ -57,7 +60,7 @@
       </div>
     </div>
 
-    <div class="panel panel-default hk-graph">
+    <div class="panel panel-default hk-graph" ng-if="vm.average >= 0">
       <h2>Response Time</h2>
       <div class="hk-legend text-left" ng-show="vm.chartData.dataPoints.length > 0">
         <span><i class="fa fa-circle hk-blue"></i>Response Time</span>
@@ -77,6 +80,16 @@
           y-axis-units="Response Time (ms)"
           chart-height="250">
         </hawkular-chart>
+      </div>
+    </div>
+
+    <div class="panel panel-default hk-graph" ng-if="vm.average < 0">
+      <h2>Response Time</h2>
+      <div class="blank-slate-pf">
+        <div class="blank-slate-pf-icon">
+          <i class="fa fa-line-chart"></i>
+        </div>
+        <h1>The server hasn't been reachable for this time range.</h1>
       </div>
     </div>
 
