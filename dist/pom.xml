@@ -97,8 +97,8 @@
       <type>war</type>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.metrics</groupId>
-      <artifactId>hawkular-metrics-embedded-cassandra-ear</artifactId>
+      <groupId>org.hawkular.commons</groupId>
+      <artifactId>hawkular-commons-embedded-cassandra-ear</artifactId>
       <type>ear</type>
     </dependency>
     <dependency>
