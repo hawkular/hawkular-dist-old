@@ -20,9 +20,9 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:ds="urn:jboss:domain:datasources:2.0"
-                xmlns:ra="urn:jboss:domain:resource-adapters:2.0"
-                xmlns:ejb3="urn:jboss:domain:ejb3:2.0"
+                xmlns:ds="urn:jboss:domain:datasources:3.0"
+                xmlns:ra="urn:jboss:domain:resource-adapters:3.0"
+                xmlns:ejb3="urn:jboss:domain:ejb3:3.0"
                 version="2.0"
                 exclude-result-prefixes="xalan ds ra ejb3">
 
@@ -139,7 +139,7 @@
 
   <!-- set the console log level -->
   <xsl:template match="logging:console-handler[@name='CONSOLE']/logging:level"
-                xmlns:logging="urn:jboss:domain:logging:2.0">
+                xmlns:logging="urn:jboss:domain:logging:3.0">
     <xsl:if test="$kettle.build.type='production'"><level name="INFO"/></xsl:if>
   </xsl:template>
 
