@@ -63,8 +63,8 @@
     <div class="panel panel-default hk-graph" ng-if="vm.average >= 0">
       <h2>Response Time</h2>
       <div class="hk-legend text-left" ng-show="vm.chartData.dataPoints.length > 0">
-        <span><i class="fa fa-circle hk-blue"></i>Response Time</span>
-        <span><i class="fa fa-circle hk-red"></i>Response Time (above the threshold)</span>
+        <span><i class="fa fa-circle hk-chart-line-blue"></i>Response Time</span>
+        <span><i class="fa fa-circle hk-alert-lightred"></i>Response Time (above the threshold)</span>
       </div>
 
       <p class="label label-info waiting-label" ng-hide="vm.chartData.dataPoints.length > 0" >We are
