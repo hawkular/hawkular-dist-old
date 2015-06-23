@@ -21,5 +21,5 @@ after_success:
 - if [[ "$PROJECT_VERSION" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
   then
    mvn  -s .travis.maven.settings.xml deploy -DskipTests ;
-   curl -X GET http://${DEPLOYMENT_JENKINS}/job/Build-Hawkular-Image/build?token=${DEPLOYMENT_JENKINS_TOKEN} ;
+   curl -X GET http://${env.DEPLOYMENT_JENKINS}/job/Build-Hawkular-Image/build?token=${env.DEPLOYMENT_JENKINS_TOKEN} ;
   fi
