@@ -457,7 +457,7 @@
                       timeUnits="minutes"
                       path="/"
                       attribute="wait-time" />
-          <metric-dmr name="Pool Availabile Count"
+          <metric-dmr name="Pool Available Count"
                       interval="5"
                       timeUnits="minutes"
                       path="/"
