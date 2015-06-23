@@ -271,8 +271,8 @@
   <xsl:template name="system-properties">
     <system-properties>
       <property>
-        <xsl:attribute name="name">hawkular-metrics.backend</xsl:attribute>
-        <xsl:attribute name="value">&#36;{hawkular-metrics.backend:embedded_cass}</xsl:attribute>
+        <xsl:attribute name="name">hawkular.backend</xsl:attribute>
+        <xsl:attribute name="value">&#36;{hawkular.backend:embedded_cassandra}</xsl:attribute>
       </property>
 
       <xsl:choose>
