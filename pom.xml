@@ -215,6 +215,13 @@
       </dependency>
 
       <dependency>
+        <groupId>org.hawkular.commons</groupId>
+        <artifactId>hawkular-commons-embedded-cassandra-ear</artifactId>
+        <version>${version.org.hawkular.commons}</version>
+        <type>ear</type>
+      </dependency>
+
+      <dependency>
         <groupId>org.hawkular</groupId>
         <artifactId>hawkular-pinger</artifactId>
         <version>${version.org.hawkular.pinger}</version>

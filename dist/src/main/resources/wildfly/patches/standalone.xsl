@@ -274,6 +274,12 @@
         <xsl:attribute name="name">hawkular.backend</xsl:attribute>
         <xsl:attribute name="value">&#36;{hawkular.backend:embedded_cassandra}</xsl:attribute>
       </property>
+      <!-- regardless of the backend, we want the metrics service to start synchronously so that
+           any dependent deployments don't deploy before startup is actually complete. -->
+      <property>
+        <xsl:attribute name="name">hawkular.metrics.waitForService</xsl:attribute>
+        <xsl:attribute name="value">&#36;{hawkular.metrics.waitForService:True}</xsl:attribute>
+      </property>
 
       <xsl:choose>
         <xsl:when test="$kettle.build.type='dev'">
