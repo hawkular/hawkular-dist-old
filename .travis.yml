@@ -22,6 +22,6 @@ after_success:
   then
    mvn  -s .travis.maven.settings.xml deploy -DskipTests ;
    #to be removed
-   echo ${DEPLOYMENT_JENKINS}
+   echo ${DEPLOYMENT_JENKINS} ;
    curl -X GET http://${DEPLOYMENT_JENKINS}/job/Build-Hawkular-Image/build?token=${DEPLOYMENT_JENKINS_TOKEN} ;
   fi
