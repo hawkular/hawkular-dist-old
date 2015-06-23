@@ -87,7 +87,7 @@
     <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
     <version.org.hawkular.accounts>1.0.6</version.org.hawkular.accounts>
     <version.org.hawkular.agent>0.2.0</version.org.hawkular.agent>
-    <version.org.hawkular.alerts>0.2.0.Final-SNAPSHOT</version.org.hawkular.alerts>
+    <version.org.hawkular.alerts>0.2.0.Final</version.org.hawkular.alerts>
     <version.org.hawkular.availCreator>${project.version}</version.org.hawkular.availCreator>
     <version.org.hawkular.bus>0.1.1</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.2.0-SNAPSHOT</version.org.hawkular.commons>
@@ -212,6 +212,13 @@
         <groupId>org.hawkular.metrics</groupId>
         <artifactId>clients-common</artifactId>
         <version>${version.org.hawkular.metrics}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.commons</groupId>
+        <artifactId>hawkular-commons-embedded-cassandra-ear</artifactId>
+        <version>${version.org.hawkular.commons}</version>
+        <type>ear</type>
       </dependency>
 
       <dependency>
