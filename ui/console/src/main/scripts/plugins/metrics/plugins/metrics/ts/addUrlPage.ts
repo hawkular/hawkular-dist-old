@@ -103,7 +103,7 @@ module HawkularMetrics {
       var currentTenantId: TenantId = this.$rootScope.currentPersona.id;
 
       /// Add the Resource and its metrics
-      this.HawkularInventory.Resource.save({tenantId: currentTenantId, environmentId: globalEnvironmentId}, resource).$promise
+      this.HawkularInventory.Resource.save({environmentId: globalEnvironmentId}, resource).$promise
         .then((newResource) => {
           this.getResourceList(currentTenantId);
           metricId = resourceId;
@@ -128,13 +128,11 @@ module HawkularMetrics {
           var errMetric = (error: any) => err(error, 'Error saving metric.');
           var createMetric = (metric: any) =>
             this.HawkularInventory.Metric.save({
-              tenantId: currentTenantId,
               environmentId: globalEnvironmentId
             }, metric).$promise;
 
           var associateResourceWithMetrics = () =>
             this.HawkularInventory.ResourceMetric.save({
-              tenantId: currentTenantId,
               environmentId: globalEnvironmentId,
               resourceId: resourceId
             }, metricsIds).$promise;
@@ -170,7 +168,7 @@ module HawkularMetrics {
 
     getResourceList(currentTenantId?: TenantId):any {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.ResourceOfType.query({tenantId: tenantId, resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
+      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
         // FIXME: hack.. make expanded out of list
         this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
 
@@ -261,14 +259,12 @@ module HawkularMetrics {
       var triggerIds: string[] = [this.resource.id + '_trigger_thres', this.resource.id + '_trigger_avail'];
       var deleteMetric = (metricId: string) =>
         this.HawkularInventory.Metric.delete({
-          tenantId: this.$rootScope.currentPersona.id,
           environmentId: globalEnvironmentId,
           metricId: metricId
         }).$promise;
 
       var removeResource = () =>
         this.HawkularInventory.Resource.delete({
-          tenantId: this.$rootScope.currentPersona.id,
           environmentId: globalEnvironmentId,
           resourceId: this.resource.id
         }).$promise;

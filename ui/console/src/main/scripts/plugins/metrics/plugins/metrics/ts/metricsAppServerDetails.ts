@@ -84,7 +84,7 @@ module HawkularMetrics {
     getResourceList(currentTenantId?: TenantId): any {
       this.alertList = []; // FIXME: when we have alerts for app server
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.ResourceOfType.query({tenantId: tenantId, resourceTypeId: 'Deployment'}, (aResourceList, getResponseHeaders) => {
+      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'Deployment'}, (aResourceList, getResponseHeaders) => {
         var promises = [];
         var tmpResourceList = [];
         angular.forEach(aResourceList, function(res, idx) {
