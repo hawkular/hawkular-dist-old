@@ -86,6 +86,8 @@
       "enabled": true,
       "bearerOnly" : false,
       "publicClient": false,
+      "redirectUris": ["/*", "http://localhost:2772/*"],
+      "webOrigins": ["http://localhost:2772"],
       "secret" : "${uuid.hawkular.accounts.backend}"
     },
     {
