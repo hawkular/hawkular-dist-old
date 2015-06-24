@@ -90,8 +90,7 @@ module HawkularMetrics {
         angular.forEach(aResourceList, function(res, idx) {
           if (res.id.startsWith(new RegExp('\\[' + this.$routeParams.resourceId + '~/'))) {
             tmpResourceList.push(res);
-            promises.push(this.HawkularMetric.AvailabilityMetricData.query({
-              tenantId: tenantId,
+            promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
               availabilityId: 'AI~R~' + res.id + '~AT~Deployment Status',
               distinct: true}, (resource) => {
                 var latestData = resource[resource.length-1];
