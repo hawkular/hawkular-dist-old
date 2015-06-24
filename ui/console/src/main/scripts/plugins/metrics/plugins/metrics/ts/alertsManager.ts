@@ -41,7 +41,7 @@ module HawkularMetrics {
     setEmail(triggerId: string, email: string): ng.IPromise<void>;
     setResponseTime(triggerId: string, treshold: number, duration: number, enabled: boolean): ng.IPromise<void>;
     setDowntime(triggerId: string, duration: number, enabled: boolean): ng.IPromise<void>;
-    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType): ng.IPromise<void>;
+    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType, currentPage?:number, perPage?:number): any;
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
@@ -202,9 +202,9 @@ module HawkularMetrics {
       return undefined;
     }
 
-    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, alertType?:AlertType): ng.IPromise<void> {
-
+    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, alertType?:AlertType, currentPage?:number, perPage?:number): any {
       var alertList = [];
+      var headers;
 
       /* Format of Alerts:
 
@@ -222,6 +222,14 @@ module HawkularMetrics {
         statuses:'OPEN'
       };
 
+      if (currentPage || currentPage === 0) {
+        queryParams['page'] = currentPage;
+      }
+
+      if (perPage) {
+        queryParams['per_page'] = perPage;
+      }
+
       if (alertType === AlertType.AVAILABILITY) {
         queryParams['triggerIds'] = metricId+'_trigger_avail';
       } else if (alertType === AlertType.THRESHOLD) {
@@ -231,15 +239,16 @@ module HawkularMetrics {
       }
 
       if (startTime) {
-        queryParams[startTime] = startTime;
+        queryParams['startTime'] = startTime;
       }
 
       if (endTime) {
-        queryParams[endTime] = endTime;
+        queryParams['endTime'] = endTime;
       }
 
-      return this.HawkularAlert.Alert.query(queryParams).$promise.then((serverAlerts: any) => {
+      return this.HawkularAlert.Alert.query(queryParams, (serverAlerts: any, getHeaders: any) => {
 
+        headers = getHeaders();
         var momentNow = this.$moment();
 
         for (var i = 0; i < serverAlerts.length; i++) {
@@ -286,8 +295,11 @@ module HawkularMetrics {
         }
       }, (error) => {
         this.$log.debug('querying data error', error);
-      }).then(()=> {
-        return alertList;
+      }).$promise.then(()=> {
+        return {
+          alertList: alertList,
+          headers: headers
+        };
       });
     }
   }

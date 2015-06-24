@@ -88,7 +88,7 @@ module HawkularMetrics {
     $scope.pagesNumber = getPagesNumber();
 
     function getPagesNumber() {
-      return Math.ceil(($scope.headers.total || 1) / $scope.perPage);
+      return $scope.headers && Math.ceil(($scope.headers.total || 1) / $scope.perPage);
     }
 
     $scope.setPage = (pageNumber: number) => {
