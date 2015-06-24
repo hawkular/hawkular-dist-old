@@ -170,7 +170,7 @@ module HawkularMetrics {
 
     private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime, HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
-        this.alertList = data;
+        this.alertList = data.alertList;
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
 

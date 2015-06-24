@@ -32,6 +32,9 @@
 -->
 <hk-alert-panel-list class="clearfix" hk-alert-list="mac.alertList"></hk-alert-panel-list>
 
+<hk-pagination resource-list="mac.alertList" current-page="mac.resCurPage" page-setter="mac.setPage(pageNumber)"
+               per-page="mac.resPerPage" headers="mac.headerLinks"></hk-pagination>
+
 <div class="clearfix" ng-show="mac.alertList.length > 0">
   <button class="btn btn-default pull-right" ng-click="mac.resolveAll()" ng-disabled="mac.isResolvingAll">
     <i class="fa fa-check-square-o"></i> Resolve all

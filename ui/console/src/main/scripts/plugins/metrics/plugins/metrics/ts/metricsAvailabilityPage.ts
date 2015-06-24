@@ -192,12 +192,8 @@ module HawkularMetrics {
     }
 
     private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      console.log('1',HawkularMetrics);
-      console.log('2',HawkularMetrics.AlertType);
-      console.log('3',HawkularMetrics.AlertType.AVAILABILITY);
-
       this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime, HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
-        this.alertList = data;
+        this.alertList = data.alertList;
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
 
