@@ -186,7 +186,7 @@ module HawkularMetrics {
 
       if (metricId) {
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-          numericId: metricId,
+          gaugeId: metricId,
           start: startTime,
           end: endTime,
           buckets: 1
@@ -219,7 +219,7 @@ module HawkularMetrics {
 
       if (metricId) {
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-          numericId: metricId,
+          gaugeId: metricId,
           start: startTime,
           end: endTime,
           buckets: 120

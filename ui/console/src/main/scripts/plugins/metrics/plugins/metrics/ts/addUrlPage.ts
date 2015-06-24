@@ -186,7 +186,7 @@ module HawkularMetrics {
         var promises = [];
         angular.forEach(aResourceList, function(res, idx) {
           promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-            resourceId: res.id, numericId: (res.id + '.status.duration'),
+            resourceId: res.id, gaugeId: (res.id + '.status.duration'),
             start: moment().subtract(1, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
             // FIXME: Work data so it works for chart ?
             res['responseTime'] = resource;
