@@ -22,99 +22,21 @@
 module HawkularMetrics {
 
   export class AppServerDetailsController {
-    /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5'];
+    /// for minification only
+    public static  $inject = ['$scope'];
 
-    private resourceList;
-    private metricsList;
-    public alertList;
-    private resPerPage = 5;
-    private resCurPage = 0;
+    constructor(private $scope: any,
+                public availableTabs: any) {
+      $scope.tabs = this;
 
-    constructor(private $location: ng.ILocationService,
-      private $scope: any,
-      private $rootScope: any,
-      private $interval: ng.IIntervalService,
-      private $log: ng.ILogService,
-      private $filter: ng.IFilterService,
-      private $routeParams: any,
-      private $modal: any,
-      private HawkularInventory: any,
-      private HawkularMetric: any,
-      private HawkularAlert: any,
-      private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-      private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
-      private $q: ng.IQService,
-      private md5: any,
-      public startTimeStamp:TimestampInMillis,
-      public endTimeStamp:TimestampInMillis,
-      public resourceUrl: string) {
-        $scope.vm = this;
-
-        this.startTimeStamp = +moment().subtract(1, 'hours');
-        this.endTimeStamp = +moment();
-
-        if ($rootScope.currentPersona) {
-          this.getResourceList(this.$rootScope.currentPersona.id);
-        } else {
-          // currentPersona hasn't been injected to the rootScope yet, wait for it..
-          $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.getResourceList(currentPersona.id));
-        }
-
-        this.autoRefresh(20);
-    }
-
-    private autoRefreshPromise: ng.IPromise<number>;
-
-    cancelAutoRefresh(): void {
-      this.$interval.cancel(this.autoRefreshPromise);
-      toastr.info('Canceling Auto Refresh');
-    }
-
-    autoRefresh(intervalInSeconds: number): void {
-      this.autoRefreshPromise = this.$interval(() => {
-        this.getResourceList();
-      }, intervalInSeconds * 1000);
-
-      this.$scope.$on('$destroy', () => {
-        this.$interval.cancel(this.autoRefreshPromise);
-      });
-    }
-
-    getResourceList(currentTenantId?: TenantId): any {
-      this.alertList = []; // FIXME: when we have alerts for app server
-      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.ResourceOfType.query({tenantId: tenantId, resourceTypeId: 'Deployment'}, (aResourceList, getResponseHeaders) => {
-        var promises = [];
-        var tmpResourceList = [];
-        angular.forEach(aResourceList, function(res, idx) {
-          if (res.id.startsWith(new RegExp('\\[' + this.$routeParams.resourceId + '~/'))) {
-            tmpResourceList.push(res);
-            promises.push(this.HawkularMetric.AvailabilityMetricData.query({
-              tenantId: tenantId,
-              availabilityId: 'AI~R~' + res.id + '~AT~Deployment Status',
-              distinct: true}, (resource) => {
-                var latestData = resource[resource.length-1];
-                if (latestData) {
-                  res['state'] = latestData['value'];
-                  res['updateTimestamp'] = latestData['timestamp'];
-                }
-            }).$promise);
-          }
-          this.lastUpdateTimestamp = new Date();
-        }, this);
-        this.$q.all(promises).then((result) => {
-          this.resourceList = tmpResourceList;
-          this.resourceList.$resolved = true;
-        });
-      },
-      () => { // error
-        if (!this.resourceList) {
-          this.resourceList = [];
-          this.resourceList.$resolved = true;
-          this['lastUpdateTimestamp'] = new Date();
-        }
-      });
+      this.availableTabs = [
+        {id: 'jvm', name: 'JVM', enabled: true, src:'plugins/metrics/html/app-details/detail-jvm.html', controller: HawkularMetrics.AppServerJvmDetailsController},
+        {id: 'deployments', name: 'Deployments', enabled: true, src:'plugins/metrics/html/app-details/detail-deployments.html', controller: HawkularMetrics.AppServerDeploymentsDetailsController},
+        {id: 'jms', name: 'JMS', enabled: false, src:'plugins/metrics/html/app-details/detail-jms.html', controller: HawkularMetrics.AppServerJmsDetailsController},
+        {id: 'transactions', name: 'Transactions', enabled: false, src:'plugins/metrics/html/app-details/detail-transactions.html', controller: HawkularMetrics.AppServerTransactionsDetailsController},
+        {id: 'web', name: 'Web', enabled: false, src:'plugins/metrics/html/app-details/detail-web.html', controller: HawkularMetrics.AppServerWebDetailsController},
+        {id: 'datasources', name: 'Datasources', enabled: true, src:'plugins/metrics/html/app-details/detail-datasources.html', controller: HawkularMetrics.AppServerDatasourcesDetailsController}
+      ];
     }
 
   }

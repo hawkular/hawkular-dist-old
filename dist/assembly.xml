@@ -110,7 +110,7 @@
         <include>org.hawkular.alerts:hawkular-alerts-ear</include>
         <include>org.hawkular.alerts:hawkular-actions-email</include>
         <include>org.hawkular.metrics:hawkular-metrics-api-jaxrs</include>
-        <include>org.hawkular.metrics:hawkular-metrics-embedded-cassandra-ear</include>
+        <include>org.hawkular.commons:hawkular-commons-embedded-cassandra-ear</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>

@@ -24,7 +24,7 @@ module HawkularMetrics {
 
   export class MetricsAlertController {
     public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q',
-      '$rootScope', '$routeParams', '$modal', '$interval'];
+      '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
 
     private metricId: string;
     public alertList: any  = [];
@@ -35,6 +35,10 @@ module HawkularMetrics {
     public alertsTimeEnd: TimestampInMillis;
     public alertsTimeOffset: TimestampInMillis;
 
+    public resCurPage: number = 0;
+    public resPerPage: number = 5;
+    public headerLinks: any;
+
     constructor(private $scope:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
@@ -44,7 +48,8 @@ module HawkularMetrics {
                 private $rootScope: any,
                 private $routeParams: any,
                 private $modal: any,
-                private $interval: ng.IIntervalService) {
+                private $interval: ng.IIntervalService,
+                private HkHeaderParser: any) {
 
       this.$log.debug('querying data');
       this.$log.debug('$routeParams', $routeParams);
@@ -72,10 +77,19 @@ module HawkularMetrics {
     }
 
     public getAlerts():void {
-      this.HawkularAlertsManager.queryConsoleAlerts(this.metricId, this.alertsTimeStart, this.alertsTimeEnd).then((data)=> {
-        this.alertList = data;
+      this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : (new Date()).getTime();
+      this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
+
+      this.HawkularAlertsManager.queryConsoleAlerts(this.metricId, this.alertsTimeStart, this.alertsTimeEnd, undefined, this.resCurPage, this.resPerPage).then((queriedAlerts)=> {
+        this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
+        this.alertList = queriedAlerts.alertList;
         this.alertList.$resolved = true; // FIXME
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
+    }
+
+    setPage(page:number):void {
+      this.resCurPage = page;
+      this.getAlerts();
     }
 
     private autoRefresh(intervalInSeconds:number):void {

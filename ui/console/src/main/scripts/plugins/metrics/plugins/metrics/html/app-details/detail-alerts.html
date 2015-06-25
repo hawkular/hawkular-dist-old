@@ -1,33 +1,32 @@
+<section id="hk-alerts" class="hk-tab-content">
 
-<section id="hk-alerts" class="hk-tab-content" ng-if="vm.activeTab === 'alerts'">
-
-    <div class="hk-info-top clearfix">
-        <h3 class="pull-left" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse">Alerts <span>(29)</span></h3>
-        <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+  <div class="hk-info-top clearfix">
+    <h3 class="pull-left" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse">Alerts <span>(29)</span></h3>
+    <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+  </div>
+  <div class="clearfix">
+    <div class="panel panel-default alert alert-danger">
+      <div class="hk-alert-icon">
+        <i class="fa fa-flag"></i>
+      </div>
+      <div class="hk-date">
+        12 Feb, 5:35 PM
+      </div>
+      <div class="hk-event">
+        Server <strong>down</strong> for 4 minutes (until 5:39 PM).
+      </div>
     </div>
-    <div class="clearfix">
-        <div class="panel panel-default alert alert-danger">
-            <div class="hk-alert-icon">
-                <i class="fa fa-flag"></i>
-            </div>
-            <div class="hk-date">
-                12 Feb, 5:35 PM
-            </div>
-            <div class="hk-event">
-                Server <strong>down</strong> for 4 minutes (until 5:39 PM).
-            </div>
-        </div>
-        <div class="panel panel-default alert alert-danger">
-            <div class="hk-alert-icon">
-                <i class="fa fa-flag"></i>
-            </div>
-            <div class="hk-date">
-                11 Feb, 3:53 PM
-            </div>
-            <div class="hk-event">
-                <strong>Response time</strong> was above the threshold for 7 minutes (until 4:00 PM).
-            </div>
-        </div>
+    <div class="panel panel-default alert alert-danger">
+      <div class="hk-alert-icon">
+        <i class="fa fa-flag"></i>
+      </div>
+      <div class="hk-date">
+        11 Feb, 3:53 PM
+      </div>
+      <div class="hk-event">
+        <strong>Response time</strong> was above the threshold for 7 minutes (until 4:00 PM).
+      </div>
     </div>
+  </div>
 
 </section>

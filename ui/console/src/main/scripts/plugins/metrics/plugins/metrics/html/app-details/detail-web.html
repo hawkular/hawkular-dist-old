@@ -1,37 +1,34 @@
+<section id="hk-web" class="hk-tab-content">
 
-
-
-<section id="hk-web" class="hk-tab-content"  ng-if="vm.activeTab === 'web'">
-
-    <h3 class="pull-left">Web</h3>
-    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
-    <div class="panel panel-default hk-summary">
-        <div class="row">
-            <div class="col-sm-3 hk-summary-item">
-                <span class="hk-data">2 <i class="fa fa-flag"></i></span>
-                <span class="hk-item">Alerts</span>
-            </div>
-            <div class="col-sm-3 hk-summary-item">
-                <span class="hk-data">1270 MB</span>
-                <span class="hk-item">Average Heap Usage</span>
-            </div>
-            <div class="col-sm-3 hk-summary-item">
-                <span class="hk-data">5 s</span>
-                <span class="hk-item">Last Garbage Collection (Duration)</span>
-            </div>
-            <div class="col-sm-3 hk-summary-item">
-                <span class="hk-data">2000 MB</span>
-                <span class="hk-item">Maximum Heap</span>
-            </div>
-        </div>
+  <h3 class="pull-left">Web</h3>
+  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'mediumTime'}}</span>
+  <div class="panel panel-default hk-summary">
+    <div class="row">
+      <div class="col-sm-3 hk-summary-item">
+        <span class="hk-data">2 <i class="fa fa-flag"></i></span>
+        <span class="hk-item">Alerts</span>
+      </div>
+      <div class="col-sm-3 hk-summary-item">
+        <span class="hk-data">1270 MB</span>
+        <span class="hk-item">Average Heap Usage</span>
+      </div>
+      <div class="col-sm-3 hk-summary-item">
+        <span class="hk-data">5 s</span>
+        <span class="hk-item">Last Garbage Collection (Duration)</span>
+      </div>
+      <div class="col-sm-3 hk-summary-item">
+        <span class="hk-data">2000 MB</span>
+        <span class="hk-item">Maximum Heap</span>
+      </div>
     </div>
+  </div>
 
-    <div class="hk-info-top clearfix">
-        <h3 class="pull-left" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><button class="btn btn-link hk-trigger"><i class="fa fa-plus-square-o"></i> Alerts <span>(0)</span></button></h3>
-        <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
-    </div>
-    <div class="clearfix">
-        <p>No alerts.</p>
-    </div>
+  <div class="hk-info-top clearfix">
+    <h3 class="pull-left" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><button class="btn btn-link hk-trigger"><i class="fa fa-plus-square-o"></i> Alerts <span>(0)</span></button></h3>
+    <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+  </div>
+  <div class="clearfix">
+    <p>No alerts.</p>
+  </div>
 
 </section>

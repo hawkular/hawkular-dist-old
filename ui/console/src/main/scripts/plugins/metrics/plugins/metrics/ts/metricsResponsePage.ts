@@ -170,7 +170,7 @@ module HawkularMetrics {
 
     private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime, HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
-        this.alertList = data;
+        this.alertList = data.alertList;
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
 
@@ -185,9 +185,8 @@ module HawkularMetrics {
       }
 
       if (metricId) {
-        this.HawkularMetric.NumericMetricData.queryMetrics({
-          tenantId: this.$rootScope.currentPersona.id,
-          numericId: metricId,
+        this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+          gaugeId: metricId,
           start: startTime,
           end: endTime,
           buckets: 1
@@ -219,9 +218,8 @@ module HawkularMetrics {
       }
 
       if (metricId) {
-        this.HawkularMetric.NumericMetricData.queryMetrics({
-          tenantId: this.$rootScope.currentPersona.id,
-          numericId: metricId,
+        this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+          gaugeId: metricId,
           start: startTime,
           end: endTime,
           buckets: 120

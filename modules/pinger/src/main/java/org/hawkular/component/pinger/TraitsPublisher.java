@@ -35,8 +35,8 @@ import java.util.Map.Entry;
 @Stateless
 public class TraitsPublisher {
 
-    @javax.annotation.Resource(lookup = "java:global/Hawkular/ObservableInventory")
-    private Inventory.Mixin.Observable inventory;
+    @javax.annotation.Resource(lookup = "java:global/Hawkular/Inventory")
+    private Inventory inventory;
 
     /**
      * Stores the {@link Traits} of the given {@link PingStatus} in Hawkular Inventory.

@@ -20,9 +20,9 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:ds="urn:jboss:domain:datasources:2.0"
-                xmlns:ra="urn:jboss:domain:resource-adapters:2.0"
-                xmlns:ejb3="urn:jboss:domain:ejb3:2.0"
+                xmlns:ds="urn:jboss:domain:datasources:3.0"
+                xmlns:ra="urn:jboss:domain:resource-adapters:3.0"
+                xmlns:ejb3="urn:jboss:domain:ejb3:3.0"
                 version="2.0"
                 exclude-result-prefixes="xalan ds ra ejb3">
 
@@ -139,11 +139,8 @@
 
   <!-- set the console log level -->
   <xsl:template match="logging:console-handler[@name='CONSOLE']/logging:level"
-                xmlns:logging="urn:jboss:domain:logging:2.0">
-    <xsl:choose>
-      <xsl:when test="$kettle.build.type='dev'"><level name="DEBUG"/></xsl:when>
-      <xsl:otherwise><level name="INFO"/></xsl:otherwise>
-    </xsl:choose>
+                xmlns:logging="urn:jboss:domain:logging:3.0">
+    <xsl:if test="$kettle.build.type='production'"><level name="INFO"/></xsl:if>
   </xsl:template>
 
   <!-- add bus resource adapter -->
@@ -274,8 +271,8 @@
   <xsl:template name="system-properties">
     <system-properties>
       <property>
-        <xsl:attribute name="name">hawkular-metrics.backend</xsl:attribute>
-        <xsl:attribute name="value">&#36;{hawkular-metrics.backend:embedded_cass}</xsl:attribute>
+        <xsl:attribute name="name">hawkular.backend</xsl:attribute>
+        <xsl:attribute name="value">&#36;{hawkular.backend:embedded_cassandra}</xsl:attribute>
       </property>
 
       <xsl:choose>
@@ -304,7 +301,8 @@
   <xsl:template match="node()[name(.)='extensions']">
     <xsl:copy>
       <xsl:apply-templates select="node()|@*"/>
-      <extension module="org.keycloak.keycloak-subsystem"/>
+      <extension module="org.keycloak.keycloak-adapter-subsystem"/>
+      <extension module="org.keycloak.keycloak-server-subsystem"/>
       <extension module="org.hawkular.agent.monitor"/>
     </xsl:copy>
     <xsl:call-template name="system-properties"/>
@@ -459,7 +457,7 @@
                       timeUnits="minutes"
                       path="/"
                       attribute="wait-time" />
-          <metric-dmr name="Pool Availabile Count"
+          <metric-dmr name="Pool Available Count"
                       interval="5"
                       timeUnits="minutes"
                       path="/"
@@ -828,11 +826,10 @@
       </subsystem>
 
       <!-- Keycloak-related - our secured deployments (important) -->
-      <subsystem xmlns="urn:jboss:domain:keycloak:1.0">
-        <auth-server name="main-auth-server">
-          <enabled>true</enabled>
-          <web-context>auth</web-context>
-        </auth-server>
+      <subsystem xmlns="urn:jboss:domain:keycloak-server:1.1">
+        <web-context>auth</web-context>
+      </subsystem>
+      <subsystem xmlns="urn:jboss:domain:keycloak:1.1">
         <realm name="hawkular">
           <auth-server-url>/auth</auth-server-url>
           <auth-server-url-for-backend-requests><xsl:text disable-output-escaping="yes">http://${jboss.bind.address:127.0.0.1}:${jboss.http.port:8080}/auth</xsl:text></auth-server-url-for-backend-requests>
