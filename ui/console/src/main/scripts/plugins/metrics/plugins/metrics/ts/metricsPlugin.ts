@@ -112,7 +112,6 @@ module HawkularMetrics {
                 resolve: {
                     hkResourceList: function ($filter, $location, $rootScope, $q, HawkularInventory) {
                         var resPromise = HawkularInventory.Resource.query({
-                            tenantId: $rootScope.currentPersona.id,
                             environmentId: globalEnvironmentId
                         }).$promise;
                         resPromise.then(function (hkResourceList) {

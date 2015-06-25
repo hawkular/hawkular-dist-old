@@ -23,19 +23,19 @@
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
 
   <broker xmlns="http://activemq.apache.org/schema/core"
-          brokerName="${org.hawkular.bus.broker.name}"
-          persistent="${org.hawkular.bus.broker.persistent}"
-          useJmx="${org.hawkular.bus.broker.use-jmx}"
+          brokerName="${org-hawkular-bus-broker-name}"
+          persistent="${org-hawkular-bus-broker-persistent}"
+          useJmx="${org-hawkular-bus-broker-use-jmx}"
           dataDirectory="${jboss.server.data.dir}/broker"
           useShutdownHook="false">
 
     <transportConnectors>
-      <transportConnector name="${org.hawkular.bus.broker.connector.name}"
-                          uri="${org.hawkular.bus.broker.connector.protocol}://${org.hawkular.bus.broker.connector.address}:${org.hawkular.bus.broker.connector.port}"
+      <transportConnector name="${org-hawkular-bus-broker-connector-name}"
+                          uri="${org-hawkular-bus-broker-connector-protocol}://${org-hawkular-bus-broker-connector-address}:${org-hawkular-bus-broker-connector-port}"
                           updateClusterClients="true"
                           updateClusterClientsOnRemove="true"
                           rebalanceClusterClients="true"
-                          discoveryUri="multicast://${org.hawkular.bus.broker.discovery.address}:${org.hawkular.bus.broker.discovery.port}?group=hawkular" />
+                          discoveryUri="multicast://${org-hawkular-bus-broker-discovery-address}:${org-hawkular-bus-broker-discovery-port}?group=hawkular" />
     </transportConnectors>
 
     <!-- Define the Network of Brokers (aka clustering).
@@ -46,7 +46,7 @@
     -->
     <networkConnectors>
       <networkConnector
-        uri="multicast://${org.hawkular.bus.broker.discovery.address}:${org.hawkular.bus.broker.discovery.port}?group=hawkular" />
+        uri="multicast://${org-hawkular-bus-broker-discovery-address}:${org-hawkular-bus-broker-discovery-port}?group=hawkular" />
     </networkConnectors>
 
     <persistenceAdapter>

@@ -23,18 +23,16 @@ module Inventory {
       var envId = 'test';
 
       $scope.queryResources = function() {
-        if(this.tenantId) {
-            this.resources = hkInventory.ResourceOfType.query({tenantId: this.tenantId, resourceTypeId: 'URL'}, function(data) {
-                angular.forEach(data, function(value) {
-                    value.metrics = hkInventory.ResourceMetric.query({tenantId: $scope.tenantId, environmentId: envId, resourceId: value.id});
-                });
+        this.resources = hkInventory.ResourceOfType.query({resourceTypeId: 'URL'}, function(data) {
+            angular.forEach(data, function(value) {
+                value.metrics = hkInventory.ResourceMetric.query({environmentId: envId, resourceId: value.id});
             });
-        }
+        });
       };
 
       $scope.queryMetrics = function() {
-        if(this.tenantId && this.resourceId && envId) {
-            this.metrics = hkInventory.ResourceMetric.query({tenantId: this.tenantId, environmentId: envId, resourceId: this.resourceId});
+        if(this.resourceId && envId) {
+            this.metrics = hkInventory.ResourceMetric.query({environmentId: envId, resourceId: this.resourceId});
         }
       };
 
