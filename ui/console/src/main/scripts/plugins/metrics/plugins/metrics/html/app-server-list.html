@@ -69,7 +69,7 @@
       <div class="dataTables_header"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label><input type="search" ng-model="vm.search" aria-controls="DataTables_Table_0"></label></div>
 
       <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing <b>1</b> to <b>{{(vm.resourceList | filter:vm.search).length}}</b> of <b>{{vm.resourceList.length}}</b> Items</div></div>
-      <table class="datatable table table-striped table-bordered table-checkbox" ng-show="vm.resourceList.length > 0">
+      <table class="datatable table table-striped table-bordered" ng-show="vm.resourceList.length > 0">
         <thead>
           <tr>
             <th>State</th>
