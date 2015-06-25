@@ -11,6 +11,7 @@
   "accountTheme" : "hawkular",
   "adminTheme" : "hawkular",
   "defaultRoles" : [ "user" ],
+  "eventsListeners" : [ "hawkular-jms", "jboss-logging" ],
   "users" : [ {
     "id" : "28026b36-8fe4-4332-84c8-524e173a68bf",
     "username" : "jdoe",

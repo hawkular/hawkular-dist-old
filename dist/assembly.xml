@@ -111,6 +111,7 @@
         <include>org.hawkular.alerts:hawkular-actions-email</include>
         <include>org.hawkular.metrics:hawkular-metrics-api-jaxrs</include>
         <include>org.hawkular.commons:hawkular-commons-embedded-cassandra-ear</include>
+        <include>org.hawkular.accounts:hawkular-accounts-events-backend:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
@@ -137,6 +138,8 @@
       <includes>
         <include>org.hawkular.agent:hawkular-monitor:zip:module</include>
         <include>org.hawkular.bus:hawkular-bus-ra-wf-module:zip:module</include>
+        <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-rest:zip:module</include>
+        <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-jms:zip:module</include>
       </includes>
       <unpack>true</unpack>
       <fileMode>0644</fileMode>
@@ -151,6 +154,30 @@
         <include>org.hawkular.accounts:hawkular-accounts-keycloak-theme:jar</include>
       </includes>
       <outputFileNameMapping>hawkular-accounts-keycloak-theme.jar</outputFileNameMapping>
+      <useProjectAttachments>false</useProjectAttachments>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useTransitiveFiltering>false</useTransitiveFiltering>
+    </dependencySet>
+
+    <!-- Keycloak Event Listeners -->
+    <dependencySet>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/modules/org/hawkular/keycloak/events/rest/main</outputDirectory>
+      <includes>
+        <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-rest:jar</include>
+      </includes>
+      <outputFileNameMapping>hawkular-accounts-keycloak-event-listener-rest.jar</outputFileNameMapping>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useProjectAttachments>false</useProjectAttachments>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useTransitiveFiltering>false</useTransitiveFiltering>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/modules/org/hawkular/keycloak/events/jms/main</outputDirectory>
+      <includes>
+        <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-jms:jar</include>
+      </includes>
+      <outputFileNameMapping>hawkular-accounts-keycloak-event-listener-jms.jar</outputFileNameMapping>
+      <useProjectArtifact>false</useProjectArtifact>
       <useProjectAttachments>false</useProjectAttachments>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useTransitiveFiltering>false</useTransitiveFiltering>
