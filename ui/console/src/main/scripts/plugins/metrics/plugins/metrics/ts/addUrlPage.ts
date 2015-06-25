@@ -275,7 +275,7 @@ module HawkularMetrics {
                    this.HawkularAlertsManager.deleteTrigger(triggerIds[1])])
       .then(removeResource)
       .then((res) => {
-          toastr.success('The site ' + this.resource.properties.url + ' is no longer being monitored.');
+          toastr.success('The website ' + this.resource.properties.url + ' is no longer being monitored.');
           this.$modalInstance.close(res);
       });
     }
