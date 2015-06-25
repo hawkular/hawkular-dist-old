@@ -32,7 +32,7 @@ var gulp = require('gulp'),
 
 var POM_MAIN_PATH = '../../../../pom.xml';
 var DIST_TARGET_PATH = '../../../../dist/target/';
-var WF_CONSOLE_PATH = 'wildfly-9.0.0.CR2/modules/org/hawkular/nest/main/deployments/hawkular-console.war/dist/';
+var WF_CONSOLE_PATH = 'modules/org/hawkular/nest/main/deployments/hawkular-console.war/dist/';
 
 var plugins = gulpLoadPlugins({});
 var pkg = require('./package.json');
@@ -63,7 +63,7 @@ var config = {
 gulp.task('set-server-path', function(done) {
   var parser = new xml2js.Parser();
   parser.addListener('end', function(result) {
-    config.serverPath = DIST_TARGET_PATH + 'hawkular-' + result.project.version + '/' + WF_CONSOLE_PATH;
+    config.serverPath = DIST_TARGET_PATH + 'hawkular-' + result.project.version + '/hawkular-' + result.project.version + '/' + WF_CONSOLE_PATH;
     done();
   });
 
