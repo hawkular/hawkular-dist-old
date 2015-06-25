@@ -33,7 +33,7 @@ module HawkularMetrics {
     deleteTrigger(triggerId: string): ng.IPromise<void>;
     createCondition(triggerId: string, condition: any): ng.IPromise<void>;
     updateCondition(triggerId: string, conditionId: string, condition: any): ng.IPromise<void>;
-    createDampening(triggerId: string, duration: number): ng.IPromise<void>;
+    createDampening(triggerId: string, duration: number, triggerMode?: string): ng.IPromise<void>;
     updateDampening(triggerId: string, dampeningId: string, dampening: any): ng.IPromise<void>;
     getAction(email: string): ng.IPromise<void>;
     getActions(triggerId: string): ng.IPromise<void>;
@@ -57,6 +57,9 @@ module HawkularMetrics {
     public createTrigger(triggerName: string, enabled: boolean, conditionType: string, email: string): ng.IPromise<void> {
       // Create a trigger
       var triggerId: string;
+      var DEFAULT_RESOLVE_THRESHOLD = 1000;
+      var DEFAULT_DAMPENING_INTERVAL = 7 * 60000;
+      var DEFAULT_AUTORESOLVE_INTERVAL = 5 * 60000;
 
       return this.HawkularAlert.Trigger.save({
         name: triggerName,
@@ -65,7 +68,7 @@ module HawkularMetrics {
         firingMatch: 'ALL',
         autoResolveMatch: 'ALL',
         enabled: enabled,
-        autoResolve: false,
+        autoResolve: true,
         actions: {email: [email]}
       }).$promise.then((trigger)=> {
 
@@ -76,12 +79,21 @@ module HawkularMetrics {
 
           // Create a conditions for that trigger
           if (conditionType === 'THRESHOLD') {
-            return this.createCondition(triggerId,{
+            return this.createCondition(triggerId, {
               type: conditionType,
               triggerId: triggerId,
-              threshold: 1000,
+              threshold: DEFAULT_RESOLVE_THRESHOLD,
               dataId: dataId,
               operator: 'GT'
+            }).then(()=> {
+              return this.createCondition(triggerId, {
+                type: conditionType,
+                triggerId: triggerId,
+                triggerMode: 'AUTORESOLVE',
+                threshold: DEFAULT_RESOLVE_THRESHOLD,
+                dataId: dataId,
+                operator: 'LT'
+              });
             });
           } else if (conditionType === 'AVAILABILITY') {
             return this.createCondition(triggerId, {
@@ -89,11 +101,21 @@ module HawkularMetrics {
               triggerId: triggerId,
               dataId: trigger.name.slice(0,-14),
               operator: 'DOWN'
+            }).then(()=> {
+              return this.createCondition(triggerId, {
+                type: conditionType,
+                triggerId: triggerId,
+                triggerMode: 'AUTORESOLVE',
+                dataId: trigger.name.slice(0,-14),
+                operator: 'UP'
+              });
             });
           }
         }).then(() => {
           // Create dampening for that trigger
-          return this.createDampening(triggerId, 7 * 60000);
+          return this.createDampening(triggerId, DEFAULT_DAMPENING_INTERVAL);
+        }).then(() => {
+          return this.createDampening(triggerId, DEFAULT_AUTORESOLVE_INTERVAL, 'AUTORESOLVE');
         });
     }
 
@@ -151,10 +173,11 @@ module HawkularMetrics {
       return this.HawkularAlert.Condition.put({triggerId: triggerId, conditionId: conditionId}, condition).$promise;
     }
 
-    createDampening(triggerId: string, duration: number): ng.IPromise<void> {
+    createDampening(triggerId: string, duration: number, triggerMode?: string): ng.IPromise<void> {
       return this.HawkularAlert.Dampening.save({ triggerId: triggerId }, {
         triggerId: triggerId,
         evalTimeSetting: duration,
+        triggerMode: triggerMode || 'FIRING',
         type: 'STRICT_TIME'
       }).$promise;
     }
