@@ -30,21 +30,21 @@
   <fileSets>
     <fileSet>
       <directory>src/main/resources/wildfly/configuration</directory>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/standalone/configuration</outputDirectory>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/standalone/configuration</outputDirectory>
       <filtered>false</filtered>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>src/main/resources/configuration</directory>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/standalone/configuration</outputDirectory>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/standalone/configuration</outputDirectory>
       <filtered>true</filtered>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>src/main/resources/wildfly/modules</directory>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/modules</outputDirectory>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/modules</outputDirectory>
       <filtered>false</filtered>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
@@ -72,8 +72,8 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>${project.build.directory}/wildfly</directory>
-      <outputDirectory></outputDirectory>
+      <directory>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}</directory>
+      <outputDirectory>${hawkular.dist.zip.root.dir}</outputDirectory>
       <excludes>
         <exclude>**/*.sh</exclude>
       </excludes>
@@ -82,8 +82,8 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>${project.build.directory}/wildfly</directory>
-      <outputDirectory></outputDirectory>
+      <directory>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}</directory>
+      <outputDirectory>${hawkular.dist.zip.root.dir}</outputDirectory>
       <includes>
         <include>**/*.sh</include>
       </includes>
@@ -93,14 +93,14 @@
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/keycloak/</directory>
-      <outputDirectory>${wildfly.dist.zip.root.dir}</outputDirectory>
+      <outputDirectory>${hawkular.dist.zip.root.dir}</outputDirectory>
     </fileSet>
   </fileSets>
 
   <dependencySets>
     <!-- all component deployments that go in the nest's internal modules directory -->
     <dependencySet>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments</outputDirectory>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.inventory:hawkular-integrated-inventory-rest</include>
@@ -120,7 +120,7 @@
 
     <!-- TODO Make the unpacking conditional == only for the dev profile -->
     <dependencySet>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments/${artifact.artifactId}.war</outputDirectory>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments/${artifact.artifactId}.war</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular:hawkular-console</include>
@@ -132,7 +132,7 @@
 
     <!-- additional subsystem extensions that go in the main WildFly modules directory -->
     <dependencySet>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/modules</outputDirectory>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/modules</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.agent:hawkular-monitor:zip:module</include>
@@ -145,7 +145,7 @@
 
     <!-- Keycloak theme -->
     <dependencySet>
-      <outputDirectory>${wildfly.dist.zip.root.dir}/modules/org/hawkular/keycloak/theme/main</outputDirectory>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/modules/org/hawkular/keycloak/theme/main</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.accounts:hawkular-accounts-keycloak-theme:jar</include>

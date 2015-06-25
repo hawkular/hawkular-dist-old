@@ -36,6 +36,7 @@
     <checkstyle.suppressions.file>checkstyle-suppressions.xml</checkstyle.suppressions.file>
     <assembly.dir>${project.build.directory}/assembly</assembly.dir>
     <wildfly.dist.zip.root.dir>wildfly-${version.org.wildfly}</wildfly.dist.zip.root.dir>
+    <hawkular.dist.zip.root.dir>hawkular-${project.version}</hawkular.dist.zip.root.dir>
   </properties>
 
   <dependencies>
@@ -275,7 +276,7 @@
                   <includes>
                     <include>standalone.xml</include>
                   </includes>
-                  <outputDir>${assembly.dir}/${wildfly.dist.zip.root.dir}/standalone/configuration</outputDir>
+                  <outputDir>${assembly.dir}/${hawkular.dist.zip.root.dir}/standalone/configuration</outputDir>
                   <parameters>
                     <parameter>
                       <name>kettle.build.type</name>
@@ -300,7 +301,7 @@
                   <includes>
                     <include>standalone.xml</include>
                   </includes>
-                  <outputDir>${assembly.dir}/${wildfly.dist.zip.root.dir}/standalone/configuration</outputDir>
+                  <outputDir>${assembly.dir}/${hawkular.dist.zip.root.dir}/standalone/configuration</outputDir>
                   <parameters>
                     <parameter>
                       <name>kettle.build.type</name>
