@@ -32,7 +32,7 @@ var gulp = require('gulp'),
 
 var POM_MAIN_PATH = '../../../../pom.xml';
 var DIST_TARGET_PATH = '../../../../dist/target/';
-var WF_CONSOLE_PATH = 'wildfly-8.2.0.Final/modules/org/hawkular/nest/main/deployments/hawkular-console.war/dist/';
+var WF_CONSOLE_PATH = 'wildfly-9.0.0.CR2/modules/org/hawkular/nest/main/deployments/hawkular-console.war/dist/';
 
 var plugins = gulpLoadPlugins({});
 var pkg = require('./package.json');

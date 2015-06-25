@@ -85,9 +85,8 @@ module HawkularMetrics {
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularMetric.NumericMetricData.query({
-        tenantId: tenantId,
-        numericId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~Heap Used',
+      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used',
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
