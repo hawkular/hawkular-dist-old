@@ -179,21 +179,31 @@ module HawkularMetrics {
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error fetching threshold trigger.');
       }).then((data)=> {
-        this.trigger_thres_damp = data;
+
+        // Make sure, the AUTORESOLVE entity is the 2nd one
+        this.trigger_thres_damp = [];
+        this.trigger_thres_damp[0] = data[data[1].triggerMode === 'AUTORESOLVE' ? 0 : 1];
+        this.trigger_thres_damp[1] = data[data[1].triggerMode === 'AUTORESOLVE' ? 1 : 0];
+
         this.alertSetupBackup.trigger_thres_damp = angular.copy(this.trigger_thres_damp);
 
-        this.responseUnit = this.getTimeUnit(data[0].evalTimeSetting);
-        this.responseDuration = data[0].evalTimeSetting / this.responseUnit;
+        this.responseUnit = this.getTimeUnit(this.trigger_thres_damp[0].evalTimeSetting);
+        this.responseDuration = this.trigger_thres_damp[0].evalTimeSetting / this.responseUnit;
         this.alertSetupBackup.responseDuration = angular.copy(this.responseDuration);
 
-        this.thresDampDurationEnabled = data[0].evalTimeSetting !== 0;
+        this.thresDampDurationEnabled = this.trigger_thres_damp[0].evalTimeSetting !== 0;
         this.alertSetupBackup.thresDampDurationEnabled = angular.copy(this.thresDampDurationEnabled);
         this.$log.debug('this.trigger_thres_damp', this.trigger_thres_damp);
         return HawkularAlert.Condition.query({triggerId: $routeParams.resourceId + '_trigger_thres'}).$promise;
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error fetching threshold trigger dampening.');
       }).then((data)=> {
-        this.trigger_thres_cond = data;
+
+        // Make sure, the AUTORESOLVE condition is the 2nd one
+        this.trigger_thres_cond = [];
+        this.trigger_thres_cond[0] = data[data[1].triggerMode === 'AUTORESOLVE' ? 0 : 1];
+        this.trigger_thres_cond[1] = data[data[1].triggerMode === 'AUTORESOLVE' ? 1 : 0];
+
         this.alertSetupBackup.trigger_thres_cond = angular.copy(this.trigger_thres_cond);
         this.$log.debug('this.trigger_thres_cond', this.trigger_thres_cond);
       }, (error)=> {
@@ -299,7 +309,12 @@ module HawkularMetrics {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger dampening.', errorCallback);
       }).then(()=> {
         if(!angular.equals(this.alertSetupBackup.trigger_thres_cond[0], this.trigger_thres_cond[0])) {
-          return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id, this.trigger_thres_cond[0].conditionId, this.trigger_thres_cond[0]);
+          return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id, this.trigger_thres_cond[0].conditionId, this.trigger_thres_cond[0]).then(()=> {
+            // Update the threshold on AUTORESOLVE condition
+            var autoResolveCondition = angular.copy(this.trigger_thres_cond[1]);
+            autoResolveCondition.threshold = this.trigger_thres_cond[0].threshold;
+            return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id, autoResolveCondition.conditionId, autoResolveCondition);
+          });
         }
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating availability dampening.', errorCallback);
