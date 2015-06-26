@@ -736,10 +736,19 @@
 
         <resource-type-set-dmr name="Main" enabled="true">
           <resource-type-dmr name="WildFly Server"
-                             resourceNameTemplate="WildFly Server [${{jboss.node.name}}]"
+                             resourceNameTemplate="WildFly Server [%ManagedServerName] [${{jboss.node.name:localhost}}]"
                              path="/"
                              metricSets="WildFly Memory Metrics,WildFly Threading Metrics"
-                             availSets="Server Availability" />
+                             availSets="Server Availability">
+            <resource-config-dmr name="Hostname"
+                                 path="/core-service=server-environment"
+                                 attribute="qualified-host-name" />
+            <resource-config-dmr name="Max Heap"
+                                 path="/core-service=platform-mbean/type=memory"
+                                 attribute="heap-memory-usage#max" />
+            <resource-config-dmr name="Version"
+                                 attribute="release-version" />
+          </resource-type-dmr>
         </resource-type-set-dmr>
 
         <resource-type-set-dmr name="Hawkular" enabled="true">
