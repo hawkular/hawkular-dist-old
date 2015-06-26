@@ -1,0 +1,18 @@
+<div class="hk-alerts-feedback" hk-clear-notifications="hkNotifications.alerts">
+    <div ng-repeat="notification in hkNotifications.alerts">
+        <div ng-switch="notification.type">
+            <div class="alert alert-success" ng-switch-when="success">
+                <span class="pficon pficon-ok"></span>
+                <strong>{{notification.message}}</strong>
+            </div>
+
+            <div class="alert alert-danger" ng-switch-when="error">
+        <span class="pficon-layered">
+          <span class="pficon pficon-error-octagon"></span>
+          <span class="pficon pficon-error-exclamation"></span>
+        </span>
+                <strong>Error:</strong> {{notification.message}}</a>
+            </div>
+        </div>
+    </div>
+</div>
