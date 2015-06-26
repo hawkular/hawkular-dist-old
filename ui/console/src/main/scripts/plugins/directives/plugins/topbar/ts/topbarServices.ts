@@ -32,7 +32,7 @@ module Topbar {
       var defaultOffset = 1 * 60 * 60  * 1000;
 
       var init = (tenantId: TenantId) => {
-        HawkularInventory.Resource.query({tenantId: tenantId, environmentId: globalEnvironmentId}, (resourceList) => {
+        HawkularInventory.Resource.query({environmentId: globalEnvironmentId}, (resourceList) => {
           $rootScope.hkResources = resourceList;
           for (var i = 0; i < resourceList.length; i++) {
             if(resourceList[i].id === $rootScope.hkParams.resourceId) {
@@ -52,7 +52,7 @@ module Topbar {
           $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
           $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
-          HawkularInventory.Resource.query({tenantId: tenantId, environmentId: globalEnvironmentId}, (resourceList) => {
+          HawkularInventory.Resource.query({environmentId: globalEnvironmentId}, (resourceList) => {
             $rootScope.hkResources = resourceList;
             for (var i = 0; i < resourceList.length; i++) {
               if(resourceList[i].id === $rootScope.hkParams.resourceId) {
