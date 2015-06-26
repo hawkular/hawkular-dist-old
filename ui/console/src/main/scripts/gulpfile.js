@@ -129,7 +129,7 @@ var gulpTsc = function(done) {
     .pipe(plugins.sourcemaps.init())
     .pipe(plugins.typescript(config.tsProject))
     .on('error', plugins.notify.onError({
-      message: '#{ error.message }',
+      message: '<%= error.message %>',
       title: 'Typescript compilation error'
     }));
 
