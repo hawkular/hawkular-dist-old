@@ -11,11 +11,13 @@
           <span class="hk-item">Datasources Alerts</span>
         </div>
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data">{{ ds.inUseCount.value / ds.availableCount.value * 100 }} %</span>
+          <span class="hk-data" ng-show="ds.availableCount.value">{{ ds.inUseCount.value / ds.availableCount.value * 100 }} %</span>
+          <span class="hk-data" ng-hide="ds.availableCount.value">n/a</span>
           <span class="hk-item">Connections Used (%)</span>
         </div>
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data">{{ ds.availableCount.value - ds.inUseCount.value }} Available (of {{ ds.availableCount.value }})</span>
+          <span class="hk-data" ng-show="ds.availableCount.value">{{ ds.availableCount.value - ds.inUseCount.value }} Available (of {{ ds.availableCount.value }})</span>
+          <span class="hk-data" ng-hide="ds.availableCount.value">n/a</span>
           <span class="hk-item">Available Connections (of total)</span>
         </div>
       </div>
