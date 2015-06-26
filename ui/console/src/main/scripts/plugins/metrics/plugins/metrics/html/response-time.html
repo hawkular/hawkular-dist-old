@@ -38,7 +38,8 @@
     <!-- Alerts -->
     <div class="hk-info-top clearfix">
       <h3 class="pull-left" data-toggle="tooltip" data-placement="top" title="" data-original-title="Expand/collapse">
-        <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+        <button class="btn btn-link hk-trigger" ng-show="vm.alertList.length > 0" ng-click="showAllAlerts = !showAllAlerts"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Alerts <span>({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+        <span ng-hide="vm.alertList.length > 0">Alerts</span>
       </h3>
       <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
     </div>
@@ -78,7 +79,7 @@
         </hawkular-chart>
       </div>
       
-      <div class="hk-legend text-left" ng-show="vm.chartData.dataPoints.length > 0">
+      <div class="hk-legend text-left hk-response-time" ng-show="vm.chartData.dataPoints.length > 0">
         <span><i class="fa fa-circle hk-blue"></i>Response Time</span>
         <span><span class="hk-legend-square hk-red-light"></span>Response Time (above the threshold)</span>
       </div>      
