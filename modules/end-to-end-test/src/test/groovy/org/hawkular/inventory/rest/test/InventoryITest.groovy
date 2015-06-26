@@ -40,6 +40,13 @@ class InventoryITest extends AbstractTestBase {
     private static final String environmentId = "itest-env-" + UUID.randomUUID().toString()
     private static final String pingableHostRTypeId = "itest-pingable-host-" + UUID.randomUUID().toString()
     private static final String roomRTypeId = "itest-room-type-" + UUID.randomUUID().toString()
+    private static final String copyMachineRTypeId = "itest-copy-machine-type-" + UUID.randomUUID().toString()
+    private static final String date20150626 = "2015-06-26"
+    private static final String date20160801 = "2016-08-01"
+    private static final String expectedLifetime15years = "15y"
+    private static final String facilitiesDept = "Facilities"
+    private static final String itDept = "IT"
+    private static final String typeVersion = "1.0"
     private static final String responseTimeMTypeId = "itest-response-time-" + UUID.randomUUID().toString()
     private static final String responseStatusCodeMTypeId = "itest-response-status-code-" + UUID.randomUUID().toString()
     private static final String statusDurationMTypeId = "status.duration.type"
@@ -47,6 +54,8 @@ class InventoryITest extends AbstractTestBase {
     private static final String host1ResourceId = "itest-host1-" + UUID.randomUUID().toString();
     private static final String host2ResourceId = "itest-host2-" + UUID.randomUUID().toString();
     private static final String room1ResourceId = "itest-room1-" + UUID.randomUUID().toString();
+    private static final String copyMachine1ResourceId = "itest-copy-machine1-" + UUID.randomUUID().toString();
+    private static final String copyMachine2ResourceId = "itest-copy-machine2-" + UUID.randomUUID().toString();
     private static final String responseTimeMetricId = "itest-response-time-" + host1ResourceId;
     private static final String responseStatusCodeMetricId = "itest-response-status-code-" + host1ResourceId;
     private static final String feedId = "itest-feed-" + UUID.randomUUID().toString();
@@ -117,15 +126,31 @@ class InventoryITest extends AbstractTestBase {
         assertEquals(200, response.status)
         assertEquals(urlTypeId, response.data.id)
 
-        /* Create a custom resource type */
-        response = postDeletable(path: "resourceTypes", body: [id : pingableHostRTypeId])
+        /* Create pingable host resource type */
+        response = postDeletable(path: "resourceTypes",
+            body: [
+                id : pingableHostRTypeId
+            ])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/resourceTypes/$pingableHostRTypeId", response.headers.Location)
 
-        /* Create another resource type */
-        response = postDeletable(path: "resourceTypes", body: [id : roomRTypeId])
+        /* Create room resource type */
+        response = postDeletable(path: "resourceTypes",
+            body: [
+                id : roomRTypeId,
+                properties : [expectedLifetime : expectedLifetime15years, ownedByDepartment : facilitiesDept]
+            ])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/resourceTypes/$roomRTypeId", response.headers.Location)
+
+        /* Create copy machine resource type */
+        response = postDeletable(path: "resourceTypes",
+            body: [
+                id : copyMachineRTypeId,
+                properties : [expectedLifetime : expectedLifetime15years, ownedByDepartment : itDept]
+            ])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/resourceTypes/$copyMachineRTypeId", response.headers.Location)
 
         /* Create a metric type */
         response = postDeletable(path: "metricTypes", body: [id : responseTimeMTypeId, unit : "MILLI_SECOND"])
@@ -171,9 +196,24 @@ class InventoryITest extends AbstractTestBase {
 
         /* add a room resource */
         response = postDeletable(path: "$environmentId/resources",
-            body: [ id : room1ResourceId, resourceTypeId: roomRTypeId ])
+            body: [ id : room1ResourceId, resourceTypeId: roomRTypeId,
+                properties : [purchaseDate : date20150626] ])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId", response.headers.Location)
+
+        /* add a copy machine resource */
+        response = postDeletable(path: "$environmentId/resources",
+            body: [ id : copyMachine1ResourceId, resourceTypeId: copyMachineRTypeId,
+                properties : [purchaseDate : date20150626,
+                    nextMaintenanceDate : date20160801] ])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$copyMachine1ResourceId", response.headers.Location)
+
+        response = postDeletable(path: "$environmentId/resources",
+            body: [ id : copyMachine2ResourceId, resourceTypeId: copyMachineRTypeId,
+                properties : [purchaseDate : date20160801] ])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$copyMachine2ResourceId", response.headers.Location)
 
         /* link the metric to resource */
         path = "$basePath/$environmentId/resources/$host1ResourceId/metrics"
@@ -280,12 +320,40 @@ class InventoryITest extends AbstractTestBase {
 
     @Test
     void testResourcesFilters() {
+
+        /* filter by resource properties */
         def response = client.get(path: "$basePath/$environmentId/resources",
-            query: [type: pingableHostRTypeId])
+            query: ["properties" : "purchaseDate:$date20150626", sort: "id"])
+        assertEquals(2, response.data.size())
+        assertEquals(copyMachine1ResourceId, response.data.get(0).id)
+        assertEquals(room1ResourceId, response.data.get(1).id)
+
+        response = client.get(path: "$basePath/$environmentId/resources",
+            query: ["properties" : "nextMaintenanceDate:$date20160801"])
+        assertEquals(1, response.data.size())
+        assertEquals(copyMachine1ResourceId, response.data.get(0).id)
+
+        /* query by two props at once */
+        response = client.get(path: "$basePath/$environmentId/resources",
+            query: ["properties" : "nextMaintenanceDate:$date20160801,purchaseDate:$date20150626"])
+        assertEquals(1, response.data.size())
+        assertEquals(copyMachine1ResourceId, response.data.get(0).id)
+
+        /* query by property existence */
+        response = client.get(path: "$basePath/$environmentId/resources",
+            query: ["properties" : "purchaseDate", sort: "id"])
+        assertEquals(3, response.data.size())
+        assertEquals(copyMachine1ResourceId, response.data.get(0).id)
+        assertEquals(copyMachine2ResourceId, response.data.get(1).id)
+        assertEquals(room1ResourceId, response.data.get(2).id)
+
+        /* filter by type */
+        response = client.get(path: "$basePath/$environmentId/resources",
+            query: ["type.id": pingableHostRTypeId])
         assertEquals(2, response.data.size())
 
         response = client.get(path: "$basePath/$environmentId/resources",
-            query: [type: roomRTypeId])
+            query: ["type.id": roomRTypeId, "type.version": typeVersion])
         assertEquals(1, response.data.size())
 
     }
@@ -306,26 +374,26 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testPaging() {
         String path = "$basePath/$environmentId/resources"
-        def response = client.get(path: path, query: [type: pingableHostRTypeId, page: 0, per_page: 2, sort: "id"])
+        def response = client.get(path: path, query: ["type.id": pingableHostRTypeId, page: 0, per_page: 2, sort: "id"])
         assertEquals(2, response.data.size())
 
         def first = response.data.get(0)
         def second = response.data.get(1)
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, page: 0, per_page: 1, sort: "id"])
+        response = client.get(path: path, query: ["type.id": pingableHostRTypeId, page: 0, per_page: 1, sort: "id"])
         assertEquals(1, response.data.size())
         assertEquals(first, response.data.get(0))
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, page: 1, per_page: 1, sort: "id"])
+        response = client.get(path: path, query: ["type.id": pingableHostRTypeId, page: 1, per_page: 1, sort: "id"])
         assertEquals(1, response.data.size())
         assertEquals(second, response.data.get(0))
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, page : 0, per_page: 1, sort: "id",
+        response = client.get(path: path, query: ["type.id": pingableHostRTypeId, page : 0, per_page: 1, sort: "id",
                                                                                order: "desc"])
         assertEquals(1, response.data.size())
         assertEquals(second, response.data.get(0))
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, page : 1, per_page: 1, sort: "id",
+        response = client.get(path: path, query: ["type.id": pingableHostRTypeId, page : 1, per_page: 1, sort: "id",
                                                                                order: "desc"])
         assertEquals(1, response.data.size())
         assertEquals(first, response.data.get(0))
@@ -559,6 +627,7 @@ class InventoryITest extends AbstractTestBase {
         args.path = basePath + "/" + args.path
         String path = args.path + "/" + args.body.id
         pathsToDelete.put(path, basePath + "/" + getVerificationPath)
+        println "posting $args"
         return client.post(args)
     }
 }
