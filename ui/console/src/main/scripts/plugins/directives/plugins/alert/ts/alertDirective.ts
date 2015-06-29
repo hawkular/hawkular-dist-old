@@ -15,14 +15,10 @@
 /// limitations under the License.
 ///
 
-/// <reference path="../../includes.ts"/>
-/// <reference path="../../includes.ts"/>
-
+/// <reference path="alertPlugin.ts"/>
 module Alert {
 
-  export var _module = angular.module('hawkular-alerts');
-
-  class HkAlertPanel {
+  export class HkAlertPanel {
 
     public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
     public replace = 'true';
@@ -54,9 +50,7 @@ module Alert {
     }
   }
 
-  _module.directive('hkAlertPanel', HkAlertPanel.Factory());
-
-  class HkAlertPanelList {
+  export class HkAlertPanelList {
 
     public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
     public replace = 'true';
@@ -90,5 +84,6 @@ module Alert {
     }
   }
 
-  _module.directive('hkAlertPanelList', HkAlertPanelList.Factory());
+  _module.directive('hkAlertPanelList', Alert.HkAlertPanelList.Factory());
+  _module.directive('hkAlertPanel', Alert.HkAlertPanel.Factory());
 }
