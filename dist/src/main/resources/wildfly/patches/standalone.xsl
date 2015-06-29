@@ -392,6 +392,21 @@
                       timeUnits="minutes"
                       path="/subsystem=undertow"
                       attribute="sessions-created" />
+          <metric-dmr name="Expired Sessions"
+                      interval="2"
+                      timeUnits="minutes"
+                      path="/subsystem=undertow"
+                      attribute="expired-sessions" />
+          <metric-dmr name="Rejected Sessions"
+                      interval="2"
+                      timeUnits="minutes"
+                      path="/subsystem=undertow"
+                      attribute="rejected-sessions" />
+          <metric-dmr name="Max Active Sessions"
+                      interval="2"
+                      timeUnits="minutes"
+                      path="/subsystem=undertow"
+                      attribute="max-active-sessions" />
         </metric-set-dmr>
 
         <metric-set-dmr name="Servlet Metrics" enabled="true">
