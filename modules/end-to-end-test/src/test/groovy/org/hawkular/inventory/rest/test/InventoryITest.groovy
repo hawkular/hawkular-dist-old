@@ -40,7 +40,6 @@ class InventoryITest extends AbstractTestBase {
     private static final String environmentId = "itest-env-" + UUID.randomUUID().toString()
     private static final String pingableHostRTypeId = "itest-pingable-host-" + UUID.randomUUID().toString()
     private static final String roomRTypeId = "itest-room-type-" + UUID.randomUUID().toString()
-    private static final String typeVersion = "1.0"
     private static final String responseTimeMTypeId = "itest-response-time-" + UUID.randomUUID().toString()
     private static final String responseStatusCodeMTypeId = "itest-response-status-code-" + UUID.randomUUID().toString()
     private static final String statusDurationMTypeId = "status.duration.type"
@@ -119,12 +118,12 @@ class InventoryITest extends AbstractTestBase {
         assertEquals(urlTypeId, response.data.id)
 
         /* Create a custom resource type */
-        response = postDeletable(path: "resourceTypes", body: [id : pingableHostRTypeId, version : typeVersion])
+        response = postDeletable(path: "resourceTypes", body: [id : pingableHostRTypeId])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/resourceTypes/$pingableHostRTypeId", response.headers.Location)
 
         /* Create another resource type */
-        response = postDeletable(path: "resourceTypes", body: [id : roomRTypeId, version : typeVersion])
+        response = postDeletable(path: "resourceTypes", body: [id : roomRTypeId])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/resourceTypes/$roomRTypeId", response.headers.Location)
 
@@ -282,11 +281,11 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testResourcesFilters() {
         def response = client.get(path: "$basePath/$environmentId/resources",
-            query: [type: pingableHostRTypeId, typeVersion: typeVersion])
+            query: [type: pingableHostRTypeId])
         assertEquals(2, response.data.size())
 
         response = client.get(path: "$basePath/$environmentId/resources",
-            query: [type: roomRTypeId, typeVersion: typeVersion])
+            query: [type: roomRTypeId])
         assertEquals(1, response.data.size())
 
     }
@@ -307,26 +306,26 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testPaging() {
         String path = "$basePath/$environmentId/resources"
-        def response = client.get(path: path, query: [type: pingableHostRTypeId, typeVersion: typeVersion, page: 0, per_page: 2, sort: "id"])
+        def response = client.get(path: path, query: [type: pingableHostRTypeId, page: 0, per_page: 2, sort: "id"])
         assertEquals(2, response.data.size())
 
         def first = response.data.get(0)
         def second = response.data.get(1)
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, typeVersion: typeVersion, page: 0, per_page: 1, sort: "id"])
+        response = client.get(path: path, query: [type: pingableHostRTypeId, page: 0, per_page: 1, sort: "id"])
         assertEquals(1, response.data.size())
         assertEquals(first, response.data.get(0))
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, typeVersion: typeVersion, page: 1, per_page: 1, sort: "id"])
+        response = client.get(path: path, query: [type: pingableHostRTypeId, page: 1, per_page: 1, sort: "id"])
         assertEquals(1, response.data.size())
         assertEquals(second, response.data.get(0))
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, typeVersion: typeVersion, page : 0, per_page: 1, sort: "id",
+        response = client.get(path: path, query: [type: pingableHostRTypeId, page : 0, per_page: 1, sort: "id",
                                                                                order: "desc"])
         assertEquals(1, response.data.size())
         assertEquals(second, response.data.get(0))
 
-        response = client.get(path: path, query: [type: pingableHostRTypeId, typeVersion: typeVersion, page : 1, per_page: 1, sort: "id",
+        response = client.get(path: path, query: [type: pingableHostRTypeId, page : 1, per_page: 1, sort: "id",
                                                                                order: "desc"])
         assertEquals(1, response.data.size())
         assertEquals(first, response.data.get(0))

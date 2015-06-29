@@ -38,7 +38,7 @@ public class PingerTestUtils {
         Map<String, Object> props = new HashMap<>();
         props.put(ResourceField.url.name(), PingerTestUtils.TEST_URL);
         props.put(ResourceField.method.name(), PingerTestUtils.GET_METHOD);
-        ResourceType urlType = new ResourceType(PingerTestUtils.TEST_TENANT_ID, PingDestination.URL_TYPE, "0");
+        ResourceType urlType = new ResourceType(PingerTestUtils.TEST_TENANT_ID, PingDestination.URL_TYPE);
         Resource urlResource = new Resource(PingerTestUtils.TEST_TENANT_ID, PingerTestUtils.TEST_ENVIRONMENT_ID, null,
                 PingerTestUtils.TEST_RESOURCE_ID, urlType, props);
         return urlResource;
