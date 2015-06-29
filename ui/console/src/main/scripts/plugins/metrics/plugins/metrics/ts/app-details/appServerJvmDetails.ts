@@ -21,6 +21,12 @@
 
 module HawkularMetrics {
 
+  export interface IMultiDataPoint {
+    key: string;
+    color: string;
+    values: IChartDataPoint[];
+  }
+
   export class AppServerJvmDetailsController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5'];
@@ -28,6 +34,8 @@ module HawkularMetrics {
     private resourceList;
     private metricsList;
     public alertList;
+    public chartHeapData: IMultiDataPoint[];
+    public chartNonHeapData: IMultiDataPoint[];
 
     constructor(private $location: ng.ILocationService,
       private $scope: any,
@@ -51,6 +59,8 @@ module HawkularMetrics {
 
         this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
         this.endTimeStamp = +moment();
+        this.chartHeapData = [];
+        this.chartNonHeapData = [];
 
         if ($rootScope.currentPersona) {
           this.getJvmData(this.$rootScope.currentPersona.id);
@@ -72,6 +82,7 @@ module HawkularMetrics {
     autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getJvmData();
+        this.getJvmChartData();
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -92,6 +103,67 @@ module HawkularMetrics {
         buckets: 1}, (resource) => {
           this['heapUsage'] = resource[0];
         }, this);
+      this.getJvmChartData(currentTenantId);
+    }
+
+    getJvmChartData(currentTenantId?: TenantId): any {
+      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'WildFly Server'}, (aResourceList, getResponseHeaders) => {
+      //this.HawkularInventory.FeedResource.get({environmentId: 'test', feedId: '...',resourceId: '[' + this.$routeParams.resourceId + '~/]'}, (resource, getResponseHeaders) => {
+        var resource = this.$filter('filter')(aResourceList, {id: '[' + this.$routeParams.resourceId + '~/]'}, true)[0];
+        this['maxHeap'] = parseInt(this.$filter('filter')(resource.properties.resourceConfiguration, {name: 'Max Heap'})[0].value);
+      });
+
+      this.endTimeStamp = this.$routeParams.endTime || +moment();
+      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
+
+      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Committed',
+        start: this.startTimeStamp,
+        end: this.endTimeStamp, buckets:60}, (data) => {
+          this.chartHeapData[0] = { key: 'Heap Committed', color: '#555555', values: this.formatBucketedChartOutput(data) };
+        }, this);
+      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used',
+        start: this.startTimeStamp,
+        end: this.endTimeStamp, buckets:60}, (data) => {
+          this.chartHeapData[1] = { key: 'Heap Used', color: '#168ABC', values: this.formatBucketedChartOutput(data) };
+
+          this.chartHeapData[2] = { key: 'Max Heap', color: '#F2742E', values: JSON.parse(JSON.stringify(this.chartHeapData[1].values)) };
+          for(var i = 0; i < this.chartHeapData[1].values.length; i++) {
+            this.chartHeapData[2].values[i].avg = this['maxHeap'];
+          }
+        }, this);
+
+      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~NonHeap Committed',
+        start: this.startTimeStamp,
+        end: this.endTimeStamp, buckets:60}, (data) => {
+          this.chartNonHeapData[0] = { key: 'NonHeap Committed', color: '#555555', values: this.formatBucketedChartOutput(data) };
+        }, this);
+      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~NonHeap Used',
+        start: this.startTimeStamp,
+        end: this.endTimeStamp, buckets:60}, (data) => {
+          this.chartNonHeapData[1] = { key: 'NonHeap Used', color: '#168ABC', values: this.formatBucketedChartOutput(data) };
+        }, this);
+    }
+
+    private formatBucketedChartOutput(response):IChartDataPoint[] {
+      //  The schema is different for bucketed output
+      return _.map(response, (point:IChartDataPoint) => {
+        return {
+          timestamp: point.start,
+          date: new Date(point.start),
+          value: !angular.isNumber(point.value) ? 0 : point.value,
+          avg: (point.empty) ? 0 : point.avg,
+          min: !angular.isNumber(point.min) ? 0 : point.min,
+          max: !angular.isNumber(point.max) ? 0 : point.max,
+          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
+          median: !angular.isNumber(point.median) ? 0 : point.median,
+          empty: point.empty
+        };
+      });
     }
 
   }
