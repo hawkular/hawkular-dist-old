@@ -89,4 +89,26 @@ public class TraitsTest {
 
     }
 
+    /**
+     * Test multiple {@code X-Powered-By} headers, which occur e.g. with https://www.digitec.ch
+     */
+    @Test
+    public void testCollectMultiple() {
+
+        HttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_0, HttpStatus.SC_OK, "OK");
+        response.addHeader("X-Powered-By", "ASP.NET");
+        response.addHeader("X-Powered-By", "ARR/2.5");
+        /* yes, https://www.digitec.ch returns ASP.NET twice */
+        response.addHeader("X-Powered-By", "ASP.NET");
+
+        Map<TraitHeader, String> found = Traits.collect(response, 0).getItems();
+
+        Map<TraitHeader, String> expected = new ImmutableMap.Builder<TraitHeader, String>()
+                .put(TraitHeader.X_POWERED_BY, "ARR/2.5, ASP.NET")
+                .build();
+
+        Assert.assertEquals(expected, found);
+
+    }
+
 }
