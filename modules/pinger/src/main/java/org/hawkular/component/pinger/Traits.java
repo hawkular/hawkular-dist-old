@@ -20,13 +20,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
 import org.apache.http.HttpResponse;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
 /**
  * A collection of traits retrieved from response headers. The headers that are considered to be interesting are listed
@@ -42,7 +42,9 @@ public class Traits {
      * site.
      */
     public enum TraitHeader {
-        SERVER("server"), X_ASPNET_VERSION("x-aspnet-version"), X_POWERED_BY("x-powered-by"), X_RUNTIME("x-runtime"),
+        SERVER("server"), X_ASPNET_VERSION("x-aspnet-version"),
+        X_POWERED_BY("x-powered-by"),
+        X_RUNTIME("x-runtime"),
         X_VERSION("x-version");
 
         private static final Map<String, TraitHeader> index;
@@ -86,24 +88,68 @@ public class Traits {
 
     /**
      * Collects the traits from the given {@link HttpResponse}.
+     * <p>
+     * Header keys tha occur multiple times, are concantenated into a single comma-separated string in alphabetical
+     * order.
      *
      * @param httpResponse the HTTP reponse to collect traits from
      * @param timestamp the UNIX timestamp when the response was received
      * @return a new {@link Traits}
      */
     public static Traits collect(HttpResponse httpResponse, long timestamp) {
-        Builder<TraitHeader, String> builder = new ImmutableMap.Builder<TraitHeader, String>();
+        /* We assume that the header keys will typically be unique
+         * Therefore, we store the value into items Map on first hit
+         * and only if there is a second hit, we lazily create a sorted Set in multiItems.
+         */
+        Map<TraitHeader, String> items = null;
+        Map<TraitHeader, Set<String>> multiItems = null;
 
         HeaderIterator headers = httpResponse.headerIterator();
         while (headers.hasNext()) {
             Header header = headers.nextHeader();
             TraitHeader traitHeader = TraitHeader.fastValueOf(header.getName());
             if (traitHeader != null) {
-                builder.put(traitHeader, header.getValue());
+                if (items == null) {
+                    items = new HashMap<>();
+                    items.put(traitHeader, header.getValue());
+                } else {
+                    String value = items.get(traitHeader);
+                    if (value == null) {
+                        /* no value so far - this is the first hit of the present key */
+                        items.put(traitHeader, header.getValue());
+                    } else {
+                        /* value available - let's fall back to the multiValues map */
+                        if (multiItems == null) {
+                            multiItems = new HashMap<>();
+                        }
+                        Set<String> multiValues = multiItems.get(traitHeader);
+                        if (multiValues == null) {
+                            multiValues = new TreeSet<>();
+                            multiValues.add(value);
+                            multiItems.put(traitHeader, multiValues);
+                        }
+                        multiValues.add(header.getValue());
+                    }
+                }
+
             }
         }
 
-        return new Traits(timestamp, builder.build());
+        if (multiItems != null) {
+            /* Lets serialize the entries in multiItems and put them back to items. */
+            for (Entry<TraitHeader, Set<String>> en : multiItems.entrySet()) {
+                StringBuilder sb = new StringBuilder();
+                for (String item : en.getValue()) {
+                    if (sb.length() > 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(item);
+                }
+                items.put(TraitHeader.X_POWERED_BY, sb.toString());
+            }
+        }
+
+        return new Traits(timestamp, items == null ? Collections.emptyMap() : Collections.unmodifiableMap(items));
     };
 
     /**
