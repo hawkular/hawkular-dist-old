@@ -84,6 +84,27 @@ module Alert {
     }
   }
 
+  class HkTimeInterval {
+
+    public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+    public replace = 'true';
+    public scope = {
+      hkTime: '='
+    };
+    public templateUrl = 'plugins/alert/html/timeInterval.html';
+
+    public static Factory() {
+      var directive = () => {
+        return new HkTimeInterval();
+      };
+
+      directive['$inject'] = [];
+
+      return directive;
+    }
+  }
+
   _module.directive('hkAlertPanelList', Alert.HkAlertPanelList.Factory());
   _module.directive('hkAlertPanel', Alert.HkAlertPanel.Factory());
+  _module.directive('hkTimeInterval', HkTimeInterval.Factory());
 }

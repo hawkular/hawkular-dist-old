@@ -274,6 +274,27 @@ module HawkularMetrics {
         headers = getHeaders();
         var momentNow = this.$moment();
 
+        var toTimeObj = (timeMillis: number) => {
+          var result: any = {};
+
+          var sec_num: number = Math.floor(timeMillis / 1000);
+          var hours: number   = Math.floor(sec_num / 3600);
+          var minutes: number = Math.floor((sec_num - (hours * 3600)) / 60);
+          var seconds: number = sec_num - (hours * 3600) - (minutes * 60);
+
+          if (hours !== 0) {
+            result.hours = hours;
+          }
+          if (minutes !== 0) {
+            result.minutes = minutes;
+          }
+          if (seconds !== 0) {
+            result.seconds = seconds;
+          }
+
+          return result;
+        };
+
         for (var i = 0; i < serverAlerts.length; i++) {
           var consoleAlert: any = {};
           var serverAlert = serverAlerts[i];
@@ -313,6 +334,8 @@ module HawkularMetrics {
           }
 
           consoleAlert.avg = sum/count;
+
+          consoleAlert.durationTime = toTimeObj(consoleAlert.end - consoleAlert.start);
 
           alertList.push(consoleAlert);
         }
