@@ -22,7 +22,7 @@
     "bootstrap-select": "1.6",
     "d3": "3.5.5",
     "event-drops": "0.1.1",
-    "hawkular-charts": "0.4.2",
+    "hawkular-charts": "0.4.3",
     "hawkular-ui-services": "0.5.0",
     "hawtio-core-navigation": "2.0.51",
     "hawtio-core": "2.0.16",
