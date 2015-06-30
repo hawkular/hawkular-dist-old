@@ -110,7 +110,7 @@ module HawkularMetrics {
       this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'WildFly Server'}, (aResourceList, getResponseHeaders) => {
       //this.HawkularInventory.FeedResource.get({environmentId: 'test', feedId: '...',resourceId: '[' + this.$routeParams.resourceId + '~/]'}, (resource, getResponseHeaders) => {
         var resource = this.$filter('filter')(aResourceList, {id: '[' + this.$routeParams.resourceId + '~/]'}, true)[0];
-        this['maxHeap'] = parseInt(this.$filter('filter')(resource.properties.resourceConfiguration, {name: 'Max Heap'})[0].value, 10);
+        this['maxHeap'] = parseInt(this.$filter('filter')(resource.properties.resourceConfiguration, {name: 'Max Heap'})[0].value, 10) / 1024 / 1024;
       });
 
       this.endTimeStamp = this.$routeParams.endTime || +moment();
@@ -149,14 +149,17 @@ module HawkularMetrics {
         }, this);
     }
 
+
     private formatBucketedChartOutput(response):IChartDataPoint[] {
+      function convertBytesToMegaBytes(bytes:number):number { return bytes / 1024 / 1024; }
+
       //  The schema is different for bucketed output
       return _.map(response, (point:IChartDataPoint) => {
         return {
           timestamp: point.start,
           date: new Date(point.start),
           value: !angular.isNumber(point.value) ? 0 : point.value,
-          avg: (point.empty) ? 0 : point.avg,
+          avg: (point.empty) ? 0 : convertBytesToMegaBytes(point.avg),
           min: !angular.isNumber(point.min) ? 0 : point.min,
           max: !angular.isNumber(point.max) ? 0 : point.max,
           percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
