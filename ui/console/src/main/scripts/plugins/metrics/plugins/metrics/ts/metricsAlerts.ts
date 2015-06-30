@@ -219,7 +219,10 @@ module HawkularMetrics {
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error fetching availability trigger.');
       }).then((data)=> {
-        this.trigger_avail_damp = data;
+        this.trigger_avail_damp = [];
+        this.trigger_avail_damp[0] = data[data[1].triggerMode === 'AUTORESOLVE' ? 0 : 1];
+        this.trigger_avail_damp[1] = data[data[1].triggerMode === 'AUTORESOLVE' ? 1 : 0];
+
         this.alertSetupBackup.trigger_avail_damp = angular.copy(this.trigger_avail_damp);
 
         this.downtimeUnit = this.getTimeUnit(data[0].evalTimeSetting);
