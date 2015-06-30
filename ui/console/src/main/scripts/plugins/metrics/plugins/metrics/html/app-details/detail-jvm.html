@@ -56,12 +56,12 @@
 
   <div class="panel panel-default hk-graph" ng-if="vm.chartHeapData[0]">
     <h2>JVM Heap Usage</h2>
-    <div id="metrics-chart">
+    <div class="metrics-chart">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
           multi-data="{{vm.chartHeapData}}"
           chart-type="multiline"
-          y-axis-units="bytes"
+          y-axis-units="Usage: (MB)"
           chart-height="250">
       </hawkular-chart>
     </div>
@@ -74,12 +74,12 @@
 
   <div class="panel panel-default hk-graph" ng-if="vm.chartNonHeapData[0]">
     <h2>Non Heap Usage</h2>
-    <div id="metrics-chart">
+    <div class="metrics-chart">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
           multi-data="{{vm.chartNonHeapData}}"
           chart-type="multiline"
-          y-axis-units="bytes"
+          y-axis-units="Usage: (MB)"
           chart-height="250">
       </hawkular-chart>
     </div>
