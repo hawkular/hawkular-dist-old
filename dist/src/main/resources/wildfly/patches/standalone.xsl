@@ -23,8 +23,11 @@
                 xmlns:ds="urn:jboss:domain:datasources:3.0"
                 xmlns:ra="urn:jboss:domain:resource-adapters:3.0"
                 xmlns:ejb3="urn:jboss:domain:ejb3:3.0"
+                xmlns:logging="urn:jboss:domain:logging:3.0"
+                xmlns:undertow="urn:jboss:domain:undertow:2.0"
+                xmlns:tx="urn:jboss:domain:transactions:3.0"
                 version="2.0"
-                exclude-result-prefixes="xalan ds ra ejb3">
+                exclude-result-prefixes="xalan ds ra ejb3 logging undertow tx">
 
   <!-- will indicate if this is a "dev" build or "production" build -->
   <xsl:param name="kettle.build.type"/>
@@ -138,15 +141,14 @@
   </xsl:template>
 
   <!-- set the console log level -->
-  <xsl:template match="logging:console-handler[@name='CONSOLE']/logging:level"
-                xmlns:logging="urn:jboss:domain:logging:3.0">
+  <xsl:template match="logging:console-handler[@name='CONSOLE']/logging:level">
     <xsl:if test="$kettle.build.type='production'"><level name="INFO"/></xsl:if>
   </xsl:template>
 
   <!-- add bus resource adapter -->
   <xsl:template name="resource-adapters">
     <resource-adapters>
-      <resource-adapter id="activemq-rar">
+      <resource-adapter id="activemq-rar" statistics-enabled="true">
         <module slot="main" id="org.apache.activemq.ra" />
         <transaction-support>XATransaction</transaction-support>
         <config-property name="UseInboundSession">false</config-property>
@@ -206,14 +208,29 @@
   <xsl:template match="ejb3:subsystem">
     <xsl:copy>
       <xsl:call-template name="mdb"/>
+      <statistics enabled="true"/>
       <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="undertow:subsystem">
+    <xsl:copy>
+      <xsl:attribute name="statistics-enabled">true</xsl:attribute>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="tx:subsystem">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+      <coordinator-environment statistics-enabled="true"/>
     </xsl:copy>
   </xsl:template>
 
   <!-- Remove the out-of-box datasource example and add our own datasource -->
   <xsl:template name="datasources">
     <datasources>
-      <datasource jta="true" jndi-name="java:jboss/datasources/HawkularDS" pool-name="HawkularDS" enabled="true" use-ccm="true">
+      <datasource jta="true" jndi-name="java:jboss/datasources/HawkularDS" pool-name="HawkularDS" enabled="true" use-ccm="true" statistics-enabled="true">
         <connection-url>jdbc:h2:${jboss.server.data.dir}/hawkular_db;MVCC=TRUE</connection-url>
         <driver-class>org.h2.Driver</driver-class>
         <driver>h2</driver>
@@ -238,7 +255,7 @@
           <share-prepared-statements>false</share-prepared-statements>
         </statement>
       </datasource>
-      <datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true">
+      <datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true" statistics-enabled="true">
         <connection-url>jdbc:h2:${jboss.server.data.dir}${/}h2${/}keycloak;AUTO_SERVER=TRUE</connection-url>
         <driver>h2</driver>
         <security>
@@ -918,7 +935,7 @@
     <xsl:copy>
       <xsl:copy-of select="node()|@*"/>
     </xsl:copy>
-    <cache-container name="hawkular-accounts" default-cache="role-cache">
+    <cache-container name="hawkular-accounts" default-cache="role-cache" statistics-enabled="true">
       <local-cache name="role-cache"/>
       <local-cache name="operation-cache"/>
     </cache-container>
