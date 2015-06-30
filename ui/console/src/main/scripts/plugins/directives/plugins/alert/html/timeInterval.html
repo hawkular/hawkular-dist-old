@@ -1,0 +1,7 @@
+<span>
+    <span ng-show="hkTime.hours">{{hkTime.hours}} hour{{hkTime.hours > 1 ? 's':''}}</span>
+    <span ng-show="hkTime.hours && hkTime.minutes">and</span>
+    <span ng-show="hkTime.minutes">{{hkTime.minutes}} minute{{hkTime.minutes > 1 ? 's':''}}</span>
+    <span ng-show="(hkTime.minutes && hkTime.seconds) || (hkTime.hours && hkTime.seconds)">and</span>
+    <span ng-show="hkTime.seconds">{{hkTime.seconds}} second{{hkTime.seconds > 1 ? 's':''}}</span>
+</span>

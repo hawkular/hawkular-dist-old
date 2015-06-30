@@ -7,10 +7,12 @@
       {{alert.start | date:'medium' }}
     </div>
     <div class="hk-event">
-      Server <strong>down</strong> for {{(alert.end - alert.start)/1000 | number: 0}} seconds (until
-      <span ng-if="alert.isThisYear && alert.isToday">{{alert.end | date:'shortTime' }}).</span>
-      <span ng-if="alert.isThisYear && !alert.isToday">{{alert.end | date:'MMM d, h:mm:ss a' }}).</span>
-      <span ng-if="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
+      Server <strong>down</strong> for
+      <hk-time-interval hk-time="alert.durationTime"></hk-time-interval>
+      (until
+      <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'shortTime' }}).</span>
+      <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'MMM d, h:mm:ss a' }}).</span>
+      <span ng-show="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
     </div>
 
     <div class="alert-resolver">
@@ -34,10 +36,14 @@
       {{alert.start | date:'medium' }}
     </div>
     <div class="hk-event">
-      <strong>Response time</strong> was above the threshold ({{alert.threshold | number: 0}} ms) for {{(alert.end - alert.start) / 1000.0 | number: 0}} seconds (until
-      <span ng-if="alert.isThisYear && alert.isToday">{{alert.end | date:'shortTime' }}).</span>
-      <span ng-if="alert.isThisYear && !alert.isToday">{{alert.end | date:'MMM d, h:mm:ss a' }}).</span>
-      <span ng-if="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
+      <strong>Response time</strong> was above the threshold ({{alert.threshold | number: 0}} ms) for
+
+      <hk-time-interval hk-time="alert.durationTime"></hk-time-interval>
+
+      (until
+      <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'shortTime' }}).</span>
+      <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'MMM d, h:mm:ss a' }}).</span>
+      <span ng-show="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
       The average response time was {{alert.avg  | number: 0}} ms.
     </div>
 
