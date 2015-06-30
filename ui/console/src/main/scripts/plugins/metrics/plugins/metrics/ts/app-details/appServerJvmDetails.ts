@@ -110,7 +110,7 @@ module HawkularMetrics {
       this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'WildFly Server'}, (aResourceList, getResponseHeaders) => {
       //this.HawkularInventory.FeedResource.get({environmentId: 'test', feedId: '...',resourceId: '[' + this.$routeParams.resourceId + '~/]'}, (resource, getResponseHeaders) => {
         var resource = this.$filter('filter')(aResourceList, {id: '[' + this.$routeParams.resourceId + '~/]'}, true)[0];
-        this['maxHeap'] = parseInt(this.$filter('filter')(resource.properties.resourceConfiguration, {name: 'Max Heap'})[0].value);
+        this['maxHeap'] = parseInt(this.$filter('filter')(resource.properties.resourceConfiguration, {name: 'Max Heap'})[0].value, 10);
       });
 
       this.endTimeStamp = this.$routeParams.endTime || +moment();
