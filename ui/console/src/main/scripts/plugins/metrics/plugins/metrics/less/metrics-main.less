@@ -133,7 +133,7 @@ a:hover .fa-repeat {
 .fa-arrow-down,
 a .fa-arrow-down,
 a:hover .fa-arrow-down {
-  color: @gray-light;
+  color: @brand-danger;
 }
 
 .fa-chain-broken,
@@ -648,6 +648,14 @@ a:hover .fa-spinner {
     color: inherit;
     font-size: inherit;
   }
+  
+  p {
+    font-size: ceil(@font-size-base + 1);
+  }
+}
+
+.container > .blank-slate-pf:first-child {
+  margin-top: @grid-gutter-width/2;
 }
 
 // alert settings modal
@@ -854,11 +862,11 @@ a:hover .fa-spinner {
     }
 
     .hk-blue {
-      color: @brand-primary;
+      color: #1884c7;
     }
 
     .hk-red {
-      color: @brand-danger;
+      color: #e12226;
     }
 
     .hk-orange {
@@ -892,7 +900,7 @@ a:hover .fa-spinner {
       width: 10px;  
       
       &.hk-red {
-        background-color: @brand-danger;
+        background-color: #e12226;
       }
       
       &.hk-red-light {
@@ -993,11 +1001,11 @@ a:hover .fa-spinner {
       }
 
       &.hk-blue input[type=checkbox]:checked + label:before {
-        background-color: @brand-primary;
+        background-color: #1884c7;
       }
 
       &.hk-red input[type=checkbox]:checked + label:before {
-        background-color: @brand-danger;
+        background-color: #e12226;
       }
 
       &.hk-orange input[type=checkbox]:checked + label:before {
@@ -1042,6 +1050,12 @@ a:hover .fa-spinner {
 
   .dataTables_wrapper {
     margin-top: 15px;
+  }
+
+  .fa-arrow-down,
+  a .fa-arrow-down,
+  a:hover .fa-arrow-down {
+    color: @gray-light;
   }
 }
 
