@@ -31,6 +31,10 @@ module HawkularMetrics {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5'];
 
+    public static USED_COLOR = "#1884c7"; /// blue
+    public static MAXIMUM_COLOR = "#f57f20"; /// orange
+    public static COMMITTED_COLOR = "#515252"; /// dark gray
+
     private resourceList;
     private metricsList;
     public alertList;
@@ -121,15 +125,15 @@ module HawkularMetrics {
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Committed',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
-          this.chartHeapData[0] = { key: 'Heap Committed', color: '#555555', values: this.formatBucketedChartOutput(data) };
+          this.chartHeapData[0] = { key: 'Heap Committed', color: AppServerJvmDetailsController.COMMITTED_COLOR, values: this.formatBucketedChartOutput(data) };
         }, this);
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
-          this.chartHeapData[1] = { key: 'Heap Used', color: '#168ABC', values: this.formatBucketedChartOutput(data) };
+          this.chartHeapData[1] = { key: 'Heap Used', color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data) };
 
-          this.chartHeapData[2] = { key: 'Max Heap', color: '#F2742E', values: JSON.parse(JSON.stringify(this.chartHeapData[1].values)) };
+          this.chartHeapData[2] = { key: 'Max Heap', color: AppServerJvmDetailsController.MAXIMUM_COLOR, values: JSON.parse(JSON.stringify(this.chartHeapData[1].values)) };
           for(var i = 0; i < this.chartHeapData[1].values.length; i++) {
             this.chartHeapData[2].values[i].avg = this['maxHeap'];
           }
@@ -139,13 +143,13 @@ module HawkularMetrics {
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~NonHeap Committed',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
-          this.chartNonHeapData[0] = { key: 'NonHeap Committed', color: '#555555', values: this.formatBucketedChartOutput(data) };
+          this.chartNonHeapData[0] = { key: 'NonHeap Committed', color: AppServerJvmDetailsController.COMMITTED_COLOR, values: this.formatBucketedChartOutput(data) };
         }, this);
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~NonHeap Used',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
-          this.chartNonHeapData[1] = { key: 'NonHeap Used', color: '#168ABC', values: this.formatBucketedChartOutput(data) };
+          this.chartNonHeapData[1] = { key: 'NonHeap Used', color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data) };
         }, this);
     }
 
