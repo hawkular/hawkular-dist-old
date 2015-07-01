@@ -194,7 +194,8 @@ module HawkularMetrics {
           promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
             availabilityId: res.id, distinct: true,
             start: 1, end: moment().valueOf()}, (resource) => {
-            res['isUp'] = (resource[0] && resource[0].value === 'up');
+              resource.reverse(); // FIXME: HAWKULAR-366
+              res['isUp'] = (resource[0] && resource[0].value === 'up');
           }).$promise);
           promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
             availabilityId: res.id,
