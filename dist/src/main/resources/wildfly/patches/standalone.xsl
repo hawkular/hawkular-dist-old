@@ -378,7 +378,7 @@
                       path="/core-service=platform-mbean/type=memory"
                       attribute="heap-memory-usage#committed" />
           <metric-dmr name="Heap Max"
-                      interval="5"
+                      interval="1"
                       timeUnits="minutes"
                       path="/core-service=platform-mbean/type=memory"
                       attribute="heap-memory-usage#max" />
@@ -614,22 +614,22 @@
                       path="/statistics=pool"
                       attribute="ActiveCount" />
           <metric-dmr name="Available Count"
-                      interval="10"
+                      interval="1"
                       timeUnits="minutes"
                       path="/statistics=pool"
                       attribute="AvailableCount" />
           <metric-dmr name="Average Blocking Time"
-                      interval="10"
+                      interval="1"
                       timeUnits="minutes"
                       path="/statistics=pool"
                       attribute="AverageBlockingTime" />
           <metric-dmr name="Average Creation Time"
-                      interval="10"
+                      interval="1"
                       timeUnits="minutes"
                       path="/statistics=pool"
                       attribute="AverageCreationTime" />
           <metric-dmr name="Average Get Time"
-                      interval="10"
+                      interval="1"
                       timeUnits="minutes"
                       path="/statistics=pool"
                       attribute="AverageGetTime" />
@@ -654,7 +654,7 @@
                       path="/statistics=pool"
                       attribute="IdleCount" />
           <metric-dmr name="In Use Count"
-                      interval="10"
+                      interval="1"
                       timeUnits="minutes"
                       path="/statistics=pool"
                       attribute="InUseCount" />
@@ -684,7 +684,7 @@
                       path="/statistics=pool"
                       attribute="MaxWaitTime" />
           <metric-dmr name="Timed Out"
-                      interval="10"
+                      interval="1"
                       timeUnits="minutes"
                       path="/statistics=pool"
                       attribute="TimedOut" />

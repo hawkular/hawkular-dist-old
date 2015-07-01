@@ -20,7 +20,7 @@
         <span class="hk-item">Last Garbage Collection (Duration)</span>
       </div>
       <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data" ng-show="vm.heapUsage">{{ vm.maxHeap / 1024 / 1024 | number : 0 }} MB</span>
+        <span class="hk-data" ng-show="vm.heapMax">{{ vm.heapMax.max / 1024 / 1024 | number : 0 }} MB</span>
         <span class="hk-data" ng-hide="vm.heapUsage">n/a</span>
         <span class="hk-item">Maximum Heap</span>
       </div>

@@ -107,15 +107,17 @@ module HawkularMetrics {
         buckets: 1}, (resource) => {
           this['heapUsage'] = resource[0];
         }, this);
+      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Max',
+        start: this.startTimeStamp,
+        end: this.endTimeStamp,
+        buckets: 1}, (resource) => {
+          this['heapMax'] = resource[0];
+        }, this);
       this.getJvmChartData(currentTenantId);
     }
 
     getJvmChartData(currentTenantId?: TenantId): any {
-      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'WildFly Server'}, (aResourceList, getResponseHeaders) => {
-      //this.HawkularInventory.FeedResource.get({environmentId: 'test', feedId: '...',resourceId: '[' + this.$routeParams.resourceId + '~/]'}, (resource, getResponseHeaders) => {
-        var resource = this.$filter('filter')(aResourceList, {id: '[' + this.$routeParams.resourceId + '~/]'}, true)[0];
-        this['maxHeap'] = parseInt(this.$filter('filter')(resource.properties.resourceConfiguration, {name: 'Max Heap'})[0].value, 10) / 1024 / 1024;
-      });
 
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
@@ -132,11 +134,12 @@ module HawkularMetrics {
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
           this.chartHeapData[1] = { key: 'Heap Used', color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data) };
-
-          this.chartHeapData[2] = { key: 'Max Heap', color: AppServerJvmDetailsController.MAXIMUM_COLOR, values: JSON.parse(JSON.stringify(this.chartHeapData[1].values)) };
-          for(var i = 0; i < this.chartHeapData[1].values.length; i++) {
-            this.chartHeapData[2].values[i].avg = this['maxHeap'];
-          }
+        }, this);
+      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Max',
+        start: this.startTimeStamp,
+        end: this.endTimeStamp, buckets:60}, (data) => {
+          this.chartHeapData[2] = { key: 'Heap Max', color: AppServerJvmDetailsController.MAXIMUM_COLOR, values: this.formatBucketedChartOutput(data) };
         }, this);
 
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
