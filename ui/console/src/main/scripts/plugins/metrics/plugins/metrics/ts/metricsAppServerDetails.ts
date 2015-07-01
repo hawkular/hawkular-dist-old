@@ -23,10 +23,13 @@ module HawkularMetrics {
 
   export class AppServerDetailsController {
     /// for minification only
-    public static  $inject = ['$scope'];
+    public static  $inject = ['$scope','$route','$routeParams'];
 
     constructor(private $scope: any,
-                public availableTabs: any) {
+                private $route: any,
+                private $routeParams: any,
+                public availableTabs: any,
+                public activeTab: any) {
       $scope.tabs = this;
 
       this.availableTabs = [
@@ -37,6 +40,12 @@ module HawkularMetrics {
         {id: 'web', name: 'Web', enabled: false, src:'plugins/metrics/html/app-details/detail-web.html', controller: HawkularMetrics.AppServerWebDetailsController},
         {id: 'datasources', name: 'Datasources', enabled: true, src:'plugins/metrics/html/app-details/detail-datasources.html', controller: HawkularMetrics.AppServerDatasourcesDetailsController}
       ];
+
+      this.activeTab = $routeParams.tabId || 'jvm';
+    }
+
+    updateTab(newTabId: string) {
+      this.$route.updateParams({tabId: newTabId});
     }
 
   }
