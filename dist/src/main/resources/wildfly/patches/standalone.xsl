@@ -377,6 +377,11 @@
                       timeUnits="minutes"
                       path="/core-service=platform-mbean/type=memory"
                       attribute="heap-memory-usage#committed" />
+          <metric-dmr name="Heap Max"
+                      interval="5"
+                      timeUnits="minutes"
+                      path="/core-service=platform-mbean/type=memory"
+                      attribute="heap-memory-usage#max" />
           <metric-dmr name="NonHeap Used"
                       interval="30"
                       timeUnits="seconds"
@@ -780,9 +785,6 @@
             <resource-config-dmr name="Hostname"
                                  path="/core-service=server-environment"
                                  attribute="qualified-host-name" />
-            <resource-config-dmr name="Max Heap"
-                                 path="/core-service=platform-mbean/type=memory"
-                                 attribute="heap-memory-usage#max" />
             <resource-config-dmr name="Version"
                                  attribute="release-version" />
           </resource-type-dmr>
