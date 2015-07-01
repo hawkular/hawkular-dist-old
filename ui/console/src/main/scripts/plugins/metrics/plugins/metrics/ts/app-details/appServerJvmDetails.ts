@@ -31,9 +31,9 @@ module HawkularMetrics {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5'];
 
-    public static USED_COLOR = "#1884c7"; /// blue
-    public static MAXIMUM_COLOR = "#f57f20"; /// orange
-    public static COMMITTED_COLOR = "#515252"; /// dark gray
+    public static USED_COLOR = '#1884c7'; /// blue
+    public static MAXIMUM_COLOR = '#f57f20'; /// orange
+    public static COMMITTED_COLOR = '#515252'; /// dark gray
 
     private resourceList;
     private metricsList;
