@@ -26,7 +26,7 @@
       <a href="#" ng-click="vm.expandedList[ds.id] = !vm.expandedList[ds.id]"><span ng-hide="vm.expandedList[ds.id]">View Metrics</span><span ng-show="vm.expandedList[ds.id]">Hide Metrics</span><i class="fa" ng-class="vm.expandedList[ds.id] ? 'fa-angle-up' : 'fa-angle-down'"></i></a>
     </div>
 
-    <div class="hk-collapsible-area" ng-class="{ 'hide': !vm.expandedList[ds.id]}">
+    <div class="hk-collapsible-area" ng-class="{ 'hide': !vm.expandedList[ds.id]}" ng-if="vm.expandedList[ds.id]">
 
       <!-- Alerts -->
       <div class="hk-info-top clearfix">
