@@ -6,7 +6,7 @@
   <div class="hk-urls-list" ng-class="{'hk-urls-empty text-center': vm.resourceList.length === 0, 'hk-fade-in': vm.resourceList}" ng-show="vm.resourceList">
     <h1 class="text-center">Hello {{userDetails.firstName}}!</h1>
     <i class="fa fa-line-chart" ng-show="vm.resourceList.length === 0"></i>
-    <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a website that you want to monitor.</h2>
+    <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a URL that you want to monitor.</h2>
     <form class="form-horizontal hk-add-url" name="addUrlForm" role="form" novalidate ng-submit="vm.addUrl(vm.resourceUrl)">
       <div class="form-group input">
         <div class="col-lg-6 col-sm-8 col-xs-12 hk-align-center">
@@ -29,7 +29,7 @@
     </form>
   </div>
 
-  <h2 ng-show="vm.resourceList.length > 0" class="text-center hk-fade-in">Current status of your websites</h2>
+  <h2 ng-show="vm.resourceList.length > 0" class="text-center hk-fade-in">Current status of your URLs</h2>
 
   <div class="row hk-urls-list-labels" ng-class="{'hk-fade-in': vm.resourceList}" ng-show="vm.resourceList.length > 0">
     <div class="col-sm-6 text-left">
