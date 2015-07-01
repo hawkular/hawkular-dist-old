@@ -92,7 +92,7 @@
     <version.org.hawkular.bus>0.1.1</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.1.1.Final</version.org.hawkular.commons>
     <version.org.hawkular.console>${project.version}</version.org.hawkular.console>
-    <version.org.hawkular.inventory>0.1.0.Alpha2</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>0.1.0.Alpha3</version.org.hawkular.inventory>
     <version.org.hawkular.metrics>0.4.0.Final</version.org.hawkular.metrics>
     <version.org.hawkular.nest>0.1.1</version.org.hawkular.nest>
     <version.org.hawkular.pinger>${project.version}</version.org.hawkular.pinger>
