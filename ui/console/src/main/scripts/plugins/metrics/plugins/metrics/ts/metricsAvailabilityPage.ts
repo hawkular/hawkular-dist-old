@@ -78,7 +78,7 @@ module HawkularMetrics {
           this.refreshAvailPageNow(this.getResourceId());
         }
       });
-      
+
       if ($rootScope.currentPersona) {
         waitForResourceId();
       } else {
@@ -149,10 +149,10 @@ module HawkularMetrics {
 
             if (availResponse && !_.last(availResponse).empty) {
 
-              this.uptimeRatio = _.last(availResponse).uptimeRatio;
-              this.downtimeDuration = Math.round(_.last(availResponse).downtimeDuration);
+              // FIXME: HAWKULAR-347 - this.uptimeRatio = _.last(availResponse).uptimeRatio;
+              // FIXME: HAWKULAR-347 - this.downtimeDuration = Math.round(_.last(availResponse).downtimeDuration);
               this.lastDowntime = new Date(_.last(availResponse).lastDowntime);
-              this.downtimeCount = _.last(availResponse).downtimeCount;
+              // FIXME: HAWKULAR-347 - this.downtimeCount = _.last(availResponse).downtimeCount;
               this.empty = _.last(availResponse).empty;
             }
 
@@ -182,6 +182,24 @@ module HawkularMetrics {
             console.dir(response);
             this.availabilityDataPoints = response;
 
+            // FIXME: HAWKULAR-347
+            var downtimeDuration = 0;
+            var lastUptime = +moment();
+            var lastDowntime = -1;
+            var downtimeCount = 0;
+            _.each(response.slice(0).reverse(), function(status, idx) {
+              if (status['value'] === 'down') {
+                lastDowntime = status['timestamp'];
+                downtimeDuration += (lastUptime - lastDowntime);
+                downtimeCount++;
+              } else {
+                lastUptime = status['timestamp'];
+              }
+            });
+
+            this.downtimeDuration = downtimeDuration;
+            this.uptimeRatio = 1 - downtimeDuration / (+moment() - response[0]['timestamp']);
+            this.downtimeCount = downtimeCount;
           }, (error) => {
             this.$log.error('Error Loading Avail data');
             toastr.error('Error Loading Avail Data: ' + error);
