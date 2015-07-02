@@ -34,7 +34,7 @@
   <!-- major.minor.micro.Beta[n] -->
   <!-- major.minor.micro.CR[n] -->
   <!-- major.minor.micro.Final -->
-  <version>1.0.0.Alpha2</version>
+  <version>1.0.0.Alpha3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Hawkular</name>
