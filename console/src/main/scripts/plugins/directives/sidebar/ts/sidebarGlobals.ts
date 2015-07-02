@@ -16,14 +16,13 @@
 ///
 
 /// <reference path="../../includes.ts"/>
-module Topbar {
+module Sidebar {
 
-  export var pluginName = "topbar";
+  export var pluginName = "sidebar";
 
   export var log:Logging.Logger = Logger.get(pluginName);
 
-  export var templatePath = "plugins/topbar/html/topbar.html";
+  export var templatePath = "plugins/directives/sidebar/html/sidebar.html";
 
   export var globalEnvironmentId = "test";
-
 }

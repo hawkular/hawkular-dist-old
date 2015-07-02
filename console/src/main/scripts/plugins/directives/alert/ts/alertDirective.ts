@@ -26,7 +26,7 @@ module Alert {
       alert: '=hkAlert',
       refresh: '&hkRefresh'
     };
-    public templateUrl = 'plugins/alert/html/alert.html';
+    public templateUrl = 'plugins/directives/alert/html/alert.html';
 
 
     constructor(private HawkularAlert) {
@@ -58,7 +58,7 @@ module Alert {
       alertList: '=hkAlertList',
       limit: '=hkLimit'
     };
-    public templateUrl = 'plugins/alert/html/alertList.html';
+    public templateUrl = 'plugins/directives/alert/html/alertList.html';
 
     constructor() {
       this.link = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
@@ -84,14 +84,14 @@ module Alert {
     }
   }
 
-  class HkTimeInterval {
+  export class HkTimeInterval {
 
     public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
     public replace = 'true';
     public scope = {
       hkTime: '='
     };
-    public templateUrl = 'plugins/alert/html/timeInterval.html';
+    public templateUrl = 'plugins/directives/alert/html/timeInterval.html';
 
     public static Factory() {
       var directive = () => {
@@ -106,5 +106,5 @@ module Alert {
 
   _module.directive('hkAlertPanelList', Alert.HkAlertPanelList.Factory());
   _module.directive('hkAlertPanel', Alert.HkAlertPanel.Factory());
-  _module.directive('hkTimeInterval', HkTimeInterval.Factory());
+  _module.directive('hkTimeInterval', Alert.HkTimeInterval.Factory());
 }

@@ -30,8 +30,8 @@ var gulp = require('gulp'),
 
 // CONSTANTS
 
-var POM_MAIN_PATH = '../../../../pom.xml';
-var DIST_TARGET_PATH = '../../../../dist/target/';
+var POM_MAIN_PATH = '../../../pom.xml';
+var DIST_TARGET_PATH = '../../../dist/target/';
 var WF_CONSOLE_PATH = 'modules/org/hawkular/nest/main/deployments/hawkular-console.war/dist/';
 
 var plugins = gulpLoadPlugins({});
@@ -181,8 +181,7 @@ var gulpTemplate = function(){
       root: '',
       base: function(file){
         var filename = /[^/]*$/.exec( file.relative).input;
-        var prefixIndex = filename.indexOf('/') + 1;
-        return filename.substring(prefixIndex, filename.length);
+        return 'plugins/' + filename;
       },
       standalone: true,
       module: config.templateModule,

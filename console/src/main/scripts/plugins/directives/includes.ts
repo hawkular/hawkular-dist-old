@@ -15,5 +15,5 @@
 /// limitations under the License.
 ///
 
-/// <reference path="../../../libs/hawtio-utilities/defs.d.ts"/>
-/// <reference path="../../../libs/hawtio-oauth/defs.d.ts"/>
+/// <reference path="../../libs/hawtio-utilities/defs.d.ts"/>
+/// <reference path="vendor/moment/moment.d.ts"/>
