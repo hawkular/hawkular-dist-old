@@ -54,7 +54,7 @@
   </licenses>
 
   <modules>
-    <module>ui/console</module>
+    <module>console</module>
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
     <module>dist</module>
