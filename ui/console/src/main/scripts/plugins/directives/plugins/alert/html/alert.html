@@ -4,15 +4,15 @@
       <i class="fa fa-flag"></i>
     </div>
     <div class="hk-date">
-      {{alert.start | date:'medium' }}
+      {{alert.start | date:'d MMM y HH:mm:ss' }}
     </div>
     <div class="hk-event">
       Server <strong>down</strong> for
       <hk-time-interval hk-time="alert.durationTime"></hk-time-interval>
       (until
-      <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'shortTime' }}).</span>
-      <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'MMM d, h:mm:ss a' }}).</span>
-      <span ng-show="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
+      <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'HH:mm' }}).</span>
+      <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'d MMM HH:mm:ss' }}).</span>
+      <span ng-show="!alert.isThisYear">{{alert.end | date:'d MMM y HH:mm:ss' }}).</span>
     </div>
 
     <div class="alert-resolver">
@@ -33,7 +33,7 @@
       <i class="fa fa-flag"></i>
     </div>
     <div class="hk-date">
-      {{alert.start | date:'medium' }}
+      {{alert.start | date:'d MMM y HH:mm:ss' }}
     </div>
     <div class="hk-event">
       <strong>Response time</strong> was above the threshold ({{alert.threshold | number: 0}} ms) for
@@ -41,9 +41,9 @@
       <hk-time-interval hk-time="alert.durationTime"></hk-time-interval>
 
       (until
-      <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'shortTime' }}).</span>
-      <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'MMM d, h:mm:ss a' }}).</span>
-      <span ng-show="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
+      <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'HH:mm' }}).</span>
+      <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'d MMM HH:mm:ss' }}).</span>
+      <span ng-show="!alert.isThisYear">{{alert.end | date:'d MMM y HH:mm:ss' }}).</span>
       The average response time was {{alert.avg  | number: 0}} ms.
     </div>
 
