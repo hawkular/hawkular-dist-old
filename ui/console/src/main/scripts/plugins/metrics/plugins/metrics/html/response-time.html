@@ -65,8 +65,9 @@
     <div class="panel panel-default hk-graph" ng-if="vm.average >= 0">
       <h2>Response Time</h2>
 
-      <p class="label label-info waiting-label" ng-hide="vm.chartData.dataPoints.length > 0" >We are
-        collecting your initial data. Please be patient(could be up to a minute)...</p>
+      <div class="text-center hk-spinner-container" ng-hide="vm.chartData.dataPoints.length > 0">
+        <div class="spinner spinner-lg"></div>
+      </div>
 
       <div class="metrics-chart">
         <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
