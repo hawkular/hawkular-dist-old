@@ -27,6 +27,7 @@
 
 body {
   line-height: 1.4;
+  padding-bottom: @grid-gutter-width/2;
 }
 
 .container {
@@ -159,8 +160,10 @@ a:hover .fa-spinner {
   padding: 2px 4px;
 }
 
-.help-block {
-
+.hk-spinner-legend-below {
+  color: @gray-light;
+  font-size: ceil(@font-size-base + 2);
+  margin-top: @grid-gutter-width/8;
 }
 
 // tables
@@ -313,12 +316,6 @@ a:hover .fa-spinner {
 
   &.hk-spinner-container {
     margin-top: @grid-gutter-width*5.5;
-  }
-
-  .hk-spinner-legend-below {
-    color: @gray-light;
-    font-size: ceil(@font-size-base + 2);
-    margin-top: @grid-gutter-width/4;
   }
 
   h1 + .fa {
@@ -842,6 +839,11 @@ a:hover .fa-spinner {
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 5px;
+  }
+
+  .hk-spinner-container {
+    margin-bottom: @grid-gutter-width/4*5;
+    margin-top: @grid-gutter-width*1.5;
   }
 
   .hk-legend {
