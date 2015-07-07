@@ -52,6 +52,7 @@ module Topbar {
           $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
           $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
+          /* not used anymore, was for topbar dropdown
           HawkularInventory.Resource.query({environmentId: globalEnvironmentId}, (resourceList) => {
             $rootScope.hkResources = resourceList;
             for (var i = 0; i < resourceList.length; i++) {
@@ -60,6 +61,7 @@ module Topbar {
               }
             }
             });
+          */
 
           }, this);
       };
