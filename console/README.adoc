@@ -1,0 +1,63 @@
+= Hawkular Console
+
+[.lead]
+*Hawkular Console* is the home of the UI console for Hawkular.  The current console is based on https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[Hawt.io 2], which is (now) a javascript based client-side framework.
+This console application pulls in various bower packages (libs) and Hawt.io 2 plugins (which are also bower packages) to plug-n-play various functionality to the console. Since one of the bower packages it pulls in is our Hawt.io plugin, it loads this plugin and adds it to the nav bar.
+
+== UI Directory Structure
+
+* ui - directory for various Hawkular UIs (currently only one)
+
+** ui/console - The main angular.js Hawkular UI console. For more info please see: http://www.hawkular.org/docs/dev/ui-dev.html[Hawkular UI Dev Guide]
+
+The general idea here being hawt.io UIs which are composed of plugins (that can swapped around like legos between the various UIs)
+
+== Maven Install
+
+The easiest way to build the console is to use maven (inside the `console` directory):
+
+`mvn install`
+
+No system http://nodejs.org/[Node.js] dependencies are needed.
+http://nodejs.org/[Node.js] and its related modules are managed by the https://github.com/eirslett/frontend-maven-plugin[frontend-maven-plugin].
+They are downloaded to the build target (./console/target) directory, where the actual http://gulpjs.com/[Gulp] based build process
+(triggered by the maven plugin) happens.
+
+To save some time during the build process, the downloaded http://nodejs.org/[Node.js] files and its related modules
+don't have to be deleted after invoking the `clean` target. If you want to persist the node.js related stuff in the target
+directory, please use the `cache` profile:
+
+`mvn clean -Pcache`
+
+In that case, the http://nodejs.org/[Node.js] is not deleted and doesn't have to be downloaded again, together with
+npm modules and bower packages. Be aware, this causes the libraries not being updated.
+
+== Hawkular-ui-components development
+
+For the ease of development we're using the watch feature of the gulp tool. Gulp can watch for changes in source files
+and update the compiled console accordingly. To use this feature, you must start Hawkular from the
+`$HAWKULAR_ROOT/dist/target/hawkular-x.y.x-SNAPSHOT/wildfly-x.x.z.Final/` directory. Once the server is up and running you have to
+start the actual gulp task responsible for watching the changes. To achieve this, traverse to the
+`$HAWKULAR_ROOT/ui/console/target/gulp-build/` directory and run:
+
+`gulp watch-server`
+
+The advantage of this approach is, that is scans for file changes in the source directory and apply them directly
+into the target directory (`$HAWKULAR_ROOT/dist/target/hawkular-x.y.x-SNAPSHOT/wildfly-x.y.z.Final/`), which is suitable for console
+developing since it doesn't require the whole maven build to see the actual changes in the console UI.
+
+== Other packages development
+
+If you want to use a local version of a bower component, you can use the `link` profile together with the
+https://oncletom.io/2013/live-development-bower-component/[bower link functionality]. In your bower component,
+link the bower package with:
+
+`bower link`
+
+and then build Hawkular with the `bower.link.package` property pointing to the package name, i.e.:
+
+`mvn clean install -Pdev -Dbower.link.package=hawkular-charts`
+
+You don't have to specify the link profile itself with the `-P`, since it's activated everytime the `bower.link.package`
+property is passed to the build. Please, be aware, that you can combine the `link` profile with other profiles, like the
+`dev` profile. Don't forget to run `bower link` in the package you're about to link before using the maven `link` profile.
