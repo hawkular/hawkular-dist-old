@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hawkular.component.pinger.PingDestination.ResourceField;
+import org.hawkular.inventory.api.model.CanonicalPath;
 import org.hawkular.inventory.api.model.Resource;
 import org.hawkular.inventory.api.model.ResourceType;
 
@@ -38,9 +39,10 @@ public class PingerTestUtils {
         Map<String, Object> props = new HashMap<>();
         props.put(ResourceField.url.name(), PingerTestUtils.TEST_URL);
         props.put(ResourceField.method.name(), PingerTestUtils.GET_METHOD);
-        ResourceType urlType = new ResourceType(PingerTestUtils.TEST_TENANT_ID, PingDestination.URL_TYPE);
-        Resource urlResource = new Resource(PingerTestUtils.TEST_TENANT_ID, PingerTestUtils.TEST_ENVIRONMENT_ID, null,
-                PingerTestUtils.TEST_RESOURCE_ID, urlType, props);
+        ResourceType urlType = new ResourceType(CanonicalPath.of().tenant(TEST_TENANT_ID)
+                .resourceType(PingDestination.URL_TYPE).get());
+        Resource urlResource = new Resource(CanonicalPath.of().tenant(TEST_TENANT_ID).environment(TEST_ENVIRONMENT_ID)
+                .resource(TEST_RESOURCE_ID).get(), urlType, props);
         return urlResource;
     }
 
