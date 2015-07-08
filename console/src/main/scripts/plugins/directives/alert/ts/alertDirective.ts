@@ -84,26 +84,59 @@ module Alert {
     }
   }
 
+  export class HkTime {
+
+    public static $inject = [];
+
+    public humanizeTime(timeMillis: number): any {
+      var result: any = {};
+
+      var sec_num: number = Math.floor(timeMillis / 1000);
+      var hours: number   = Math.floor(sec_num / 3600);
+      var minutes: number = Math.floor((sec_num - (hours * 3600)) / 60);
+      var seconds: number = sec_num - (hours * 3600) - (minutes * 60);
+
+      if (hours !== 0) {
+        result.hours = hours;
+      }
+      if (minutes !== 0) {
+        result.minutes = minutes;
+      }
+      if (seconds !== 0) {
+        result.seconds = seconds;
+      }
+
+      return result;
+    }
+  }
+
   export class HkTimeInterval {
 
     public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
     public replace = 'true';
     public scope = {
-      hkTime: '='
+      hkTimeMillis: '=hkTime'
     };
     public templateUrl = 'plugins/directives/alert/html/timeInterval.html';
 
+    constructor(private HkTime) {
+      this.link = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+        scope.hkTime = HkTime.humanizeTime(scope.hkTimeMillis);
+      };
+    }
+
     public static Factory() {
-      var directive = () => {
-        return new HkTimeInterval();
+      var directive = (HkTime: any) => {
+        return new HkTimeInterval(HkTime);
       };
 
-      directive['$inject'] = [];
+      directive['$inject'] = ['hkTime'];
 
       return directive;
     }
   }
 
+  _module.service('hkTime', Alert.HkTime);
   _module.directive('hkAlertPanelList', Alert.HkAlertPanelList.Factory());
   _module.directive('hkAlertPanel', Alert.HkAlertPanel.Factory());
   _module.directive('hkTimeInterval', Alert.HkTimeInterval.Factory());
