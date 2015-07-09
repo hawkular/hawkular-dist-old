@@ -31,4 +31,7 @@ module HawkularMetrics {
 
   export var globalEnvironmentId = 'test';
 
+  /// This will be set when accessing a feed resource
+  export var globalFeedId = undefined;
+
 }

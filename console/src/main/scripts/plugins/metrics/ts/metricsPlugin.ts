@@ -23,53 +23,16 @@ module HawkularMetrics {
     export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkular.charts',
         'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5']);
 
-    var metricsTab:any;
-
-    _module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider',
-        ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider,
-         navBuilder:HawtioMainNav.BuilderFactory) => {
-
-        metricsTab = navBuilder.create()
-            .id(HawkularMetrics.pluginName)
-            .title(() => 'Metrics')
-            .href(() => '/metrics')
-            .subPath('Add Url', 'add-url', navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
-            .subPath('Response Time', 'response-time', navBuilder.join(HawkularMetrics.templatePath,
-                'response-time.html'))
-            .subPath('Availability', 'availability', navBuilder.join(HawkularMetrics.templatePath, 'availability.html'))
-            .subPath('Alerts', 'alerts', navBuilder.join(HawkularMetrics.templatePath, 'alerts.html'))
-            .build();
-
-        navBuilder.configureRouting($routeProvider, metricsTab);
-
+    _module.config(['$httpProvider', '$locationProvider', '$routeProvider', ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider) => {
         $locationProvider.html5Mode(true);
     }]);
 
-    _module.run(['HawtioNav', (HawtioNav:HawtioMainNav.Registry) => {
-        HawtioNav.add(metricsTab);
-        log.debug('loaded Metrics Plugin');
-    }]);
-
-    _module.directive('hkEnter', () => {
-        return function (scope, element, attrs) {
-            element.bind('keydown keypress', (event) => {
-                if (event.which === 13) {
-                    scope.$apply(() => {
-                        scope.$eval(attrs.hkEnter);
-                    });
-
-                    event.preventDefault();
-                }
-            });
-        };
-    });
-
     _module.filter('firstUpper', function () {
-        return function (input, all) {
-            return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function (txt) {
-                return txt.charAt(0).toUpperCase() + txt.substr(1);
-            }) : '';
-        };
+      return function (input, all) {
+        return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function (txt) {
+          return txt.charAt(0).toUpperCase() + txt.substr(1);
+        }) : '';
+      };
     });
 
     /**
@@ -102,15 +65,10 @@ module HawkularMetrics {
       };
     });
 
-    _module.filter('urlEncode', function () {
-        return window['encodeURIComponent'];
-    });
-
     _module.config(['$routeProvider', ($routeProvider) => {
         $routeProvider.
             // this was for single page.. remove ?
-            when('/hawkular/:resourceId/:timeOffset?/:endTime?',
-            {templateUrl: 'plugins/metrics/html/single-page.html'}).
+            when('/hawkular/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/single-page.html'}).
             when('/metrics/response-time', {
                 templateUrl: 'plugins/metrics/html/response-time.html',
                 resolve: {
@@ -131,21 +89,102 @@ module HawkularMetrics {
                 }
             }).
             when('/hawkular-ui/url/url-list', {templateUrl: 'plugins/metrics/html/add-url.html'}).
-            when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?',
-            {templateUrl: 'plugins/metrics/html/response-time.html'}).
-            when('/hawkular-ui/url/availability/:resourceId/:timeOffset?/:endTime?',
-            {templateUrl: 'plugins/metrics/html/availability.html'}).
-            when('/hawkular-ui/url/alerts/:resourceId/:timeOffset?/:endTime?',
-            {templateUrl: 'plugins/metrics/html/alerts.html'}).
-
+            when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {
+              templateUrl: 'plugins/metrics/html/response-time.html',
+              reloadOnSearch: false,
+              resolve: {
+                resource: function ($route, $location, HawkularInventory) {
+                  var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
+                    resourceId: $route.current.params.resourceId}).$promise;
+                  p.then((response) => {
+                      return response.properties.url;
+                    },
+                    (error) => {
+                      toastr.info('You were redirected to this page because you requested an invalid URL.');
+                      $location.path('/');
+                    });
+                  return p;
+                }
+              }
+            }).
+            when('/hawkular-ui/url/availability/:resourceId/:timeOffset?/:endTime?', {
+              templateUrl: 'plugins/metrics/html/availability.html',
+              reloadOnSearch: false,
+              resolve: {
+                resource: function ($route, $location, HawkularInventory) {
+                  var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
+                    resourceId: $route.current.params.resourceId}).$promise;
+                  p.then((response) => {
+                      return response.properties.url;
+                    },
+                    (error) => {
+                      toastr.info('You were redirected to this page because you requested an invalid URL.');
+                      $location.path('/');
+                    });
+                  return p;
+                }
+              }
+            }).
+            when('/hawkular-ui/url/alerts/:resourceId/:timeOffset?/:endTime?', {
+              templateUrl: 'plugins/metrics/html/alerts.html',
+              reloadOnSearch: false,
+              resolve: {
+                resource: function ($route, $location, HawkularInventory) {
+                  var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
+                    resourceId: $route.current.params.resourceId}).$promise;
+                  p.then((response) => {
+                      return response.properties.url;
+                    },
+                    (error) => {
+                      toastr.info('You were redirected to this page because you requested an invalid URL.');
+                      $location.path('/');
+                    });
+                  return p;
+                }
+              }
+            }).
             when('/hawkular-ui/app/app-list', {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
             when('/hawkular-ui/app/app-details/:resourceId/:tabId/:timeOffset?/:endTime?', {
-                templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
-                resolve: {
-                    hideSubNav: function () {
-                        return true;
+              templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
+              reloadOnSearch: false,
+              resolve: {
+                resource: function ($route, $location, HawkularInventory) {
+                  var redirectMissingAppServer = function() {
+                    toastr.info('You were redirected to this page because you requested an invalid Application Server.');
+                    $location.path('/hawkular-ui/app/app-list');
+                  };
+                  var checkAppServerExists = function() {
+                    var p = HawkularInventory.FeedResource.get({
+                        environmentId: globalEnvironmentId,
+                        feedId: globalFeedId,
+                        resourceId: '[' + $route.current.params.resourceId + '~/]'
+                      }).$promise;
+                      p.then((response) => {
+                        return response;
+                      },
+                      (error) => redirectMissingAppServer()
+                    );
+                    return p;
+                  };
+                  var isValidAppServer = function() {
+                    if (!globalFeedId) {
+                      return HawkularInventory.Feed.query({environmentId: globalEnvironmentId}).$promise
+                        .then((response) => {
+                          globalFeedId = response.length && response[0].id;
+                          if (globalFeedId) {
+                            return checkAppServerExists();
+                          }
+                        }
+                        /*,
+                         (error) => redirectMissingAppServer()*/
+                      );
+                    } else {
+                      return checkAppServerExists();
                     }
+                  };
+                  return isValidAppServer();
                 }
+              }
             }).
             otherwise({redirectTo: '/hawkular-ui/url/url-list'});
     }]);
