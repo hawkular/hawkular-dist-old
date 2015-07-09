@@ -11,6 +11,7 @@
   "loginTheme" : "hawkular",
   "accountTheme" : "hawkular",
   "adminTheme" : "hawkular",
+  "eventsListeners" : [ "hawkular-jms", "jboss-logging" ],
   "roles" : {
     "realm" : [
       {

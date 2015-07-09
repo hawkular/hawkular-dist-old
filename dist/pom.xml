@@ -113,6 +113,11 @@
       <type>war</type>
     </dependency>
     <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-events-backend</artifactId>
+      <type>war</type>
+    </dependency>
+    <dependency>
       <groupId>org.wildfly</groupId>
       <artifactId>wildfly-dist</artifactId>
       <type>zip</type>
@@ -140,6 +145,20 @@
       <artifactId>hawkular-accounts-keycloak-theme</artifactId>
       <version>${version.org.hawkular.accounts}</version>
       <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-keycloak-event-listener-jms</artifactId>
+      <version>${version.org.hawkular.accounts}</version>
+      <classifier>module</classifier>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-keycloak-event-listener-rest</artifactId>
+      <version>${version.org.hawkular.accounts}</version>
+      <classifier>module</classifier>
+      <type>zip</type>
     </dependency>
   </dependencies>
 
