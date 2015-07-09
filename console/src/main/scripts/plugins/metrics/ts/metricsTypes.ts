@@ -31,6 +31,7 @@ export type TenantId = string;
 export type ResourceId = string;
 export type MetricId = string;
 export type TimestampInMillis = number;
+export type IntervalInSeconds = number;
 
 
 }

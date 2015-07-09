@@ -80,12 +80,26 @@ module HawkularMetrics {
 
     private autoRefreshPromise: ng.IPromise<number>;
 
-    cancelAutoRefresh(): void {
-      this.$interval.cancel(this.autoRefreshPromise);
-      toastr.info('Canceling Auto Refresh');
+    private formatBucketedChartOutput(response):IChartDataPoint[] {
+      function convertBytesToMegaBytes(bytes:number):number { return bytes / 1024 / 1024; }
+
+      //  The schema is different for bucketed output
+      return _.map(response, (point:IChartDataPoint) => {
+        return {
+          timestamp: point.start,
+          date: new Date(point.start),
+          value: !angular.isNumber(point.value) ? 0 : point.value,
+          avg: (point.empty) ? 0 : convertBytesToMegaBytes(point.avg),
+          min: !angular.isNumber(point.min) ? 0 : point.min,
+          max: !angular.isNumber(point.max) ? 0 : point.max,
+          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
+          median: !angular.isNumber(point.median) ? 0 : point.median,
+          empty: point.empty
+        };
+      });
     }
 
-    autoRefresh(intervalInSeconds: number): void {
+    public autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getJvmData();
         this.getJvmChartData();
@@ -96,7 +110,7 @@ module HawkularMetrics {
       });
     }
 
-    getJvmData(currentTenantId?: TenantId): any {
+    public getJvmData(currentTenantId?: TenantId): any {
       this.alertList = []; // FIXME: when we have alerts for app server
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
@@ -119,7 +133,7 @@ module HawkularMetrics {
       this.getJvmChartData(currentTenantId);
     }
 
-    getJvmChartData(currentTenantId?: TenantId): any {
+    public getJvmChartData(currentTenantId?: TenantId): any {
 
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
@@ -164,24 +178,7 @@ module HawkularMetrics {
     }
 
 
-    private formatBucketedChartOutput(response):IChartDataPoint[] {
-      function convertBytesToMegaBytes(bytes:number):number { return bytes / 1024 / 1024; }
 
-      //  The schema is different for bucketed output
-      return _.map(response, (point:IChartDataPoint) => {
-        return {
-          timestamp: point.start,
-          date: new Date(point.start),
-          value: !angular.isNumber(point.value) ? 0 : point.value,
-          avg: (point.empty) ? 0 : convertBytesToMegaBytes(point.avg),
-          min: !angular.isNumber(point.min) ? 0 : point.min,
-          max: !angular.isNumber(point.max) ? 0 : point.max,
-          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
-          median: !angular.isNumber(point.median) ? 0 : point.median,
-          empty: point.empty
-        };
-      });
-    }
 
   }
 

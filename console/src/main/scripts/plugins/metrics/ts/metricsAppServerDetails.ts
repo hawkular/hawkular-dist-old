@@ -56,7 +56,7 @@ module HawkularMetrics {
       this.activeTab = $routeParams.tabId || 'jvm';
     }
 
-    updateTab(newTabId: string) {
+    public updateTab(newTabId: string) {
       this.$route.updateParams({tabId: newTabId});
     }
 

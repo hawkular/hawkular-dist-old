@@ -26,7 +26,7 @@ module HawkularMetrics {
     public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q',
       '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
 
-    private metricId: string;
+    private metricId: string; /// @todo: use MetricId
     public alertList: any  = [];
     public openSetup: any;
     public isResolvingAll: boolean = false;
@@ -76,6 +76,17 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
+
+    private autoRefresh(intervalInSeconds:number):void {
+      var autoRefreshPromise = this.$interval(()  => {
+        this.getAlerts();
+      }, intervalInSeconds * 1000);
+
+      this.$scope.$on('$destroy', () => {
+        this.$interval.cancel(autoRefreshPromise);
+      });
+    }
+
     public getAlerts():void {
       this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : (new Date()).getTime();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
@@ -88,20 +99,11 @@ module HawkularMetrics {
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
 
-    setPage(page:number):void {
+    public setPage(page:number):void {
       this.resCurPage = page;
       this.getAlerts();
     }
 
-    private autoRefresh(intervalInSeconds:number):void {
-      var autoRefreshPromise = this.$interval(()  => {
-        this.getAlerts();
-      }, intervalInSeconds * 1000);
-
-      this.$scope.$on('$destroy', () => {
-        this.$interval.cancel(autoRefreshPromise);
-      });
-    }
 
     public resolveAll(): void {
       this.isResolvingAll = true;

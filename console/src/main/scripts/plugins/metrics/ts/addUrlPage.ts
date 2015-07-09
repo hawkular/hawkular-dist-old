@@ -29,14 +29,15 @@ module HawkularMetrics {
       'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q',
       'md5', 'HkHeaderParser'];
 
+    private autoRefreshPromise:ng.IPromise<number>;
     private httpUriPart = 'http://';
-    public addProgress: boolean = false;
     private resourceList;
-    public alertList;
-    public lastUpdateTimestamp:Date = new Date();
     private resPerPage = 5;
     public resCurPage = 0;
+    public alertList;
+    public lastUpdateTimestamp:Date = new Date();
     public headerLinks = {};
+    public addProgress: boolean = false;
 
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
@@ -68,15 +69,9 @@ module HawkularMetrics {
 
       this.autoRefresh(20);
     }
-    private autoRefreshPromise:ng.IPromise<number>;
 
 
-    cancelAutoRefresh():void {
-      this.$interval.cancel(this.autoRefreshPromise);
-      toastr.info('Canceling Auto Refresh');
-    }
-
-    autoRefresh(intervalInSeconds:number):void {
+    public autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(()  => {
         this.getResourceList();
       }, intervalInSeconds * 1000);
@@ -86,7 +81,7 @@ module HawkularMetrics {
       });
     }
 
-    addUrl(url:string):void {
+    public addUrl(url:string):void {
       this.addProgress = true;
 
       var resourceId = this.md5.createHash(url || '');
@@ -171,7 +166,7 @@ module HawkularMetrics {
         });
     }
 
-    getResourceList(currentTenantId?: TenantId):any {
+    public getResourceList(currentTenantId?: TenantId):any {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.ResourceOfType.query(
           {resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage},
@@ -222,7 +217,7 @@ module HawkularMetrics {
       });
     }
 
-    getAverage(data:any, field:string):number {
+    public getAverage(data:any, field:string):number {
       if (data) {
         var sum = 0;
         for (var i = 0; i < data.length; i++) {
@@ -232,7 +227,7 @@ module HawkularMetrics {
       }
     }
 
-    deleteResource(resource:any):any {
+    public deleteResource(resource:any):any {
       this.$modal.open({
         templateUrl: 'plugins/metrics/html/modals/delete-resource.html',
         controller: DeleteResourceModalController,
@@ -242,7 +237,7 @@ module HawkularMetrics {
       }).result.then(result => this.getResourceList());
     }
 
-    setPage(page:number):void {
+    public setPage(page:number):void {
       this.resCurPage = page;
       this.getResourceList();
     }
@@ -289,7 +284,7 @@ module HawkularMetrics {
       });
     }
 
-    cancel() {
+    public cancel() {
       this.$modalInstance.dismiss('cancel');
     }
 

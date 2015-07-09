@@ -63,12 +63,12 @@ module HawkularMetrics {
     private autoRefreshPromise:ng.IPromise<number>;
 
     private resourceId:ResourceId;
-    threshold = 5000; // default to 5 seconds some high number
+    public threshold = 5000; // default to 5 seconds some high number
 
-    median = 0;
-    percentile95th = 0;
-    average = 0;
-    math;
+    public median = 0;
+    public percentile95th = 0;
+    public average = 0;
+    public math;
 
     constructor(private $scope:any,
                 private $rootScope:any,
@@ -114,12 +114,32 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private cancelAutoRefresh():void {
-      this.$interval.cancel(this.autoRefreshPromise);
-      toastr.info('Canceling Auto Refresh');
+    private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
+          HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
+            this.alertList = data.alertList;
+          }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
 
-    private autoRefresh(intervalInSeconds:number):void {
+    private formatBucketedChartOutput(response):IChartDataPoint[] {
+      //  The schema is different for bucketed output
+      return _.map(response, (point:IChartDataPoint) => {
+        return {
+          timestamp: point.start,
+          date: new Date(point.start),
+          value: !angular.isNumber(point.value) ? 0 : point.value,
+          avg: (point.empty) ? 0 : point.avg,
+          min: !angular.isNumber(point.min) ? 0 : point.min,
+          max: !angular.isNumber(point.max) ? 0 : point.max,
+          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
+          median: !angular.isNumber(point.median) ? 0 : point.median,
+          empty: point.empty
+        };
+      });
+    }
+
+
+    private autoRefresh(intervalInSeconds:IntervalInSeconds):void {
       this.autoRefreshPromise = this.$interval(()  => {
         this.$scope.hkEndTimestamp = +moment();
         this.endTimeStamp = this.$scope.hkEndTimestamp;
@@ -141,7 +161,7 @@ module HawkularMetrics {
       ///toastr.warning('No Data found for id: ' + id);
     }
 
-    private refreshChartDataNow(metricId:string, startTime?:TimestampInMillis):void {
+    private refreshChartDataNow(metricId:MetricId, startTime?:TimestampInMillis):void {
       this.$scope.hkEndTimestamp = +moment();
       var adjStartTimeStamp:number = moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds').valueOf();
       this.endTimeStamp = this.$scope.hkEndTimestamp;
@@ -152,11 +172,11 @@ module HawkularMetrics {
       this.retrieveThreshold();
     }
 
-    getMetricId():ResourceId {
+    public getMetricId():ResourceId {
       return this.resourceId + '.status.duration';
     }
 
-    retrieveThreshold() {
+    public retrieveThreshold() {
       this.HawkularAlert.Condition.query({triggerId: this.$routeParams.resourceId + '_trigger_thres'}).$promise
         .then((response) => {
 
@@ -170,14 +190,11 @@ module HawkularMetrics {
         });
     }
 
-    private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
-          HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
-        this.alertList = data.alertList;
-      }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
-    }
 
-    refreshSummaryData(metricId:string, startTime?:TimestampInMillis, endTime?:TimestampInMillis):void {
+
+    public refreshSummaryData(metricId:MetricId,
+                              startTime?:TimestampInMillis,
+                              endTime?:TimestampInMillis):void {
       var dataPoints:IChartDataPoint[];
       // calling refreshChartData without params use the model values
       if (!endTime) {
@@ -211,8 +228,9 @@ module HawkularMetrics {
       }
     }
 
-    refreshHistoricalChartDataForTimestamp(metricId:string,
-                                           startTime?:TimestampInMillis, endTime?:TimestampInMillis):void {
+    public refreshHistoricalChartDataForTimestamp(metricId:MetricId,
+                                                  startTime?:TimestampInMillis,
+                                                  endTime?:TimestampInMillis):void {
       // calling refreshChartData without params use the model values
       if (!endTime) {
         endTime = this.endTimeStamp;
@@ -256,22 +274,6 @@ module HawkularMetrics {
       }
     }
 
-    private formatBucketedChartOutput(response):IChartDataPoint[] {
-      //  The schema is different for bucketed output
-      return _.map(response, (point:IChartDataPoint) => {
-        return {
-          timestamp: point.start,
-          date: new Date(point.start),
-          value: !angular.isNumber(point.value) ? 0 : point.value,
-          avg: (point.empty) ? 0 : point.avg,
-          min: !angular.isNumber(point.min) ? 0 : point.min,
-          max: !angular.isNumber(point.max) ? 0 : point.max,
-          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
-          median: !angular.isNumber(point.median) ? 0 : point.median,
-          empty: point.empty
-        };
-      });
-    }
 
   }
 

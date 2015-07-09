@@ -72,16 +72,17 @@ module HawkularMetrics {
       return relationLinks;
     }
 
-    parse(headers: any): any {
+    public parse(headers: any): any {
       return {
         total: headers['x-total-count'],
         rel: this.parseLinkHeader(headers.link)
       };
     }
-  };
+  }
 
   _module.service('HkHeaderParser', HkHeaderParser);
 
+  /// @todo: use ControllerAs syntax
   var paginationController = ($scope: any) => {
 
     $scope.currentPageView = $scope.currentPage + 1;
