@@ -15,10 +15,10 @@
 /// limitations under the License.
 ///
 
-/// <reference path="sidebarPlugin.ts"/>
+/// <reference path='sidebarPlugin.ts'/>
 module Sidebar {
 
-  var log:Logging.Logger = Logger.get("Sidebar");
+  var log:Logging.Logger = Logger.get('Sidebar');
 
   export class SidebarDirective {
 
@@ -30,7 +30,7 @@ module Sidebar {
   }
 
   /*
-  export var SidebarController = _module.controller("Sidebar.SidebarController",
+  export var SidebarController = _module.controller('Sidebar.SidebarController',
     ['$scope', '$rootScope', '$location', ($scope, $rootScope, $location) => {
 
       $scope.isSinglePage = function() {
@@ -43,7 +43,7 @@ module Sidebar {
     }]);
   */
 
-  export var SidebarController = _module.controller("Sidebar.SidebarController",
+  export var SidebarController = _module.controller('Sidebar.SidebarController',
       ['$scope', '$rootScope', '$location', 'HawkularNav', 'HawkularInventory', ($scope, $rootScope, $location,
                                                                                  HawkularNav, HawkularInventory) => {
 

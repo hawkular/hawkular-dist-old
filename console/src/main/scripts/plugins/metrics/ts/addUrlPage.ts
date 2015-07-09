@@ -15,10 +15,10 @@
 /// limitations under the License.
 ///
 
-/// <reference path="metricsPlugin.ts"/>
-/// <reference path="alertsManager.ts"/>
-/// <reference path="pagination.ts"/>
-/// <reference path="errorManager.ts"/>
+/// <reference path='metricsPlugin.ts'/>
+/// <reference path='alertsManager.ts'/>
+/// <reference path='pagination.ts'/>
+/// <reference path='errorManager.ts'/>
 
 module HawkularMetrics {
 

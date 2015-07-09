@@ -15,9 +15,9 @@
 /// limitations under the License.
 ///
 
-/// <reference path="metricsTypes.ts"/>
-/// <reference path="metricsPlugin.ts"/>
-/// <reference path="../../includes.ts"/>
+/// <reference path='metricsTypes.ts'/>
+/// <reference path='metricsPlugin.ts'/>
+/// <reference path='../../includes.ts'/>
 
 module HawkularMetrics {
 
@@ -145,7 +145,7 @@ module HawkularMetrics {
           buckets: 1
         }).$promise
           .then((availResponse:IAvailabilitySummary[]) => {
-            console.info("Avail Summary:");
+            console.info('Avail Summary:');
             console.dir(availResponse);
 
             if (availResponse && !_.last(availResponse).empty) {
@@ -179,7 +179,7 @@ module HawkularMetrics {
         }).$promise
           .then((response) => {
 
-            console.log("Availability Data: ");
+            console.log('Availability Data: ');
             console.dir(response);
             this.availabilityDataPoints = response;
 

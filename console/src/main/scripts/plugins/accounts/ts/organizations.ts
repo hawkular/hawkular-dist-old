@@ -15,10 +15,10 @@
 /// limitations under the License.
 ///
 
-/// <reference path="accountsPlugin.ts"/>
+/// <reference path='accountsPlugin.ts'/>
 module HawkularAccounts {
 
-    export var OrganizationsController = _module.controller("HawkularAccounts.OrganizationsController", [
+    export var OrganizationsController = _module.controller('HawkularAccounts.OrganizationsController', [
         '$rootScope', '$scope', '$log', '$location', 'HawkularAccount',
         ($rootScope, $scope, $log, $location, HawkularAccount) => {
 
@@ -37,7 +37,7 @@ module HawkularAccounts {
                         $scope.loading = false;
                     },
                     () => {
-                        $log.warn("List of organizations could NOT be retrieved.");
+                        $log.warn('List of organizations could NOT be retrieved.');
                         $scope.loading = false;
                     }
                 );
@@ -61,7 +61,7 @@ module HawkularAccounts {
             });
         }]);
 
-    export var OrganizationNewController = _module.controller("HawkularAccounts.OrganizationNewController", [
+    export var OrganizationNewController = _module.controller('HawkularAccounts.OrganizationNewController', [
         '$scope', '$log', '$location', 'HawkularAccount',
         ($scope, $log, $location, HawkularAccount) => {
 
@@ -74,10 +74,10 @@ module HawkularAccounts {
                     },
                     () => {
                         // error
-                        $log.debug("Organization could NOT be added.");
+                        $log.debug('Organization could NOT be added.');
                     }
                 );
-                $log.debug("Trying to persist the organization");
+                $log.debug('Trying to persist the organization');
             };
         }]);
 }

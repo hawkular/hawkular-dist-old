@@ -15,9 +15,9 @@
 /// limitations under the License.
 ///
 
-/// <reference path="metricsTypes.ts"/>
-/// <reference path="metricsPlugin.ts"/>
-/// <reference path="../../includes.ts"/>
+/// <reference path='metricsTypes.ts'/>
+/// <reference path='metricsPlugin.ts'/>
+/// <reference path='../../includes.ts'/>
 
 module HawkularMetrics {
 
@@ -101,7 +101,7 @@ module HawkularMetrics {
           this.refreshChartDataNow(this.getMetricId());
         }
       });
-      
+
       if ($rootScope.currentPersona) {
         waitForResourceId();
       } else {

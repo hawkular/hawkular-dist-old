@@ -15,8 +15,8 @@
 /// limitations under the License.
 ///
 
-/// <reference path="../../includes.ts"/>
-/// <reference path="metricsGlobals.ts"/>
+/// <reference path='../../includes.ts'/>
+/// <reference path='metricsGlobals.ts'/>
 
 module HawkularMetrics {
 
@@ -106,7 +106,7 @@ module HawkularMetrics {
         return window['encodeURIComponent'];
     });
 
-    _module.config(["$routeProvider", ($routeProvider) => {
+    _module.config(['$routeProvider', ($routeProvider) => {
         $routeProvider.
             // this was for single page.. remove ?
             when('/hawkular/:resourceId/:timeOffset?/:endTime?',

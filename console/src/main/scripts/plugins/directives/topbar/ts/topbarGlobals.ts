@@ -15,15 +15,15 @@
 /// limitations under the License.
 ///
 
-/// <reference path="../../includes.ts"/>
+/// <reference path='../../includes.ts'/>
 module Topbar {
 
-  export var pluginName = "topbar";
+  export var pluginName = 'topbar';
 
   export var log:Logging.Logger = Logger.get(pluginName);
 
-  export var templatePath = "plugins/directives/topbar/html/topbar.html";
+  export var templatePath = 'plugins/directives/topbar/html/topbar.html';
 
-  export var globalEnvironmentId = "test";
+  export var globalEnvironmentId = 'test';
 
 }
