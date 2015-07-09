@@ -23,7 +23,9 @@ module HawkularMetrics {
 
   export class AppServerListController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5', 'HkHeaderParser'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
+        'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q',
+        'md5', 'HkHeaderParser'];
 
     private resourceList;
     public alertList;
@@ -56,7 +58,8 @@ module HawkularMetrics {
         this.getResourceList(this.$rootScope.currentPersona.id);
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
-        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.getResourceList(currentPersona.id));
+        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
+        this.getResourceList(currentPersona.id));
       }
 
       this.autoRefresh(20);
@@ -84,7 +87,8 @@ module HawkularMetrics {
 
     getResourceList(currentTenantId?: TenantId):any {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'WildFly Server', per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
+      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'WildFly Server', per_page: this.resPerPage,
+              page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
         this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
         var promises = [];
         angular.forEach(aResourceList, function(res, idx) {

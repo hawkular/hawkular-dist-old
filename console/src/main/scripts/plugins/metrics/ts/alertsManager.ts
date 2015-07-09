@@ -41,7 +41,8 @@ module HawkularMetrics {
     setEmail(triggerId: string, email: string): ng.IPromise<void>;
     setResponseTime(triggerId: string, treshold: number, duration: number, enabled: boolean): ng.IPromise<void>;
     setDowntime(triggerId: string, duration: number, enabled: boolean): ng.IPromise<void>;
-    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType, currentPage?:number, perPage?:number): any;
+    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType,
+                       currentPage?:number, perPage?:number): any;
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
@@ -54,7 +55,8 @@ module HawkularMetrics {
                 private $moment: any) {
     }
 
-    public createTrigger(triggerName: string, enabled: boolean, conditionType: string, email: string): ng.IPromise<void> {
+    public createTrigger(triggerName: string, enabled: boolean,
+                         conditionType: string, email: string): ng.IPromise<void> {
       // Create a trigger
       var triggerId: string;
       var DEFAULT_RESOLVE_THRESHOLD = 1000;
@@ -225,7 +227,8 @@ module HawkularMetrics {
       return undefined;
     }
 
-    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, alertType?:AlertType, currentPage?:number, perPage?:number): any {
+    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, alertType?:AlertType,
+                       currentPage?:number, perPage?:number): any {
       var alertList = [];
       var headers;
 

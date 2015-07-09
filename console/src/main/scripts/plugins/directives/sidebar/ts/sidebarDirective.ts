@@ -44,7 +44,8 @@ module Sidebar {
   */
 
   export var SidebarController = _module.controller("Sidebar.SidebarController",
-      ['$scope', '$rootScope', '$location', 'HawkularNav', 'HawkularInventory', ($scope, $rootScope, $location, HawkularNav, HawkularInventory) => {
+      ['$scope', '$rootScope', '$location', 'HawkularNav', 'HawkularInventory', ($scope, $rootScope, $location,
+                                                                                 HawkularNav, HawkularInventory) => {
 
     $scope.isSinglePage = function() {
       return $location.path().indexOf('/metrics') !== 0;
@@ -81,7 +82,8 @@ module Sidebar {
       var momEnd = moment();
 
       if (diff < 24 * 60 * 60 * 1000) {
-        return momStart.format('D MMM YYYY') + ' ' + momStart.format('HH:mm') + ' - ' + (momStart.day() !== momEnd.day() ? momEnd.format('D MMM YYYY ')  : '') + momEnd.format('HH:mm');
+        return momStart.format('D MMM YYYY') + ' ' + momStart.format('HH:mm') + ' - ' +
+            (momStart.day() !== momEnd.day() ? momEnd.format('D MMM YYYY ')  : '') + momEnd.format('HH:mm');
       } else {
         return momStart.format('D MMM YYYY') + ' - ' + momEnd.format('D MMM YYYY');
       }
@@ -93,7 +95,8 @@ module Sidebar {
 
     $scope.getUrlFromId = function(id) {
       if(!$scope.resource) {
-        $scope.resource = HawkularInventory.Resource.get({environmentId: globalEnvironmentId, resourceId: id}, function(data) {
+        $scope.resource = HawkularInventory.Resource.get({environmentId: globalEnvironmentId, resourceId: id},
+            function(data) {
           $scope.resourceName = data.properties.url;
           });
       }

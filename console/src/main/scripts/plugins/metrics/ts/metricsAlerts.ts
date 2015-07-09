@@ -80,7 +80,8 @@ module HawkularMetrics {
       this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : (new Date()).getTime();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
 
-      this.HawkularAlertsManager.queryConsoleAlerts(this.metricId, this.alertsTimeStart, this.alertsTimeEnd, undefined, this.resCurPage, this.resPerPage).then((queriedAlerts)=> {
+      this.HawkularAlertsManager.queryConsoleAlerts(this.metricId, this.alertsTimeStart, this.alertsTimeEnd, undefined,
+          this.resCurPage, this.resPerPage).then((queriedAlerts)=> {
         this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
         this.alertList = queriedAlerts.alertList;
         this.alertList.$resolved = true; // FIXME
@@ -121,7 +122,8 @@ module HawkularMetrics {
   _module.controller('MetricsAlertController', MetricsAlertController);
 
   export class MetricsAlertSetupController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q', '$rootScope', '$routeParams', '$modalInstance'];
+    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q',
+      '$rootScope', '$routeParams', '$modalInstance'];
 
     private metricId: string;
     private trigger_thres: any;
@@ -300,23 +302,28 @@ module HawkularMetrics {
         }
 
         if(!angular.equals(this.alertSetupBackup.trigger_thres_damp[0], this.trigger_thres_damp[0])) {
-          return this.HawkularAlertsManager.updateDampening(this.trigger_thres.id, this.trigger_thres_damp[0].dampeningId, this.trigger_thres_damp[0]);
+          return this.HawkularAlertsManager.updateDampening(this.trigger_thres.id,
+              this.trigger_thres_damp[0].dampeningId, this.trigger_thres_damp[0]);
         }
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating availability trigger.', errorCallback);
       }).then(()=> {
         if(!angular.equals(this.alertSetupBackup.trigger_avail_damp[0], this.trigger_avail_damp[0])) {
-          this.HawkularAlertsManager.updateDampening(this.trigger_avail.id, this.trigger_avail_damp[0].dampeningId, this.trigger_avail_damp[0]);
+          this.HawkularAlertsManager.updateDampening(this.trigger_avail.id, this.trigger_avail_damp[0].dampeningId,
+              this.trigger_avail_damp[0]);
         }
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger dampening.', errorCallback);
+        return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger dampening.',
+            errorCallback);
       }).then(()=> {
         if(!angular.equals(this.alertSetupBackup.trigger_thres_cond[0], this.trigger_thres_cond[0])) {
-          return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id, this.trigger_thres_cond[0].conditionId, this.trigger_thres_cond[0]).then(()=> {
+          return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id,
+              this.trigger_thres_cond[0].conditionId, this.trigger_thres_cond[0]).then(()=> {
             // Update the threshold on AUTORESOLVE condition
             var autoResolveCondition = angular.copy(this.trigger_thres_cond[1]);
             autoResolveCondition.threshold = this.trigger_thres_cond[0].threshold;
-            return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id, autoResolveCondition.conditionId, autoResolveCondition);
+            return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id, autoResolveCondition.conditionId,
+                autoResolveCondition);
           });
         }
       }, (error)=> {
@@ -373,7 +380,9 @@ module HawkularMetrics {
     constructor() {
       this.link = (scope: IHkClearNotifications, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
         angular.element('html').on('click', () => {
-          if (scope.hkClearNotifications && scope.hkClearNotifications.length && scope.hkClearNotifications.length > 0 ) {
+          if (scope.hkClearNotifications &&
+              scope.hkClearNotifications.length &&
+              scope.hkClearNotifications.length > 0 ) {
             scope.$apply(()=> {
               scope.hkClearNotifications = [];
             });

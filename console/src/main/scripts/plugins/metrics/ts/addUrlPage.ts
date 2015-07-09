@@ -25,7 +25,9 @@ module HawkularMetrics {
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q', 'md5', 'HkHeaderParser'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
+      'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q',
+      'md5', 'HkHeaderParser'];
 
     private httpUriPart = 'http://';
     public addProgress: boolean = false;
@@ -60,7 +62,8 @@ module HawkularMetrics {
         this.getResourceList(this.$rootScope.currentPersona.id);
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
-        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.getResourceList(currentPersona.id));
+        $rootScope.$watch('currentPersona', (currentPersona) =>
+        currentPersona && this.getResourceList(currentPersona.id));
       }
 
       this.autoRefresh(20);
@@ -148,11 +151,13 @@ module HawkularMetrics {
           (e) => err(e, 'Error during saving metrics.'))
 
         // Create threshold trigger for newly created metrics
-        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', defaultEmail),
+        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD',
+              defaultEmail),
           (e) => err(e, 'Error saving email action.'))
 
         // Create availability trigger for newly created metrics
-        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', defaultEmail),
+        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY',
+              defaultEmail),
           (e) => err(e, 'Error saving threshold trigger.'))
 
         //this.$location.url('/hawkular/' + metricId);
@@ -168,7 +173,9 @@ module HawkularMetrics {
 
     getResourceList(currentTenantId?: TenantId):any {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
+      this.HawkularInventory.ResourceOfType.query(
+          {resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage},
+          (aResourceList, getResponseHeaders) => {
         // FIXME: hack.. make expanded out of list
         this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
 
@@ -243,7 +250,8 @@ module HawkularMetrics {
 
   class DeleteResourceModalController {
 
-    static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularInventory', 'HawkularAlertsManager', 'resource'];
+    static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularInventory', 'HawkularAlertsManager',
+      'resource'];
 
     constructor(private $scope: any,
                 private $rootScope: any,

@@ -23,7 +23,9 @@ module HawkularMetrics {
 
   export class AppServerDeploymentsDetailsController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$q', 'md5'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
+      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager',
+      '$q', 'md5'];
 
     private resourceList;
     private metricsList;
@@ -56,7 +58,8 @@ module HawkularMetrics {
           this.getResourceList(this.$rootScope.currentPersona.id);
         } else {
           // currentPersona hasn't been injected to the rootScope yet, wait for it..
-          $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.getResourceList(currentPersona.id));
+          $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
+          this.getResourceList(currentPersona.id));
         }
 
         this.autoRefresh(20);
@@ -82,7 +85,8 @@ module HawkularMetrics {
     getResourceList(currentTenantId?: TenantId): any {
       this.alertList = []; // FIXME: when we have alerts for app server
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'Deployment'}, (aResourceList, getResponseHeaders) => {
+      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'Deployment'},
+          (aResourceList, getResponseHeaders) => {
         var promises = [];
         var tmpResourceList = [];
         angular.forEach(aResourceList, function(res, idx) {

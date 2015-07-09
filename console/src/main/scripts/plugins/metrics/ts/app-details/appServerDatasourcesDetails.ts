@@ -24,7 +24,8 @@ module HawkularMetrics {
   export class AppServerDatasourcesDetailsController {
 
     /// for minification only
-    public static  $inject = ['$scope','$rootScope','$routeParams','$interval','$q','HawkularInventory','HawkularMetric'];
+    public static  $inject = ['$scope','$rootScope','$routeParams','$interval','$q','HawkularInventory',
+      'HawkularMetric'];
 
     public static AVAILABLE_COLOR = '#1884c7'; /// blue
     public static IN_USE_COLOR = '#49a547'; /// green
@@ -58,7 +59,8 @@ module HawkularMetrics {
         this.getDatasources(this.$rootScope.currentPersona.id);
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
-        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.getDatasources(currentPersona.id));
+        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
+        this.getDatasources(currentPersona.id));
       }
 
       this.autoRefresh(20);
@@ -87,7 +89,8 @@ module HawkularMetrics {
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'Datasource'}, (aResourceList, getResponseHeaders) => {
+      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'Datasource'},
+          (aResourceList, getResponseHeaders) => {
         var promises = [];
         var tmpResourceList = [];
         angular.forEach(aResourceList, function(res, idx) {
@@ -129,21 +132,27 @@ module HawkularMetrics {
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
             this.chartAvailData[res.id] = this.chartAvailData[res.id] || [];
-            this.chartAvailData[res.id][0] = { key: 'Available Count', color: AppServerDatasourcesDetailsController.AVAILABLE_COLOR, values: this.formatBucketedChartOutput(data) };
+            this.chartAvailData[res.id][0] = { key: 'Available Count',
+              color: AppServerDatasourcesDetailsController.AVAILABLE_COLOR,
+              values: this.formatBucketedChartOutput(data) };
           }, this);
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
           gaugeId: 'MI~R~' + res.id + '~MT~Datasource Pool Metrics~In Use Count',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
             this.chartAvailData[res.id] = this.chartAvailData[res.id] || [];
-            this.chartAvailData[res.id][1] = { key: 'In Use', color: AppServerDatasourcesDetailsController.IN_USE_COLOR, values: this.formatBucketedChartOutput(data) };
+            this.chartAvailData[res.id][1] = { key: 'In Use',
+              color: AppServerDatasourcesDetailsController.IN_USE_COLOR,
+              values: this.formatBucketedChartOutput(data) };
           }, this);
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
           gaugeId: 'MI~R~' + res.id + '~MT~Datasource Pool Metrics~Timed Out',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
             this.chartAvailData[res.id] = this.chartAvailData[res.id] || [];
-            this.chartAvailData[res.id][2] = { key: 'Timed Out', color: AppServerDatasourcesDetailsController.TIMED_OUT_COLOR, values: this.formatBucketedChartOutput(data) };
+            this.chartAvailData[res.id][2] = { key: 'Timed Out',
+              color: AppServerDatasourcesDetailsController.TIMED_OUT_COLOR,
+              values: this.formatBucketedChartOutput(data) };
           }, this);
 
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
@@ -151,14 +160,18 @@ module HawkularMetrics {
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
             this.chartRespData[res.id] = this.chartRespData[res.id] || [];
-            this.chartRespData[res.id][0] = { key: 'Wait Time (Avg.)', color: AppServerDatasourcesDetailsController.WAIT_COLOR, values: this.formatBucketedChartOutput(data) };
+            this.chartRespData[res.id][0] = { key: 'Wait Time (Avg.)',
+              color: AppServerDatasourcesDetailsController.WAIT_COLOR,
+              values: this.formatBucketedChartOutput(data) };
           }, this);
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
           gaugeId: 'MI~R~' + res.id + '~MT~Datasource Pool Metrics~Average Creation Time',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
             this.chartRespData[res.id] = this.chartRespData[res.id] || [];
-            this.chartRespData[res.id][1] = { key: 'Creation Time (Avg.)', color: AppServerDatasourcesDetailsController.CREATION_COLOR, values: this.formatBucketedChartOutput(data) };
+            this.chartRespData[res.id][1] = { key: 'Creation Time (Avg.)',
+              color: AppServerDatasourcesDetailsController.CREATION_COLOR,
+              values: this.formatBucketedChartOutput(data) };
           }, this);
         }, this);
 

@@ -38,7 +38,8 @@ module HawkularMetrics {
 
   export class MetricsAvailabilityController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert',
+      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
@@ -208,7 +209,8 @@ module HawkularMetrics {
     }
 
     private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime, HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
+      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
+          HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
         this.alertList = data.alertList;
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }

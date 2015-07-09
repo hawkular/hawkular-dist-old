@@ -25,7 +25,8 @@ module Topbar {
     public static $inject = ['$rootScope', '$route', '$routeParams', 'HawkularInventory'];
 
 
-    constructor(private $rootScope: any, private $route: any, private $routeParams: any, private HawkularInventory: any) {
+    constructor(private $rootScope: any, private $route: any, private $routeParams: any,
+                private HawkularInventory: any) {
       $rootScope.hkParams = $routeParams || [];
 
       // default time period set to 24 hours

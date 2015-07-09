@@ -91,7 +91,8 @@ module HawkularMetrics {
       //if (globalMetricId !== '.status.duration' && globalMetricId !== '.status.code') {
       if (this.metricId !== '.status.duration' && this.metricId !== '.status.code') {
         var newTrigger:any = {};
-        newTrigger.name = this.metricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
+        newTrigger.name = this.metricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' +
+            this.$scope.quickTrigger.threshold;
         newTrigger.description = 'Created on ' + new Date();
         newTrigger.firingMatch = 'ALL';
         newTrigger.safetyMatch = 'ALL';

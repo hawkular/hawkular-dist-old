@@ -25,14 +25,17 @@ module HawkularMetrics {
 
     var metricsTab:any;
 
-    _module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
+    _module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider',
+        ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider,
+         navBuilder:HawtioMainNav.BuilderFactory) => {
 
         metricsTab = navBuilder.create()
             .id(HawkularMetrics.pluginName)
             .title(() => 'Metrics')
             .href(() => '/metrics')
             .subPath('Add Url', 'add-url', navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
-            .subPath('Response Time', 'response-time', navBuilder.join(HawkularMetrics.templatePath, 'response-time.html'))
+            .subPath('Response Time', 'response-time', navBuilder.join(HawkularMetrics.templatePath,
+                'response-time.html'))
             .subPath('Availability', 'availability', navBuilder.join(HawkularMetrics.templatePath, 'availability.html'))
             .subPath('Alerts', 'alerts', navBuilder.join(HawkularMetrics.templatePath, 'alerts.html'))
             .build();
@@ -106,7 +109,8 @@ module HawkularMetrics {
     _module.config(["$routeProvider", ($routeProvider) => {
         $routeProvider.
             // this was for single page.. remove ?
-            when('/hawkular/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/single-page.html'}).
+            when('/hawkular/:resourceId/:timeOffset?/:endTime?',
+            {templateUrl: 'plugins/metrics/html/single-page.html'}).
             when('/metrics/response-time', {
                 templateUrl: 'plugins/metrics/html/response-time.html',
                 resolve: {
@@ -127,9 +131,12 @@ module HawkularMetrics {
                 }
             }).
             when('/hawkular-ui/url/url-list', {templateUrl: 'plugins/metrics/html/add-url.html'}).
-            when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/response-time.html'}).
-            when('/hawkular-ui/url/availability/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/availability.html'}).
-            when('/hawkular-ui/url/alerts/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/alerts.html'}).
+            when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?',
+            {templateUrl: 'plugins/metrics/html/response-time.html'}).
+            when('/hawkular-ui/url/availability/:resourceId/:timeOffset?/:endTime?',
+            {templateUrl: 'plugins/metrics/html/availability.html'}).
+            when('/hawkular-ui/url/alerts/:resourceId/:timeOffset?/:endTime?',
+            {templateUrl: 'plugins/metrics/html/alerts.html'}).
 
             when('/hawkular-ui/app/app-list', {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
             when('/hawkular-ui/app/app-details/:resourceId/:tabId/:timeOffset?/:endTime?', {

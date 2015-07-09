@@ -54,7 +54,8 @@ module HawkularMetrics {
    */
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams','HawkularAlertsManager' ,'HawkularErrorManager'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert',
+      '$routeParams','HawkularAlertsManager' ,'HawkularErrorManager'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
@@ -145,7 +146,8 @@ module HawkularMetrics {
       var adjStartTimeStamp:number = moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds').valueOf();
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.refreshSummaryData(metricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
-      this.refreshHistoricalChartDataForTimestamp(metricId, !startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
+      this.refreshHistoricalChartDataForTimestamp(metricId,
+          !startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
       this.getAlerts(this.resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       this.retrieveThreshold();
     }
@@ -169,7 +171,8 @@ module HawkularMetrics {
     }
 
     private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime, HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
+      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
+          HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
         this.alertList = data.alertList;
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
@@ -208,7 +211,8 @@ module HawkularMetrics {
       }
     }
 
-    refreshHistoricalChartDataForTimestamp(metricId:string, startTime?:TimestampInMillis, endTime?:TimestampInMillis):void {
+    refreshHistoricalChartDataForTimestamp(metricId:string,
+                                           startTime?:TimestampInMillis, endTime?:TimestampInMillis):void {
       // calling refreshChartData without params use the model values
       if (!endTime) {
         endTime = this.endTimeStamp;
