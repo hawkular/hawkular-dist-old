@@ -28,6 +28,9 @@ module HawkularMetrics {
   export class QuickAlertController implements IQuickAlertController {
     public static  $inject = ['$scope', 'HawkularAlert', '$log', '$q'];
 
+    private metricId:MetricId;
+    private PROMISE_BREAK: string = 'magicValue1234';
+
     constructor(private $scope:any,
                 private HawkularAlert:any,
                 private $log: ng.ILogService,
@@ -47,14 +50,6 @@ module HawkularMetrics {
 
       this.allActions();
     }
-
-    private metricId;
-
-    toggleQuickAlert():void {
-      this.$scope.showQuickAlert = !this.$scope.showQuickAlert;
-    }
-
-    private PROMISE_BREAK: string = 'magicValue1234';
 
     private allActions():void {
       this.$scope.actions = [];
@@ -87,7 +82,11 @@ module HawkularMetrics {
       return this.$q.reject(this.PROMISE_BREAK);
     }
 
-    saveQuickAlert():void {
+    public toggleQuickAlert():void {
+      this.$scope.showQuickAlert = !this.$scope.showQuickAlert;
+    }
+
+    public saveQuickAlert():void {
       //if (globalMetricId !== '.status.duration' && globalMetricId !== '.status.code') {
       if (this.metricId !== '.status.duration' && this.metricId !== '.status.code') {
         var newTrigger:any = {};

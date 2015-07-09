@@ -33,6 +33,7 @@ module HawkularMetrics {
     public static WAIT_COLOR = '#d5d026'; /// yellow
     public static CREATION_COLOR = '#95489c'; /// purple
 
+    private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
     private expandedList;
     public alertList;
@@ -66,14 +67,26 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private autoRefreshPromise: ng.IPromise<number>;
 
-    cancelAutoRefresh(): void {
-      this.$interval.cancel(this.autoRefreshPromise);
-      toastr.info('Canceling Auto Refresh');
+    private formatBucketedChartOutput(response):IChartDataPoint[] {
+      //  The schema is different for bucketed output
+      return _.map(response, (point:IChartDataPoint) => {
+        return {
+          timestamp: point.start,
+          date: new Date(point.start),
+          value: !angular.isNumber(point.value) ? 0 : point.value,
+          avg: (point.empty) ? 0 : point.avg,
+          min: !angular.isNumber(point.min) ? 0 : point.min,
+          max: !angular.isNumber(point.max) ? 0 : point.max,
+          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
+          median: !angular.isNumber(point.median) ? 0 : point.median,
+          empty: point.empty
+        };
+      });
     }
 
-    autoRefresh(intervalInSeconds: number): void {
+
+    public autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getDatasources();
       }, intervalInSeconds * 1000);
@@ -83,7 +96,7 @@ module HawkularMetrics {
       });
     }
 
-    getDatasources(currentTenantId?: TenantId): any {
+    public getDatasources(currentTenantId?: TenantId): any {
       this.alertList = []; // FIXME: when we have alerts for app server
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
@@ -121,7 +134,7 @@ module HawkularMetrics {
       });
     }
 
-    getDatasourceChartData(currentTenantId?: TenantId): any {
+    public getDatasourceChartData(currentTenantId?: TenantId): any {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
@@ -177,22 +190,7 @@ module HawkularMetrics {
 
     }
 
-    private formatBucketedChartOutput(response):IChartDataPoint[] {
-      //  The schema is different for bucketed output
-      return _.map(response, (point:IChartDataPoint) => {
-        return {
-          timestamp: point.start,
-          date: new Date(point.start),
-          value: !angular.isNumber(point.value) ? 0 : point.value,
-          avg: (point.empty) ? 0 : point.avg,
-          min: !angular.isNumber(point.min) ? 0 : point.min,
-          max: !angular.isNumber(point.max) ? 0 : point.max,
-          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
-          median: !angular.isNumber(point.median) ? 0 : point.median,
-          empty: point.empty
-        };
-      });
-    }
+
 
 
 

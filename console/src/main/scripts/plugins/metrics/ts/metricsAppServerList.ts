@@ -28,10 +28,10 @@ module HawkularMetrics {
         'md5', 'HkHeaderParser'];
 
     private resourceList;
-    public alertList;
     private resPerPage = 10;
     private resCurPage = 0;
     private autoRefreshPromise: ng.IPromise<number>;
+    public alertList;
     public headerLinks = {};
 
     constructor(private $location: ng.ILocationService,
@@ -70,12 +70,8 @@ module HawkularMetrics {
       this.getResourceList();
     }
 
-    cancelAutoRefresh(): void {
-      this.$interval.cancel(this.autoRefreshPromise);
-      toastr.info('Canceling Auto Refresh');
-    }
 
-    autoRefresh(intervalInSeconds: number): void {
+    public autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getResourceList();
       }, intervalInSeconds * 1000);
@@ -85,7 +81,7 @@ module HawkularMetrics {
       });
     }
 
-    getResourceList(currentTenantId?: TenantId):any {
+    public getResourceList(currentTenantId?: TenantId):any {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'WildFly Server', per_page: this.resPerPage,
               page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
