@@ -15,10 +15,10 @@
 /// limitations under the License.
 ///
 
-/// <reference path="accountsPlugin.ts"/>
+/// <reference path='accountsPlugin.ts'/>
 module HawkularAccounts {
 
-    export var PersonaController = _module.controller("HawkularAccounts.PersonaController", [
+    export var PersonaController = _module.controller('HawkularAccounts.PersonaController', [
         '$rootScope', '$scope', '$log', 'HawkularAccount',
         ($rootScope, $scope, $log, HawkularAccount) => {
             $scope.personas = [];
@@ -29,12 +29,12 @@ module HawkularAccounts {
             };
 
             $scope.loadCurrentPersona = () => {
-                $scope.currentPersona = HawkularAccount.Persona.get({id: "current"},
+                $scope.currentPersona = HawkularAccount.Persona.get({id: 'current'},
                     () => {
-                        $scope.$emit("CurrentPersonaLoaded", $scope.currentPersona);
+                        $scope.$emit('CurrentPersonaLoaded', $scope.currentPersona);
                     },
                     () => {
-                        $log.warn("Failed in retrieving the current persona");
+                        $log.warn('Failed in retrieving the current persona');
                     }
                 );
             };
@@ -48,7 +48,7 @@ module HawkularAccounts {
                         $scope.loading = false;
                     },
                     () => {
-                        $log.warn("List of personas could NOT be retrieved.");
+                        $log.warn('List of personas could NOT be retrieved.');
                         $scope.loading = false;
                     }
                 );
@@ -60,7 +60,7 @@ module HawkularAccounts {
                 $scope.personas = $scope.personas.filter((persona) => {
                     return persona.id !== $scope.currentPersona.id;
                 });
-                $scope.$emit("SwitchedPersona", persona);
+                $scope.$emit('SwitchedPersona', persona);
             };
 
             $rootScope.$on('CurrentPersonaLoaded', () => {

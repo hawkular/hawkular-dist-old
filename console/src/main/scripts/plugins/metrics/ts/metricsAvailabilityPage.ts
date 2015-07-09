@@ -15,9 +15,9 @@
 /// limitations under the License.
 ///
 
-/// <reference path="metricsTypes.ts"/>
-/// <reference path="metricsPlugin.ts"/>
-/// <reference path="../../includes.ts"/>
+/// <reference path='metricsTypes.ts'/>
+/// <reference path='metricsPlugin.ts'/>
+/// <reference path='../../includes.ts'/>
 
 module HawkularMetrics {
 
@@ -38,7 +38,8 @@ module HawkularMetrics {
 
   export class MetricsAvailabilityController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert',
+      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
@@ -144,7 +145,7 @@ module HawkularMetrics {
           buckets: 1
         }).$promise
           .then((availResponse:IAvailabilitySummary[]) => {
-            console.info("Avail Summary:");
+            console.info('Avail Summary:');
             console.dir(availResponse);
 
             if (availResponse && !_.last(availResponse).empty) {
@@ -178,7 +179,7 @@ module HawkularMetrics {
         }).$promise
           .then((response) => {
 
-            console.log("Availability Data: ");
+            console.log('Availability Data: ');
             console.dir(response);
             this.availabilityDataPoints = response;
 
@@ -208,7 +209,8 @@ module HawkularMetrics {
     }
 
     private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime, HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
+      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
+          HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
         this.alertList = data.alertList;
       }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }

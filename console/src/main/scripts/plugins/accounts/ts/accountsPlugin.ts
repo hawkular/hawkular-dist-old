@@ -15,29 +15,34 @@
 /// limitations under the License.
 ///
 
-/// <reference path="../../includes.ts"/>
-/// <reference path="accountsGlobals.ts"/>
+/// <reference path='../../includes.ts'/>
+/// <reference path='accountsGlobals.ts'/>
 module HawkularAccounts {
     export var _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
     var accountsTab:any = undefined;
     var currentPersona:any = undefined;
 
-    _module.config(['$locationProvider', '$routeProvider', '$httpProvider', 'HawtioNavBuilderProvider', ($locationProvider, $routeProvider:ng.route.IRouteProvider, $httpProvider:ng.IHttpProvider, builder:HawtioMainNav.BuilderFactory) => {
+    _module.config(['$locationProvider', '$routeProvider', '$httpProvider', 'HawtioNavBuilderProvider', (
+        $locationProvider, $routeProvider:ng.route.IRouteProvider, $httpProvider:ng.IHttpProvider,
+        builder:HawtioMainNav.BuilderFactory) => {
         accountsTab = builder.create()
             .id(HawkularAccounts.pluginName)
-            .title(() => "Accounts")
-            .href(() => "/accounts")
-            .subPath("My account", "accounts", builder.join(HawkularAccounts.templatePath, 'accounts.html'))
-            .subPath("Organizations", "organizations", builder.join(HawkularAccounts.templatePath, 'organizations.html'))
+            .title(() => 'Accounts')
+            .href(() => '/accounts')
+            .subPath('My account', 'accounts', builder.join(HawkularAccounts.templatePath, 'accounts.html'))
+            .subPath('Organizations', 'organizations', builder.join(HawkularAccounts.templatePath,
+                'organizations.html'))
             .build();
         builder.configureRouting($routeProvider, accountsTab);
 
-        $routeProvider.when('/accounts/organizations/new', {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization_new.html')});
+        $routeProvider.when('/accounts/organizations/new', {templateUrl: builder.join(HawkularAccounts.templatePath,
+            'organization_new.html')});
         $locationProvider.html5Mode(true);
         $httpProvider.interceptors.push(PersonaInterceptorService.Factory);
     }]);
 
-    _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails', 'HawtioNav', ($rootScope, $log, $modal, $document, userDetails, HawtioNav:HawtioMainNav.Registry) => {
+    _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails', 'HawtioNav',
+        ($rootScope, $log, $modal, $document, userDetails, HawtioNav:HawtioMainNav.Registry) => {
         HawtioNav.add(accountsTab);
         $rootScope.userDetails = userDetails;
 
@@ -46,7 +51,7 @@ module HawkularAccounts {
         });
 
         $rootScope.$on('IdleEnd', () => {
-            $("#idle").slideUp();
+            $('#idle').slideUp();
         });
 
         $rootScope.$on('IdleTimeout', () => {
@@ -57,7 +62,7 @@ module HawkularAccounts {
                 backdrop: 'static'
             });
         });
-        
+
         $rootScope.$on('CurrentPersonaLoaded', (e, persona) => {
             currentPersona = persona;
             $rootScope.currentPersona = currentPersona;
@@ -70,7 +75,7 @@ module HawkularAccounts {
     }]);
 
     hawtioPluginLoader.registerPreBootstrapTask((next) => {
-        window['KeycloakConfig'] = "/keycloak.json";
+        window['KeycloakConfig'] = '/keycloak.json';
         next();
     }, true);
 

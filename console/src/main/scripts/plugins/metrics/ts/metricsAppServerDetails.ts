@@ -33,12 +33,24 @@ module HawkularMetrics {
       $scope.tabs = this;
 
       this.availableTabs = [
-        {id: 'jvm', name: 'JVM', enabled: true, src:'plugins/metrics/html/app-details/detail-jvm.html', controller: HawkularMetrics.AppServerJvmDetailsController},
-        {id: 'deployments', name: 'Deployments', enabled: true, src:'plugins/metrics/html/app-details/detail-deployments.html', controller: HawkularMetrics.AppServerDeploymentsDetailsController},
-        {id: 'jms', name: 'JMS', enabled: false, src:'plugins/metrics/html/app-details/detail-jms.html', controller: HawkularMetrics.AppServerJmsDetailsController},
-        {id: 'transactions', name: 'Transactions', enabled: false, src:'plugins/metrics/html/app-details/detail-transactions.html', controller: HawkularMetrics.AppServerTransactionsDetailsController},
-        {id: 'web', name: 'Web', enabled: false, src:'plugins/metrics/html/app-details/detail-web.html', controller: HawkularMetrics.AppServerWebDetailsController},
-        {id: 'datasources', name: 'Datasources', enabled: true, src:'plugins/metrics/html/app-details/detail-datasources.html', controller: HawkularMetrics.AppServerDatasourcesDetailsController}
+        {id: 'jvm', name: 'JVM', enabled: true,
+          src:'plugins/metrics/html/app-details/detail-jvm.html',
+          controller: HawkularMetrics.AppServerJvmDetailsController},
+        {id: 'deployments', name: 'Deployments', enabled: true,
+          src:'plugins/metrics/html/app-details/detail-deployments.html',
+          controller: HawkularMetrics.AppServerDeploymentsDetailsController},
+        {id: 'jms', name: 'JMS', enabled: false,
+          src:'plugins/metrics/html/app-details/detail-jms.html',
+          controller: HawkularMetrics.AppServerJmsDetailsController},
+        {id: 'transactions', name: 'Transactions', enabled: false,
+          src:'plugins/metrics/html/app-details/detail-transactions.html',
+          controller: HawkularMetrics.AppServerTransactionsDetailsController},
+        {id: 'web', name: 'Web', enabled: false,
+          src:'plugins/metrics/html/app-details/detail-web.html',
+          controller: HawkularMetrics.AppServerWebDetailsController},
+        {id: 'datasources', name: 'Datasources', enabled: true,
+          src:'plugins/metrics/html/app-details/detail-datasources.html',
+          controller: HawkularMetrics.AppServerDatasourcesDetailsController}
       ];
 
       this.activeTab = $routeParams.tabId || 'jvm';

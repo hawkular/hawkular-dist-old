@@ -22,8 +22,10 @@
 
 module HawkularMetrics {
 
-/// Typescript 1.4 introduces type aliases: http://blogs.msdn.com/b/typescript/archive/2015/01/16/announcing-typescript-1-4.aspx
-/// Some Type aliases to make things more type safe than just string or number. Implies how it is being used and is especially useful for refactoring.
+/// Typescript 1.4 introduces type aliases:
+/// http://blogs.msdn.com/b/typescript/archive/2015/01/16/announcing-typescript-1-4.aspx
+/// Some Type aliases to make things more type safe than just string or number. Implies how it is being used and is
+/// especially useful for refactoring.
 
 export type TenantId = string;
 export type ResourceId = string;

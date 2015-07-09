@@ -15,10 +15,10 @@
 /// limitations under the License.
 ///
 
-/// <reference path="topbarPlugin.ts"/>
+/// <reference path='topbarPlugin.ts'/>
 module Topbar {
 
-  var log:Logging.Logger = Logger.get("Topbar");
+  var log:Logging.Logger = Logger.get('Topbar');
 
   export class TopbarDirective {
 
@@ -29,8 +29,9 @@ module Topbar {
     public templateUrl = templatePath;
   }
 
-  export var TopbarController = _module.controller("Topbar.TopbarController",
-    ['$scope', '$rootScope', '$location', '$route', '$routeParams', 'HawkularNav', 'HawkularInventory', ($scope, $rootScope, $location, $route, $routeParams, HawkularNav, HawkularInventory) => {
+  export var TopbarController = _module.controller('Topbar.TopbarController',
+    ['$scope', '$rootScope', '$location', '$route', '$routeParams', 'HawkularNav', 'HawkularInventory',
+      ($scope, $rootScope, $location, $route, $routeParams, HawkularNav, HawkularInventory) => {
 
       $scope.getClass = function(path) {
           return $location.path().indexOf(path) === 0 ? 'active' : '';
