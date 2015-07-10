@@ -30,10 +30,11 @@ module HawkularMetrics {
 
   export class HawkularErrorManager implements IHawkularErrorManager {
 
-    public static $inject = ['$q', '$log'];
+    public static $inject = ['$q', '$log', 'AlertService'];
 
     constructor(private $q: ng.IQService,
-                private $log: ng.ILogService) {
+                private $log: ng.ILogService,
+                private AlertService: IAlertService) {
     }
 
     private errorToastr(error: any, errorMsg: string): void {
@@ -45,8 +46,7 @@ module HawkularMetrics {
         errorMsgComplete = errorMsg + ' ' + error;
       }
 
-      this.$log.error(errorMsgComplete);
-      toastr.error(errorMsgComplete);
+      this.AlertService.error(errorMsgComplete);
     }
 
     public errorHandler(error: any, msg: string, cb?: (error: any, msg: string) => void): ng.IPromise<void> {
