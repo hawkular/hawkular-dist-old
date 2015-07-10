@@ -57,6 +57,7 @@
     <module>console</module>
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
+    <module>modules/feed-comm</module>
     <module>dist</module>
     <module>modules/end-to-end-test</module>
   </modules>
@@ -92,6 +93,7 @@
     <version.org.hawkular.bus>0.1.1</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.1.1.Final</version.org.hawkular.commons>
     <version.org.hawkular.console>${project.version}</version.org.hawkular.console>
+    <version.org.hawkular.feed-comm>${project.version}</version.org.hawkular.feed-comm>
     <version.org.hawkular.inventory>0.1.0.Alpha3</version.org.hawkular.inventory>
     <version.org.hawkular.metrics>0.4.0.Final</version.org.hawkular.metrics>
     <version.org.hawkular.nest>0.1.1</version.org.hawkular.nest>
@@ -180,6 +182,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.hawkular.bus</groupId>
+        <artifactId>hawkular-bus-mdb</artifactId>
+        <version>${version.org.hawkular.bus}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.hawkular.commons</groupId>
         <artifactId>hawkular-commons-embedded-cassandra-ear</artifactId>
         <version>${version.org.hawkular.commons}</version>
@@ -235,6 +243,13 @@
         <groupId>org.hawkular.metrics</groupId>
         <artifactId>clients-common</artifactId>
         <version>${version.org.hawkular.metrics}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular</groupId>
+        <artifactId>hawkular-feed-comm</artifactId>
+        <version>${version.org.hawkular.feed-comm}</version>
+        <type>war</type>
       </dependency>
 
       <dependency>
