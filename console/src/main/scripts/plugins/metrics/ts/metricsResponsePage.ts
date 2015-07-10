@@ -55,7 +55,7 @@ module HawkularMetrics {
   export class MetricsViewController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert',
-      '$routeParams','HawkularAlertsManager' ,'HawkularErrorManager'];
+      '$routeParams','HawkularAlertsManager' ,'HawkularErrorManager', 'AlertService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
@@ -79,6 +79,7 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private HawkularAlertsManager: IHawkularAlertsManager,
                 private HawkularErrorManager: IHawkularErrorManager,
+                private AlertService: IAlertService,
                 public alertList:any,
                 public startTimeStamp:TimestampInMillis,
                 public endTimeStamp:TimestampInMillis) {
@@ -158,7 +159,7 @@ module HawkularMetrics {
 
     private noDataFoundForId(resourceId:ResourceId):void {
       this.$log.warn('No Data found for id: ' + resourceId);
-      ///toastr.warning('No Data found for id: ' + id);
+      ///this.AlertService.warning('No Data found for id: ' + id);
     }
 
     private refreshChartDataNow(metricId:MetricId, startTime?:TimestampInMillis):void {
@@ -185,8 +186,7 @@ module HawkularMetrics {
           }
 
         }, (error) => {
-          this.$log.error('Error Loading Threshold data');
-          toastr.error('Error Loading Threshold Data: ' + error);
+          this.AlertService.error('Error Loading Threshold Data: ' + error);
         });
     }
 
@@ -221,8 +221,7 @@ module HawkularMetrics {
             this.average = Math.round(_.last(dataPoints).avg);
 
           }, (error) => {
-            this.$log.error('Error Loading Chart data');
-            toastr.error('Error Loading Chart Data: ' + error);
+            this.AlertService.error('Error Loading Chart Data: ' + error);
           });
 
       }
@@ -268,8 +267,7 @@ module HawkularMetrics {
             }
 
           }, (error) => {
-            this.$log.error('Error Loading Chart data');
-            toastr.error('Error Loading Chart Data: ' + error);
+            this.AlertService.error('Error Loading Chart Data: ' + error);
           });
       }
     }

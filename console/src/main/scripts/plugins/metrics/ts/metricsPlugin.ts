@@ -21,7 +21,7 @@
 module HawkularMetrics {
 
   export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkular.charts',
-    'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5']);
+    'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr']);
 
   _module.config(['$httpProvider', '$locationProvider', '$routeProvider',
     ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider) => {
@@ -94,14 +94,14 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/response-time.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory) {
+          resource: function ($route, $location, HawkularInventory, AlertService) {
             var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
               resourceId: $route.current.params.resourceId}).$promise;
             p.then((response) => {
                 return response.properties.url;
               },
               (error) => {
-                toastr.info('You were redirected to this page because you requested an invalid URL.');
+                AlertService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -112,14 +112,14 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/availability.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory) {
+          resource: function ($route, $location, HawkularInventory, AlertService) {
             var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
               resourceId: $route.current.params.resourceId}).$promise;
             p.then((response) => {
                 return response.properties.url;
               },
               (error) => {
-                toastr.info('You were redirected to this page because you requested an invalid URL.');
+                AlertService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -130,14 +130,14 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/alerts.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory) {
+          resource: function ($route, $location, HawkularInventory, AlertService) {
             var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
               resourceId: $route.current.params.resourceId}).$promise;
             p.then((response) => {
                 return response.properties.url;
               },
               (error) => {
-                toastr.info('You were redirected to this page because you requested an invalid URL.');
+                AlertService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -149,9 +149,10 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory) {
+          resource: function ($route, $location, HawkularInventory, AlertService) {
             var redirectMissingAppServer = function() {
-              toastr.info('You were redirected to this page because you requested an invalid Application Server.');
+              AlertService.info('You were redirected to this page because you requested an invalid ' +
+                  'Application Server.');
               $location.path('/hawkular-ui/app/app-list');
             };
             var checkAppServerExists = function() {
