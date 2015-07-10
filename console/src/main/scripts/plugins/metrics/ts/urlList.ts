@@ -24,7 +24,7 @@
 module HawkularMetrics {
 
 
-  export class AddUrlController {
+  export class UrlListController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
       'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q',
@@ -183,8 +183,8 @@ module HawkularMetrics {
             // get things
           }
         }
-        var expanded = this.resourceList ? this.resourceList.expanded : [];
-        aResourceList.expanded = expanded;
+
+        aResourceList.expanded = this.resourceList ? this.resourceList.expanded : [];
         this.HawkularAlert.Alert.query({statuses:'OPEN'}, (anAlertList) => {
           this.alertList = anAlertList;
         }, this);
@@ -193,7 +193,6 @@ module HawkularMetrics {
           promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
             resourceId: res.id, gaugeId: (res.id + '.status.duration'),
             start: moment().subtract(1, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
-            // FIXME: Work data so it works for chart ?
             res['responseTime'] = resource;
           }).$promise);
           promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
@@ -213,21 +212,11 @@ module HawkularMetrics {
           }).$promise);
           this.lastUpdateTimestamp = new Date();
         }, this);
-        this.$q.all(promises).then((result) => {
+        this.$q.all(promises).then(() => {
           this.resourceList = aResourceList;
         });
 
       });
-    }
-
-    public getAverage(data:any, field:string):number {
-      if (data) {
-        var sum = 0;
-        for (var i = 0; i < data.length; i++) {
-          sum += parseInt(data[i][field], 10);
-        }
-        return Math.round(sum / data.length);
-      }
     }
 
     public deleteResource(resource:any):any {
@@ -293,6 +282,6 @@ module HawkularMetrics {
     }
 
   }
-  _module.controller('HawkularMetrics.AddUrlController', AddUrlController);
+  _module.controller('HawkularMetrics.UrlListController', UrlListController);
 
 }

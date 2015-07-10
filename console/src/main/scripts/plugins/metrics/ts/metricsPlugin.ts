@@ -89,7 +89,7 @@ module HawkularMetrics {
           }
         }
       }).
-      when('/hawkular-ui/url/url-list', {templateUrl: 'plugins/metrics/html/add-url.html'}).
+      when('/hawkular-ui/url/url-list', {templateUrl: 'plugins/metrics/html/url-list.html'}).
       when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {
         templateUrl: 'plugins/metrics/html/response-time.html',
         reloadOnSearch: false,
