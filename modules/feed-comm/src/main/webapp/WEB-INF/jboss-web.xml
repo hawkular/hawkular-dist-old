@@ -18,7 +18,5 @@
 
 -->
 <jboss-web>
-  <context-root>/hawkular/opsq</context-root>
-  <!-- see https://community.jboss.org/wiki/JBossAS7SecurityAuditing for the next tag -->
-  <!--<disable-audit>false</disable-audit>-->
+  <context-root>/hawkular/feed-comm</context-root>
 </jboss-web>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
 
     Copyright 2015 Red Hat, Inc. and/or its affiliates
@@ -17,12 +17,14 @@
     limitations under the License.
 
 -->
-<jboss-deployment-structure>
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+
   <deployment>
     <dependencies>
-      <!--<module name="org.hawkular.nest" />-->
-      <module name="org.jboss.resteasy.resteasy-jackson2-provider" services="import"/>
-      <module name="deployment.hawkular-integrated-inventory-rest.war" services="import"/>
+      <module name="org.hawkular.nest" />
+      <module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
     </dependencies>
   </deployment>
+
 </jboss-deployment-structure>
+
