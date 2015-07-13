@@ -22,7 +22,7 @@ public class EchoCommand implements Command {
     public static String NAME = "echo";
 
     @Override
-    public String execute(String json) {
+    public BasicResponse execute(String json) {
         // hydrate request object from the JSON message
         EchoRequest echoMessage = JsonUtil.fromJson(json, EchoRequest.class);
 
@@ -30,6 +30,6 @@ public class EchoCommand implements Command {
         String reply = String.format("ECHO [%s]", echoMessage.echoMessage);
 
         // return the JSON response
-        return new EchoResponse(reply).toJson();
+        return new EchoResponse(reply);
     }
 }

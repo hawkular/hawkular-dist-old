@@ -20,11 +20,13 @@ package org.hawkular.feedcomm.ws;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.hawkular.feedcomm.ws.command.BasicResponse;
@@ -32,7 +34,7 @@ import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.EchoCommand;
 import org.hawkular.feedcomm.ws.command.ErrorDetails;
 
-@ServerEndpoint("/")
+@ServerEndpoint("/{feedId}")
 public class FeedCommWebSocket {
 
     private static final Map<String, Class<? extends Command>> VALID_COMMANDS;
@@ -41,47 +43,53 @@ public class FeedCommWebSocket {
         VALID_COMMANDS.put(EchoCommand.NAME, EchoCommand.class);
     }
 
+    @Inject
+    private ConnectedFeeds connectedFeeds;
+
     @OnOpen
-    public void clientOpen(Session client) {
-        MsgLogger.LOG.debug("Client connected");
+    public void feedSessionOpen(Session session, @PathParam("feedId") String feedId) {
+        MsgLogger.LOG.infof("Feed [%s] connected", feedId);
+        connectedFeeds.addSession(feedId, session);
     }
 
     /**
      * When a message is received from a feed, this method will execute the command the feed is asking for.
      *
      * @param commandAndJsonStr the name of the command followed optionally by "=" and with a json message.
-     * @param client the client making the request
-     * @return the results of the command invocation
+     * @param session the client session making the request
+     * @return the results of the command invocation; this is sent back to the feed
      */
     @OnMessage
-    public String clientMessage(String commandAndJsonStr, Session client) {
+    public String feedMessage(String commandAndJsonStr, Session session, @PathParam("feedId") String feedId) {
         String[] commandAndJsonArray = commandAndJsonStr.split("=", 2); // commandName[=jsonString]
         String commandName = commandAndJsonArray[0];
         String json = (commandAndJsonArray.length == 1) ? null : commandAndJsonArray[1];
 
-        MsgLogger.LOG.debugf("Client message: command=[%s], json=[%s]", commandName, json);
+        MsgLogger.LOG.infof("Feed [%s] message: command=[%s], json=[%s]", feedId, commandName, json);
 
         Class<? extends Command> commandClass = VALID_COMMANDS.get(commandName);
         if (commandClass == null) {
-            MsgLogger.LOG.errorInvalidCommandName(commandName);
+            MsgLogger.LOG.errorInvalidCommandName(feedId, commandName);
             return new BasicResponse(new ErrorDetails("Invalid command name: " + commandName)).toJson();
         }
 
-        String response;
+        String responseString;
 
         try {
             Command command = commandClass.newInstance();
-            response = command.execute(json);
+            BasicResponse response = command.execute(json);
+            responseString = response.toJson();
         } catch (Throwable t) {
-            MsgLogger.LOG.errorCommandExecutionFailure(commandName, json, t);
-            response = new BasicResponse(new ErrorDetails("Command failed[" + commandName + "]", t)).toJson();
+            MsgLogger.LOG.errorCommandExecutionFailure(feedId, commandName, json, t);
+            responseString = new BasicResponse(new ErrorDetails("Command failed[" + commandName + "]", t)).toJson();
         }
 
-        return response;
+        return responseString;
     }
 
     @OnClose
-    public void clientClose(Session client, CloseReason reason) {
-        MsgLogger.LOG.debugf("Client closed. Reason=[%s]", reason);
+    public void feedSessionClose(Session session, CloseReason reason, @PathParam("feedId") String feedId) {
+        MsgLogger.LOG.infof("Feed [%s] closed session. Reason=[%s]", feedId, reason);
+        connectedFeeds.removeSession(feedId);
     }
 }

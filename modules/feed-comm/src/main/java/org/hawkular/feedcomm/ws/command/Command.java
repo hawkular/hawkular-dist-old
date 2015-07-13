@@ -23,8 +23,9 @@ public interface Command {
     /**
      * Performs the command for the feed.
      *
-     * @param json the feed will send information to this command via a JSON message.
-     * @return the results of the command that need to be sent back to the feed. This should be a JSON message.
+     * @param json the feed will send information to this command via a JSON message. The command needs to
+     *             deserialize this JSON based on the request it expects to be receiving.
+     * @return the results of the command that need to be sent back to the feed.
      */
-    String execute(String json);
+    BasicResponse execute(String json);
 }
