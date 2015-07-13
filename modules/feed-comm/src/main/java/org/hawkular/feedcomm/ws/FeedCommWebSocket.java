@@ -18,6 +18,7 @@
 package org.hawkular.feedcomm.ws;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
@@ -26,27 +27,60 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import org.hawkular.feedcomm.ws.command.Command;
+import org.hawkular.feedcomm.ws.command.EchoCommand;
+import org.hawkular.feedcomm.ws.command.ErrorResponse;
+
 @ServerEndpoint("/")
 public class FeedCommWebSocket {
 
-    @OnOpen
-    public void clientOpen(Session client) {
-        MsgLogger.LOG.infoGeneric("Client connected");
+    private static final Map<String, Class<? extends Command>> VALID_COMMANDS;
+    static {
+        VALID_COMMANDS = new HashMap<>();
+        VALID_COMMANDS.put(EchoCommand.NAME, EchoCommand.class);
     }
 
+    @OnOpen
+    public void clientOpen(Session client) {
+        MsgLogger.LOG.debug("Client connected");
+    }
+
+    /**
+     * When a message is received from a feed, this method will execute the command the feed is asking for.
+     *
+     * @param commandAndJsonStr the name of the command followed optionally by "=" and with a json message.
+     * @param client the client making the request
+     * @return the results of the command invocation
+     */
     @OnMessage
-    public String clientMessage(String json, Session client) {
-        MsgLogger.LOG.infoGeneric("Client message: " + json);
-        try {
-            HashMap<String, String> command = JsonUtil.fromJson(json, HashMap.class);
-            return command.toString();
-        } catch (Exception e) {
-            return "ERROR: " + e;
+    public String clientMessage(String commandAndJsonStr, Session client) {
+        String[] commandAndJsonArray = commandAndJsonStr.split("=", 2); // commandName[=jsonString]
+        String commandName = commandAndJsonArray[0];
+        String json = (commandAndJsonArray.length == 1) ? null : commandAndJsonArray[1];
+
+        MsgLogger.LOG.debugf("Client message: command=[%s], json=[%s]", commandName, json);
+
+        Class<? extends Command> commandClass = VALID_COMMANDS.get(commandName);
+        if (commandClass == null) {
+            MsgLogger.LOG.errorInvalidCommandName(commandName);
+            return JsonUtil.toJson(new ErrorResponse("Invalid command name: " + commandName));
         }
+
+        String response;
+
+        try {
+            Command command = commandClass.newInstance();
+            response = command.execute(json);
+        } catch (Throwable t) {
+            MsgLogger.LOG.errorCommandExecutionFailure(commandName, json, t);
+            response = JsonUtil.toJson(new ErrorResponse("Failed to execute command [" + commandName + "]", t));
+        }
+
+        return response;
     }
 
     @OnClose
     public void clientClose(Session client, CloseReason reason) {
-        MsgLogger.LOG.infoGeneric("Client closed");
+        MsgLogger.LOG.debugf("Client closed. Reason=[%s]", reason);
     }
 }

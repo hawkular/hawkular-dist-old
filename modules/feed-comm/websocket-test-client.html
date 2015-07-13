@@ -7,8 +7,8 @@
 <body>
 Enter text to send to the websocket server:
 <div id="send">
-    <input type="text" id="data" size="100"/><br>
-    <input type="button" id="sendtext" value="send text"/>
+  <input type="text" id="data" size="100"/><br>
+  <input type="button" id="sendtext" value="send text"/>
 </div>
 <div id="output"></div>
 </body>
@@ -22,7 +22,6 @@ jQuery(function($){
   }else{
     setup();
   }
-
 
   function setup(){
 
@@ -78,9 +77,7 @@ jQuery(function($){
       var p = document.createElement('p');
       p.innerHTML = txt;
       document.getElementById('output').appendChild(p);
-    }	
-
-
+    }
   }
 
 });
