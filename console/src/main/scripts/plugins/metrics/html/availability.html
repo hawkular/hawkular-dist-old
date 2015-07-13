@@ -1,0 +1,83 @@
+<div class="hk-screen-content" ng-controller="MetricsAvailabilityController as vm">
+  <hawkular-sidebar ng-controller="Sidebar.SidebarController">
+    <div class="hk-nav-tabs-container">
+      <ul class="nav nav-tabs nav-tabs-pf">
+        <li><a href="/hawkular-ui/url/alerts/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-alerts">All Alerts</a></li>
+        <li class="active"><a href="/hawkular-ui/url/availability/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-availability">Availability</a></li>
+        <li><a href="/hawkular-ui/url/response-time/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-response-time">Response Time</a></li>
+      </ul>
+    </div>
+  </hawkular-sidebar>
+
+  <section id="hk-availability" class="hk-tab-content">
+
+    <hk-alert-notification></hk-alert-notification>
+
+    <!-- Summary -->
+    <h3 class="pull-left">Availability Status</h3>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+    <div class="panel panel-default hk-summary">
+      <div class="row">
+        <div class="col-sm-3 hk-summary-item">
+          <span class="hk-data" ng-show="vm.uptimeRatio < 1">{{vm.uptimeRatio * 100 | number:3}} %</span>
+          <span class="hk-data" ng-show="vm.uptimeRatio === 1">{{vm.uptimeRatio * 100}} %</span>
+          <span class="hk-item">Availability</span>
+        </div>
+        <div class="col-sm-3 hk-summary-item">
+          <span class="hk-data">{{vm.downtimeDuration / 1000 | number:0}} s</span>
+          <span class="hk-item">Total Downtime Duration</span>
+        </div>
+        <div class="col-sm-3 hk-summary-item">
+          <span class="hk-data" ng-show="vm.lastDowntime.valueOf() !== 0">{{vm.lastDowntime | date:'mediumDate'}}</span>
+          <span class="hk-data" ng-show="!vm.lastDowntime || vm.lastDowntime.valueOf() === 0">Always Up</span>
+          <span class="hk-item">Last Downtime</span>
+        </div>
+        <div class="col-sm-3 hk-summary-item">
+          <span class="hk-data">{{vm.downtimeCount}}</span>
+          <span class="hk-item">Downtime Events</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="hk-info-top clearfix">
+      <h3 class="pull-left" data-toggle="tooltip" data-placement="top" title="" data-original-title="Expand/collapse">
+        <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+      </h3>
+      <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    </div>
+
+    <div class="clearfix">
+      <!-- No Alerts -->
+      <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
+        <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
+        <div class="hk-event">No Alerts have been fired in this category and time range.</div>
+      </div>
+      <!-- Alerts exist -->
+      <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList" hk-limit="(showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
+    </div>
+
+    <!-- Availability Chart -->
+    <div class="hk-info-top clearfix">
+      <h3 class="pull-left">Metrics</h3>
+      <div class="hk-update pull-right">
+        <button ng-click="vm.refreshAvailPageNow(vm.getResourceId())" class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart"><i class="fa fa-refresh"></i></button>
+      </div>
+    </div>
+
+    <div class="panel panel-default hk-graph">
+      <h2>Availability</h2>
+      <availability-chart
+              data="{{vm.availabilityDataPoints}}"
+              chart-type="availability">
+      </availability-chart>
+      <div class="hk-legend text-left hk-availability">
+        <span><span class="hk-legend-square hk-green"></span>Available</span>
+        <span><span class="hk-legend-square hk-red"></span>Down</span>
+        <span><span class="hk-legend-square hk-gray-light"></span>Unknown</span>
+      </div>
+    </div>
+
+
+  </section>
+</div>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Hawkular - The OpenSource monitoring platform</title>
+    <base href='${hawkular.console.index.html.base.href}'>
+    <meta charset="UTF8">
+
+    <!-- bower:css -->
+    <!-- endbower -->
+    <link href="dist/hawkular-console.css?v=${hawkular.console.timestamp}" rel="stylesheet">
+
+    <!-- ES6/ES6 shim -->
+    <!--[if IE 8]>
+    <script src="libs/es5-dom-shim/__COMIPLE/a.ie8.js"></script>
+    <![endif]-->
+    <script src="libs/es5-dom-shim/__COMPILE/a.js"></script>
+    <script src="libs/patternfly/components/jquery/dist/jquery.js"></script>
+    <script src="libs/patternfly/components/bootstrap/dist/js/bootstrap.js"></script>
+
+    <!-- bower:js -->
+    <!-- endbower -->
+  </head>
+
+  <body style="background-color: #f5f5f5" class="ng-cloak"> <!-- FIXME: Add CSS rule -->
+    <nav class="navbar navbar-default navbar-pf" role="navigation">
+      <div data-idle-countdown="countdown" data-ng-init="countdown=30" id="idle">
+        <strong>You'll be logged out in {{countdown}} second(s).</strong>.
+      </div>
+
+      <div>
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">
+            <img id="hawkularLogo" src="resources/img/brand.svg" alt="RED HAT JBOSS HAWKULAR Management Console" title="Hawkular">
+          </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-utility pull-right">
+            <li class="dropdown" data-ng-controller="HawkularAccounts.PersonaController">
+              <a href="#" dropdown-toggle>
+                <span class="pficon pficon-user"></span>
+                {{currentPersona.name}} <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu" id="personaSwitcher">
+                <li data-ng-repeat="persona in personas">
+                  <a href="#" data-ng-click="switchPersona(persona)">{{persona.name}}</a>
+                </li>
+                <li class="divider" data-ng-show="personas.length"></li>
+                <li>
+                  <a id="logout" href="#" data-ng-click="userDetails.logout()">Log Out</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <hawkular-topbar ng-controller="Topbar.TopbarController"></hawkular-topbar>
+        </div>
+      </div>
+    </nav>
+
+    <div ng-controller="HawtioNav.ViewController">
+      <div class="container screen-content" ng-include src="viewPartial"></div>
+    </div>
+
+    <!-- add any scripts under dist/ here -->
+    <script src="dist/hawkular-console.js?v=${hawkular.console.timestamp}"></script>
+    <script>
+      var title = 'HAWKULAR: ' + HawkularVersion;
+      document.getElementById("hawkularLogo").title = title;
+    </script>
+  </body>
+</html>

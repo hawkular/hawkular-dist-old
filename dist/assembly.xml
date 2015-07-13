@@ -111,6 +111,7 @@
         <include>org.hawkular.alerts:hawkular-actions-email</include>
         <include>org.hawkular.metrics:hawkular-metrics-api-jaxrs</include>
         <include>org.hawkular.commons:hawkular-commons-embedded-cassandra-ear</include>
+        <include>org.hawkular.accounts:hawkular-accounts-events-backend:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
@@ -137,6 +138,8 @@
       <includes>
         <include>org.hawkular.agent:hawkular-monitor:zip:module</include>
         <include>org.hawkular.bus:hawkular-bus-ra-wf-module:zip:module</include>
+        <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-rest:zip:module</include>
+        <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-jms:zip:module</include>
       </includes>
       <unpack>true</unpack>
       <fileMode>0644</fileMode>
@@ -155,6 +158,7 @@
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useTransitiveFiltering>false</useTransitiveFiltering>
     </dependencySet>
+
   </dependencySets>
 
 </assembly>

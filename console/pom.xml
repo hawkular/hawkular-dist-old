@@ -1,0 +1,301 @@
+<?xml version="1.0"?>
+<!--
+
+    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0           http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.hawkular</groupId>
+    <artifactId>hawkular</artifactId>
+    <version>1.0.0.Alpha3-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>hawkular-console</artifactId>
+  <name>Hawkular: Admin console</name>
+  <packaging>war</packaging>
+
+  <properties>
+    <!-- TODO: should be /hawkular-console and /hawkular-console/ -->
+    <hawkular.console.timestamp>${maven.build.timestamp}</hawkular.console.timestamp>
+    <hawkular.console.context>/</hawkular.console.context>
+    <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+    <bower.link.package></bower.link.package>
+    <node.version>v0.10.33</node.version>
+    <node.npm.version>2.1.10</node.npm.version>
+    <node.maven.plugin.version>0.0.23</node.maven.plugin.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.ocpsoft.rewrite</groupId>
+      <artifactId>rewrite-servlet</artifactId>
+      <version>2.0.12.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <nonFilteredFileExtensions>
+                <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+              </nonFilteredFileExtensions>
+              <outputDirectory>${basedir}/target/gulp-build/</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/webapp/</directory>
+                  <excludes>
+                    <exclude>WEB-INF/</exclude>
+                  </excludes>
+                  <filtering>true</filtering>
+                </resource>
+                <resource>
+                  <directory>src/main/scripts/</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <webResources>
+            <resource>
+              <directory>src/main/webapp</directory>
+              <includes>
+                <include>WEB-INF/*</include>
+              </includes>
+              <filtering>true</filtering>
+            </resource>
+            <resource>
+              <directory>target/gulp-build/</directory>
+              <includes>
+                <include>index.html</include>
+                <include>libs/**</include>
+                <include>dist/**</include>
+              </includes>
+              <excludes>
+                <exclude>node_modules/**</exclude>
+                <exclude>.bower/**</exclude>
+                <exclude>node/**</exclude>
+                <exclude>libs/hawkular-ui-components/node_modules/**</exclude>
+              </excludes>
+              <filtering>false</filtering>
+            </resource>
+          </webResources>
+        </configuration>
+      </plugin>
+    </plugins>
+
+  </build>
+
+  <profiles>
+    <profile>
+      <id>cache</id>
+      <properties>
+        <hawkular.console.context>/</hawkular.console.context>
+        <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                  <directory>target/gulp-build/</directory>
+                  <excludes>
+                    <exclude>node/**</exclude>
+                    <exclude>node_modules/**</exclude>
+                    <exclude>libs/**</exclude>
+                  </excludes>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+              </filesets>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Download node.js and related modules to install 3rd party frontend libraries -->
+    <profile>
+      <id>default-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <hawkular.console.context>/</hawkular.console.context>
+        <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>${node.maven.plugin.version}</version>
+
+            <configuration>
+              <workingDirectory>target/gulp-build/</workingDirectory>
+            </configuration>
+
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <nodeVersion>${node.version}</nodeVersion>
+                  <npmVersion>${node.npm.version}</npmVersion>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>bower install</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>gulp build</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>build</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>link</id>
+      <activation>
+        <property>
+          <name>bower.link.package</name>
+          <value></value>
+        </property>
+      </activation>
+      <properties>
+        <hawkular.console.context>/</hawkular.console.context>
+        <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>${node.maven.plugin.version}</version>
+
+            <configuration>
+              <workingDirectory>target/gulp-build/</workingDirectory>
+            </configuration>
+
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <nodeVersion>${node.version}</nodeVersion>
+                  <npmVersion>${node.npm.version}</npmVersion>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>bower link</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>link ${bower.link.package}</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>gulp build</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>build</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+</project>

@@ -1,7 +1,18 @@
 {
     "providers": [
-        "classpath:${jboss.server.config.dir}/providers/*"
+        "classpath:${jboss.server.config.dir}/providers/*",
+        "module:org.hawkular.keycloak.events.rest",
+        "module:org.hawkular.keycloak.events.jms"
     ],
+
+    "eventsListener": {
+        "hawkular-rest": {
+            "excludes": [ "REFRESH_TOKEN", "CODE_TO_TOKEN", "LOGIN" ]
+        },
+        "hawkular-jms": {
+            "excludes": [ "REFRESH_TOKEN", "CODE_TO_TOKEN", "LOGIN" ]
+        }
+    },
 
     "admin": {
         "realm": "master"

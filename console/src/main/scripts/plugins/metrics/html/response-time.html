@@ -1,0 +1,102 @@
+<div class="hk-screen-content" ng-controller="MetricsViewController as vm">
+
+  <hawkular-sidebar ng-controller="Sidebar.SidebarController">
+    <div class="hk-nav-tabs-container">
+      <ul class="nav nav-tabs nav-tabs-pf">
+        <li><a href="/hawkular-ui/url/alerts/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-alerts">All Alerts</a></li>
+        <li><a href="/hawkular-ui/url/availability/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-availability">Availability</a></li>
+        <li class="active"><a href="/hawkular-ui/url/response-time/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-response-time">Response Time</a></li>
+      </ul>
+    </div>
+  </hawkular-sidebar>
+
+  <section class="hk-tab-content" id="hk-response-time">
+
+    <hk-alert-notification></hk-alert-notification>
+
+    <!-- Summary -->
+    <h3 class="pull-left">Response Time Status</h3>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+    <div class="panel panel-default hk-summary">
+      <div class="row">
+        <div class="col-sm-4 hk-summary-item">
+          <span class="hk-data" ng-show="vm.average >= 0">{{vm.average}} <span>ms</span></span>
+          <span class="hk-data" ng-hide="vm.average >= 0">n/a</span>
+          <span class="hk-item">Average</span>
+        </div>
+        <div class="col-sm-4 hk-summary-item">
+          <span class="hk-data" ng-show="vm.median >= 0">{{vm.median}} <span>ms</span></span>
+          <span class="hk-data" ng-hide="vm.median >= 0">n/a</span>
+          <span class="hk-item">Median</span>
+        </div>
+        <div class="col-sm-4 hk-summary-item">
+          <span class="hk-data" ng-show="vm.percentile95th >= 0">{{vm.percentile95th}} <span>ms</span></span>
+          <span class="hk-data" ng-hide="vm.percentile95th >= 0">n/a</span>
+          <span class="hk-item">95th percentile</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="hk-info-top clearfix">
+      <h3 class="pull-left" data-toggle="tooltip" data-placement="top" title="" data-original-title="Expand/collapse">
+        <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+      </h3>
+      <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    </div>
+    <div class="clearfix">
+      <!-- No Alerts -->
+      <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
+        <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
+        <div>No alerts have been fired in this category and time range.</div>
+      </div>
+      <!-- Alerts exist -->
+      <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList" hk-limit="(showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
+    </div>
+
+    <!-- Response Time Graph -->
+    <div class="hk-info-top clearfix">
+      <h3 class="pull-left">Metrics</h3>
+      <div class="hk-update pull-right">
+        <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart" ng-click="vm.refreshChartDataNow(vm.getMetricId())"><i class="fa fa-refresh"></i></button>
+      </div>
+    </div>
+
+    <div class="panel panel-default hk-graph" ng-if="vm.average >= 0">
+      <h2>Response Time</h2>
+
+      <div class="text-center hk-spinner-container" ng-hide="vm.chartData.dataPoints.length > 0">
+        <div class="spinner spinner-lg"></div>
+      </div>
+
+      <div class="metrics-chart">
+        <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+        <hawkular-chart
+          data="{{vm.chartData.dataPoints}}"
+          chart-type="hawkularmetric"
+          alert-value="{{vm.threshold}}"
+          use-zero-min-value="true"
+          y-axis-units="Response Time (ms)"
+          chart-height="250">
+        </hawkular-chart>
+      </div>
+
+      <div class="hk-legend text-left hk-response-time" ng-show="vm.chartData.dataPoints.length > 0">
+        <span><i class="fa fa-circle hk-blue"></i>Response Time</span>
+        <span><i class="fa fa-circle hk-red"></i>Threshold</span>
+        <span><span class="hk-legend-square hk-red-light"></span>Interval above the threshold</span>
+      </div>
+    </div>
+
+    <div class="panel panel-default hk-graph" ng-if="vm.average < 0">
+      <h2>Response Time</h2>
+      <div class="blank-slate-pf">
+        <div class="blank-slate-pf-icon">
+          <i class="fa fa-line-chart"></i>
+        </div>
+        <h1>The server hasn't been reachable for this time range.</h1>
+      </div>
+    </div>
+
+  </section>
+</div>
