@@ -27,9 +27,10 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import org.hawkular.feedcomm.ws.command.BasicResponse;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.EchoCommand;
-import org.hawkular.feedcomm.ws.command.ErrorResponse;
+import org.hawkular.feedcomm.ws.command.ErrorDetails;
 
 @ServerEndpoint("/")
 public class FeedCommWebSocket {
@@ -63,7 +64,7 @@ public class FeedCommWebSocket {
         Class<? extends Command> commandClass = VALID_COMMANDS.get(commandName);
         if (commandClass == null) {
             MsgLogger.LOG.errorInvalidCommandName(commandName);
-            return JsonUtil.toJson(new ErrorResponse("Invalid command name: " + commandName));
+            return new BasicResponse(new ErrorDetails("Invalid command name: " + commandName)).toJson();
         }
 
         String response;
@@ -73,7 +74,7 @@ public class FeedCommWebSocket {
             response = command.execute(json);
         } catch (Throwable t) {
             MsgLogger.LOG.errorCommandExecutionFailure(commandName, json, t);
-            response = JsonUtil.toJson(new ErrorResponse("Failed to execute command [" + commandName + "]", t));
+            response = new BasicResponse(new ErrorDetails("Command failed[" + commandName + "]", t)).toJson();
         }
 
         return response;

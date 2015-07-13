@@ -18,18 +18,21 @@ package org.hawkular.feedcomm.ws.command;
 
 import org.hawkular.feedcomm.ws.JsonUtil;
 
-public class EchoCommand implements Command {
-    public static String NAME = "echo";
+public class BasicRequest {
 
-    @Override
-    public String execute(String json) {
-        // hydrate request object from the JSON message
-        EchoRequest echoMessage = JsonUtil.fromJson(json, EchoRequest.class);
+    /**
+     * Constructs a basic request.
+     */
+    public BasicRequest() {
+    }
 
-        // execute the request
-        String reply = String.format("ECHO [%s]", echoMessage.echoMessage);
-
-        // return the JSON response
-        return new EchoResponse(reply).toJson();
+    /**
+     * Serialize this object into JSON.
+     *
+     * @return this object's JSON representation
+     */
+    public String toJson() {
+        String json = JsonUtil.toJson(this);
+        return json;
     }
 }

@@ -19,7 +19,7 @@ package org.hawkular.feedcomm.ws.command;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-public class EchoRequest {
+public class EchoRequest extends BasicRequest {
     @JsonInclude
     public String echoMessage;
 

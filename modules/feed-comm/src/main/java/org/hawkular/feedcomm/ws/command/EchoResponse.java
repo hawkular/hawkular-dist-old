@@ -19,14 +19,21 @@ package org.hawkular.feedcomm.ws.command;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-public class EchoResponse {
+public class EchoResponse extends BasicResponse {
+
     @JsonInclude
-    public String replyMessage;
+    public String reply;
 
     public EchoResponse() {
+        super();
     }
 
-    public EchoResponse(String replyMessage) {
-        this.replyMessage = replyMessage;
+    public EchoResponse(ErrorDetails errorDetails) {
+        super(errorDetails);
+    }
+
+    public EchoResponse(String reply) {
+        super();
+        this.reply = reply;
     }
 }

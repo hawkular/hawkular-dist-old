@@ -19,28 +19,28 @@ package org.hawkular.feedcomm.ws.command;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * A generic error response that can be JSON-encoded.
+ * Contains some details that describe an error that occurred.
  */
-public class ErrorResponse {
+public class ErrorDetails {
 
     @JsonInclude
-    private final String message;
+    private final String errorMessage;
 
     @JsonInclude
     private final String exception;
 
-    public ErrorResponse(String message) {
-        this.message = message;
+    public ErrorDetails(String errorMessage) {
+        this.errorMessage = errorMessage;
         this.exception = null;
     }
 
-    public ErrorResponse(Throwable throwable) {
-        this.message = null;
+    public ErrorDetails(Throwable throwable) {
+        this.errorMessage = null;
         this.exception = throwable.toString();
     }
 
-    public ErrorResponse(String message, Throwable throwable) {
-        this.message = message;
+    public ErrorDetails(String errorMessage, Throwable throwable) {
+        this.errorMessage = errorMessage;
         this.exception = throwable.toString();
     }
 
