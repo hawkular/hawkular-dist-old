@@ -17,6 +17,8 @@
 
 package org.hawkular.feedcomm.ws;
 
+import java.util.HashMap;
+
 import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -28,18 +30,23 @@ import javax.websocket.server.ServerEndpoint;
 public class FeedCommWebSocket {
 
     @OnOpen
-    public void init(Session client) {
-        // TODO
+    public void clientOpen(Session client) {
+        MsgLogger.LOG.infoGeneric("Client connected");
     }
 
     @OnMessage
-    public String echo(String message, Session client) {
-        // TODO what to do?
-        return message;
+    public String clientMessage(String json, Session client) {
+        MsgLogger.LOG.infoGeneric("Client message: " + json);
+        try {
+            HashMap<String, String> command = JsonUtil.fromJson(json, HashMap.class);
+            return command.toString();
+        } catch (Exception e) {
+            return "ERROR: " + e;
+        }
     }
 
     @OnClose
     public void clientClose(Session client, CloseReason reason) {
-        // TODO
+        MsgLogger.LOG.infoGeneric("Client closed");
     }
 }
