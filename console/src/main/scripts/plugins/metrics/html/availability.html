@@ -24,7 +24,17 @@
           <span class="hk-item">Availability</span>
         </div>
         <div class="col-sm-3 hk-summary-item">
-          <span class="hk-data">{{vm.downtimeDuration / 1000 | number:0}} s</span>
+          <!--
+          <span class="hk-data" ng-if="vm.downtimeDuration < 60000">{{ vm.downtimeDuration / 1000 | nduration:'s\' seconds\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 60000 && vm.downtimeDuration < 7200000">{{ vm.downtimeDuration | nduration:'m\' minutes and \'ss\' seconds\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 7200000 && vm.downtimeDuration < 172800000">{{ vm.downtimeDuration | nduration:'h\' hours and \'m\' minutes\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 172800000">{{ vm.downtimeDuration | nduration:'d\' days and \'h\' hours\'' }}</span>
+          -->
+          <span class="hk-data" ng-hide="vm.downtimeDuration">Always Up</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration && vm.downtimeDuration < 60000" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="2500" tooltip="{{ vm.downtimeDuration | duration:'ss\'s\'' }}">{{ vm.downtimeDuration | duration:'s\' seconds\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 60000 && vm.downtimeDuration < 7200000" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="2500" tooltip="{{ vm.downtimeDuration | duration:'mm\'m\'ss\'s\'' }}">{{ vm.downtimeDuration | duration:'m\' minutes\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 7200000 && vm.downtimeDuration < 172800000" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="2500" tooltip="{{ vm.downtimeDuration | duration:'hh\'h\'mm\'m\'ss\'s\'' }}">{{ vm.downtimeDuration | duration:'h\' hours\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 172800000" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="2500" tooltip="{{ vm.downtimeDuration | duration:'d\'d \'hh\'h\'mm\'m\'ss\'s\'' }}">{{ vm.downtimeDuration | duration:'d\' days\'' }}</span>
           <span class="hk-item">Total Downtime Duration</span>
         </div>
         <div class="col-sm-3 hk-summary-item">
