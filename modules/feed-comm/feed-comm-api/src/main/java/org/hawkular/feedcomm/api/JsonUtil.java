@@ -22,15 +22,17 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+// probably not needed, but its here in case its useful later
 public abstract class JsonUtil {
 
     // prohibit instantiation
     private JsonUtil() {
     }
 
+    // probably not needed, but its here in case its useful later
     public static String toJson(Object obj) {
         final ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibilityChecker(mapper.getSerializationConfig().getDefaultVisibilityChecker()
+        mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
@@ -44,6 +46,7 @@ public abstract class JsonUtil {
         return json;
     }
 
+    // probably not needed, but its here in case its useful later
     public static <T> T fromJson(String json, Class<T> clazz) {
         final ObjectMapper mapper = new ObjectMapper();
         final T obj;

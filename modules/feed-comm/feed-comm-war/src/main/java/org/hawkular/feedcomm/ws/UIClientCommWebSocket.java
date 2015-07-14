@@ -26,7 +26,6 @@ import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
-import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.hawkular.bus.common.BasicMessage;
@@ -35,38 +34,40 @@ import org.hawkular.feedcomm.api.GenericErrorResponseBuilder;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.EchoCommand;
 
-@ServerEndpoint("/{feedId}")
-public class FeedCommWebSocket {
+/**
+ * This is similiar to the feed web socket endpoint, however, it has a different set of allowed commants
+ * that can be processed for a UI client.
+ */
+@ServerEndpoint("/ui")
+public class UIClientCommWebSocket {
 
     private static final Map<String, Class<? extends Command<?, ?>>> VALID_COMMANDS;
-
     static {
         VALID_COMMANDS = new HashMap<>();
         VALID_COMMANDS.put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class);
     }
 
     @Inject
-    private ConnectedFeeds connectedFeeds;
+    private ConnectedUIClients connectedUIClients;
 
     @OnOpen
-    public void feedSessionOpen(Session session, @PathParam("feedId") String feedId) {
-        MsgLogger.LOG.infof("Feed [%s] session opened", feedId);
-        connectedFeeds.addSession(feedId, session);
+    public void uiClientSessionOpen(Session session) {
+        MsgLogger.LOG.infof("UI client session [%s] opened", session.getId());
+        connectedUIClients.addSession(session);
     }
 
     /**
-     * When a message is received from a feed, this method will execute the command the feed is asking for.
+     * When a message is received from a UI client, this method will execute the command the client is asking for.
      *
      * @param nameAndJsonStr the name of the API request followed by "=" followed then by the request's JSON data
      * @param session the client session making the request
-     * @param feedId identifies the feed that has connected
-     * @return the results of the command invocation; this is sent back to the feed
+     * @return the results of the command invocation; this is sent back to the UI client
      */
     @OnMessage
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public String feedMessage(String nameAndJsonStr, Session session, @PathParam("feedId") String feedId) {
+    public String uiClientMessage(String nameAndJsonStr, Session session) {
 
-        MsgLogger.LOG.infof("Received message from feed [%s]", feedId);
+        MsgLogger.LOG.infof("Received message from UI client [%s]", session.getId());
 
         String requestClassName = "?";
         BasicMessage response;
@@ -77,7 +78,7 @@ public class FeedCommWebSocket {
 
             Class<? extends Command<?, ?>> commandClass = VALID_COMMANDS.get(requestClassName);
             if (commandClass == null) {
-                MsgLogger.LOG.errorInvalidCommandRequestFeed(feedId, requestClassName);
+                MsgLogger.LOG.errorInvalidCommandRequestUIClient(session.getId(), requestClassName);
                 String errorMessage = "Invalid command request: " + requestClassName;
                 response = new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build();
             } else {
@@ -85,7 +86,7 @@ public class FeedCommWebSocket {
                 response = command.execute(request);
             }
         } catch (Throwable t) {
-            MsgLogger.LOG.errorCommandExecutionFailureFeed(requestClassName, feedId, t);
+            MsgLogger.LOG.errorCommandExecutionFailureUIClient(requestClassName, session.getId(), t);
             String errorMessage = "Command failed[" + requestClassName + "]";
             response = new GenericErrorResponseBuilder()
                     .setThrowable(t)
@@ -99,8 +100,8 @@ public class FeedCommWebSocket {
     }
 
     @OnClose
-    public void feedSessionClose(Session session, CloseReason reason, @PathParam("feedId") String feedId) {
-        MsgLogger.LOG.infof("Feed [%s] session closed. Reason=[%s]", feedId, reason);
-        connectedFeeds.removeSession(feedId, session);
+    public void uiClientSessionClose(Session session, CloseReason reason) {
+        MsgLogger.LOG.infof("UI client session [%s] closed. Reason=[%s]", session.getId(), reason);
+        connectedUIClients.removeSession(session);
     }
 }

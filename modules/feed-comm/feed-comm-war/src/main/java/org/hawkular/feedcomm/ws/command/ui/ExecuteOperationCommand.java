@@ -14,21 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.feedcomm.ws.command;
+package org.hawkular.feedcomm.ws.command.ui;
 
-import org.hawkular.feedcomm.api.EchoRequest;
-import org.hawkular.feedcomm.api.EchoResponse;
+import org.hawkular.feedcomm.api.ExecuteOperationRequest;
+import org.hawkular.feedcomm.api.GenericSuccessResponse;
+import org.hawkular.feedcomm.ws.command.Command;
 
-public class EchoCommand implements Command<EchoRequest, EchoResponse> {
-    public static final Class<EchoRequest> REQUEST_CLASS = EchoRequest.class;
+/**
+ * UI client requesting to execute an operation on a resource managed by a feed.
+ */
+public class ExecuteOperationCommand implements Command<ExecuteOperationRequest, GenericSuccessResponse> {
+    public static final Class<ExecuteOperationRequest> REQUEST_CLASS = ExecuteOperationRequest.class;
 
     @Override
-    public EchoResponse execute(EchoRequest echoRequest) {
-        String reply = String.format("ECHO [%s]", echoRequest.getEchoMessage());
-
-        // return the response
-        EchoResponse echoResponse = new EchoResponse();
-        echoResponse.setReply(reply);
-        return echoResponse;
+    public GenericSuccessResponse execute(ExecuteOperationRequest request) {
+        return null;
     }
+
 }

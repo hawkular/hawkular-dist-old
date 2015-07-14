@@ -21,12 +21,12 @@ import org.hawkular.bus.common.BasicMessage;
 /**
  * An command that comes from a feed.
  */
-public interface Command {
+public interface Command<REQ extends BasicMessage, RESP extends BasicMessage> {
     /**
      * Performs the command for the feed.
      *
      * @param request the request that describes what needs to be executed
      * @return the results of the command that need to be sent back to the feed.
      */
-    BasicMessage execute(BasicMessage request);
+    RESP execute(REQ request);
 }

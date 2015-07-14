@@ -48,9 +48,9 @@ public class ApiDeserializerTest {
     }
 
     @Test
-    public void testExecuteOperation() {
-        ExecuteOperation newpojo;
-        ExecuteOperation pojo = new ExecuteOperation();
+    public void testExecuteOperationRequest() {
+        ExecuteOperationRequest newpojo;
+        ExecuteOperationRequest pojo = new ExecuteOperationRequest();
         pojo.setOperationName("opname");
         pojo.setResourceId("resid");
         pojo.setParameters(new HashMap<String, String>());

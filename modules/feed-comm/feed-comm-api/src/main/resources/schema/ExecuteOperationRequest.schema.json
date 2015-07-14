@@ -4,7 +4,7 @@
     "type": "object",
     "javaType": "org.hawkular.bus.common.BasicMessage"
   },
-  "javaType": "org.hawkular.feedcomm.api.ExecuteOperation",
+  "javaType": "org.hawkular.feedcomm.api.ExecuteOperationRequest",
   "additionalProperties": false,
   "description": "A request to execute an operation.",
   "properties": {

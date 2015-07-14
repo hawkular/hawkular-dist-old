@@ -26,15 +26,33 @@ public class ApiDeserializer {
     // note that this assumes this class is in the same package as all the API POJOs
     private static final String API_PKG = ApiDeserializer.class.getPackage().getName();
 
+    /**
+     * Returns a string that encodes the given object as a JSON message but then
+     * prefixes that JSON with additional information that a Hawkular client will
+     * need to be able to deserialize the JSON.
+     *
+     * This string can be used to deserialize the object via {@link #deserialize(String)}.
+     *
+     * @param msg the message object that will be serialized into JSON
+     * @return a string that includes the JSON that can be used by other Hawkular endpoints to deserialize the message.
+     */
+    public static String toHawkularFormat(BasicMessage msg) {
+        return String.format("%s=%s", msg.getClass().getSimpleName(), msg.toJSON());
+    }
+
+    private static String[] fromHawkularFormat(String msg) {
+        String[] nameAndJsonArray = msg.split("=", 2);
+        if (nameAndJsonArray.length != 2) {
+            throw new IllegalArgumentException("Cannot deserialize: [" + msg + "]");
+        }
+        return nameAndJsonArray;
+    }
+
     public ApiDeserializer() {
     }
 
     public <T extends BasicMessage> T deserialize(String nameAndJson) {
-        String[] nameAndJsonArray = nameAndJson.split("=", 2);
-        if (nameAndJsonArray.length != 2) {
-            throw new IllegalArgumentException("Cannot deserialize: [" + nameAndJson + "]");
-        }
-
+        String[] nameAndJsonArray = fromHawkularFormat(nameAndJson);
         String name = nameAndJsonArray[0];
         String json = nameAndJsonArray[1];
 

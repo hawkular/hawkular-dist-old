@@ -32,11 +32,11 @@ public interface MsgLogger extends BasicLogger {
 
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 1, value = "Feed [%s] provided an invalid command request: [%s]")
-    void errorInvalidCommandRequest(String feedId, String invalidCommandRequest);
+    void errorInvalidCommandRequestFeed(String feedId, String invalidCommandRequest);
 
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 2, value = "Failed to execute command [%s] for feed [%s]")
-    void errorCommandExecutionFailure(String commandRequest, String feedId, @Cause Throwable t);
+    void errorCommandExecutionFailureFeed(String commandRequest, String feedId, @Cause Throwable t);
 
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 3, value = "A feed [%s] opened multiple sessions. This is a violation; closing the extra session")
@@ -45,5 +45,13 @@ public interface MsgLogger extends BasicLogger {
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 4, value = "Cannot close the extra session created by feed [%s]")
     void errorCannotCloseExtraFeedSession(String feedId, @Cause Throwable t);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 5, value = "UI client session [%s] provided an invalid command request: [%s]")
+    void errorInvalidCommandRequestUIClient(String sessionId, String invalidCommandRequest);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 6, value = "Failed to execute command [%s] for UI client session [%s]")
+    void errorCommandExecutionFailureUIClient(String commandRequest, String sessionId, @Cause Throwable t);
 
 }
