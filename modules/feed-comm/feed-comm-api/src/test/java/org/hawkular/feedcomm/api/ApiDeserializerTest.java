@@ -35,7 +35,7 @@ public class ApiDeserializerTest {
         Assert.assertEquals("msg", echoRequest.getEchoMessage());
     }
 
-    @Test
+    //@Test // put this back if we revert HAWKULAR-451, remove this if we do not revert it
     public void testApiDeserializerError() {
         ApiDeserializer ad = new ApiDeserializer();
 
