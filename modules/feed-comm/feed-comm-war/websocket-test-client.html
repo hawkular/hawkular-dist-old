@@ -5,9 +5,9 @@
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 </head>
 <body>
-Enter text to send to the websocket server:
 <div id="send">
-  <input type="text" id="data" size="100"/><br>
+  URL Context (a feed ID or 'ui')<input type="text" id="urlcontext" size="25"/><br>
+  Message (Hawkular JSON):<input type="text" id="data" size="100"/><br>
   <input type="button" id="sendtext" value="send text"/>
 </div>
 <div id="output"></div>
@@ -28,7 +28,8 @@ jQuery(function($){
     // Note: You have to change the host var
     // if your client runs on a different machine than the websocket server
 
-    var host = "ws://localhost:8080/hawkular/feed-comm";
+    var $urlcontext = $("#urlcontext");
+    var host = "ws://localhost:8080/hawkular/feed-comm/" + $urlcontext.val();
     var socket = new WebSocket(host);
     //console.log("socket status: " + socket.readyState);
 
@@ -44,7 +45,7 @@ jQuery(function($){
         return;
       }
       socket.send(text);
-      $txt.val("");
+      //$txt.val("");
     });
 
     $txt.keypress(function(evt){
