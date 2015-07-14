@@ -28,7 +28,7 @@ import org.jboss.logging.annotations.ValidIdRange;
 @ValidIdRange(min = 1, max = 5000)
 public interface MsgLogger extends BasicLogger {
 
-    MsgLogger LOG = Logger.getMessageLogger(MsgLogger.class, "org.hawkular.feedcom.ws");
+    MsgLogger LOG = Logger.getMessageLogger(MsgLogger.class, "org.hawkular.feedcomm.ws");
 
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 1, value = "Feed [%s] provided an invalid command request: [%s]")
@@ -53,5 +53,9 @@ public interface MsgLogger extends BasicLogger {
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 6, value = "Failed to execute command [%s] for UI client session [%s]")
     void errorCommandExecutionFailureUIClient(String commandRequest, String sessionId, @Cause Throwable t);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 7, value = "Cannot process an execute-operation message")
+    void errorCannotProcessExecuteOperationMessage(@Cause Exception e);
 
 }

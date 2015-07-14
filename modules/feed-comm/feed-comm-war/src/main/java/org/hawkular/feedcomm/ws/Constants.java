@@ -14,22 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.feedcomm.ws.command;
+package org.hawkular.feedcomm.ws;
 
-import org.hawkular.bus.common.BasicMessage;
+
 
 /**
- * An command that comes from a feed.
+ * Global constants.
  */
-public interface Command<REQ extends BasicMessage, RESP extends BasicMessage> {
+public interface Constants {
+    /**
+     * A JMS message header that will identify the targeted feed.
+     */
+    String HEADER_FEEDID = "feedId";
 
     /**
-     * Performs the command for the feed.
-     *
-     * @param request the request that describes what needs to be executed
-     * @param context some context data that can be useful for the command to be able to execute the request
-     * @return the results of the command that need to be sent back to the feed.
-     * @throws Exception if failed to execute the operation
+     * The JNDI name of the bus connection factory.
      */
-    RESP execute(REQ request, CommandContext context) throws Exception;
+    String CONNECTION_FACTORY_JNDI = "java:/HawkularBusConnectionFactory";
+
+    // QUEUES AND TOPICS
+    String DEST_FEED_EXECUTE_OP = "FeedExecuteOperation";
 }

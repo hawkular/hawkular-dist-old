@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.feedcomm.ws;
+package org.hawkular.feedcomm.ws.server;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ConcurrencyManagement;
@@ -28,8 +30,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.websocket.Session;
 
-import org.hawkular.feedcomm.api.ApiDeserializer;
-import org.hawkular.feedcomm.api.NotificationMessage;
+import org.hawkular.feedcomm.ws.MsgLogger;
 
 /**
  * Maintains a runtime list of UI clients currently connected with this server.
@@ -54,6 +55,16 @@ public class ConnectedUIClients {
 
     }
 
+    @Lock(LockType.READ)
+    public Set<Session> getAllSessions() {
+        return new HashSet<Session>(this.sessions.values());
+    }
+
+    @Lock(LockType.READ)
+    public Set<String> getAllSessionIds() {
+        return new HashSet<String>(this.sessions.keySet());
+    }
+
     @Lock(LockType.WRITE)
     public void addSession(Session newSession) {
         this.sessions.put(newSession.getId(), newSession);
@@ -68,15 +79,6 @@ public class ConnectedUIClients {
         if (removed != null) {
             MsgLogger.LOG.infof("A UI client session has been removed [%s]. There are now [%d] connected UI clients",
                     removed.getId(), this.sessions.size());
-        }
-    }
-
-    @Lock(LockType.READ)
-    public void sendNotificationMessageToAll(NotificationMessage notification) {
-        String message = ApiDeserializer.toHawkularFormat(notification);
-        MsgLogger.LOG.debugf("Sending notification message to all UI clients: [%s]", message);
-        for (Session session : this.sessions.values()) {
-            session.getAsyncRemote().sendText(message);
         }
     }
 

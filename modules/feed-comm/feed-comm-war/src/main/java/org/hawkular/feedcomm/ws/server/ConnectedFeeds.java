@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.feedcomm.ws;
+package org.hawkular.feedcomm.ws.server;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ConcurrencyManagement;
@@ -28,6 +30,8 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
+
+import org.hawkular.feedcomm.ws.MsgLogger;
 
 /**
  * Maintains a runtime list of feeds currently connected with this server.
@@ -55,6 +59,16 @@ public class ConnectedFeeds {
     @Lock(LockType.READ)
     public Session getSession(String feedId) {
         return this.sessions.get(feedId);
+    }
+
+    @Lock(LockType.READ)
+    public Set<Session> getAllSessions() {
+        return new HashSet<Session>(this.sessions.values());
+    }
+
+    @Lock(LockType.READ)
+    public Set<String> getAllFeeds() {
+        return new HashSet<String>(this.sessions.keySet());
     }
 
     @Lock(LockType.WRITE)
@@ -96,5 +110,4 @@ public class ConnectedFeeds {
                     feedId, this.sessions.size());
         }
     }
-
 }

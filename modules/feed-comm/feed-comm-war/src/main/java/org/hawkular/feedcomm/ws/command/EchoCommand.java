@@ -23,7 +23,7 @@ public class EchoCommand implements Command<EchoRequest, EchoResponse> {
     public static final Class<EchoRequest> REQUEST_CLASS = EchoRequest.class;
 
     @Override
-    public EchoResponse execute(EchoRequest echoRequest) {
+    public EchoResponse execute(EchoRequest echoRequest, CommandContext context) {
         String reply = String.format("ECHO [%s]", echoRequest.getEchoMessage());
 
         // return the response
