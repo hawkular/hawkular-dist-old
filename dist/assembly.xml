@@ -104,7 +104,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.inventory:hawkular-integrated-inventory-rest</include>
-        <include>org.hawkular:hawkular-feed-comm</include>
+        <include>org.hawkular:hawkular-feed-comm-war</include>
         <include>org.hawkular:hawkular-pinger</include>
         <include>org.hawkular:hawkular-avail-creator</include>
         <include>org.hawkular.accounts:hawkular-accounts:war</include>

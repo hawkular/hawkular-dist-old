@@ -17,113 +17,32 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
   <parent>
-    <artifactId>hawkular</artifactId>
     <groupId>org.hawkular</groupId>
+    <artifactId>hawkular</artifactId>
     <version>1.0.0.Alpha3-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>hawkular-feed-comm</artifactId>
-  <name>Hawkular: Feed Communications Infrastructure</name>
-  <packaging>war</packaging>
+  <artifactId>hawkular-feed-comm-parent</artifactId>
+  <name>Hawkular: Feed Communications Parent</name>
+  <packaging>pom</packaging>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
+  <modules>
+    <module>feed-comm-api</module>
+    <module>feed-comm-war</module>
+  </modules>
 
-    <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
-      <version>7.0</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-bus-mdb</artifactId>
-      <version>${version.org.hawkular.bus}</version>
-      <scope>provided</scope> <!-- the nest provides this -->
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-processor</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jackson2-provider</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.spec.javax.ejb</groupId>
-      <artifactId>jboss-ejb-api_3.1_spec</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-  </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-            </manifest>
-          </archive>
-          <webResources>
-            <resource>
-              <filtering>false</filtering>
-              <directory>${basedir}/src/main/webapp</directory>
-              <excludes>
-                <exclude>WEB-INF/web.xml</exclude>
-              </excludes>
-            </resource>
-            <resource>
-              <filtering>true</filtering>
-              <directory>${basedir}/src/main/webapp</directory>
-              <includes>
-                <include>WEB-INF/web.xml</include>
-              </includes>
-            </resource>
-          </webResources>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>javax</groupId>
+        <artifactId>javaee-api</artifactId>
+        <version>7.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

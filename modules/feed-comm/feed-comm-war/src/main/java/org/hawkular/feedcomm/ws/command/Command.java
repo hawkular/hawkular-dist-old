@@ -16,6 +16,8 @@
  */
 package org.hawkular.feedcomm.ws.command;
 
+import org.hawkular.bus.common.BasicMessage;
+
 /**
  * An command that comes from a feed.
  */
@@ -27,5 +29,5 @@ public interface Command {
      *             deserialize this JSON based on the request it expects to be receiving.
      * @return the results of the command that need to be sent back to the feed.
      */
-    BasicResponse execute(String json);
+    BasicMessage execute(String json);
 }

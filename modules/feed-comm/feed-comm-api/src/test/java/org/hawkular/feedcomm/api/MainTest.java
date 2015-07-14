@@ -14,22 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.feedcomm.ws.command;
+package org.hawkular.feedcomm.api;
 
-import org.hawkular.feedcomm.ws.JsonUtil;
+import org.junit.Test;
 
-public class EchoCommand implements Command {
-    public static String NAME = "echo";
+public class MainTest {
 
-    @Override
-    public BasicResponse execute(String json) {
-        // hydrate request object from the JSON message
-        EchoRequest echoMessage = JsonUtil.fromJson(json, EchoRequest.class);
-
-        // execute the request
-        String reply = String.format("ECHO [%s]", echoMessage.echoMessage);
-
-        // return the JSON response
-        return new EchoResponse(reply);
+    @Test
+    public void test() throws Exception {
+        Main.main(null);
     }
 }

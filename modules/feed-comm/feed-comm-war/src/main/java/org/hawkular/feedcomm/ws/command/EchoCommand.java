@@ -16,32 +16,24 @@
  */
 package org.hawkular.feedcomm.ws.command;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.feedcomm.api.EchoRequest;
+import org.hawkular.feedcomm.api.EchoResponse;
 
-/**
- * Contains some details that describe an error that occurred.
- */
-public class ErrorDetails {
+public class EchoCommand implements Command {
+    public static String NAME = "echo";
 
-    @JsonInclude
-    private final String errorMessage;
+    @Override
+    public BasicMessage execute(String json) {
+        // hydrate request object from the JSON message
+        EchoRequest echoRequest = EchoRequest.fromJSON(json, EchoRequest.class);
 
-    @JsonInclude
-    private final String exception;
+        // execute the request
+        String reply = String.format("ECHO [%s]", echoRequest.getEchoMessage());
 
-    public ErrorDetails(String errorMessage) {
-        this.errorMessage = errorMessage;
-        this.exception = null;
+        // return the response
+        EchoResponse echoResponse = new EchoResponse();
+        echoResponse.setReply(reply);
+        return echoResponse;
     }
-
-    public ErrorDetails(Throwable throwable) {
-        this.errorMessage = null;
-        this.exception = throwable.toString();
-    }
-
-    public ErrorDetails(String errorMessage, Throwable throwable) {
-        this.errorMessage = errorMessage;
-        this.exception = throwable.toString();
-    }
-
 }

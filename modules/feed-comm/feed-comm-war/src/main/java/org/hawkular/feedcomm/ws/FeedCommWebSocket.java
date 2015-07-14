@@ -29,10 +29,10 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import org.hawkular.feedcomm.ws.command.BasicResponse;
+import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.feedcomm.api.GenericErrorResponseBuilder;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.EchoCommand;
-import org.hawkular.feedcomm.ws.command.ErrorDetails;
 
 @ServerEndpoint("/{feedId}")
 public class FeedCommWebSocket {
@@ -57,6 +57,7 @@ public class FeedCommWebSocket {
      *
      * @param commandAndJsonStr the name of the command followed optionally by "=" and with a json message.
      * @param session the client session making the request
+     * @param feedId identifies the feed that has connected
      * @return the results of the command invocation; this is sent back to the feed
      */
     @OnMessage
@@ -70,21 +71,28 @@ public class FeedCommWebSocket {
         Class<? extends Command> commandClass = VALID_COMMANDS.get(commandName);
         if (commandClass == null) {
             MsgLogger.LOG.errorInvalidCommandName(feedId, commandName);
-            return new BasicResponse(new ErrorDetails("Invalid command name: " + commandName)).toJson();
+            String errorMessage = "Invalid command name: " + commandName;
+            return new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build().toJSON();
         }
 
-        String responseString;
+        String responseJson;
 
         try {
             Command command = commandClass.newInstance();
-            BasicResponse response = command.execute(json);
-            responseString = response.toJson();
+            BasicMessage response = command.execute(json);
+            responseJson = response.toJSON();
         } catch (Throwable t) {
             MsgLogger.LOG.errorCommandExecutionFailure(feedId, commandName, json, t);
-            responseString = new BasicResponse(new ErrorDetails("Command failed[" + commandName + "]", t)).toJson();
+            String errorMessage = "Command failed[" + commandName + "]";
+            responseJson = new GenericErrorResponseBuilder()
+                    .setThrowable(t)
+                    .setErrorMessage(errorMessage)
+                    .build()
+                    .toJSON();
+
         }
 
-        return responseString;
+        return responseJson;
     }
 
     @OnClose

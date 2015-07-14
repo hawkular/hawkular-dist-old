@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "extends": {
+    "type": "object",
+    "javaType": "org.hawkular.bus.common.BasicMessage"
+  },
+  "javaType": "org.hawkular.feedcomm.api.EchoResponse",
+  "description": "An echo response where the reply should be the message from the echo request.",
+  "additionalProperties": false,
+  "properties": {
+    "reply": {
+      "type": "string"
+    }
+  },
+  "required": ["reply"]
+}

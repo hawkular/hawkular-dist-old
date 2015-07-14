@@ -34,7 +34,7 @@ jQuery(function($){
     // Note: You have to change the host var
     // if your client runs on a different machine than the websocket server
 
-    var host = "ws://localhost:8080/hawkular/feed-comm";
+    var host = "ws://localhost:8080/hawkular/feed-comm/123-456";
     var socket = new WebSocket(host);
     //console.log("socket status: " + socket.readyState);
 
