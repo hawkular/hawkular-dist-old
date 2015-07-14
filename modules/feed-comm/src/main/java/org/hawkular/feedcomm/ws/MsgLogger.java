@@ -38,4 +38,12 @@ public interface MsgLogger extends BasicLogger {
     @Message(id = 2, value = "Failed to execute command [%s] with json [%s] for feed [%s]")
     void errorCommandExecutionFailure(String feedId, String commandName, String json, @Cause Throwable t);
 
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 3, value = "A feed [%s] opened multiple sessions. This is a violation; closing the extra session")
+    void errorClosingExtraFeedSession(String feedId);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 4, value = "Cannot close the extra session created by feed [%s]")
+    void errorCannotCloseExtraFeedSession(String feedId, @Cause Throwable t);
+
 }

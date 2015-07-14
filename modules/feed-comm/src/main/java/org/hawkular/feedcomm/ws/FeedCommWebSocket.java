@@ -48,7 +48,7 @@ public class FeedCommWebSocket {
 
     @OnOpen
     public void feedSessionOpen(Session session, @PathParam("feedId") String feedId) {
-        MsgLogger.LOG.infof("Feed [%s] connected", feedId);
+        MsgLogger.LOG.infof("Feed [%s] session opened", feedId);
         connectedFeeds.addSession(feedId, session);
     }
 
@@ -89,7 +89,7 @@ public class FeedCommWebSocket {
 
     @OnClose
     public void feedSessionClose(Session session, CloseReason reason, @PathParam("feedId") String feedId) {
-        MsgLogger.LOG.infof("Feed [%s] closed session. Reason=[%s]", feedId, reason);
-        connectedFeeds.removeSession(feedId);
+        MsgLogger.LOG.infof("Feed [%s] session closed. Reason=[%s]", feedId, reason);
+        connectedFeeds.removeSession(feedId, session);
     }
 }

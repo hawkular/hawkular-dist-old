@@ -26,6 +26,7 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
 /**
@@ -57,18 +58,43 @@ public class ConnectedFeeds {
     }
 
     @Lock(LockType.WRITE)
-    public void addSession(String feedId, Session feedSession) {
-        // TODO what happens if a feed already has a session open?
-        this.sessions.put(feedId, feedSession);
-        MsgLogger.LOG.infof("A feed session has been added [%s]. There are now [%d] connected feeds",
-                feedId, this.sessions.size());
+    public void addSession(String feedId, Session newSession) {
+        Session oldSession = this.sessions.putIfAbsent(feedId, newSession);
+        if (oldSession == null) {
+            MsgLogger.LOG.infof("A feed session has been added [%s]. There are now [%d] connected feeds",
+                    feedId, this.sessions.size());
+        } else {
+            // a feed already had a session open, cannot open more than one
+            try {
+                MsgLogger.LOG.errorClosingExtraFeedSession(feedId);
+                newSession.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY,
+                        "Cannot have multiple sessions open, the new one will be closed"));
+            } catch (Exception e) {
+                MsgLogger.LOG.errorCannotCloseExtraFeedSession(feedId, e);
+            }
+        }
     }
 
     @Lock(LockType.WRITE)
-    public void removeSession(String feedId) {
-        this.sessions.remove(feedId);
-        MsgLogger.LOG.infof("A feed session has been removed [%s]. There are now [%d] connected feeds",
-                feedId, this.sessions.size());
+    public void removeSession(String feedId, Session doomedSession) {
+        boolean removed = false;
+
+        // If no session was passed in, remove any session associated with the given feed.
+        // If a session was passed in, only remove it if the feedId is associated with that session.
+        // This is to support the need to close extra sessions a feed might have created.
+        if (doomedSession == null) {
+            removed = this.sessions.remove(feedId) != null;
+        } else {
+            Session existingSession = this.sessions.get(feedId);
+            if (existingSession != null && existingSession.getId().equals(doomedSession.getId())) {
+                removed = this.sessions.remove(feedId) != null;
+            }
+        }
+
+        if (removed) {
+            MsgLogger.LOG.infof("A feed session has been removed [%s]. There are now [%d] connected feeds",
+                    feedId, this.sessions.size());
+        }
     }
 
 }
