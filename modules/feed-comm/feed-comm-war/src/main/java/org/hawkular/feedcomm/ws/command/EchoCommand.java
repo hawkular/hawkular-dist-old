@@ -21,7 +21,6 @@ import org.hawkular.feedcomm.api.EchoRequest;
 import org.hawkular.feedcomm.api.EchoResponse;
 
 public class EchoCommand implements Command {
-    public static final String NAME = "echo";
     public static final Class<EchoRequest> REQUEST_CLASS = EchoRequest.class;
 
     @Override
