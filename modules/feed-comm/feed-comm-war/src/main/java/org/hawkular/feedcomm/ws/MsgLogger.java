@@ -31,12 +31,12 @@ public interface MsgLogger extends BasicLogger {
     MsgLogger LOG = Logger.getMessageLogger(MsgLogger.class, "org.hawkular.feedcom.ws");
 
     @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 1, value = "Feed [%s] provided an invalid command name: [%s]")
-    void errorInvalidCommandName(String feedId, String invalidCommandName);
+    @Message(id = 1, value = "Feed [%s] provided an invalid command request: [%s]")
+    void errorInvalidCommandRequest(String feedId, String invalidCommandRequest);
 
     @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 2, value = "Failed to execute command [%s] with json [%s] for feed [%s]")
-    void errorCommandExecutionFailure(String feedId, String commandName, String json, @Cause Throwable t);
+    @Message(id = 2, value = "Failed to execute command [%s] for feed [%s]")
+    void errorCommandExecutionFailure(String commandRequest, String feedId, @Cause Throwable t);
 
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 3, value = "A feed [%s] opened multiple sessions. This is a violation; closing the extra session")

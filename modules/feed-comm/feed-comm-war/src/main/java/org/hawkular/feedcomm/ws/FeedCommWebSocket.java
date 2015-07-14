@@ -30,6 +30,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.feedcomm.api.ApiDeserializer;
 import org.hawkular.feedcomm.api.GenericErrorResponseBuilder;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.EchoCommand;
@@ -40,7 +41,7 @@ public class FeedCommWebSocket {
     private static final Map<String, Class<? extends Command>> VALID_COMMANDS;
     static {
         VALID_COMMANDS = new HashMap<>();
-        VALID_COMMANDS.put(EchoCommand.NAME, EchoCommand.class);
+        VALID_COMMANDS.put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class);
     }
 
     @Inject
@@ -55,35 +56,36 @@ public class FeedCommWebSocket {
     /**
      * When a message is received from a feed, this method will execute the command the feed is asking for.
      *
-     * @param commandAndJsonStr the name of the command followed optionally by "=" and with a json message.
+     * @param nameAndJsonStr the name of the API request followed by "=" followed then by the request's JSON data
      * @param session the client session making the request
      * @param feedId identifies the feed that has connected
      * @return the results of the command invocation; this is sent back to the feed
      */
     @OnMessage
-    public String feedMessage(String commandAndJsonStr, Session session, @PathParam("feedId") String feedId) {
-        String[] commandAndJsonArray = commandAndJsonStr.split("=", 2); // commandName[=jsonString]
-        String commandName = commandAndJsonArray[0];
-        String json = (commandAndJsonArray.length == 1) ? null : commandAndJsonArray[1];
+    public String feedMessage(String nameAndJsonStr, Session session, @PathParam("feedId") String feedId) {
 
-        MsgLogger.LOG.infof("Feed [%s] message: command=[%s], json=[%s]", feedId, commandName, json);
+        MsgLogger.LOG.infof("Received message from feed [%s]", feedId);
 
-        Class<? extends Command> commandClass = VALID_COMMANDS.get(commandName);
-        if (commandClass == null) {
-            MsgLogger.LOG.errorInvalidCommandName(feedId, commandName);
-            String errorMessage = "Invalid command name: " + commandName;
-            return new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build().toJSON();
-        }
-
+        String requestClassName = "?";
         String responseJson;
 
         try {
-            Command command = commandClass.newInstance();
-            BasicMessage response = command.execute(json);
-            responseJson = response.toJSON();
+            BasicMessage request = new ApiDeserializer().deserialize(nameAndJsonStr);
+            requestClassName = request.getClass().getName();
+
+            Class<? extends Command> commandClass = VALID_COMMANDS.get(requestClassName);
+            if (commandClass == null) {
+                MsgLogger.LOG.errorInvalidCommandRequest(feedId, requestClassName);
+                String errorMessage = "Invalid command request: " + requestClassName;
+                responseJson = new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build().toJSON();
+            } else {
+                Command command = commandClass.newInstance();
+                BasicMessage response = command.execute(request);
+                responseJson = response.toJSON();
+            }
         } catch (Throwable t) {
-            MsgLogger.LOG.errorCommandExecutionFailure(feedId, commandName, json, t);
-            String errorMessage = "Command failed[" + commandName + "]";
+            MsgLogger.LOG.errorCommandExecutionFailure(requestClassName, feedId, t);
+            String errorMessage = "Command failed[" + requestClassName + "]";
             responseJson = new GenericErrorResponseBuilder()
                     .setThrowable(t)
                     .setErrorMessage(errorMessage)

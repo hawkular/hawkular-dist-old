@@ -21,14 +21,13 @@ import org.hawkular.feedcomm.api.EchoRequest;
 import org.hawkular.feedcomm.api.EchoResponse;
 
 public class EchoCommand implements Command {
-    public static String NAME = "echo";
+    public static final String NAME = "echo";
+    public static final Class<EchoRequest> REQUEST_CLASS = EchoRequest.class;
 
     @Override
-    public BasicMessage execute(String json) {
-        // hydrate request object from the JSON message
-        EchoRequest echoRequest = EchoRequest.fromJSON(json, EchoRequest.class);
+    public BasicMessage execute(BasicMessage request) {
+        EchoRequest echoRequest = (EchoRequest) request;
 
-        // execute the request
         String reply = String.format("ECHO [%s]", echoRequest.getEchoMessage());
 
         // return the response
