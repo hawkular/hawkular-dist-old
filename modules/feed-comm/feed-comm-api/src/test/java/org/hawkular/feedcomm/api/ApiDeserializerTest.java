@@ -16,6 +16,8 @@
  */
 package org.hawkular.feedcomm.api;
 
+import java.util.HashMap;
+
 import org.hawkular.bus.common.BasicMessage;
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,4 +47,72 @@ public class ApiDeserializerTest {
         }
     }
 
+    @Test
+    public void testExecuteOperation() {
+        ExecuteOperation newpojo;
+        ExecuteOperation pojo = new ExecuteOperation();
+        pojo.setOperationName("opname");
+        pojo.setResourceId("resid");
+        pojo.setParameters(new HashMap<String, String>());
+        pojo.getParameters().put("one", "1");
+        pojo.getParameters().put("two", "22");
+        pojo.getParameters().put("three", "333");
+
+        newpojo = testSpecificPojo(pojo);
+        Assert.assertEquals(pojo.getOperationName(), newpojo.getOperationName());
+        Assert.assertEquals(pojo.getResourceId(), newpojo.getResourceId());
+        Assert.assertEquals(pojo.getParameters(), newpojo.getParameters());
+    }
+
+    @Test
+    public void testGenericSuccessResponse() {
+        GenericSuccessResponse newpojo;
+        GenericSuccessResponse pojo = new GenericSuccessResponse();
+        pojo.setMessage("howdy!");
+
+        newpojo = testSpecificPojo(pojo);
+        Assert.assertEquals(pojo.getMessage(), newpojo.getMessage());
+    }
+
+    @Test
+    public void testGenericErrorResponse() {
+        GenericErrorResponse newpojo;
+        GenericErrorResponse pojo = new GenericErrorResponse();
+        pojo.setErrorMessage("howdy!");
+        pojo.setStackTrace("stack trace here");
+
+        newpojo = testSpecificPojo(pojo);
+        Assert.assertEquals(pojo.getErrorMessage(), newpojo.getErrorMessage());
+        Assert.assertEquals(pojo.getStackTrace(), newpojo.getStackTrace());
+    }
+
+    @Test
+    public void testEchoRequest() {
+        EchoRequest newpojo;
+        EchoRequest pojo = new EchoRequest();
+        pojo.setEchoMessage("howdy!");
+
+        newpojo = testSpecificPojo(pojo);
+        Assert.assertEquals(pojo.getEchoMessage(), newpojo.getEchoMessage());
+    }
+
+    @Test
+    public void testEchoResponse() {
+        EchoResponse newpojo;
+        EchoResponse pojo = new EchoResponse();
+        pojo.setReply("what up?");
+
+        newpojo = testSpecificPojo(pojo);
+        Assert.assertEquals(pojo.getReply(), newpojo.getReply());
+    }
+
+    // takes a POJO, gets its JSON, then deserializes that JSON back into a POJO.
+    private <T extends BasicMessage> T testSpecificPojo(T pojo) {
+        String nameAndJson = String.format("%s=%s", pojo.getClass().getSimpleName(), pojo.toJSON());
+        System.out.println("ApiDeserializerTest: " + nameAndJson);
+        ApiDeserializer ad = new ApiDeserializer();
+        T results = ad.deserialize(nameAndJson);
+        Assert.assertNotSame(pojo, results); // just sanity check
+        return results;
+    }
 }

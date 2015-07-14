@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "extends": {
+    "type": "object",
+    "javaType": "org.hawkular.bus.common.BasicMessage"
+  },
+  "javaType": "org.hawkular.feedcomm.api.GenericSuccessResponse",
+  "description": "An general success message.",
+  "additionalProperties": false,
+  "properties": {
+    "message": {
+      "type": "string"
+    }
+  },
+  "required": ["message"]
+}
