@@ -16,3 +16,4 @@
 ///
 
 // Console code placeholder
+/// <reference path="../typings/tsd.d.ts"/>
