@@ -59,7 +59,10 @@ module HawkularAccounts {
             $document.find('body').eq(0).addClass('inactivity-modal-open');
             $modal.open({
                 templateUrl: 'plugins/accounts/html/inactivityModal.html',
-                backdrop: 'static'
+                backdrop: 'static',
+                keyboard: false
+            }).opened.then(() => {
+                HawtioKeycloak.keycloak.clearToken();
             });
         });
 
