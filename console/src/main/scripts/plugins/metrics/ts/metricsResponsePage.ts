@@ -54,7 +54,8 @@ module HawkularMetrics {
    */
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams','HawkularAlertsManager' ,'HawkularErrorManager', 'AlertService'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert',
+                              '$routeParams','HawkularAlertsManager' ,'HawkularErrorManager', 'AlertService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
