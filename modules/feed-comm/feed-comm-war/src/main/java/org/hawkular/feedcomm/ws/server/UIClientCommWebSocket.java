@@ -122,7 +122,7 @@ public class UIClientCommWebSocket {
 
         }
 
-        String responseText = ApiDeserializer.toHawkularFormat(response);
+        String responseText = (response == null) ? null : ApiDeserializer.toHawkularFormat(response);
         return responseText;
     }
 

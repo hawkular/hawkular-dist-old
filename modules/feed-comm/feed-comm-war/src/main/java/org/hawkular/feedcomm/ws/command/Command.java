@@ -28,7 +28,7 @@ public interface Command<REQ extends BasicMessage, RESP extends BasicMessage> {
      *
      * @param request the request that describes what needs to be executed
      * @param context some context data that can be useful for the command to be able to execute the request
-     * @return the results of the command that need to be sent back to the feed.
+     * @return the results of the command that need to be sent back to the feed - may be null
      * @throws Exception if failed to execute the operation
      */
     RESP execute(REQ request, CommandContext context) throws Exception;
