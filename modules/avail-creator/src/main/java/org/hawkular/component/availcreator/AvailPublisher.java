@@ -39,7 +39,8 @@ import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.ObjectMessage;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Publish Avail data
@@ -77,7 +78,12 @@ public class AvailPublisher {
             Availability availability = new Availability(avr.timestamp, avr.avail.toLowerCase());
             List<Availability> list = new ArrayList<>(1);
             list.add(availability);
-            String payload = new Gson().toJson(list);
+            String payload = null;
+            try {
+                payload = new ObjectMapper().writeValueAsString(list);
+            } catch (JsonProcessingException e) {
+                Log.LOG.eCouldNotParseMessage(e);
+            }
             request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
 
             try {

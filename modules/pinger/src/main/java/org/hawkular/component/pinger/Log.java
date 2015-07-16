@@ -73,4 +73,7 @@ public interface Log extends BasicLogger {
     @Message(id = 5008, value = "IOException accessing Hawkular Metrics")
     void eMetricsIoException(@Cause IOException e);
 
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 5009, value = "Could not parse a message to json format")
+    void eCouldNotParseMessage(@Cause Throwable e);
 }

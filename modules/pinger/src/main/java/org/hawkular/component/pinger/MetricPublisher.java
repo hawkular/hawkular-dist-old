@@ -16,7 +16,8 @@
  */
 package org.hawkular.component.pinger;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -89,7 +90,12 @@ public class MetricPublisher {
         addDataItem(mMetrics, resourceId, timestamp, status.getCode(), "code");
 
         // Send it to metrics via rest
-        String payload = new Gson().toJson(mMetrics);
+        String payload = null;
+        try {
+            payload = new ObjectMapper().writeValueAsString(mMetrics);
+        } catch (JsonProcessingException e) {
+            Log.LOG.eCouldNotParseMessage(e);
+        }
         HttpClient client = HttpClientBuilder.create().build();
 
         HttpPost request = new HttpPost(configuration.getMetricsBaseUri() + "/gauges/data");
