@@ -46,7 +46,7 @@ import org.hawkular.feedcomm.ws.command.ui.ExecuteOperationCommand;
  * This is similiar to the feed web socket endpoint, however, it has a different set of allowed commants
  * that can be processed for a UI client.
  */
-@ServerEndpoint("/ui")
+@ServerEndpoint("/ui/ws")
 public class UIClientCommWebSocket {
 
     private static final Map<String, Class<? extends Command<?, ?>>> VALID_COMMANDS;

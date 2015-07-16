@@ -42,7 +42,7 @@ import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
 import org.hawkular.feedcomm.ws.command.EchoCommand;
 
-@ServerEndpoint("/{feedId}")
+@ServerEndpoint("/feed/{feedId}")
 public class FeedCommWebSocket {
 
     private static final Map<String, Class<? extends Command<?, ?>>> VALID_COMMANDS;
