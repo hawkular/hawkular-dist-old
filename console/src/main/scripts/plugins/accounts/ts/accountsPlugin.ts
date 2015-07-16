@@ -15,7 +15,6 @@
 /// limitations under the License.
 ///
 
-/// <reference path='../../includes.ts'/>
 /// <reference path='accountsGlobals.ts'/>
 module HawkularAccounts {
     export var _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
