@@ -393,7 +393,8 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testMetricsLinked() {
         assertEntitiesExist("$environmentId/resources/$host1ResourceId/metrics",
-                ["/e;test/m;" + responseTimeMetricId, "/e;test/m;" + responseStatusCodeMetricId])
+                ["/e;" + environmentId + "/m;" + responseTimeMetricId, "/e;" + environmentId + "/m;" +
+               responseStatusCodeMetricId])
     }
 
     @Test
