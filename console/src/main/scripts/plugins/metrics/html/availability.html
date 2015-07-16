@@ -24,11 +24,22 @@
           <span class="hk-item">Availability</span>
         </div>
         <div class="col-sm-3 hk-summary-item">
-          <span class="hk-data">{{vm.downtimeDuration / 1000 | number:0}} s</span>
+          <!--
+          <span class="hk-data" ng-if="vm.downtimeDuration < 60000">{{ vm.downtimeDuration / 1000 | nduration:'s\' seconds\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 60000 && vm.downtimeDuration < 7200000">{{ vm.downtimeDuration | nduration:'m\' minutes and \'ss\' seconds\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 7200000 && vm.downtimeDuration < 172800000">{{ vm.downtimeDuration | nduration:'h\' hours and \'m\' minutes\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 172800000">{{ vm.downtimeDuration | nduration:'d\' days and \'h\' hours\'' }}</span>
+          -->
+          <span class="hk-data" ng-hide="vm.downtimeDuration">Always Up</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration && vm.downtimeDuration < 60000" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1500" tooltip="{{ vm.downtimeDuration | duration:'ss\'s\'' }}">{{ vm.downtimeDuration | duration:'s\' seconds\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 60000 && vm.downtimeDuration < 7200000" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1500" tooltip="{{ vm.downtimeDuration | duration:'mm\'m\'ss\'s\'' }}">{{ vm.downtimeDuration | duration:'m\' minutes\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 7200000 && vm.downtimeDuration < 172800000" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1500" tooltip="{{ vm.downtimeDuration | duration:'hh\'h\'mm\'m\'ss\'s\'' }}">{{ vm.downtimeDuration | duration:'h\' hours\'' }}</span>
+          <span class="hk-data" ng-if="vm.downtimeDuration >= 172800000" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1500" tooltip="{{ vm.downtimeDuration | duration:'d\'d \'hh\'h\'mm\'m\'ss\'s\'' }}">{{ vm.downtimeDuration | duration:'d\' days\'' }}</span>
           <span class="hk-item">Total Downtime Duration</span>
         </div>
         <div class="col-sm-3 hk-summary-item">
-          <span class="hk-data" ng-show="vm.lastDowntime.valueOf() !== 0">{{vm.lastDowntime | date:'mediumDate'}}</span>
+          <span class="hk-data" ng-hide="vm.lastDowntime.valueOf() === 0 || (vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down')" am-time-ago="vm.lastDowntime" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1500" tooltip="{{ vm.lastDowntime | date:'d MMM HH:mm:ss' }}"></span>
+          <span class="hk-data" ng-show="vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down'">Always Down</span>
           <span class="hk-data" ng-show="!vm.lastDowntime || vm.lastDowntime.valueOf() === 0">Always Up</span>
           <span class="hk-item">Last Downtime</span>
         </div>

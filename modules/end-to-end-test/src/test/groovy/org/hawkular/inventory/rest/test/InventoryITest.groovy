@@ -204,7 +204,7 @@ class InventoryITest extends AbstractTestBase {
         /* add a room resource */
         response = postDeletable(path: "$environmentId/resources",
                 body: [id        : room1ResourceId, resourceTypePath: "/$roomRTypeId".toString(),
-                       properties: [purchaseDate: date20150626]])
+                properties: [purchaseDate: date20150626]])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId", response.headers.Location)
 
@@ -212,7 +212,7 @@ class InventoryITest extends AbstractTestBase {
         response = postDeletable(path: "$environmentId/resources",
                 body: [id: copyMachine1ResourceId, resourceTypePath: "/" + copyMachineRTypeId,
                 properties : [purchaseDate : date20150626,
-                    nextMaintenanceDate : date20160801] ])
+                nextMaintenanceDate : date20160801] ])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$copyMachine1ResourceId", response.headers.Location)
 
