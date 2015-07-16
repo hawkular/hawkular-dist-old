@@ -38,12 +38,19 @@ module HawkularMetrics {
     median: number;
   }
 
-  declare var window: any;
+  export interface IChartData {
+    id: MetricId;
+    startTimeStamp: TimestampInMillis;
+    endTimeStamp: TimestampInMillis;
+    dataPoints: IChartDataPoint[];
+    contextDataPoints: IChartDataPoint[];
+    annotationDataPoints: IChartDataPoint[];
+  }
 
   /**
    * @ngdoc controller
-   * @name ChartController
-   * @description This controller is responsible for handling activity related to the Chart tab.
+   * @name MetricsViewController
+   * @description This controller is responsible for handling activity related to the metrics response tab.
    * @param $scope
    * @param $rootScope for publishing $broadcast events only
    * @param $interval
@@ -51,6 +58,9 @@ module HawkularMetrics {
    * @param HawkularMetric
    * @param HawkularAlert
    * @param $routeParams
+   * @param HawkularAlertsManager
+   * @param HawkularErrorManager
+   * @param AlertService
    */
   export class MetricsViewController {
     /// for minification only
@@ -59,16 +69,17 @@ module HawkularMetrics {
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
-    private chartData:any;
     private autoRefreshPromise:ng.IPromise<number>;
-
     private resourceId:ResourceId;
-    public threshold = 5000; // default to 5 seconds some high number
 
+    public chartData:IChartData; // essentially the dto for the screen
+    public threshold:TimestampInMillis = 5000; // default to 5 seconds some high number
     public median = 0;
     public percentile95th = 0;
     public average = 0;
-    public math;
+    public alertList;
+    public startTimeStamp:TimestampInMillis;
+    public endTimeStamp:TimestampInMillis;
 
     constructor(private $scope:any,
                 private $rootScope:any,
@@ -79,12 +90,8 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private HawkularAlertsManager: IHawkularAlertsManager,
                 private HawkularErrorManager: IHawkularErrorManager,
-                private AlertService: IAlertService,
-                public alertList:any,
-                public startTimeStamp:TimestampInMillis,
-                public endTimeStamp:TimestampInMillis) {
+                private AlertService: IAlertService ) {
       $scope.vm = this;
-      this.math = window.Math;
 
       this.startTimeStamp = moment().subtract(1, 'hours').valueOf();
       this.endTimeStamp = +moment();
@@ -92,6 +99,7 @@ module HawkularMetrics {
       this.resourceId = $scope.hkParams.resourceId;
 
       $scope.$on('RefreshChart', (event) => {
+        this.$log.debug('RefreshChart Event');
         this.refreshChartDataNow(this.getMetricId());
       });
 
@@ -115,7 +123,7 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+    private getAlerts(metricId: MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
           HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
             this.alertList = data.alertList;
@@ -157,10 +165,6 @@ module HawkularMetrics {
       });
     }
 
-    private noDataFoundForId(resourceId:ResourceId):void {
-      this.$log.warn('No Data found for id: ' + resourceId);
-      ///this.AlertService.warning('No Data found for id: ' + id);
-    }
 
     private refreshChartDataNow(metricId:MetricId, startTime?:TimestampInMillis):void {
       this.$scope.hkEndTimestamp = +moment();
@@ -177,20 +181,9 @@ module HawkularMetrics {
       return this.resourceId + '.status.duration';
     }
 
-    public retrieveThreshold() {
-      this.HawkularAlert.Condition.query({triggerId: this.$routeParams.resourceId + '_trigger_thres'}).$promise
-        .then((response) => {
-
-          if (response[0]) {
-            this.threshold = response[0].threshold;
-          }
-
-        }, (error) => {
-          this.AlertService.error('Error Loading Threshold Data: ' + error);
-        });
+    public static min(a:number, b:number):number {
+      return Math.min(a,b);
     }
-
-
 
     public refreshSummaryData(metricId:MetricId,
                               startTime?:TimestampInMillis,
@@ -214,7 +207,7 @@ module HawkularMetrics {
           .then((response) => {
 
             dataPoints = this.formatBucketedChartOutput(response);
-            console.dir(dataPoints);
+            ///console.dir(dataPoints);
 
             this.median = Math.round(_.last(dataPoints).median);
             this.percentile95th = Math.round(_.last(dataPoints).percentile95th);
@@ -227,10 +220,25 @@ module HawkularMetrics {
       }
     }
 
+    private retrieveThreshold() {
+      this.HawkularAlert.Condition.query({triggerId: this.$routeParams.resourceId + '_trigger_thres'}).$promise
+          .then((response) => {
+
+            if (response[0]) {
+              this.threshold = response[0].threshold;
+            }
+
+          }, (error) => {
+            this.$log.error('Error Loading Threshold data');
+            toastr.error('Error Loading Threshold Data: ' + error);
+          });
+    }
+
+
     public refreshHistoricalChartDataForTimestamp(metricId:MetricId,
                                                   startTime?:TimestampInMillis,
                                                   endTime?:TimestampInMillis):void {
-      // calling refreshChartData without params use the model values
+      /// calling refreshChartData without params use the model values
       if (!endTime) {
         endTime = this.endTimeStamp;
       }
@@ -249,7 +257,7 @@ module HawkularMetrics {
 
             // we want to isolate the response from the data we are feeding to the chart
             this.bucketedDataPoints = this.formatBucketedChartOutput(response);
-            console.dir(this.bucketedDataPoints);
+            ///console.dir(this.bucketedDataPoints);
 
             if (this.bucketedDataPoints.length) {
               // this is basically the DTO for the chart
@@ -259,11 +267,11 @@ module HawkularMetrics {
                 endTimeStamp: endTime,
                 dataPoints: this.bucketedDataPoints,
                 contextDataPoints: this.contextDataPoints,
-                annotationDataPoints: []
+                annotationDataPoints: null
               };
 
             } else {
-              this.noDataFoundForId(metricId);
+              this.$log.warn('No Data found for id: ' + metricId);
             }
 
           }, (error) => {

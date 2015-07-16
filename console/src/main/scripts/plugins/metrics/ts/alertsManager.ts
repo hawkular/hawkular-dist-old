@@ -26,39 +26,40 @@ module HawkularMetrics {
   }
 
   export interface IHawkularAlertsManager {
-    addEmailAction(email: string): ng.IPromise<void>;
-    createAction(email: string): ng.IPromise<void>;
-    updateTrigger(triggerId: string, data: any): ng.IPromise<void>;
-    createTrigger(triggerName: string, enabled: boolean, conditionType: string, email: string): ng.IPromise<void>;
-    deleteTrigger(triggerId: string): ng.IPromise<void>;
-    createCondition(triggerId: string, condition: any): ng.IPromise<void>;
-    updateCondition(triggerId: string, conditionId: string, condition: any): ng.IPromise<void>;
-    createDampening(triggerId: string, duration: number, triggerMode?: string): ng.IPromise<void>;
-    updateDampening(triggerId: string, dampeningId: string, dampening: any): ng.IPromise<void>;
-    getAction(email: string): ng.IPromise<void>;
-    getActions(triggerId: string): ng.IPromise<void>;
-    getTrigger(triggerId: string): ng.IPromise<void>;
-    setEmail(triggerId: string, email: string): ng.IPromise<void>;
-    setResponseTime(triggerId: string, treshold: number, duration: number, enabled: boolean): ng.IPromise<void>;
-    setDowntime(triggerId: string, duration: number, enabled: boolean): ng.IPromise<void>;
-    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType,
+    addEmailAction(email: EmailType): ng.IPromise<void>;
+    createAction(email: EmailType): ng.IPromise<void>;
+    updateTrigger(triggerId: TriggerId, data: any): ng.IPromise<void>;
+    createTrigger(triggerName: string, enabled: boolean, conditionType: string, email: EmailType): ng.IPromise<void>;
+    deleteTrigger(triggerId: TriggerId): ng.IPromise<void>;
+    createCondition(triggerId: TriggerId, condition: any): ng.IPromise<void>;
+    updateCondition(triggerId: TriggerId, conditionId: ConditionId, condition: any): ng.IPromise<void>;
+    createDampening(triggerId: TriggerId, duration: number, triggerMode?: string): ng.IPromise<void>;
+    updateDampening(triggerId: TriggerId, dampeningId: DampeningId, dampening: any): ng.IPromise<void>;
+    getAction(email: EmailType): ng.IPromise<void>;
+    getActions(triggerId: TriggerId): ng.IPromise<void>;
+    getTrigger(triggerId: TriggerId): ng.IPromise<void>;
+    setEmail(triggerId: TriggerId, email: EmailType): ng.IPromise<void>;
+    setResponseTime(triggerId: TriggerId, treshold: number, duration: number, enabled: boolean): ng.IPromise<void>;
+    setDowntime(triggerId: TriggerId, duration: number, enabled: boolean): ng.IPromise<void>;
+    queryConsoleAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType,
                        currentPage?:number, perPage?:number): any;
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
 
-    public static $inject = ['HawkularAlert', '$q', '$log', '$moment'];
+    public static $inject = ['HawkularAlert', '$q', '$log', '$moment','AlertService'];
 
     constructor(private HawkularAlert: any,
                 private $q: ng.IQService,
                 private $log: ng.ILogService,
-                private $moment: any) {
+                private $moment: any,
+                private AlertService:any) {
     }
 
     public createTrigger(triggerName: string, enabled: boolean,
-                         conditionType: string, email: string): ng.IPromise<void> {
+                         conditionType: string, email: EmailType): ng.IPromise<void> {
       // Create a trigger
-      var triggerId: string;
+      var triggerId: TriggerId;
       var DEFAULT_RESOLVE_THRESHOLD = 1000;
       var DEFAULT_DAMPENING_INTERVAL = 7 * 60000;
       var DEFAULT_AUTORESOLVE_INTERVAL = 5 * 60000;
@@ -121,23 +122,23 @@ module HawkularMetrics {
         });
     }
 
-    public deleteTrigger(triggerId: string): ng.IPromise<void> {
+    public deleteTrigger(triggerId: TriggerId): ng.IPromise<void> {
       return this.HawkularAlert.Trigger.delete({triggerId: triggerId}).$promise;
     }
 
-    public updateTrigger(triggerId: string, data: any): ng.IPromise<void> {
+    public updateTrigger(triggerId: TriggerId, data: any): ng.IPromise<void> {
       data.id = triggerId;
       return this.HawkularAlert.Trigger.put({triggerId: triggerId}, data).$promise;
     }
 
-    public getAction(email: string): ng.IPromise<void> {
+    public getAction(email: EmailType): ng.IPromise<void> {
       return this.HawkularAlert.Action.get({
         pluginId: 'email',
         actionId: email
       }).$promise;
     }
 
-    public createAction(email: string): ng.IPromise<void> {
+    public createAction(email: EmailType): ng.IPromise<void> {
       return this.HawkularAlert.Action.save({
         actionPlugin: 'email',
         actionId: email,
@@ -146,7 +147,7 @@ module HawkularMetrics {
       }).$promise;
     }
 
-    public addEmailAction(email: string): ng.IPromise<void> {
+    public addEmailAction(email: EmailType): ng.IPromise<void> {
       return this.getAction(email).then((promiseValue: any) => {
         return promiseValue;
       }, (reason: any) => {
@@ -158,7 +159,7 @@ module HawkularMetrics {
       });
     }
 
-    public updateAction(email: string): ng.IPromise<void> {
+    public updateAction(email: EmailType): ng.IPromise<void> {
       return this.HawkularAlert.Action.put({
         actionPlugin: 'email',
         actionId: email,
@@ -167,15 +168,15 @@ module HawkularMetrics {
       }).$promise;
     }
 
-    public createCondition(triggerId: string, condition: any): ng.IPromise<void> {
+    public createCondition(triggerId: TriggerId, condition: any): ng.IPromise<void> {
       return this.HawkularAlert.Condition.save({triggerId: triggerId}, condition).$promise;
     }
 
-    public updateCondition(triggerId: string, conditionId: string, condition: any): ng.IPromise<void> {
+    public updateCondition(triggerId: TriggerId, conditionId: ConditionId, condition: any): ng.IPromise<void> {
       return this.HawkularAlert.Condition.put({triggerId: triggerId, conditionId: conditionId}, condition).$promise;
     }
 
-    public createDampening(triggerId: string, duration: number, triggerMode?: string): ng.IPromise<void> {
+    public createDampening(triggerId: TriggerId, duration: number, triggerMode?: string): ng.IPromise<void> {
       return this.HawkularAlert.Dampening.save({ triggerId: triggerId }, {
         triggerId: triggerId,
         evalTimeSetting: duration,
@@ -184,20 +185,20 @@ module HawkularMetrics {
       }).$promise;
     }
 
-    public updateDampening(triggerId: string, dampeningId: string, dampening: any): ng.IPromise<void> {
+    public updateDampening(triggerId: TriggerId, dampeningId: DampeningId, dampening: any): ng.IPromise<void> {
       dampening.dampeningId = dampeningId;
       return this.HawkularAlert.Dampening.put({ triggerId: triggerId, dampeningId: dampeningId }, dampening).$promise;
     }
 
-    public getActions(triggerId:string): ng.IPromise<void> {
+    public getActions(triggerId:TriggerId): ng.IPromise<void> {
       return undefined;
     }
 
-    public getTrigger(triggerId: string): ng.IPromise<void> {
+    public getTrigger(triggerId: TriggerId): ng.IPromise<void> {
       return this.HawkularAlert.Trigger.get({ triggerId: triggerId }).$promise;
     }
 
-    public setEmail(triggerId:string, email:string):ng.IPromise<void> {
+    public setEmail(triggerId:TriggerId, email:EmailType):ng.IPromise<void> {
       var actions = this.getActions(triggerId);
       return actions.then((actions)=> {
 
@@ -219,11 +220,11 @@ module HawkularMetrics {
       });
     }
 
-    public setResponseTime(triggerId:string, treshold:number, duration:number, enabled:boolean):ng.IPromise<void> {
+    public setResponseTime(triggerId:TriggerId, treshold:number, duration:number, enabled:boolean):ng.IPromise<void> {
       return undefined;
     }
 
-    public setDowntime(triggerId:string, duration:number, enabled:boolean):ng.IPromise<void> {
+    public setDowntime(triggerId:TriggerId, duration:number, enabled:boolean):ng.IPromise<void> {
       return undefined;
     }
 
@@ -331,6 +332,8 @@ module HawkularMetrics {
         };
       });
     }
+
+
   }
 
   _module.service('HawkularAlertsManager', HawkularAlertsManager);
