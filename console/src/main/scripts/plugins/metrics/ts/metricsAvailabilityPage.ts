@@ -39,18 +39,18 @@ module HawkularMetrics {
   export class MetricsAvailabilityController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert',
-      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager'];
+      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager', 'AlertService'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
     private resourceId:ResourceId;
 
-    uptimeRatio = 0;
-    downtimeDuration = 0;
-    lastDowntime:Date;
-    downtimeCount = 0;
-    empty = true;
-    math;
+    public uptimeRatio = 0;
+    public downtimeDuration = 0;
+    public lastDowntime:Date;
+    public downtimeCount = 0;
+    public empty = true;
+    public math;
 
     constructor(private $scope:any,
                 private $rootScope:any,
@@ -61,6 +61,7 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private HawkularAlertsManager: IHawkularAlertsManager,
                 private HawkularErrorManager: IHawkularErrorManager,
+                private AlertService: IAlertService,
                 public alertList:any,
                 public startTimeStamp:TimestampInMillis,
                 public endTimeStamp:TimestampInMillis) {
@@ -96,7 +97,15 @@ module HawkularMetrics {
       });
     }
 
-    refreshAvailPageNow(resourceId:ResourceId, startTime?:number):void {
+    private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
+          HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
+            this.alertList = data.alertList;
+          }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
+    }
+
+
+    public refreshAvailPageNow(resourceId:ResourceId, startTime?:number):void {
       this.$scope.hkEndTimestamp = +moment();
       var adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
@@ -108,12 +117,9 @@ module HawkularMetrics {
       }
     }
 
-    cancelAutoRefresh():void {
-      this.$interval.cancel(this.autoRefreshPromise);
-      toastr.info('Canceling Auto Refresh Availability');
-    }
 
-    autoRefreshAvailability(intervalInSeconds:TimestampInMillis):void {
+
+    public autoRefreshAvailability(intervalInSeconds:TimestampInMillis):void {
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.startTimeStamp = this.$scope.hkStartTimestamp;
       this.autoRefreshPromise = this.$interval(()  => {
@@ -130,12 +136,11 @@ module HawkularMetrics {
       });
     }
 
-    private noDataFoundForId(id:string):void {
-      this.$log.warn('No Data found for id: ' + id);
-      ///toastr.warning('No Data found for id: ' + id);
-    }
 
-    refreshSummaryAvailabilityData(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+
+    public refreshSummaryAvailabilityData(metricId:MetricId,
+                                          startTime:TimestampInMillis,
+                                          endTime:TimestampInMillis):void {
 
       if (metricId) {
         this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
@@ -158,18 +163,17 @@ module HawkularMetrics {
             }
 
           }, (error) => {
-            this.$log.error('Error Loading Avail Summary data');
-            toastr.error('Error Loading Avail Summary Data: ' + error);
+            this.AlertService.error('Error Loading Avail Summary Data: ' + error);
           });
 
       }
     }
 
-    getResourceId():ResourceId {
+    public getResourceId():ResourceId {
       return this.resourceId;
     }
 
-    refreshAvailChartData(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+    public refreshAvailChartData(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       if (metricId) {
         this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
           availabilityId: metricId,
@@ -202,18 +206,12 @@ module HawkularMetrics {
             this.uptimeRatio = 1 - downtimeDuration / (+moment() - response[0]['timestamp']);
             this.downtimeCount = downtimeCount;
           }, (error) => {
-            this.$log.error('Error Loading Avail data');
-            toastr.error('Error Loading Avail Data: ' + error);
+              this.AlertService.error('Error Loading Avail Data: ' + error);
           });
       }
     }
 
-    private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
-          HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
-        this.alertList = data.alertList;
-      }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
-    }
+
 
     public alertResolve(alert: any, index: number): void {
       for (var i = 0; i< this.alertList.length; i++) {

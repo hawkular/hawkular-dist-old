@@ -19,24 +19,26 @@
 /// <reference path='alertsManager.ts'/>
 /// <reference path='pagination.ts'/>
 /// <reference path='errorManager.ts'/>
+/// <reference path='alertService.ts'/>
 
 module HawkularMetrics {
 
 
-  export class AddUrlController {
+  export class UrlListController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
       'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q',
-      'md5', 'HkHeaderParser'];
+      'md5', 'HkHeaderParser', 'AlertService'];
 
+    private autoRefreshPromise:ng.IPromise<number>;
     private httpUriPart = 'http://';
-    public addProgress: boolean = false;
     private resourceList;
-    public alertList;
-    public lastUpdateTimestamp:Date = new Date();
     private resPerPage = 5;
     public resCurPage = 0;
+    public alertList;
+    public lastUpdateTimestamp:Date = new Date();
     public headerLinks = {};
+    public addProgress: boolean = false;
 
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
@@ -53,6 +55,7 @@ module HawkularMetrics {
                 private $q: ng.IQService,
                 private md5: any,
                 private HkHeaderParser: HawkularMetrics.IHkHeaderParser,
+                private AlertService: HawkularMetrics.IAlertService,
                 public resourceUrl:string
                 ) {
       $scope.vm = this;
@@ -68,15 +71,9 @@ module HawkularMetrics {
 
       this.autoRefresh(20);
     }
-    private autoRefreshPromise:ng.IPromise<number>;
 
 
-    cancelAutoRefresh():void {
-      this.$interval.cancel(this.autoRefreshPromise);
-      toastr.info('Canceling Auto Refresh');
-    }
-
-    autoRefresh(intervalInSeconds:number):void {
+    public autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(()  => {
         this.getResourceList();
       }, intervalInSeconds * 1000);
@@ -86,12 +83,12 @@ module HawkularMetrics {
       });
     }
 
-    addUrl(url:string):void {
+    public addUrl(url:string):void {
       this.addProgress = true;
 
       var resourceId = this.md5.createHash(url || '');
       var resource = {
-        resourceTypeId: 'URL',
+        resourceTypePath: '/URL',
         id: resourceId,
         properties: {
           url: url
@@ -113,16 +110,16 @@ module HawkularMetrics {
           console.dir(newResource);
           this.$log.info('New Resource ID: ' + metricId + ' created.');
 
-          var metricsIds: string[] = [metricId + '.status.duration', metricId + '.status.code'];
+          var metricsIds: string[] = [metricId + '.status.duration',metricId + '.status.code'];
           var metrics = [{
             id: metricsIds[0],
-            metricTypeId: 'status.duration.type',
+            metricTypePath: '/status.duration.type',
             properties: {
               description: 'Response Time in ms.'
             }
           }, {
             id: metricsIds[1],
-            metricTypeId: 'status.code.type',
+            metricTypePath: '/status.code.type',
             properties: {
               description: 'Status Code'
             }
@@ -138,7 +135,7 @@ module HawkularMetrics {
             this.HawkularInventory.ResourceMetric.save({
               environmentId: globalEnvironmentId,
               resourceId: resourceId
-            }, metricsIds).$promise;
+            }, ['../' + metricsIds[0], '../' + metricsIds[1]]).$promise;
 
           /// For right now we will just Register a couple of metrics automatically
           return this.$q.all([createMetric(metrics[0]), createMetric(metrics[1])])
@@ -161,7 +158,8 @@ module HawkularMetrics {
           (e) => err(e, 'Error saving threshold trigger.'))
 
         //this.$location.url('/hawkular/' + metricId);
-        .then(() => toastr.info('Your data is being collected. Please be patient (should be about another minute).'),
+        .then(() => this.AlertService.info('Your data is being collected. Please be patient (should be about ' +
+              'another minute).'),
           (e) => err(e, 'Error saving availability trigger.'))
 
         .finally(()=> {
@@ -171,7 +169,7 @@ module HawkularMetrics {
         });
     }
 
-    getResourceList(currentTenantId?: TenantId):any {
+    public getResourceList(currentTenantId?: TenantId):any {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.ResourceOfType.query(
           {resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage},
@@ -185,8 +183,8 @@ module HawkularMetrics {
             // get things
           }
         }
-        var expanded = this.resourceList ? this.resourceList.expanded : [];
-        aResourceList.expanded = expanded;
+
+        aResourceList.expanded = this.resourceList ? this.resourceList.expanded : [];
         this.HawkularAlert.Alert.query({statuses:'OPEN'}, (anAlertList) => {
           this.alertList = anAlertList;
         }, this);
@@ -195,7 +193,6 @@ module HawkularMetrics {
           promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
             resourceId: res.id, gaugeId: (res.id + '.status.duration'),
             start: moment().subtract(1, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
-            // FIXME: Work data so it works for chart ?
             res['responseTime'] = resource;
           }).$promise);
           promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
@@ -215,24 +212,14 @@ module HawkularMetrics {
           }).$promise);
           this.lastUpdateTimestamp = new Date();
         }, this);
-        this.$q.all(promises).then((result) => {
+        this.$q.all(promises).then(() => {
           this.resourceList = aResourceList;
         });
 
       });
     }
 
-    getAverage(data:any, field:string):number {
-      if (data) {
-        var sum = 0;
-        for (var i = 0; i < data.length; i++) {
-          sum += parseInt(data[i][field], 10);
-        }
-        return Math.round(sum / data.length);
-      }
-    }
-
-    deleteResource(resource:any):any {
+    public deleteResource(resource:any):any {
       this.$modal.open({
         templateUrl: 'plugins/metrics/html/modals/delete-resource.html',
         controller: DeleteResourceModalController,
@@ -242,7 +229,7 @@ module HawkularMetrics {
       }).result.then(result => this.getResourceList());
     }
 
-    setPage(page:number):void {
+    public setPage(page:number):void {
       this.resCurPage = page;
       this.getResourceList();
     }
@@ -251,7 +238,7 @@ module HawkularMetrics {
   class DeleteResourceModalController {
 
     static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularInventory', 'HawkularAlertsManager',
-      'resource'];
+      'AlertService', 'resource'];
 
     constructor(private $scope: any,
                 private $rootScope: any,
@@ -259,6 +246,7 @@ module HawkularMetrics {
                 private $q: ng.IQService,
                 private HawkularInventory,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
+                private AlertService: IAlertService,
                 public resource) {
       $scope.vm = this;
     }
@@ -284,16 +272,16 @@ module HawkularMetrics {
                    this.HawkularAlertsManager.deleteTrigger(triggerIds[1])])
       .then(removeResource)
       .then((res) => {
-          toastr.success('The URL ' + this.resource.properties.url + ' is no longer being monitored.');
+          this.AlertService.success('The URL ' + this.resource.properties.url + ' is no longer being monitored.');
           this.$modalInstance.close(res);
       });
     }
 
-    cancel() {
+    public cancel() {
       this.$modalInstance.dismiss('cancel');
     }
 
   }
-  _module.controller('HawkularMetrics.AddUrlController', AddUrlController);
+  _module.controller('HawkularMetrics.UrlListController', UrlListController);
 
 }

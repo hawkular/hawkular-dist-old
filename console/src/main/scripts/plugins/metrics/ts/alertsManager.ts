@@ -130,14 +130,14 @@ module HawkularMetrics {
       return this.HawkularAlert.Trigger.put({triggerId: triggerId}, data).$promise;
     }
 
-    getAction(email: string): ng.IPromise<void> {
+    public getAction(email: string): ng.IPromise<void> {
       return this.HawkularAlert.Action.get({
         pluginId: 'email',
         actionId: email
       }).$promise;
     }
 
-    createAction(email: string): ng.IPromise<void> {
+    public createAction(email: string): ng.IPromise<void> {
       return this.HawkularAlert.Action.save({
         actionPlugin: 'email',
         actionId: email,
@@ -146,7 +146,7 @@ module HawkularMetrics {
       }).$promise;
     }
 
-    addEmailAction(email: string): ng.IPromise<void> {
+    public addEmailAction(email: string): ng.IPromise<void> {
       return this.getAction(email).then((promiseValue: any) => {
         return promiseValue;
       }, (reason: any) => {
@@ -158,7 +158,7 @@ module HawkularMetrics {
       });
     }
 
-    updateAction(email: string): ng.IPromise<void> {
+    public updateAction(email: string): ng.IPromise<void> {
       return this.HawkularAlert.Action.put({
         actionPlugin: 'email',
         actionId: email,
@@ -167,15 +167,15 @@ module HawkularMetrics {
       }).$promise;
     }
 
-    createCondition(triggerId: string, condition: any): ng.IPromise<void> {
+    public createCondition(triggerId: string, condition: any): ng.IPromise<void> {
       return this.HawkularAlert.Condition.save({triggerId: triggerId}, condition).$promise;
     }
 
-    updateCondition(triggerId: string, conditionId: string, condition: any): ng.IPromise<void> {
+    public updateCondition(triggerId: string, conditionId: string, condition: any): ng.IPromise<void> {
       return this.HawkularAlert.Condition.put({triggerId: triggerId, conditionId: conditionId}, condition).$promise;
     }
 
-    createDampening(triggerId: string, duration: number, triggerMode?: string): ng.IPromise<void> {
+    public createDampening(triggerId: string, duration: number, triggerMode?: string): ng.IPromise<void> {
       return this.HawkularAlert.Dampening.save({ triggerId: triggerId }, {
         triggerId: triggerId,
         evalTimeSetting: duration,
@@ -184,20 +184,20 @@ module HawkularMetrics {
       }).$promise;
     }
 
-    updateDampening(triggerId: string, dampeningId: string, dampening: any): ng.IPromise<void> {
+    public updateDampening(triggerId: string, dampeningId: string, dampening: any): ng.IPromise<void> {
       dampening.dampeningId = dampeningId;
       return this.HawkularAlert.Dampening.put({ triggerId: triggerId, dampeningId: dampeningId }, dampening).$promise;
     }
 
-    getActions(triggerId:string): ng.IPromise<void> {
+    public getActions(triggerId:string): ng.IPromise<void> {
       return undefined;
     }
 
-    getTrigger(triggerId: string): ng.IPromise<void> {
+    public getTrigger(triggerId: string): ng.IPromise<void> {
       return this.HawkularAlert.Trigger.get({ triggerId: triggerId }).$promise;
     }
 
-    setEmail(triggerId:string, email:string):ng.IPromise<void> {
+    public setEmail(triggerId:string, email:string):ng.IPromise<void> {
       var actions = this.getActions(triggerId);
       return actions.then((actions)=> {
 
@@ -219,15 +219,16 @@ module HawkularMetrics {
       });
     }
 
-    setResponseTime(triggerId:string, treshold:number, duration:number, enabled:boolean):ng.IPromise<void> {
+    public setResponseTime(triggerId:string, treshold:number, duration:number, enabled:boolean):ng.IPromise<void> {
       return undefined;
     }
 
-    setDowntime(triggerId:string, duration:number, enabled:boolean):ng.IPromise<void> {
+    public setDowntime(triggerId:string, duration:number, enabled:boolean):ng.IPromise<void> {
       return undefined;
     }
 
-    queryConsoleAlerts(metricId: string, startTime?:TimestampInMillis, endTime?:TimestampInMillis, alertType?:AlertType,
+    public queryConsoleAlerts(metricId: MetricId, startTime?:TimestampInMillis,
+                              endTime?:TimestampInMillis, alertType?:AlertType,
                        currentPage?:number, perPage?:number): any {
       var alertList = [];
       var headers;

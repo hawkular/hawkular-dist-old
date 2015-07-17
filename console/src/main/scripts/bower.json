@@ -16,14 +16,12 @@
     "angular-md5": "0.1.7",
     "angular-momentjs": "0.1.9",
     "angular-patternfly": "0.0.6",
-    "angular-resource": "1.3.15",
     "angular-scroll": "0.6.5",
     "angular-ui-select": "0.11.2",
+    "angular-toastr": "1.4.1",
     "bootstrap-select": "1.6",
-    "d3": "3.5.5",
-    "event-drops": "0.1.1",
-    "hawkular-charts": "~0.4.5",
-    "hawkular-ui-services": "0.5.0",
+    "hawkular-charts": "~0.4.6",
+    "hawkular-ui-services": "0.5.2",
     "hawtio-core-navigation": "2.0.51",
     "hawtio-core": "2.0.16",
     "hawtio-template-cache": "2.0.3",
@@ -31,16 +29,18 @@
     "hawtio-oauth": "2.0.7",
     "lodash": "3.2.0",
     "moment": "2.10.3",
-    "toastr": "2.1.1",
-    "patternfly": "1.3.0"
+    "patternfly": "1.3.0",
+    "keycloak": "1.3.1"
   },
   "devDependencies": {
-    "angular-mocks": "1.3.15",
-    "angular-resource": "1.3.15",
+    "angular-mocks": "1.4.2",
+    "angular-resource": "1.4.2",
     "hawtio-core-dts": "2.0.18"
   },
   "resolutions": {
     "patternfly": "1.3.0",
-    "angular": "1.3.15"
+    "angular": "1.4.2",
+    "angular-resource": "1.4.2",
+    "keycloak": "1.3.1"
   }
 }

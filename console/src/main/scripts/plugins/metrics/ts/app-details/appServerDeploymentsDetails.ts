@@ -27,6 +27,7 @@ module HawkularMetrics {
       '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager',
       '$q', 'md5'];
 
+    private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
     private metricsList;
     public alertList;
@@ -65,14 +66,9 @@ module HawkularMetrics {
         this.autoRefresh(20);
     }
 
-    private autoRefreshPromise: ng.IPromise<number>;
 
-    cancelAutoRefresh(): void {
-      this.$interval.cancel(this.autoRefreshPromise);
-      toastr.info('Canceling Auto Refresh');
-    }
 
-    autoRefresh(intervalInSeconds: number): void {
+    public autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getResourceList();
       }, intervalInSeconds * 1000);
@@ -82,7 +78,7 @@ module HawkularMetrics {
       });
     }
 
-    getResourceList(currentTenantId?: TenantId): any {
+    public getResourceList(currentTenantId?: TenantId): any {
       this.alertList = []; // FIXME: when we have alerts for app server
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'Deployment'},

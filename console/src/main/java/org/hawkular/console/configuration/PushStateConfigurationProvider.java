@@ -36,11 +36,11 @@ public class PushStateConfigurationProvider extends HttpConfigurationProvider {
     public Configuration getConfiguration(final ServletContext context) {
         return ConfigurationBuilder.begin()
                 .addRule()
-                .when(Direction.isInbound().and(Path.matches("/{path}"))
-                        .andNot(Resource.exists("/{path}"))
-                        .andNot(ServletMapping.includes("/{path}")))
-                .perform(Log.message(Logger.Level.INFO, "Page not found. This may be due to html5mode routing in " +
-                        "AngularJS application. Falling back to index.html.").and(Forward.to("/index.html")))
+                .when(Direction.isInbound().and(Path.matches("/hawkular-ui{path}"))
+                        .andNot(Resource.exists("/hawkular-ui{path}"))
+                        .andNot(ServletMapping.includes("/hawkular-ui{path}")))
+                .perform(Log.message(Logger.Level.DEBUG, "Page not found: /hawkular-ui{path} This may be due to " +
+                        "html5mode routing in AngularJS. Falling back to index.html.").and(Forward.to("/index.html")))
                 .where("path").matches(".*");
     }
 

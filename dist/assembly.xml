@@ -160,29 +160,6 @@
       <useTransitiveFiltering>false</useTransitiveFiltering>
     </dependencySet>
 
-    <!-- Keycloak Event Listeners -->
-    <dependencySet>
-      <outputDirectory>${hawkular.dist.zip.root.dir}/modules/org/hawkular/keycloak/events/rest/main</outputDirectory>
-      <includes>
-        <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-rest:jar</include>
-      </includes>
-      <outputFileNameMapping>hawkular-accounts-keycloak-event-listener-rest.jar</outputFileNameMapping>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useProjectAttachments>false</useProjectAttachments>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useTransitiveFiltering>false</useTransitiveFiltering>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>${hawkular.dist.zip.root.dir}/modules/org/hawkular/keycloak/events/jms/main</outputDirectory>
-      <includes>
-        <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-jms:jar</include>
-      </includes>
-      <outputFileNameMapping>hawkular-accounts-keycloak-event-listener-jms.jar</outputFileNameMapping>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useProjectAttachments>false</useProjectAttachments>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useTransitiveFiltering>false</useTransitiveFiltering>
-    </dependencySet>
   </dependencySets>
 
 </assembly>

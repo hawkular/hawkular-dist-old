@@ -26,12 +26,16 @@ module HawkularMetrics {
   }
 
   export class QuickAlertController implements IQuickAlertController {
-    public static  $inject = ['$scope', 'HawkularAlert', '$log', '$q'];
+    public static  $inject = ['$scope', 'HawkularAlert', '$log', '$q', 'AlertService'];
+
+    private metricId:MetricId;
+    private PROMISE_BREAK: string = 'magicValue1234';
 
     constructor(private $scope:any,
                 private HawkularAlert:any,
                 private $log: ng.ILogService,
-                private $q: ng.IQService) {
+                private $q: ng.IQService,
+                private AlertService: IAlertService) {
       this.$scope.showQuickAlert = false;
       this.$scope.quickTrigger = {
         operator: 'LT',
@@ -47,14 +51,6 @@ module HawkularMetrics {
 
       this.allActions();
     }
-
-    private metricId;
-
-    toggleQuickAlert():void {
-      this.$scope.showQuickAlert = !this.$scope.showQuickAlert;
-    }
-
-    private PROMISE_BREAK: string = 'magicValue1234';
 
     private allActions():void {
       this.$scope.actions = [];
@@ -76,8 +72,7 @@ module HawkularMetrics {
         errorMsgComplete = errorMsg + ' ' + error;
       }
 
-      this.$log.error(errorMsgComplete);
-      toastr.error(errorMsgComplete);
+      this.AlertService.error(errorMsgComplete);
     }
 
     private errorHandler(error: any, msg: string) {
@@ -87,7 +82,11 @@ module HawkularMetrics {
       return this.$q.reject(this.PROMISE_BREAK);
     }
 
-    saveQuickAlert():void {
+    public toggleQuickAlert():void {
+      this.$scope.showQuickAlert = !this.$scope.showQuickAlert;
+    }
+
+    public saveQuickAlert():void {
       //if (globalMetricId !== '.status.duration' && globalMetricId !== '.status.code') {
       if (this.metricId !== '.status.duration' && this.metricId !== '.status.code') {
         var newTrigger:any = {};
@@ -144,8 +143,7 @@ module HawkularMetrics {
           // Success ThresholdCondition save
           () => {
             this.$log.debug('Success ThresholdCondition save');
-            this.$log.debug('Alert Created!');
-            toastr.success('Alert Created!');
+            this.AlertService.success('Alert Created!');
 
             this.toggleQuickAlert();
 
@@ -168,8 +166,7 @@ module HawkularMetrics {
           }
         );
       } else {
-        this.$log.debug('No metric selected');
-        toastr.warning('No metric selected');
+        this.AlertService.warning('No metric selected');
       }
     }
   }
