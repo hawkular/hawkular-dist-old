@@ -272,12 +272,11 @@ class InventoryITest extends AbstractTestBase {
 
     }
 
-//    Off, see https://issues.jboss.org/browse/HWKINVENT-69
-//    @Test
-//    void ping() {
-//        def response = client.get(path: "")
-//        assertEquals(200, response.status)
-//    }
+    @Test
+    void ping() {
+        def response = client.get(path: "$basePath")
+        assertEquals(200, response.status)
+    }
 
     @Test
     void testEnvironmentsCreated() {
