@@ -29,9 +29,12 @@ import static org.junit.Assert.assertTrue
 class Scenario1ITest extends AbstractTestBase {
 
     static final String urlTypeId = "URL"
+    static final String urlTypePath = "/" + urlTypeId
     static final String environmentId = "test"
     static final String statusCodeTypeId = "status.code.type"
+    static final String statusCodeTypePath = "/" + statusCodeTypeId
     static final String durationTypeId = "status.duration.type"
+    static final String durationTypePath = "/" + durationTypeId
 
     private static List<String> pathsToDelete = new ArrayList();
 
@@ -83,7 +86,7 @@ class Scenario1ITest extends AbstractTestBase {
         /* create a URL */
         String resourceId = UUID.randomUUID().toString();
         def newResource = Resource.Blueprint.builder().withId(resourceId)
-                .withResourceType(urlTypeId).withProperty("url", "http://hawkular.org").build()
+                .withResourceTypePath(urlTypePath).withProperty("url", "http://hawkular.org").build()
         response = client.post(path: "/hawkular/inventory/$environmentId/resources", body : newResource)
         assertEquals(201, response.status)
         pathsToDelete.add("/hawkular/inventory/$environmentId/resources/$resourceId")
@@ -91,13 +94,13 @@ class Scenario1ITest extends AbstractTestBase {
 
         /* create the metrics */
         String statusCodeId = UUID.randomUUID().toString();
-        def codeMetric = Metric.Blueprint.builder().withMetricTypeId(statusCodeTypeId).withId(statusCodeId).build();
+        def codeMetric = Metric.Blueprint.builder().withMetricTypePath(statusCodeTypePath).withId(statusCodeId).build();
         response = client.post(path: "/hawkular/inventory/$environmentId/metrics", body: codeMetric)
         assertEquals(201, response.status)
         pathsToDelete.add("/hawkular/inventory/$environmentId/metrics/$statusCodeId")
 
         String durationId = UUID.randomUUID().toString();
-        def durationMetric = Metric.Blueprint.builder().withMetricTypeId(durationTypeId).withId(durationId).build();
+        def durationMetric = Metric.Blueprint.builder().withMetricTypePath(durationTypePath).withId(durationId).build();
         response = client.post(path: "/hawkular/inventory/$environmentId/metrics", body: durationMetric)
         assertEquals(201, response.status)
         pathsToDelete.add("/hawkular/inventory/$environmentId/metrics/$durationId")
@@ -105,8 +108,8 @@ class Scenario1ITest extends AbstractTestBase {
         /* assign metrics to the resource */
         response = client.post(path: "/hawkular/inventory/$environmentId/resources/$resourceId/metrics",
         body: [
-            statusCodeId,
-            durationId]
+                "../$statusCodeId".toString(),  // relative path
+                "/test/$durationId".toString()] // canonical path, just for the fun of it
         )
         assertResponseOk(response.status)
 
@@ -180,6 +183,7 @@ class Scenario1ITest extends AbstractTestBase {
             }
         }
     }
+
     private void assertResponseOk(int responseCode) {
         assertTrue("Response code should be 2xx or 304 but was "+ responseCode,
                 (responseCode >= 200 && responseCode < 300) || responseCode == 304)
@@ -199,5 +203,4 @@ class Scenario1ITest extends AbstractTestBase {
             ])
         assertResponseOk(response.status)
     }
-
 }

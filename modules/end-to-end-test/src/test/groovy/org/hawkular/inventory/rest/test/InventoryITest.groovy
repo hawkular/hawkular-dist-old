@@ -164,64 +164,78 @@ class InventoryITest extends AbstractTestBase {
 
         /* link pingableHostRTypeId with responseTimeMTypeId and responseStatusCodeMTypeId */
         path = "$basePath/resourceTypes/$pingableHostRTypeId/metricTypes"
+        //just testing that both relative and canonical paths work when referencing the types
         response = client.post(path: path,
-                body : [responseTimeMTypeId, responseStatusCodeMTypeId])
+                body: ["../$responseTimeMTypeId".toString(), "/$responseStatusCodeMTypeId".toString()])
+
         assertEquals(204, response.status)
-        pathsToDelete.put("$path/$responseTimeMTypeId", "$path/$responseTimeMTypeId")
-        pathsToDelete.put("$path/$responseStatusCodeMTypeId", "$path/$responseStatusCodeMTypeId")
+        //we will try deleting the associations between resource types and metric types, too
+        //this is not necessary because deleting either the resource type or the metric type will take care of it anyway
+        //but this is to test that explicit deletes work, too
+        pathsToDelete.put("$path/../$responseTimeMTypeId", "$path/../$responseTimeMTypeId")
+        pathsToDelete.put("$path/../$responseStatusCodeMTypeId", "$path/../$responseStatusCodeMTypeId")
 
         /* add a metric */
         response = postDeletable(path: "$environmentId/metrics",
-                body: [ id : responseTimeMetricId, metricTypeId : responseTimeMTypeId ]);
+                body: [id: responseTimeMetricId, metricTypePath: "../" + responseTimeMTypeId]);
+        //path relative to env
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/metrics/$responseTimeMetricId", response.headers.Location)
 
         /* add another metric */
         response = postDeletable(path: "$environmentId/metrics",
-                body: [ id : responseStatusCodeMetricId, metricTypeId : responseStatusCodeMTypeId ]);
+                //now try using canonical path for referencing the metric type
+                body: [id: responseStatusCodeMetricId, metricTypePath: "/$responseStatusCodeMTypeId".toString()]);
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/metrics/$responseStatusCodeMetricId", response.headers.Location)
 
         /* add a resource */
         response = postDeletable(path: "$environmentId/resources",
-            body: [ id : host1ResourceId, resourceTypeId: pingableHostRTypeId ])
+                body: [id: host1ResourceId, resourceTypePath: "../$pingableHostRTypeId".toString()])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$host1ResourceId", response.headers.Location)
 
         /* add another resource */
         response = postDeletable(path: "$environmentId/resources",
-            body: [ id : host2ResourceId, resourceTypeId: pingableHostRTypeId ])
+                body: [id: host2ResourceId, resourceTypePath: "/" + pingableHostRTypeId])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$host2ResourceId", response.headers.Location)
 
         /* add a room resource */
         response = postDeletable(path: "$environmentId/resources",
-            body: [ id : room1ResourceId, resourceTypeId: roomRTypeId,
-                properties : [purchaseDate : date20150626] ])
+                body: [id        : room1ResourceId, resourceTypePath: "/$roomRTypeId".toString(),
+                properties: [purchaseDate: date20150626]])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId", response.headers.Location)
 
         /* add a copy machine resource */
         response = postDeletable(path: "$environmentId/resources",
-            body: [ id : copyMachine1ResourceId, resourceTypeId: copyMachineRTypeId,
+                body: [id: copyMachine1ResourceId, resourceTypePath: "/" + copyMachineRTypeId,
                 properties : [purchaseDate : date20150626,
-                    nextMaintenanceDate : date20160801] ])
+                nextMaintenanceDate : date20160801] ])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$copyMachine1ResourceId", response.headers.Location)
 
         response = postDeletable(path: "$environmentId/resources",
-            body: [ id : copyMachine2ResourceId, resourceTypeId: copyMachineRTypeId,
+                body: [id: copyMachine2ResourceId, resourceTypePath: "../" + copyMachineRTypeId,
                 properties : [purchaseDate : date20160801] ])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$copyMachine2ResourceId", response.headers.Location)
 
+        /* add a child resource */
+        response = postDeletable(path: "$environmentId/resources/$room1ResourceId",
+                body: [id: "table", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table",
+                response.headers.Location)
+
         /* link the metric to resource */
         path = "$basePath/$environmentId/resources/$host1ResourceId/metrics"
         response = client.post(path: path,
-            body: [responseTimeMetricId, responseStatusCodeMetricId]);
+                body: ["../$responseTimeMetricId".toString(), "/$environmentId/$responseStatusCodeMetricId".toString()]);
         assertEquals(204, response.status)
-        pathsToDelete.put("$path/$responseTimeMetricId", "$path/$responseTimeMetricId")
-        pathsToDelete.put("$path/$responseStatusCodeMetricId", "$path/$responseStatusCodeMetricId")
+        pathsToDelete.put("$path/../$responseTimeMetricId", "$path/../$responseTimeMetricId")
+        pathsToDelete.put("$path/../$responseStatusCodeMetricId", "$path/../$responseStatusCodeMetricId")
 
         /* add a feed */
         response = postDeletable(path: "$environmentId/feeds", body: [id: feedId])
@@ -230,9 +244,9 @@ class InventoryITest extends AbstractTestBase {
 
         /* add a custom relationship, no need to clean up, it'll be deleted together with the resources */
         def relation = [id        : 42, // it's ignored anyway
-                        source    : tenantId + "/" + environmentId + "/resources/" + host2ResourceId,
+                        source: "/t;" + tenantId + "/e;" + environmentId + "/r;" + host2ResourceId,
                         name      : "inTheSameRoom",
-                        target    : tenantId + "/" + environmentId + "/resources/" + host1ResourceId,
+                        target: "/t;" + tenantId + "/e;" + environmentId + "/r;" + host1ResourceId,
                         properties: [
                                 from      : "2000-01-01",
                                 confidence: "90%"
@@ -256,12 +270,18 @@ class InventoryITest extends AbstractTestBase {
         for (Map.Entry en : entries) {
             String path = en.getKey();
             String getValidationPath = en.getValue();
-            def response = client.delete(path : path)
-            assertEquals(204, response.status)
+            try {
+                def response = client.delete(path: path)
+                assertEquals(204, response.status)
+            } catch (groovyx.net.http.HttpResponseException e) {
+                println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                println(path)
+                println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            }
 
             if (getValidationPath != null) {
                 try {
-                    response = client.get(path : getValidationPath)
+                    def response = client.get(path: getValidationPath)
                     Assert.fail("The path '$getValidationPath' should not exist after the entity was deleted")
                 } catch (groovyx.net.http.HttpResponseException e) {
                     assertEquals("Error message for path '$path'", "Not Found", e.getMessage())
@@ -281,14 +301,15 @@ class InventoryITest extends AbstractTestBase {
 
     @Test
     void testEnvironmentsCreated() {
-        assertEntitiesExist("environments", [testEnvId, environmentId])
+        assertEntitiesExist("environments", ["/e;$testEnvId".toString(),
+                                             "/e;$environmentId".toString()])
     }
 
     @Test
     void testResourceTypesCreated() {
-        assertEntityExists("resourceTypes/$urlTypeId", urlTypeId)
-        assertEntityExists("resourceTypes/$pingableHostRTypeId", pingableHostRTypeId)
-        assertEntityExists("resourceTypes/$roomRTypeId", roomRTypeId)
+        assertEntityExists("resourceTypes/$urlTypeId", "/rt;" + urlTypeId)
+        assertEntityExists("resourceTypes/$pingableHostRTypeId", "/rt;" + pingableHostRTypeId)
+        assertEntityExists("resourceTypes/$roomRTypeId", "/rt;" + roomRTypeId)
 
         // commented out as it interfers with WildFly Agent
         // assertEntitiesExist("resourceTypes", [urlTypeId, pingableHostRTypeId, roomRTypeId])
@@ -297,9 +318,9 @@ class InventoryITest extends AbstractTestBase {
 
     @Test
     void testMetricTypesCreated() {
-        assertEntityExists("metricTypes/$responseTimeMTypeId", responseTimeMTypeId)
-        assertEntityExists("metricTypes/$statusDurationMTypeId", statusDurationMTypeId)
-        assertEntityExists("metricTypes/$statusCodeMTypeId", statusCodeMTypeId)
+        assertEntityExists("metricTypes/$responseTimeMTypeId", "/mt;" + responseTimeMTypeId)
+        assertEntityExists("metricTypes/$statusDurationMTypeId", "/mt;" + statusDurationMTypeId)
+        assertEntityExists("metricTypes/$statusCodeMTypeId", "/mt;" + statusCodeMTypeId)
         // commented out as it interfers with WildFly Agent
         // assertEntitiesExist("metricTypes",
         //    [responseTimeMTypeId, responseStatusCodeMTypeId, statusDurationMTypeId, statusCodeMTypeId])
@@ -308,14 +329,15 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testMetricTypesLinked() {
         assertEntitiesExist("resourceTypes/$pingableHostRTypeId/metricTypes",
-            [responseTimeMTypeId, responseStatusCodeMTypeId])
+                ["/mt;$responseTimeMTypeId".toString(),
+                 "/mt;$responseStatusCodeMTypeId".toString()])
     }
 
     @Test
     void testResourcesCreated() {
-        assertEntityExists("$environmentId/resources/$host1ResourceId", host1ResourceId)
-        assertEntityExists("$environmentId/resources/$host2ResourceId", host2ResourceId)
-        assertEntityExists("$environmentId/resources/$room1ResourceId", room1ResourceId)
+        assertEntityExists("$environmentId/resources/$host1ResourceId", "/e;" + environmentId + "/r;" + host1ResourceId)
+        assertEntityExists("$environmentId/resources/$host2ResourceId", "/e;" + environmentId + "/r;" + host2ResourceId)
+        assertEntityExists("$environmentId/resources/$room1ResourceId", "/e;" + environmentId + "/r;" + room1ResourceId)
     }
 
     @Test
@@ -360,15 +382,19 @@ class InventoryITest extends AbstractTestBase {
 
     @Test
     void testMetricsCreated() {
-        assertEntityExists("$environmentId/metrics/$responseTimeMetricId", responseTimeMetricId)
-        assertEntityExists("$environmentId/metrics/$responseStatusCodeMetricId", responseStatusCodeMetricId)
-        assertEntitiesExist("$environmentId/metrics", [ responseTimeMetricId, responseStatusCodeMetricId ])
+        assertEntityExists("$environmentId/metrics/$responseTimeMetricId",
+                "/e;$environmentId/m;$responseTimeMetricId".toString())
+        assertEntityExists("$environmentId/metrics/$responseStatusCodeMetricId",
+                "/e;$environmentId/m;$responseStatusCodeMetricId".toString())
+        assertEntitiesExist("$environmentId/metrics", ["/e;$environmentId/m;$responseTimeMetricId".toString(),
+                                                       "/e;$environmentId/m;$responseStatusCodeMetricId".toString()])
     }
 
     @Test
     void testMetricsLinked() {
         assertEntitiesExist("$environmentId/resources/$host1ResourceId/metrics",
-            [ responseTimeMetricId, responseStatusCodeMetricId ])
+                ["/e;" + environmentId + "/m;" + responseTimeMetricId, "/e;" + environmentId + "/m;" +
+               responseStatusCodeMetricId])
     }
 
     @Test
@@ -402,9 +428,9 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testTenantsContainEnvironments() {
         assertRelationshipExists("tenants/$tenantId/relationships",
-                "tenants/$tenantId",
+                "/t;$tenantId",
                 contains.name(),
-                "$tenantId/environments/$environmentId")
+                "/t;$tenantId/e;$environmentId")
 
         assertRelationshipJsonldExists("tenants/$tenantId/relationships",
                 tenantId,
@@ -415,41 +441,41 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testTenantsContainResourceTypes() {
         assertRelationshipExists("resourceTypes/$urlTypeId/relationships",
-                "tenants/$tenantId",
+                "/t;$tenantId",
                 contains.name(),
-                "$tenantId/resourceTypes/$urlTypeId")
+                "/t;$tenantId/rt;$urlTypeId")
 
         assertRelationshipExists("tenants/$tenantId/relationships",
-                "tenants/$tenantId",
+                "/t;$tenantId",
                 contains.name(),
-                "$tenantId/resourceTypes/$pingableHostRTypeId")
+                "/t;$tenantId/rt;$pingableHostRTypeId")
     }
 
     @Test
     void testTenantsContainMetricTypes() {
         assertRelationshipExists("metricTypes/$responseTimeMTypeId/relationships",
-                "tenants/$tenantId",
+                "/t;$tenantId",
                 contains.name(),
-                "$tenantId/metricTypes/$responseTimeMTypeId")
+                "/t;$tenantId/mt;$responseTimeMTypeId")
 
         assertRelationshipExists("tenants/$tenantId/relationships",
-                "tenants/$tenantId",
+                "/t;$tenantId",
                 contains.name(),
-                "$tenantId/metricTypes/$statusCodeMTypeId")
+                "/t;$tenantId/mt;$statusCodeMTypeId")
     }
 
 
     @Test
     void testEnvironmentsContainResources() {
         assertRelationshipExists("environments/$environmentId/relationships",
-                "$tenantId/environments/$environmentId",
+                "/t;$tenantId/e;$environmentId",
                 contains.name(),
-                "$tenantId/$environmentId/resources/$host2ResourceId")
+                "/t;$tenantId/e;$environmentId/r;$host2ResourceId")
 
         assertRelationshipExists("environments/$environmentId/relationships",
-                "$tenantId/environments/$environmentId",
+                "/t;$tenantId/e;$environmentId",
                 contains.name(),
-                "$tenantId/$environmentId/resources/$host1ResourceId")
+                "/t;$tenantId/e;$environmentId/r;$host1ResourceId")
 
         assertRelationshipJsonldExists("environments/$environmentId/relationships",
                 environmentId,
@@ -465,9 +491,9 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testEnvironmentsContainFeeds() {
         assertRelationshipExists("environments/$environmentId/relationships",
-                "$tenantId/environments/$environmentId",
+                "/t;$tenantId/e;$environmentId",
                 contains.name(),
-                "$tenantId/$environmentId/feeds/$feedId")
+                "/t;$tenantId/e;$environmentId/f;$feedId")
 
         assertRelationshipJsonldExists("environments/$environmentId/relationships",
                 environmentId,
@@ -478,14 +504,14 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testEnvironmentsContainMetrics() {
         assertRelationshipExists("environments/$environmentId/relationships",
-                "$tenantId/environments/$environmentId",
+                "/t;$tenantId/e;$environmentId",
                 contains.name(),
-                "$tenantId/$environmentId/metrics/$responseTimeMetricId")
+                "/t;$tenantId/e;$environmentId/m;$responseTimeMetricId")
 
         assertRelationshipExists("environments/$environmentId/relationships",
-                "$tenantId/environments/$environmentId",
+                "/t;$tenantId/e;$environmentId",
                 contains.name(),
-                "$tenantId/$environmentId/metrics/$responseStatusCodeMetricId")
+                "/t;$tenantId/e;$environmentId/m;$responseStatusCodeMetricId")
 
         assertRelationshipJsonldExists("environments/$environmentId/relationships",
                 environmentId,
@@ -501,45 +527,45 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testResourceTypesOwnMetricTypes() {
         assertRelationshipExists("resourceTypes/$pingableHostRTypeId/relationships",
-                "$tenantId/resourceTypes/$pingableHostRTypeId",
-                owns.name(),
-                "$tenantId/metricTypes/$responseTimeMTypeId")
+                "/t;$tenantId/rt;$pingableHostRTypeId".toString(),
+                incorporates.name(),
+                "/t;$tenantId/mt;$responseTimeMTypeId")
 
         assertRelationshipExists("metricTypes/$responseStatusCodeMTypeId/relationships",
-                "$tenantId/resourceTypes/$pingableHostRTypeId",
-                owns.name(),
-                "$tenantId/metricTypes/$responseStatusCodeMTypeId")
+                "/t;$tenantId/rt;$pingableHostRTypeId",
+                incorporates.name(),
+                "/t;$tenantId/mt;$responseStatusCodeMTypeId")
 
         assertRelationshipJsonldExists("resourceTypes/$pingableHostRTypeId/relationships",
                 pingableHostRTypeId,
-                owns.name(),
+                incorporates.name(),
                 responseTimeMTypeId)
     }
 
     @Test
     void testResourcesOwnMetrics() {
         assertRelationshipExists("$environmentId/resources/$host1ResourceId/relationships",
-                "$tenantId/$environmentId/resources/$host1ResourceId",
-                owns.name(),
-                "$tenantId/$environmentId/metrics/$responseStatusCodeMetricId")
+                "/t;$tenantId/e;$environmentId/r;$host1ResourceId",
+                incorporates.name(),
+                "/t;$tenantId/e;$environmentId/m;$responseStatusCodeMetricId")
 
         assertRelationshipExists("$environmentId/resources/$host1ResourceId/relationships",
-                "$tenantId/$environmentId/resources/$host1ResourceId",
-                owns.name(),
-                "$tenantId/$environmentId/metrics/$responseTimeMetricId")
+                "/t;$tenantId/e;$environmentId/r;$host1ResourceId",
+                incorporates.name(),
+                "/t;$tenantId/e;$environmentId/m;$responseTimeMetricId")
 
         assertRelationshipJsonldExists("$environmentId/resources/$host1ResourceId/relationships",
                 host1ResourceId,
-                owns.name(),
+                incorporates.name(),
                 responseTimeMetricId)
     }
 
     @Test
     void testResourceTypesDefinesResources() {
         assertRelationshipExists("resourceTypes/$pingableHostRTypeId/relationships",
-                "$tenantId/resourceTypes/$pingableHostRTypeId",
+                "/t;$tenantId/rt;$pingableHostRTypeId",
                 defines.name(),
-                "$tenantId/$environmentId/resources/$host2ResourceId")
+                "/t;$tenantId/e;$environmentId/r;$host2ResourceId")
     }
 
     @Test
@@ -566,37 +592,37 @@ class InventoryITest extends AbstractTestBase {
     @Test
     void testRelationshipFiltering() {
         assertRelationshipExists("$environmentId/resources/$host2ResourceId/relationships",
-                "$tenantId/$environmentId/resources/$host2ResourceId",
+                "/t;$tenantId/e;$environmentId/r;$host2ResourceId",
                 "inTheSameRoom",
-                "$tenantId/$environmentId/resources/$host1ResourceId", [property: "from", propertyValue: "2000-01-01"])
+                "/t;$tenantId/e;$environmentId/r;$host1ResourceId", [property: "from", propertyValue: "2000-01-01"])
 
         assertRelationshipExists("$environmentId/resources/$host2ResourceId/relationships",
-                "$tenantId/$environmentId/resources/$host2ResourceId",
+                "/t;$tenantId/e;$environmentId/r;$host2ResourceId",
                 "inTheSameRoom",
-                "$tenantId/$environmentId/resources/$host1ResourceId", [property: "confidence", propertyValue: "90%"])
+                "/t;$tenantId/e;$environmentId/r;$host1ResourceId", [property: "confidence", propertyValue: "90%"])
 
         assertRelationshipExists("$environmentId/resources/$host2ResourceId/relationships",
-                "$tenantId/$environmentId/resources/$host2ResourceId",
+                "/t;$tenantId/e;$environmentId/r;$host2ResourceId",
                 "inTheSameRoom",
-                "$tenantId/$environmentId/resources/$host1ResourceId", [named: "inTheSameRoom"])
+                "/t;$tenantId/e;$environmentId/r;$host1ResourceId", [named: "inTheSameRoom"])
     }
 
-    private static void assertEntityExists(path, id) {
+    private static void assertEntityExists(path, cp) {
         def response = client.get(path: "$basePath/$path")
         assertEquals(200, response.status)
-        assertEquals(id, response.data.id)
+        assertEquals(cp, response.data.path)
     }
 
-    private static void assertEntitiesExist(path, ids) {
+    private static void assertEntitiesExist(path, cps) {
         def response = client.get(path: "$basePath/$path")
 
         //noinspection GroovyAssignabilityCheck
-        def expectedIds = new ArrayList<>(ids)
-        def entityIds = response.data.collect{ it.id }
-        ids.forEach{entityIds.remove(it); expectedIds.remove(it)}
+        def expectedPaths = new ArrayList<>(cps)
+        def entityPaths = response.data.collect { it.path }
+        cps.forEach { entityPaths.remove(it); expectedPaths.remove(it) }
 
-        Assert.assertTrue("Unexpected entities with ids: " + entityIds, entityIds.empty)
-        Assert.assertTrue("Following entities not found: " + expectedIds, expectedIds.empty)
+        Assert.assertTrue("Unexpected entities with paths: " + entityPaths, entityPaths.empty)
+        Assert.assertTrue("Following entities not found: " + expectedPaths, expectedPaths.empty)
     }
 
     private static void assertRelationshipJsonldExists(path, source, label, target) {

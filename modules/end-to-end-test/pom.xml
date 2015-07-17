@@ -105,6 +105,8 @@
         <hawkular.log.cassandra>INFO</hawkular.log.cassandra>
         <hawkular.log.ejb3>WARN</hawkular.log.ejb3>
         <hawkular.log.rewrite>WARN</hawkular.log.rewrite>
+        <http.log>ERROR</http.log>
+        <http.log.wire>WARN</http.log.wire>
       </properties>
       <build>
         <plugins>
@@ -119,7 +121,19 @@
               <systemPropertyVariables>
                 <hawkular.bind.address>${hawkular.bind.address}</hawkular.bind.address>
                 <hawkular.port.offset>${hawkular.port.offset}</hawkular.port.offset>
+
+                <!-- output over-the-wire traffic -->
+                <org.apache.commons.logging.Log>
+                  org.apache.commons.logging.impl.SimpleLog
+                </org.apache.commons.logging.Log>
+                <org.apache.commons.logging.simplelog.log.org.apache.http>
+                  ${http.log}
+                </org.apache.commons.logging.simplelog.log.org.apache.http>
+                <org.apache.commons.logging.simplelog.log.org.apache.http.wire>
+                  ${http.log.wire}
+                </org.apache.commons.logging.simplelog.log.org.apache.http.wire>
               </systemPropertyVariables>
+              <!--<argLine>-Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y</argLine>-->
             </configuration>
             <executions>
               <execution>
@@ -165,6 +179,9 @@
                 <javaOpt>-Dhawkular.log.cassandra=${hawkular.log.cassandra}</javaOpt>
                 <javaOpt>-Dhawkular.log.ejb3=${hawkular.log.ejb3}</javaOpt>
                 <javaOpt>-Dhawkular.log.rewrite=${hawkular.log.rewrite}</javaOpt>
+                <javaOpt>-Dhawkular.log.rewrite=${hawkular.log.rewrite}</javaOpt>
+                <!--<javaOpt>-Xdebug</javaOpt>-->
+                <!--<javaOpt>-Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y</javaOpt>-->
               </javaOpts>
             </configuration>
             <executions>
