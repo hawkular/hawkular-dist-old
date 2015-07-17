@@ -28,6 +28,8 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
@@ -39,6 +41,7 @@ import org.hawkular.feedcomm.ws.MsgLogger;
 @Startup
 @Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class ConnectedFeeds {
 
     // key=feedID, value=feed websocket session
@@ -71,9 +74,20 @@ public class ConnectedFeeds {
         return new HashSet<String>(this.sessions.keySet());
     }
 
+    /**
+     * Adds the given session and associates it with the given feed ID.
+     * If there is already a session associated with the given feed ID,
+     * the given session is closed, it is not added or associated with the given feed ID
+     * and a error will be logged. The original session remains associated with the feed ID.
+     *
+     * @param feedId the feed ID that will be associated wit the new session
+     * @param newSession the new session to add
+     * @return if the session was added true is returned; false otherwise.
+     */
     @Lock(LockType.WRITE)
-    public void addSession(String feedId, Session newSession) {
+    public boolean addSession(String feedId, Session newSession) {
         Session oldSession = this.sessions.putIfAbsent(feedId, newSession);
+
         if (oldSession == null) {
             MsgLogger.LOG.infof("A feed session has been added [%s]. There are now [%d] connected feeds",
                     feedId, this.sessions.size());
@@ -87,27 +101,40 @@ public class ConnectedFeeds {
                 MsgLogger.LOG.errorCannotCloseExtraFeedSession(feedId, e);
             }
         }
+
+        return oldSession == null;
     }
 
+    /**
+     * Removes the session associated with the given feed ID.
+     * If doomedSession is not null, the feed's session will only be removed
+     * if that feed session has the same ID as the given doomedSession.
+     *
+     * @param feedId identifies the session to be removed
+     * @param doomedSession if not null, ensures that only this session will be removed
+     * @return the removed session or null if nothing was removed
+     */
     @Lock(LockType.WRITE)
-    public void removeSession(String feedId, Session doomedSession) {
-        boolean removed = false;
+    public Session removeSession(String feedId, Session doomedSession) {
+        Session removed = null;
 
         // If no session was passed in, remove any session associated with the given feed.
         // If a session was passed in, only remove it if the feedId is associated with that session.
         // This is to support the need to close extra sessions a feed might have created.
         if (doomedSession == null) {
-            removed = this.sessions.remove(feedId) != null;
+            removed = this.sessions.remove(feedId);
         } else {
             Session existingSession = this.sessions.get(feedId);
             if (existingSession != null && existingSession.getId().equals(doomedSession.getId())) {
-                removed = this.sessions.remove(feedId) != null;
+                removed = this.sessions.remove(feedId);
             }
         }
 
-        if (removed) {
-            MsgLogger.LOG.infof("A feed session has been removed [%s]. There are now [%d] connected feeds",
-                    feedId, this.sessions.size());
+        if (removed != null) {
+            MsgLogger.LOG.infof("Session [%s] for feed [%s] has been removed. There are now [%d] connected feeds",
+                    removed.getId(), feedId, this.sessions.size());
         }
+
+        return removed;
     }
 }
