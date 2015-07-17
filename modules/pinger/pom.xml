@@ -73,7 +73,7 @@
 
     <dependency>
       <groupId>org.jboss.spec.javax.ejb</groupId>
-      <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+      <artifactId>jboss-ejb-api_3.2_spec</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -125,6 +125,7 @@
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -136,6 +137,7 @@
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging-processor</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
