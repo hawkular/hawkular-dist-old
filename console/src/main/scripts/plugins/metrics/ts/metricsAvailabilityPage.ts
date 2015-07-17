@@ -21,11 +21,6 @@
 
 module HawkularMetrics {
 
-
-//
-  declare var window: any;
-
-
   export interface IAvailabilitySummary {
     start: number;
     end: number;
@@ -38,8 +33,8 @@ module HawkularMetrics {
 
   export class MetricsAvailabilityController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert',
-      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager', 'AlertService'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric', 'HawkularAlert',
+      '$routeParams', '$filter', '$moment', 'HawkularAlertsManager', 'HawkularErrorManager', 'AlertService'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
@@ -55,21 +50,24 @@ module HawkularMetrics {
     constructor(private $scope:any,
                 private $rootScope:any,
                 private $interval:ng.IIntervalService,
+                private $window:any,
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
                 private HawkularAlert:any,
                 private $routeParams:any,
-                private HawkularAlertsManager: IHawkularAlertsManager,
-                private HawkularErrorManager: IHawkularErrorManager,
-                private AlertService: IAlertService,
+                private $filter:any,
+                private $moment:any,
+                private HawkularAlertsManager:IHawkularAlertsManager,
+                private HawkularErrorManager:IHawkularErrorManager,
+                private AlertService:IAlertService,
                 public alertList:any,
                 public startTimeStamp:TimestampInMillis,
                 public endTimeStamp:TimestampInMillis) {
       $scope.vm = this;
-      this.math = window.Math;
+      this.math = $window.Math;
 
-      this.startTimeStamp = +moment().subtract(1, 'hours');
-      this.endTimeStamp = +moment();
+      this.startTimeStamp = +$moment().subtract(1, 'hours');
+      this.endTimeStamp = +$moment();
 
       this.resourceId = $scope.hkParams.resourceId;
 
@@ -97,17 +95,19 @@ module HawkularMetrics {
       });
     }
 
-    private getAlerts(metricId: string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+    private getAlerts(metricId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
-          HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
-            this.alertList = data.alertList;
-          }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
+        HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
+          this.alertList = data.alertList;
+        }, (error) => {
+          return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.');
+        });
     }
 
 
     public refreshAvailPageNow(resourceId:ResourceId, startTime?:number):void {
-      this.$scope.hkEndTimestamp = +moment();
-      var adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+      this.$scope.hkEndTimestamp = +this.$moment();
+      var adjStartTimeStamp:number = +this.$moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       if (resourceId) {
         console.log('*** Updating Availability Page');
@@ -118,15 +118,14 @@ module HawkularMetrics {
     }
 
 
-
     public autoRefreshAvailability(intervalInSeconds:TimestampInMillis):void {
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.startTimeStamp = this.$scope.hkStartTimestamp;
       this.autoRefreshPromise = this.$interval(()  => {
         console.info('Autorefresh Availabilty for: ' + this.getResourceId());
-        this.$scope.hkEndTimestamp = +moment();
+        this.$scope.hkEndTimestamp = +this.$moment();
         this.endTimeStamp = this.$scope.hkEndTimestamp;
-        this.$scope.hkStartTimestamp = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+        this.$scope.hkStartTimestamp = +this.$moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
         this.startTimeStamp = this.$scope.hkStartTimestamp;
         this.refreshAvailPageNow(this.getResourceId());
       }, intervalInSeconds * 1000);
@@ -135,7 +134,6 @@ module HawkularMetrics {
         this.$interval.cancel(this.autoRefreshPromise);
       });
     }
-
 
 
     public refreshSummaryAvailabilityData(metricId:MetricId,
@@ -189,41 +187,46 @@ module HawkularMetrics {
 
             // FIXME: HAWKULAR-347
             var downtimeDuration = 0;
-            var lastUptime = +moment();
+            var lastUptime = +this.$moment();
             var lastDowntime = -1;
             var downtimeCount = 0;
-            _.each(response.slice(0).reverse(), function(status, idx) {
-              if (status['value'] === 'down') {
-                lastDowntime = status['timestamp'];
+            _.each(response.slice(0).reverse(), function (status:any, idx) {
+              if (status.value === 'down') {
+                lastDowntime = status.timestamp;
                 downtimeDuration += (lastUptime - lastDowntime);
                 downtimeCount++;
               } else {
-                lastUptime = status['timestamp'];
+                lastUptime = status.timestamp;
               }
             });
 
             this.downtimeDuration = downtimeDuration;
-            this.uptimeRatio = 1 - downtimeDuration / (+moment() - response[0]['timestamp']);
+            this.uptimeRatio = 1 - downtimeDuration / (+this.$moment() - response[0].timestamp);
             this.downtimeCount = downtimeCount;
           }, (error) => {
-              this.AlertService.error('Error Loading Avail Data: ' + error);
+            this.AlertService.error('Error Loading Avail Data: ' + error);
           });
       }
     }
 
 
+    public getDowntimeDurationText(): string {
+      var durationFilter = this.$filter('duration');
 
-    public alertResolve(alert: any, index: number): void {
-      for (var i = 0; i< this.alertList.length; i++) {
-        if (this.alertList[i].$$hashKey === alert.$$hashKey) {
-          this.HawkularAlert.Alert.resolve({alertIds: alert.alertId}, {}).$promise.then( () => {
-            this.alertList.splice(i, 1);
-          });
-          break;
-        }
+      if (this.downtimeDuration && this.downtimeDuration < 60000) {
+        return durationFilter(this.downtimeDuration, 's\'<span> seconds</span>\'');
       }
+      else if (this.downtimeDuration >= 60000 && this.downtimeDuration < 7200000) {
+        return durationFilter(this.downtimeDuration, 'm\'<span> minutes</span>\' s\'<span> seconds</span>\'');
+      }
+      else if (this.downtimeDuration >= 7200000 && this.downtimeDuration < 172800000) {
+        return durationFilter(this.downtimeDuration, 'h\'<span> hours</span>\' m\'<span> minutes</span>\'');
+      }
+      else /*if (downtimeDuration >= 172800000)*/ {
+        return durationFilter(this.downtimeDuration, 'd\'<span> days</span>\' h\'<span> hours</span>\'');
+      }
+      return '';
     }
-
   }
 
   _module.controller('MetricsAvailabilityController', MetricsAvailabilityController);
