@@ -65,8 +65,7 @@ module HawkularMetrics {
                 private HawkularAlertsManager: IHawkularAlertsManager,
                 private HawkularErrorManager: IHawkularErrorManager,
                 private AlertService: IAlertService,
-                private MetricService: IMetricService )
-    {
+                private MetricService: IMetricService ) {
       $scope.vm = this;
 
       this.startTimeStamp = +moment().subtract(1, 'hours');
