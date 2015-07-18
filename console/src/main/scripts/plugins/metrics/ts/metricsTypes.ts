@@ -43,4 +43,7 @@ export type IntervalInSeconds = number;
 
 
 
+export type PersonaId = string;
+
+
 }
