@@ -29,7 +29,8 @@ module HawkularMetrics {
     addEmailAction(email: string): ng.IPromise<void>;
     createAction(email: string): ng.IPromise<void>;
     updateTrigger(triggerId: string, data: any): ng.IPromise<void>;
-    createTrigger(triggerName: string, enabled: boolean, conditionType: string, email: string): ng.IPromise<void>;
+    createTrigger(id: string, triggerName: string, enabled: boolean, conditionType: string,
+                  email: string): ng.IPromise<void>;
     deleteTrigger(triggerId: string): ng.IPromise<void>;
     createCondition(triggerId: string, condition: any): ng.IPromise<void>;
     updateCondition(triggerId: string, conditionId: string, condition: any): ng.IPromise<void>;
@@ -55,7 +56,7 @@ module HawkularMetrics {
                 private $moment: any) {
     }
 
-    public createTrigger(triggerName: string, enabled: boolean,
+    public createTrigger(id: string, triggerName: string, enabled: boolean,
                          conditionType: string, email: string): ng.IPromise<void> {
       // Create a trigger
       var triggerId: string;
@@ -65,7 +66,7 @@ module HawkularMetrics {
 
       return this.HawkularAlert.Trigger.save({
         name: triggerName,
-        id: triggerName,
+        id: id,
         description: 'Created on ' + Date(),
         firingMatch: 'ALL',
         autoResolveMatch: 'ALL',
@@ -77,7 +78,7 @@ module HawkularMetrics {
           triggerId = trigger.id;
 
           // Parse metrics id from the trigger name
-          var dataId: string = trigger.name.slice(0,-14) + '.status.duration';
+          var dataId: string = trigger.id.slice(0,-14) + '.status.duration';
 
           // Create a conditions for that trigger
           if (conditionType === 'THRESHOLD') {
@@ -101,14 +102,14 @@ module HawkularMetrics {
             return this.createCondition(triggerId, {
               type: conditionType,
               triggerId: triggerId,
-              dataId: trigger.name.slice(0,-14),
+              dataId: trigger.id.slice(0,-14),
               operator: 'DOWN'
             }).then(()=> {
               return this.createCondition(triggerId, {
                 type: conditionType,
                 triggerId: triggerId,
                 triggerMode: 'AUTORESOLVE',
-                dataId: trigger.name.slice(0,-14),
+                dataId: trigger.id.slice(0,-14),
                 operator: 'UP'
               });
             });

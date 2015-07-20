@@ -49,4 +49,7 @@ public interface Log extends BasicLogger {
     @Message(id = 5103, value = "Could not handle a message from Hawkular Bus")
     void eCouldNotHandleBusMessage(@Cause Exception e);
 
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 5104, value = "Could not parse a message to json format")
+    void eCouldNotParseMessage(@Cause Throwable e);
 }

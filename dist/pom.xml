@@ -89,8 +89,8 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.alerts</groupId>
-      <artifactId>hawkular-alerts-ear</artifactId>
-      <type>ear</type>
+      <artifactId>hawkular-alerts-rest</artifactId>
+      <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular.alerts</groupId>
