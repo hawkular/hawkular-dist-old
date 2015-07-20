@@ -152,13 +152,16 @@ class InventoryITest extends AbstractTestBase {
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/resourceTypes/$copyMachineRTypeId", response.headers.Location)
 
+
         /* Create a metric type */
-        response = postDeletable(path: "metricTypes", body: [id : responseTimeMTypeId, unit : "MILLI_SECOND"])
+        response = postDeletable(path: "metricTypes", body: [id : responseTimeMTypeId, unit : "MILLI_SECOND",
+                type: "COUNTER"])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/metricTypes/$responseTimeMTypeId", response.headers.Location)
 
         /* Create another metric type */
-        response = postDeletable(path: "metricTypes", body: [id : responseStatusCodeMTypeId, unit : "NONE"])
+        response = postDeletable(path: "metricTypes", body: [id : responseStatusCodeMTypeId, unit : "NONE",
+                type: "GAUGE"])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/metricTypes/$responseStatusCodeMTypeId", response.headers.Location)
 
@@ -292,12 +295,11 @@ class InventoryITest extends AbstractTestBase {
 
     }
 
-//    Off, see https://issues.jboss.org/browse/HWKINVENT-69
-//    @Test
-//    void ping() {
-//        def response = client.get(path: "")
-//        assertEquals(200, response.status)
-//    }
+    @Test
+    void ping() {
+        def response = client.get(path: "$basePath")
+        assertEquals(200, response.status)
+    }
 
     @Test
     void testEnvironmentsCreated() {
