@@ -22,6 +22,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.jms.ConnectionFactory;
 import javax.naming.InitialContext;
@@ -46,7 +48,8 @@ import org.hawkular.feedcomm.ws.command.ui.ExecuteOperationCommand;
  * This is similiar to the feed web socket endpoint, however, it has a different set of allowed commants
  * that can be processed for a UI client.
  */
-@ServerEndpoint("/ui")
+@ServerEndpoint("/ui/ws")
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class UIClientCommWebSocket {
 
     private static final Map<String, Class<? extends Command<?, ?>>> VALID_COMMANDS;

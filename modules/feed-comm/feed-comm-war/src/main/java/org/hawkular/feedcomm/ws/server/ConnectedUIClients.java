@@ -28,6 +28,8 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.websocket.Session;
 
 import org.hawkular.feedcomm.ws.MsgLogger;
@@ -38,6 +40,7 @@ import org.hawkular.feedcomm.ws.MsgLogger;
 @Startup
 @Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class ConnectedUIClients {
 
     // key=sessionID, value=UI client websocket session

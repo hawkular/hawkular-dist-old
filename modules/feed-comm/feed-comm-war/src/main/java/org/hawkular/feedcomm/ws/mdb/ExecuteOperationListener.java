@@ -16,10 +16,6 @@
  */
 package org.hawkular.feedcomm.ws.mdb;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.inject.Inject;
-import javax.jms.MessageListener;
 import javax.websocket.Session;
 
 import org.hawkular.bus.common.consumer.BasicMessageListener;
@@ -29,13 +25,13 @@ import org.hawkular.feedcomm.ws.MsgLogger;
 import org.hawkular.feedcomm.ws.WebSocketHelper;
 import org.hawkular.feedcomm.ws.server.ConnectedFeeds;
 
-@MessageDriven(messageListenerInterface = MessageListener.class, activationConfig = {
-        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = Constants.DEST_FEED_EXECUTE_OP) })
-public class ExecuteOperationMDB extends BasicMessageListener<ExecuteOperationRequest> {
+public class ExecuteOperationListener extends BasicMessageListener<ExecuteOperationRequest> {
 
-    @Inject
     private ConnectedFeeds connectedFeeds;
+
+    public ExecuteOperationListener(ConnectedFeeds connectedFeeds) {
+        this.connectedFeeds = connectedFeeds;
+    }
 
     protected void onBasicMessage(ExecuteOperationRequest request) {
         try {

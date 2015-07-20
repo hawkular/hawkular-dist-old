@@ -37,6 +37,8 @@ import org.hawkular.feedcomm.ws.command.CommandContext;
 public class ExecuteOperationCommand implements Command<ExecuteOperationRequest, GenericSuccessResponse> {
     public static final Class<ExecuteOperationRequest> REQUEST_CLASS = ExecuteOperationRequest.class;
 
+    private static String LAST_FEED_FOR_TESTING_ONLY_DELETE_ME = null;
+
     @Override
     public GenericSuccessResponse execute(ExecuteOperationRequest request, CommandContext context) throws Exception {
 
@@ -46,16 +48,21 @@ public class ExecuteOperationCommand implements Command<ExecuteOperationRequest,
         // TODO: THIS IS JUST FOR TESTING - JUST PICK A FEED, ANY FEED.
         //       IN THE FUTURE, WE NEED TO LOOK AT THE RESOURCE ID AND FIGURE OUT THE FEED RESPONSIBLE FOR IT
         Set<String> feeds = context.getConnectedFeeds().getAllFeeds();
-        feedId = feeds.iterator().next();
+        if (feeds.isEmpty()) {
+            feedId = LAST_FEED_FOR_TESTING_ONLY_DELETE_ME; // if its null, oh, well, we just get NPE
+        } else {
+            feedId = feeds.iterator().next();
+            LAST_FEED_FOR_TESTING_ONLY_DELETE_ME = feedId;
+        }
 
         GenericSuccessResponse response;
         try (ConnectionContextFactory ccf = new ConnectionContextFactory(context.getConnectionFactory())) {
-            Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC, Constants.DEST_FEED_EXECUTE_OP);
+            Endpoint endpoint = new Endpoint(Endpoint.Type.QUEUE, Constants.DEST_FEED_EXECUTE_OP);
             ProducerConnectionContext pcc = ccf.createProducerConnectionContext(endpoint);
             Map<String, String> feedIdHeader = Collections.singletonMap(Constants.HEADER_FEEDID, feedId);
             MessageId mid = new MessageProcessor().send(pcc, request, feedIdHeader);
             response = new GenericSuccessResponse();
-            response.setMessage("The execution request has been forwarded (id=" + mid + ")");
+            response.setMessage("The execution request has been forwarded to feed [" + feedId + "] (id=" + mid + ")");
         }
         return response;
     }
