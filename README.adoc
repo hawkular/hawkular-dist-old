@@ -21,7 +21,7 @@ the overall Hawkular instance
 
 ifdef::env-github[]
 [link=https://travis-ci.org/hawkular/hawkular]
-image:https://travis-ci.org/hawkular/hawkular.svg["Build Status", link="https://travis-ci.org/hawkular/hawkular"]
+image:https://travis-ci.org/hawkular/hawkular.svg?branch=master["Build Status", link="https://travis-ci.org/hawkular/hawkular"]
 endif::[]
 
 == Building
