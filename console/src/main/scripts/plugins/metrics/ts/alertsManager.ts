@@ -290,18 +290,18 @@ module HawkularMetrics {
           var count: number = 0.0;
 
           for (var j = 0; j < serverAlert.evalSets.length; j++) {
-            var eval = serverAlert.evalSets[j][0];
+            var evalItem = serverAlert.evalSets[j][0];
 
-            if (!consoleAlert.start && eval.dataTimestamp) {
-              consoleAlert.start = eval.dataTimestamp;
+            if (!consoleAlert.start && evalItem.dataTimestamp) {
+              consoleAlert.start = evalItem.dataTimestamp;
             }
 
-            if (!consoleAlert.threshold && eval.condition.threshold) {
-              consoleAlert.threshold = eval.condition.threshold;
+            if (!consoleAlert.threshold && evalItem.condition.threshold) {
+              consoleAlert.threshold = evalItem.condition.threshold;
             }
 
-            if (!consoleAlert.type && eval.condition.type) {
-              consoleAlert.type = eval.condition.type;
+            if (!consoleAlert.type && evalItem.condition.type) {
+              consoleAlert.type = evalItem.condition.type;
             }
 
             var momentAlert = this.$moment(consoleAlert.end);
@@ -313,7 +313,7 @@ module HawkularMetrics {
               }
             }
 
-            sum += eval.value;
+            sum += evalItem.value;
             count++;
           }
 
