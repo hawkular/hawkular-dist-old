@@ -90,7 +90,7 @@ module HawkularMetrics {
       }
       this.autoRefreshAvailability(20);
 
-      $scope.$on('RefreshAvailabilityChart', (event) => {
+      $scope.$on('RefreshAvailabilityChart', (/*event*/) => {
         this.refreshAvailPageNow(this.getResourceId());
       });
     }
@@ -190,7 +190,7 @@ module HawkularMetrics {
             var lastUptime = +this.$moment();
             var lastDowntime = -1;
             var downtimeCount = 0;
-            _.each(response.slice(0).reverse(), function (status:any, idx) {
+            _.each(response.slice(0).reverse(), function (status:any/*, idx*/) {
               if (status.value === 'down') {
                 lastDowntime = status.timestamp;
                 downtimeDuration += (lastUptime - lastDowntime);
@@ -209,20 +209,26 @@ module HawkularMetrics {
       }
     }
 
+    private durationLimits = {
+      s: 60000, // seconds, up to 60 (1 minute)
+      m: 7200000, // minutes, up to 120 (2 hours)
+      h: 172800000 // hours, up to 48 (2 days)
+    };
 
+    /// FIXME: markup here is bad. should return [{value: <nr>, unit: <unit-name>}, {value: <nr>, unit: <unit-name>},..]
     public getDowntimeDurationText(): string {
       var durationFilter = this.$filter('duration');
 
-      if (this.downtimeDuration && this.downtimeDuration < 60000) {
+      if (this.downtimeDuration && this.downtimeDuration < this.durationLimits.s) {
         return durationFilter(this.downtimeDuration, 's\'<span> seconds</span>\'');
       }
-      else if (this.downtimeDuration >= 60000 && this.downtimeDuration < 7200000) {
+      else if (this.downtimeDuration >= this.durationLimits.s && this.downtimeDuration < this.durationLimits.m) {
         return durationFilter(this.downtimeDuration, 'm\'<span> minutes</span>\' s\'<span> seconds</span>\'');
       }
-      else if (this.downtimeDuration >= 7200000 && this.downtimeDuration < 172800000) {
+      else if (this.downtimeDuration >= this.durationLimits.m && this.downtimeDuration < this.durationLimits.h) {
         return durationFilter(this.downtimeDuration, 'h\'<span> hours</span>\' m\'<span> minutes</span>\'');
       }
-      else /*if (downtimeDuration >= 172800000)*/ {
+      else /*if (downtimeDuration >= this.durationLimits.h)*/ {
         return durationFilter(this.downtimeDuration, 'd\'<span> days</span>\' h\'<span> hours</span>\'');
       }
       return '';
