@@ -18,9 +18,7 @@ package org.hawkular.component.availcreator;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -32,11 +30,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageProcessor;
-import org.hawkular.bus.common.ObjectMessage;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -99,16 +95,14 @@ public class AvailPublisher {
 
     public void publishToTopic(List<SingleAvail> availRecordList, MetricReceiver metricReceiver) {
         if (metricReceiver.topic != null) {
-            Map<String, Object> outer = new HashMap<>(1);
-            Map<String, Object> data = new HashMap<>(2);
-            data.put("data", availRecordList);
-            outer.put("availData", data);
+            AvailDataMessage.AvailData availData = new AvailDataMessage.AvailData();
+            availData.setData(availRecordList);
 
             try (ConnectionContextFactory factory = new ConnectionContextFactory(metricReceiver.connectionFactory)) {
                 Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC, metricReceiver.topic.getTopicName());
                 ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
-                BasicMessage msg = new ObjectMessage(outer);
                 MessageProcessor processor = new MessageProcessor();
+                AvailDataMessage msg = new AvailDataMessage(availData);
                 processor.send(pc, msg);
             } catch (Exception e) {
                 Log.LOG.eCouldNotSendMessage(e);
