@@ -25,6 +25,7 @@ module HawkularMetrics {
     start: number;
     end: number;
     downtimeDuration: number;
+    downtimeDurationJson: any;
     lastDowntime:number;
     uptimeRatio: number;
     downtimeCount:number;
@@ -42,6 +43,7 @@ module HawkularMetrics {
 
     public uptimeRatio = 0;
     public downtimeDuration = 0;
+    public downtimeDurationJson;
     public lastDowntime:Date;
     public downtimeCount = 0;
     public empty = true;
@@ -201,6 +203,7 @@ module HawkularMetrics {
             });
 
             this.downtimeDuration = downtimeDuration;
+            this.downtimeDurationJson = this.getDowntimeDurationAsJson();
             this.uptimeRatio = 1 - downtimeDuration / (+this.$moment() - response[0].timestamp);
             this.downtimeCount = downtimeCount;
           }, (error) => {
@@ -209,29 +212,37 @@ module HawkularMetrics {
       }
     }
 
-    private durationLimits = {
-      s: 60000, // seconds, up to 60 (1 minute)
-      m: 7200000, // minutes, up to 120 (2 hours)
-      h: 172800000 // hours, up to 48 (2 days)
+    private durationUnits = {
+      's': {unit: 'seconds', limit: 60000}, // seconds, up to 60 (1 minute)
+      'm': {unit: 'minutes', limit: 7200000}, // minutes, up to 120 (2 hours)
+      'h': {unit: 'hours',   limit: 172800000}, // hours, up to 48 (2 days)
+      'd': {unit: 'days',    limit: 1209600000} // days, up to 14 (2 weeks)
     };
 
-    /// FIXME: markup here is bad. should return [{value: <nr>, unit: <unit-name>}, {value: <nr>, unit: <unit-name>},..]
-    public getDowntimeDurationText(): string {
-      var durationFilter = this.$filter('duration');
+    private getDurationAux(duration: number, pattern: string): any {
+      var result = [];
+      var durations = this.$filter('duration')(duration, pattern).split(' ');
+      _.each(pattern.split(' '), function (unit: any, idx) {
+        result.push({value: durations[idx], unit: this.durationUnits[unit].unit});
+      }, this);
+      return this.$window.angular.fromJson(result);
+    }
 
-      if (this.downtimeDuration && this.downtimeDuration < this.durationLimits.s) {
-        return durationFilter(this.downtimeDuration, 's\'<span> seconds</span>\'');
+    private getDowntimeDurationAsJson(): any {
+      if(this.downtimeDuration) {
+        if (this.downtimeDuration < this.durationUnits.s.limit) {
+          return this.getDurationAux(this.downtimeDuration, 's');
+        }
+        else if (this.downtimeDuration < this.durationUnits.m.limit) {
+          return this.getDurationAux(this.downtimeDuration, 'm s');
+        }
+        else if (this.downtimeDuration < this.durationUnits.h.limit) {
+          return this.getDurationAux(this.downtimeDuration, 'h m');
+        }
+        else /*if (downtimeDuration >= this.durationLimits.h)*/ {
+          return this.getDurationAux(this.downtimeDuration, 'd h');
+        }
       }
-      else if (this.downtimeDuration >= this.durationLimits.s && this.downtimeDuration < this.durationLimits.m) {
-        return durationFilter(this.downtimeDuration, 'm\'<span> minutes</span>\' s\'<span> seconds</span>\'');
-      }
-      else if (this.downtimeDuration >= this.durationLimits.m && this.downtimeDuration < this.durationLimits.h) {
-        return durationFilter(this.downtimeDuration, 'h\'<span> hours</span>\' m\'<span> minutes</span>\'');
-      }
-      else /*if (downtimeDuration >= this.durationLimits.h)*/ {
-        return durationFilter(this.downtimeDuration, 'd\'<span> days</span>\' h\'<span> hours</span>\'');
-      }
-      return '';
     }
   }
 
