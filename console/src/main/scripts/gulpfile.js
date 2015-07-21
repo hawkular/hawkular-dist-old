@@ -160,11 +160,11 @@ var gulpTsc = function(done) {
     });
 };
 
-gulp.task('tsc', ['clean-defs', 'tsd'], function (done) {
+gulp.task('tsc', ['clean-defs' ], function (done) {
   gulpTsc(done);
 });
 
-gulp.task('tsc-live', ['copy-sources','clean-defs', 'tsd'], function (done) {
+gulp.task('tsc-live', ['copy-sources','clean-defs' ], function (done) {
   gulpTsc(done);
 });
 
