@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Hawkular - The OpenSource monitoring platform</title>
+    <meta charset="UTF8">
+    <script src="libs/patternfly/components/jquery/dist/jquery.js"></script>
+    <script src="libs/patternfly/components/bootstrap/dist/js/bootstrap.js"></script>
+  </head>
+
+  <body style="background-color: #232122;" class="ng-cloak time-out">
+    <nav class="navbar navbar-default navbar-pf" role="navigation">
+      <div>
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">
+            <img id="hawkularLogo" src="resources/img/brand.svg" alt="RED HAT JBOSS HAWKULAR Management Console" title="Hawkular">
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="modal fade" id="time-out" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel">Session Expired</h4>
+            </div>
+            <div class="modal-body">
+              <p>Due to inactivity, we closed your session. To start a new session, please <a href="#">log in</a> again.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary">OK</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
