@@ -3,9 +3,23 @@
 
   <head>
     <title>Hawkular - The OpenSource monitoring platform</title>
+    <base href='${hawkular.console.index.html.base.href}'>
     <meta charset="UTF8">
+
+    <!-- bower:css -->
+    <!-- endbower -->
+    <link href="dist/hawkular-console.css?v=${hawkular.console.timestamp}" rel="stylesheet">
+
+    <!-- ES6/ES6 shim -->
+    <!--[if IE 8]>
+    <script src="libs/es5-dom-shim/__COMIPLE/a.ie8.js"></script>
+    <![endif]-->
+    <script src="libs/es5-dom-shim/__COMPILE/a.js"></script>
     <script src="libs/patternfly/components/jquery/dist/jquery.js"></script>
     <script src="libs/patternfly/components/bootstrap/dist/js/bootstrap.js"></script>
+
+    <!-- bower:js -->
+    <!-- endbower -->
   </head>
 
   <body style="background-color: #232122;" class="ng-cloak time-out">
@@ -20,17 +34,17 @@
     </nav>
 
     <div class="container">
-      <div class="modal fade" id="time-out" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+      <div class="" id="time-out" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title" id="myModalLabel">Session Expired</h4>
             </div>
             <div class="modal-body">
-              <p>Due to inactivity, we closed your session. To start a new session, please <a href="#">log in</a> again.</p>
+              <p>Due to inactivity, we closed your session. To start a new session, please <a href="/hawkular-ui/">log in</a> again.</p>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary">OK</button>
+              <a class="btn btn-primary" href="/hawkular-ui/">OK</a>
             </div>
           </div>
         </div>
