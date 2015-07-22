@@ -103,6 +103,7 @@
               <directory>target/gulp-build/</directory>
               <includes>
                 <include>index.html</include>
+                <include>time-out.html</include>
                 <include>libs/**</include>
                 <include>dist/**</include>
               </includes>

@@ -77,7 +77,7 @@ gulp.task('set-server-path', function(done) {
 gulp.task('bower', function () {
     var cacheBuster = Date.now();
 
-    gulp.src('index.html')
+    gulp.src('*.html')
         .pipe(wiredep({
           fileTypes: {
             html: {
