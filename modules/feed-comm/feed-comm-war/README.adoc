@@ -1,3 +1,0 @@
-= Feed Communications Server-Side WAR
-
-You can use websocket-test-client.html to send messages via WebSockets to the server-side. It can mimic a UI client or a feed.

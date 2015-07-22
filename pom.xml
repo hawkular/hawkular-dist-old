@@ -57,7 +57,6 @@
     <module>console</module>
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
-    <module>modules/feed-comm</module>
     <module>dist</module>
     <module>modules/end-to-end-test</module>
   </modules>
@@ -81,22 +80,20 @@
     <!-- - A version property must be specified in the format "version.{groupId}" -->
     <!-- - If groupId is not unique, append the property name with ".{artifactId}" -->
     <!-- - Version properties must be sorted alphabetically -->
-    <version.com.fasterxml.jackson.core>2.6.0-rc3</version.com.fasterxml.jackson.core>
     <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
     <version.com.google.guava>16.0.1</version.com.google.guava>
     <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.hawkular.accounts>1.0.8.Final</version.org.hawkular.accounts>
-    <version.org.hawkular.agent>0.3.1-SNAPSHOT</version.org.hawkular.agent>
+    <version.org.hawkular.agent>0.3.1</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.3.0.Final</version.org.hawkular.alerts>
     <version.org.hawkular.availCreator>${project.version}</version.org.hawkular.availCreator>
-    <version.org.hawkular.bus>0.2.1</version.org.hawkular.bus>
+    <version.org.hawkular.bus>0.3.0.Final</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.1.1.Final</version.org.hawkular.commons>
     <version.org.hawkular.console>${project.version}</version.org.hawkular.console>
-    <version.org.hawkular.feed-comm>${project.version}</version.org.hawkular.feed-comm>
     <version.org.hawkular.metrics>0.5.0.Final</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.2.0.Alpha1</version.org.hawkular.inventory>
-    <version.org.hawkular.nest>0.1.1</version.org.hawkular.nest>
+    <version.org.hawkular.nest>0.3.0.Final</version.org.hawkular.nest>
     <version.org.hawkular.pinger>${project.version}</version.org.hawkular.pinger>
     <version.org.keycloak>1.3.1.Final</version.org.keycloak>
     <version.org.testng>6.5.2</version.org.testng>
@@ -104,21 +101,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${version.com.fasterxml.jackson.core}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${version.com.fasterxml.jackson.core}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${version.com.fasterxml.jackson.core}</version>
-      </dependency>
 
       <dependency>
         <groupId>org.hawkular.accounts</groupId>
@@ -262,9 +244,9 @@
       </dependency>
 
       <dependency>
-        <groupId>org.hawkular</groupId>
+        <groupId>org.hawkular.bus</groupId>
         <artifactId>hawkular-feed-comm-war</artifactId>
-        <version>${version.org.hawkular.feed-comm}</version>
+        <version>${version.org.hawkular.bus}</version>
         <type>war</type>
       </dependency>
 

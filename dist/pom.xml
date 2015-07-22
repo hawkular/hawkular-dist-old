@@ -73,7 +73,7 @@
       <type>war</type>
     </dependency>
     <dependency>
-      <groupId>org.hawkular</groupId>
+      <groupId>org.hawkular.bus</groupId>
       <artifactId>hawkular-feed-comm-war</artifactId>
       <type>war</type>
     </dependency>
