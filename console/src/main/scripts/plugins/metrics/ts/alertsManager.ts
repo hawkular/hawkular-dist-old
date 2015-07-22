@@ -29,7 +29,8 @@ module HawkularMetrics {
     addEmailAction(email: EmailType): ng.IPromise<void>;
     createAction(email: EmailType): ng.IPromise<void>;
     updateTrigger(triggerId: TriggerId, data: any): ng.IPromise<void>;
-    createTrigger(triggerName: string, enabled: boolean, conditionType: string, email: EmailType): ng.IPromise<void>;
+    createTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
+                  email: EmailType): ng.IPromise<void>;
     deleteTrigger(triggerId: TriggerId): ng.IPromise<void>;
     createCondition(triggerId: TriggerId, condition: any): ng.IPromise<void>;
     updateCondition(triggerId: TriggerId, conditionId: ConditionId, condition: any): ng.IPromise<void>;
@@ -56,7 +57,7 @@ module HawkularMetrics {
                 private AlertService:any) {
     }
 
-    public createTrigger(triggerName: string, enabled: boolean,
+    public createTrigger(id: TriggerId, triggerName: string, enabled: boolean,
                          conditionType: string, email: EmailType): ng.IPromise<void> {
       // Create a trigger
       var triggerId: TriggerId;
@@ -66,7 +67,7 @@ module HawkularMetrics {
 
       return this.HawkularAlert.Trigger.save({
         name: triggerName,
-        id: triggerName,
+        id: id,
         description: 'Created on ' + Date(),
         firingMatch: 'ALL',
         autoResolveMatch: 'ALL',
@@ -78,7 +79,7 @@ module HawkularMetrics {
           triggerId = trigger.id;
 
           // Parse metrics id from the trigger name
-          var dataId: string = trigger.name.slice(0,-14) + '.status.duration';
+          var dataId: string = trigger.id.slice(0,-14) + '.status.duration';
 
           // Create a conditions for that trigger
           if (conditionType === 'THRESHOLD') {
@@ -102,14 +103,14 @@ module HawkularMetrics {
             return this.createCondition(triggerId, {
               type: conditionType,
               triggerId: triggerId,
-              dataId: trigger.name.slice(0,-14),
+              dataId: trigger.id.slice(0,-14),
               operator: 'DOWN'
             }).then(()=> {
               return this.createCondition(triggerId, {
                 type: conditionType,
                 triggerId: triggerId,
                 triggerMode: 'AUTORESOLVE',
-                dataId: trigger.name.slice(0,-14),
+                dataId: trigger.id.slice(0,-14),
                 operator: 'UP'
               });
             });
@@ -290,18 +291,18 @@ module HawkularMetrics {
           var count: number = 0.0;
 
           for (var j = 0; j < serverAlert.evalSets.length; j++) {
-            var eval = serverAlert.evalSets[j][0];
+            var evalItem = serverAlert.evalSets[j][0];
 
-            if (!consoleAlert.start && eval.dataTimestamp) {
-              consoleAlert.start = eval.dataTimestamp;
+            if (!consoleAlert.start && evalItem.dataTimestamp) {
+              consoleAlert.start = evalItem.dataTimestamp;
             }
 
-            if (!consoleAlert.threshold && eval.condition.threshold) {
-              consoleAlert.threshold = eval.condition.threshold;
+            if (!consoleAlert.threshold && evalItem.condition.threshold) {
+              consoleAlert.threshold = evalItem.condition.threshold;
             }
 
-            if (!consoleAlert.type && eval.condition.type) {
-              consoleAlert.type = eval.condition.type;
+            if (!consoleAlert.type && evalItem.condition.type) {
+              consoleAlert.type = evalItem.condition.type;
             }
 
             var momentAlert = this.$moment(consoleAlert.end);
@@ -313,7 +314,7 @@ module HawkularMetrics {
               }
             }
 
-            sum += eval.value;
+            sum += evalItem.value;
             count++;
           }
 

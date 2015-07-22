@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "extends": {
+    "type": "object",
+    "javaType": "org.hawkular.bus.common.BasicMessage"
+  },
+  "javaType": "org.hawkular.feedcomm.api.ExecuteOperationRequest",
+  "additionalProperties": false,
+  "description": "A request to execute an operation.",
+  "properties": {
+    "resourceId": {
+      "type": "string"
+    },
+    "operationName": {
+      "type": "string"
+    },
+    "parameters": {
+      "description": "A simple map of named parameters.",
+      "type": "object",
+      "javaType": "java.util.Map<String, String>"
+    }
+  },
+  "required": ["operationName", "resourceId"]
+}
+

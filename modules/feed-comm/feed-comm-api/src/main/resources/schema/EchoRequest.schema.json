@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "extends": {
+    "type": "object",
+    "javaType": "org.hawkular.bus.common.BasicMessage"
+  },
+  "javaType": "org.hawkular.feedcomm.api.EchoRequest",
+  "description": "A simple request to echo a string back used for testing connectivity.",
+  "additionalProperties": false,
+  "properties": {
+    "echoMessage": {
+      "type": "string"
+    }
+  },
+  "required": ["echoMessage"]
+}

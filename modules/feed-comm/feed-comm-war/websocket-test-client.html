@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSockets Client</title>
+  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+</head>
+<body>
+<div id="send">
+  URL Context (a feed ID or 'ui')<input type="text" id="urlcontext" size="25"/><br>
+  Message (Hawkular JSON):<input type="text" id="data" size="100"/><br>
+  <input type="button" id="sendtext" value="send text"/>
+</div>
+<div id="output"></div>
+</body>
+</html>
+<script>
+
+jQuery(function($){
+
+  if (!("WebSocket" in window)) {
+    alert("Your browser does not support web sockets");
+  }else{
+    setup();
+  }
+
+  function setup(){
+
+    // Note: You have to change the host var
+    // if your client runs on a different machine than the websocket server
+
+    var $urlcontext = $("#urlcontext");
+    var host = "ws://localhost:8080/hawkular/feed-comm/" + $urlcontext.val();
+    var socket = new WebSocket(host);
+    //console.log("socket status: " + socket.readyState);
+
+    var $txt = $("#data");
+    var $btnSend = $("#sendtext");
+
+    $txt.focus();
+
+    // event handlers for UI
+    $btnSend.on('click',function(){
+      var text = $txt.val();
+      if(text == ""){
+        return;
+      }
+      socket.send(text);
+      //$txt.val("");
+    });
+
+    $txt.keypress(function(evt){
+      if(evt.which == 13){
+        $btnSend.click();
+      }
+    });
+
+    // event handlers for websocket
+    if(socket){
+
+      socket.onopen = function(){
+        //alert("connection opened....");
+      }
+
+      socket.onmessage = function(msg){
+        showServerResponse(msg.data);
+      }
+
+      socket.onclose = function(){
+        //alert("connection closed....");
+        showServerResponse("The connection has been closed.");
+      }
+
+    }else{
+      console.log("invalid socket");
+    }
+
+    function showServerResponse(txt){
+      var p = document.createElement('p');
+      p.innerHTML = txt;
+      document.getElementById('output').appendChild(p);
+    }
+  }
+
+});
+
+</script>

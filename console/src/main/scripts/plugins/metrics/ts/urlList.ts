@@ -88,7 +88,7 @@ module HawkularMetrics {
 
       var resourceId = this.md5.createHash(url || '');
       var resource = {
-        resourceTypeId: 'URL',
+        resourceTypePath: '/URL',
         id: resourceId,
         properties: {
           url: url
@@ -110,16 +110,16 @@ module HawkularMetrics {
           console.dir(newResource);
           this.$log.info('New Resource ID: ' + metricId + ' created.');
 
-          var metricsIds: string[] = [metricId + '.status.duration', metricId + '.status.code'];
+          var metricsIds: string[] = [metricId + '.status.duration',metricId + '.status.code'];
           var metrics = [{
             id: metricsIds[0],
-            metricTypeId: 'status.duration.type',
+            metricTypePath: '/status.duration.type',
             properties: {
               description: 'Response Time in ms.'
             }
           }, {
             id: metricsIds[1],
-            metricTypeId: 'status.code.type',
+            metricTypePath: '/status.code.type',
             properties: {
               description: 'Status Code'
             }
@@ -135,7 +135,7 @@ module HawkularMetrics {
             this.HawkularInventory.ResourceMetric.save({
               environmentId: globalEnvironmentId,
               resourceId: resourceId
-            }, metricsIds).$promise;
+            }, ['../' + metricsIds[0], '../' + metricsIds[1]]).$promise;
 
           /// For right now we will just Register a couple of metrics automatically
           return this.$q.all([createMetric(metrics[0]), createMetric(metrics[1])])
@@ -148,13 +148,13 @@ module HawkularMetrics {
           (e) => err(e, 'Error during saving metrics.'))
 
         // Create threshold trigger for newly created metrics
-        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD',
+        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', url, true, 'THRESHOLD',
               defaultEmail),
           (e) => err(e, 'Error saving email action.'))
 
         // Create availability trigger for newly created metrics
-        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY',
-              defaultEmail),
+        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', url, false,
+              'AVAILABILITY', defaultEmail),
           (e) => err(e, 'Error saving threshold trigger.'))
 
         //this.$location.url('/hawkular/' + metricId);

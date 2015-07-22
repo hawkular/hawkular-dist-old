@@ -17,10 +17,10 @@
 package org.hawkular.component.availcreator;
 
 import org.jboss.logging.BasicLogger;
-import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
-import org.jboss.logging.Message;
-import org.jboss.logging.MessageLogger;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.annotations.MessageLogger;
 import org.jboss.logging.annotations.Cause;
 
 /**
@@ -49,4 +49,7 @@ public interface Log extends BasicLogger {
     @Message(id = 5103, value = "Could not handle a message from Hawkular Bus")
     void eCouldNotHandleBusMessage(@Cause Exception e);
 
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 5104, value = "Could not parse a message to json format")
+    void eCouldNotParseMessage(@Cause Throwable e);
 }

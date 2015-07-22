@@ -28,7 +28,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Receiver that listens on JMS Topic and checks for metrics *.status.code
@@ -67,15 +67,13 @@ public class MetricReceiver implements MessageListener {
 
         try {
             String payload = ((TextMessage) message).getText();
-            Map map = new GsonBuilder().create().fromJson(payload, Map.class);
+            Map map = new ObjectMapper().readValue(payload, Map.class);
 
             Map metricDataMap = (Map) map.get("metricData");
             // Get <rid>.status.code  metrics
             String tenant = (String) metricDataMap.get("tenantId");
             List<Map<String, Object>> inputList = (List<Map<String, Object>>) metricDataMap.get("data");
             List<SingleAvail> outer = new ArrayList<>();
-
-            List<Availability> availabilityList = new ArrayList<>();
 
             for (Map<String, Object> item : inputList) {
 
@@ -85,8 +83,7 @@ public class MetricReceiver implements MessageListener {
                     int code = (int) codeD;
 
                     String id = source.substring(0, source.indexOf("."));
-                    double timestampD = (double) item.get("timestamp");
-                    long timestamp = (long) timestampD;
+                    long timestamp = (long) item.get("timestamp");
 
                     String avail = computeAvail(code);
 

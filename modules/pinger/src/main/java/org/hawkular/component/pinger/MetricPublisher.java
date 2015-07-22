@@ -16,7 +16,15 @@
  */
 package org.hawkular.component.pinger;
 
-import com.google.gson.Gson;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Asynchronous;
+import javax.ejb.Stateless;
+import javax.jms.ConnectionFactory;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -28,19 +36,11 @@ import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageProcessor;
-import org.hawkular.bus.common.ObjectMessage;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 import org.hawkular.metrics.client.common.SingleMetric;
 
-import javax.ejb.Asynchronous;
-import javax.ejb.Stateless;
-import javax.jms.ConnectionFactory;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Publish metrics data
@@ -89,7 +89,12 @@ public class MetricPublisher {
         addDataItem(mMetrics, resourceId, timestamp, status.getCode(), "code");
 
         // Send it to metrics via rest
-        String payload = new Gson().toJson(mMetrics);
+        String payload = null;
+        try {
+            payload = new ObjectMapper().writeValueAsString(mMetrics);
+        } catch (JsonProcessingException e) {
+            Log.LOG.eCouldNotParseMessage(e);
+        }
         HttpClient client = HttpClientBuilder.create().build();
 
         HttpPost request = new HttpPost(configuration.getMetricsBaseUri() + "/gauges/data");
@@ -131,17 +136,13 @@ public class MetricPublisher {
                 singleMetric = new SingleMetric(resourceId + ".status.code", timestamp, (double) status.getCode());
                 singleMetrics.add(singleMetric);
 
-                Map<String, Object> outer = new HashMap<>(1);
-
-                Map<String, Object> data = new HashMap<>(2);
-                data.put("tenantId", status.getDestination().getTenantId());
-                data.put("data", singleMetrics);
-
-                outer.put("metricData", data);
+                MetricDataMessage.MetricData metricData = new MetricDataMessage.MetricData();
+                metricData.setTenantId(status.getDestination().getTenantId());
+                metricData.setData(singleMetrics);
 
                 Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC, topic.getTopicName());
                 ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
-                BasicMessage msg = new ObjectMessage(outer);
+                BasicMessage msg = new MetricDataMessage(metricData);
                 MessageProcessor processor = new MessageProcessor();
                 processor.send(pc, msg);
             } catch (Exception e) {
