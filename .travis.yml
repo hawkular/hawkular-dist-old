@@ -2,6 +2,11 @@ language: java
 # Enable container-based infrastructure
 # see http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 sudo: false
+
+# manage the caches here https://travis-ci.org/hawkular/hawkular/caches
+cache:
+  directories:
+  - $HOME/.m2/repository
 jdk:
 - oraclejdk8
 install:
