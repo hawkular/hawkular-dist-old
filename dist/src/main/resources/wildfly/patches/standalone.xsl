@@ -399,6 +399,13 @@
                       timeUnits="minutes"
                       path="/core-service=platform-mbean/type=memory"
                       attribute="non-heap-memory-usage#committed" />
+          <metric-dmr name="Accumulated GC Duration"
+                      metricType="counter"
+                      interval="1"
+                      timeUnits="minutes"
+                      path="/core-service=platform-mbean/type=garbage-collector/name=*"
+                      attribute="collection-time" />
+
         </metric-set-dmr>
 
         <metric-set-dmr name="WildFly Threading Metrics" enabled="true">
