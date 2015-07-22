@@ -27,11 +27,23 @@ module HawkularMetrics {
 /// Some Type aliases to make things more type safe than just string or number. Implies how it is being used and is
 /// especially useful for refactoring.
 
+/// ID types
 export type TenantId = string;
 export type ResourceId = string;
 export type MetricId = string;
+export type TriggerId = string;
+export type ConditionId = string;
+export type DampeningId = string;
+export type EmailType = string;
+export type Persona = string;
+
+/// Value types
 export type TimestampInMillis = number;
 export type IntervalInSeconds = number;
+
+
+
+export type PersonaId = string;
 
 
 }
