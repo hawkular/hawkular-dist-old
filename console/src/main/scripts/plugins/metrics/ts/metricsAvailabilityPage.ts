@@ -35,7 +35,7 @@ module HawkularMetrics {
   export class MetricsAvailabilityController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric', 'HawkularAlert',
-      '$routeParams', '$filter', '$moment', 'HawkularAlertsManager', 'HawkularErrorManager', 'AlertService'];
+      '$routeParams', '$filter', '$moment', 'HawkularAlertsManager', 'HawkularErrorManager', 'NotificationService'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
@@ -48,7 +48,6 @@ module HawkularMetrics {
     public downtimeCount = 0;
     public empty = true;
     public math;
-
     constructor(private $scope:any,
                 private $rootScope:any,
                 private $interval:ng.IIntervalService,
@@ -61,7 +60,7 @@ module HawkularMetrics {
                 private $moment:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private HawkularErrorManager:IHawkularErrorManager,
-                private AlertService:IAlertService,
+                private NotificationService:INotificationService,
                 public alertList:any,
                 public startTimeStamp:TimestampInMillis,
                 public endTimeStamp:TimestampInMillis) {
@@ -163,7 +162,7 @@ module HawkularMetrics {
             }
 
           }, (error) => {
-            this.AlertService.error('Error Loading Avail Summary Data: ' + error);
+            this.NotificationService.error('Error Loading Avail Summary Data: ' + error);
           });
 
       }
@@ -207,7 +206,7 @@ module HawkularMetrics {
             this.uptimeRatio = 1 - downtimeDuration / (+this.$moment() - response[0].timestamp);
             this.downtimeCount = downtimeCount;
           }, (error) => {
-            this.AlertService.error('Error Loading Avail Data: ' + error);
+            this.NotificationService.error('Error Loading Avail Data: ' + error);
           });
       }
     }
