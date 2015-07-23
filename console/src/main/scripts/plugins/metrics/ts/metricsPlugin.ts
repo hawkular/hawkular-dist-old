@@ -36,36 +36,6 @@ module HawkularMetrics {
     };
   });
 
-  /**
-   * Replicates AngularJS 1.4 limitTo filter
-   */
-  _module.filter('limitTo14', function () {
-    return function(input, limit, begin) {
-      if (Math.abs(Number(limit)) === Infinity) {
-        limit = Number(limit);
-      } else {
-        limit = parseInt(limit, 10);
-      }
-      if (isNaN(limit)) { return input; }
-
-      if (typeof input === 'number') { input = input.toString(); }
-      if (!Array.isArray(input) && !(typeof input === 'string')) { return input; }
-
-      begin = (!begin || isNaN(begin)) ? 0 : parseInt(begin, 10);
-      begin = (begin < 0 && begin >= -input.length) ? input.length + begin : begin;
-
-      if (limit >= 0) {
-        return input.slice(begin, begin + limit);
-      } else {
-        if (begin === 0) {
-          return input.slice(limit, input.length);
-        } else {
-          return input.slice(Math.max(0, begin + limit), begin);
-        }
-      }
-    };
-  });
-
   _module.config(['$routeProvider', ($routeProvider) => {
     $routeProvider.
       // this was for single page.. remove ?

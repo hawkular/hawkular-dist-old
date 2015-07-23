@@ -106,7 +106,7 @@
               <td class="state" ng-show="res.state === 'down'"><i class="fa fa-square"></i> Stopped</td>
               <td class="state" ng-show="res.state === 'unknown'"><i class="fa fa-times-circle-o"></i> Failed</td>
               <td class="state" ng-hide="res.state"><i class="fa fa-chain-broken"></i> Unknown</td>
-              <td><strong>{{res.properties.name | limitTo14 : res.properties.name.length-13 : 12}}</strong> <span ng-show="false">({{res.properties.name | limitTo14 : res.properties.name.length-13 : 12}})</span> <span class="label label-danger label-alert pull-right" tooltip-trigger tooltip-placement="top" tooltip="Deployment alerts">{{res.alerts}}</span></td>
+              <td><strong>{{res.properties.name | limitTo : res.properties.name.length-13 : 12}}</strong> <span ng-show="false">({{res.properties.name | limitTo : res.properties.name.length-13 : 12}})</span> <span class="label label-danger label-alert pull-right" tooltip-trigger tooltip-placement="top" tooltip="Deployment alerts">{{res.alerts}}</span></td>
               <td ng-show="true">Enabled</td>
               <td ng-show="false">Disabled</td>
               <td class="success" ng-show="true">Good</td>

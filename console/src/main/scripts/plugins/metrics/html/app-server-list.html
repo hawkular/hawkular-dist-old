@@ -91,7 +91,7 @@
               <p ng-hide="res.state"><span class="spinner spinner-sm spinner-inline"></span> <span class="fetching">Fetching state...</span></p>
               {{res.state | firstUpper}}
             </td>
-            <td><a href="/hawkular-ui/app/app-details/{{res.id | limitTo14 : res.id.length-4 : 1}}/jvm">{{res.id | limitTo14 : res.id.length-4 : 1}}</a> <a href="/hawkular-ui/app/app-details/{{res.id}}/jvm" class="pull-right"><span class="label label-danger label-alert" tooltip-trigger tooltip-placement="top" tooltip="Server alerts" ng-show="res.alerts.length > 0">{{res.alerts.length}}</span></a></td>
+            <td><a href="/hawkular-ui/app/app-details/{{res.id | limitTo : res.id.length-4 : 1}}/jvm">{{res.id | limitTo : res.id.length-4 : 1}}</a> <a href="/hawkular-ui/app/app-details/{{res.id}}/jvm" class="pull-right"><span class="label label-danger label-alert" tooltip-trigger tooltip-placement="top" tooltip="Server alerts" ng-show="res.alerts.length > 0">{{res.alerts.length}}</span></a></td>
             <td>{{res.type.id}}</td>
             <td>{{(res.properties.resourceConfiguration | filter:'Hostname':true)[0].value || 'n/a'}}</td>
             <!-- <td class="center"><span class="label label-primary" ng-repeat="tag in res.tags">{{tag}}</span><span ng-hide="res.tags.length > 0">--</span></td> -->
