@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Red Hat Access: Support</title>
+    <link rel="stylesheet" href="dist/accessPortal/vendor/css/patternfly.min.css" />
+    <link rel="stylesheet" href="dist/accessPortal/vendor/css/custom_support.css" />
+    <link rel="stylesheet" href="dist/accessPortal/vendor/css/redhat_access_angular_ui-embedded-images.css" />
+    <link rel="stylesheet" href="dist/accessPortal/vendor/css/redhat_access_angular_ui-deps-embedded-images.css" />
+</head>
+<body>
+<script src="dist/accessPortal/vendor/js/jquery.min.js"></script>
+<script src="dist/accessPortal/vendor/js/angular.min.js"></script>
+<script src="dist/accessPortal/vendor/js/redhat_access_angular_ui-deps.js?v=${hawkular.console.timestamp}"></script>
+<script src="dist/accessPortal/vendor/js/redhat_access_angular_ui.js?v=${hawkular.console.timestamp}"></script>
+<script src="dist/accessPortal/vendor/js/custom-cases.js"></script>
+
+<div class="jon-rha-main" ng-app="RedhatAccess.JON" ng-controller="customCase" data-ng-init="init()">
+    <div id="rha-content" ui-view></div>
+</div>
+</body>
+</html>
