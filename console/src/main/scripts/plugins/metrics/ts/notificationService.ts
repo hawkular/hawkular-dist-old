@@ -23,14 +23,14 @@
 
 module HawkularMetrics {
 
-  export interface IAlertService {
+  export interface INotificationService {
     info(message: string): void;
     success(message: string): void;
     warning(message: string): void;
     error(message: string): void;
   }
 
-  export class AlertService implements IAlertService {
+  export class NotificationService implements INotificationService {
 
     public static $inject = ['$log', 'toastr'];
 
@@ -60,5 +60,5 @@ module HawkularMetrics {
     }
   }
 
-  _module.service('AlertService', AlertService);
+  _module.service('NotificationService', NotificationService);
 }

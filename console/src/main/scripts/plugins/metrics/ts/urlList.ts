@@ -19,7 +19,7 @@
 /// <reference path='alertsManager.ts'/>
 /// <reference path='pagination.ts'/>
 /// <reference path='errorManager.ts'/>
-/// <reference path='alertService.ts'/>
+/// <reference path='notificationService.ts'/>
 
 module HawkularMetrics {
 
@@ -28,7 +28,7 @@ module HawkularMetrics {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
       'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q',
-      'md5', 'HkHeaderParser', 'AlertService'];
+      'md5', 'HkHeaderParser', 'NotificationService'];
 
     private autoRefreshPromise:ng.IPromise<number>;
     private httpUriPart = 'http://';
@@ -50,12 +50,12 @@ module HawkularMetrics {
                 private HawkularInventory:any,
                 private HawkularMetric:any,
                 private HawkularAlert:any,
-                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
+                private HawkularAlertsManager: IHawkularAlertsManager,
+                private HawkularErrorManager: IHawkularErrorManager,
                 private $q: ng.IQService,
                 private md5: any,
-                private HkHeaderParser: HawkularMetrics.IHkHeaderParser,
-                private AlertService: HawkularMetrics.IAlertService,
+                private HkHeaderParser: IHkHeaderParser,
+                private NotificationService: INotificationService,
                 public resourceUrl:string
                 ) {
       $scope.vm = this;
@@ -158,7 +158,7 @@ module HawkularMetrics {
           (e) => err(e, 'Error saving threshold trigger.'))
 
         //this.$location.url('/hawkular/' + metricId);
-        .then(() => this.AlertService.info('Your data is being collected. Please be patient (should be about ' +
+        .then(() => this.NotificationService.info('Your data is being collected. Please be patient (should be about ' +
               'another minute).'),
           (e) => err(e, 'Error saving availability trigger.'))
 
@@ -238,7 +238,7 @@ module HawkularMetrics {
   class DeleteResourceModalController {
 
     static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularInventory', 'HawkularAlertsManager',
-      'AlertService', 'resource'];
+      'NotificationService', 'resource'];
 
     constructor(private $scope: any,
                 private $rootScope: any,
@@ -246,7 +246,7 @@ module HawkularMetrics {
                 private $q: ng.IQService,
                 private HawkularInventory,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private AlertService: IAlertService,
+                private NotificationService: INotificationService,
                 public resource) {
       $scope.vm = this;
     }
@@ -272,7 +272,8 @@ module HawkularMetrics {
                    this.HawkularAlertsManager.deleteTrigger(triggerIds[1])])
       .then(removeResource)
       .then((res) => {
-          this.AlertService.success('The URL ' + this.resource.properties.url + ' is no longer being monitored.');
+          this.NotificationService.success('The URL ' + this.resource.properties.url +
+            ' is no longer being monitored.');
           this.$modalInstance.close(res);
       });
     }
