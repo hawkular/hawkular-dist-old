@@ -57,7 +57,7 @@ module HawkularMetrics {
     public endTimeStamp:TimestampInMillis;
 
     constructor(private $scope:any,
-                private $rootScope:any,
+                private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private HawkularAlert:any,

@@ -34,7 +34,7 @@ module HawkularMetrics {
 
     constructor(private $location: ng.ILocationService,
       private $scope: any,
-      private $rootScope: any,
+      private $rootScope: IHawkularRootScope,
       private $interval: ng.IIntervalService,
       private $log: ng.ILogService,
       private $filter: ng.IFilterService,
