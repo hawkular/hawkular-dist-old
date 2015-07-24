@@ -28,22 +28,28 @@ module HawkularMetrics {
 /// especially useful for refactoring.
 
 /// ID types
-export type TenantId = string;
-export type ResourceId = string;
-export type MetricId = string;
-export type TriggerId = string;
-export type ConditionId = string;
-export type DampeningId = string;
-export type EmailType = string;
-export type Persona = string;
+  export type TenantId = string;
+  export type ResourceId = string;
+  export type MetricId = string;
+  export type TriggerId = string;
+  export type ConditionId = string;
+  export type DampeningId = string;
+  export type EmailType = string;
+  export type PersonaId = string;
+  export type Persona = IPersona;
 
 /// Value types
-export type TimestampInMillis = number;
-export type IntervalInSeconds = number;
+  export type TimestampInMillis = number;
+  export type IntervalInSeconds = number;
 
 
+/// Interface Definitions
+  export interface IPersona {
+    id:  PersonaId;
+  }
 
-export type PersonaId = string;
-
+  export interface IHawkularRootScope extends ng.IRootScopeService {
+    currentPersona:IPersona;
+  }
 
 }

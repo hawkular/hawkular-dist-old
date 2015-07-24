@@ -41,7 +41,7 @@ module HawkularMetrics {
     public chartRespData;
 
     constructor(private $scope: any,
-                private $rootScope: any,
+                private $rootScope: IHawkularRootScope,
                 private $routeParams: any,
                 private $interval: ng.IIntervalService,
                 private $q: ng.IQService,

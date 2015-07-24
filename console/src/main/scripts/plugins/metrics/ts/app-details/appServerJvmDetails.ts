@@ -30,22 +30,22 @@ module HawkularMetrics {
   export class AppServerJvmDetailsController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager',
-      '$q', 'md5'];
+      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager',
+      'HawkularErrorManager', '$q', 'md5'];
 
     public static USED_COLOR = '#1884c7'; /// blue
     public static MAXIMUM_COLOR = '#f57f20'; /// orange
     public static COMMITTED_COLOR = '#515252'; /// dark gray
 
-    private resourceList;
-    private metricsList;
     public alertList;
     public chartHeapData: IMultiDataPoint[];
     public chartNonHeapData: IMultiDataPoint[];
+    public startTimeStamp:TimestampInMillis;
+    public endTimeStamp:TimestampInMillis;
 
     constructor(private $location: ng.ILocationService,
       private $scope: any,
-      private $rootScope: any,
+      private $rootScope: IHawkularRootScope,
       private $interval: ng.IIntervalService,
       private $log: ng.ILogService,
       private $filter: ng.IFilterService,
@@ -57,10 +57,7 @@ module HawkularMetrics {
       private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
       private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
       private $q: ng.IQService,
-      private md5: any,
-      public startTimeStamp:TimestampInMillis,
-      public endTimeStamp:TimestampInMillis,
-      public resourceUrl: string) {
+      private md5: any ) {
         $scope.vm = this;
 
         this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
@@ -72,7 +69,8 @@ module HawkularMetrics {
           this.getJvmData(this.$rootScope.currentPersona.id);
         } else {
           // currentPersona hasn't been injected to the rootScope yet, wait for it..
-          $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.getJvmData(currentPersona.id));
+          $rootScope.$watch('currentPersona',
+            (currentPersona) => currentPersona && this.getJvmData(currentPersona.id));
         }
 
         this.autoRefresh(20);
@@ -138,7 +136,7 @@ module HawkularMetrics {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
-      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      //var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Committed',
         start: this.startTimeStamp,
