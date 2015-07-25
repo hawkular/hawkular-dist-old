@@ -30,7 +30,7 @@ module HawkularMetrics {
   export class AppServerJvmDetailsController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager',
+      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager',
       'HawkularErrorManager', '$q', 'md5'];
 
     public static USED_COLOR = '#1884c7'; /// blue
@@ -42,6 +42,7 @@ module HawkularMetrics {
     public chartNonHeapData: IMultiDataPoint[];
     public startTimeStamp:TimestampInMillis;
     public endTimeStamp:TimestampInMillis;
+    public chartGCDurationData: IChartDataPoint[];
 
     constructor(private $location: ng.ILocationService,
       private $scope: any,
@@ -51,6 +52,7 @@ module HawkularMetrics {
       private $filter: ng.IFilterService,
       private $routeParams: any,
       private $modal: any,
+      private $window: any,
       private HawkularInventory: any,
       private HawkularMetric: any,
       private HawkularAlert: any,
@@ -66,11 +68,11 @@ module HawkularMetrics {
         this.chartNonHeapData = [];
 
         if ($rootScope.currentPersona) {
-          this.getJvmData(this.$rootScope.currentPersona.id);
+          this.getJvmData();
         } else {
           // currentPersona hasn't been injected to the rootScope yet, wait for it..
           $rootScope.$watch('currentPersona',
-            (currentPersona) => currentPersona && this.getJvmData(currentPersona.id));
+            (currentPersona) => currentPersona && this.getJvmData());
         }
 
         this.autoRefresh(20);
@@ -97,6 +99,41 @@ module HawkularMetrics {
       });
     }
 
+    private formatCounterChartOutput(response, buckets = 60):IChartDataPoint[] {
+      var result = response;
+      /// FIXME: Simulating buckets.. this should come from metrics.
+      if (response.length > buckets) {
+        var step = this.$window.Math.floor(response.length / buckets);
+        result = [];
+        var accValue = 0;
+        _.forEach(response, function(point:any, idx) {
+          if (parseInt(idx, 10) % step === (step-1)) {
+            result.push({timestamp: point.timestamp, value: accValue });
+            accValue = 0;
+          }
+          else {
+            accValue += point.value;
+          }
+        });
+      }
+
+      //  The schema is different for bucketed output
+      return _.map(result, (point:IChartDataPoint, idx) => {
+        var theValue = idx === 0 ? 0 : (result[idx-1].value - point.value);
+        return {
+          timestamp: point.timestamp,
+          date: new Date(point.timestamp),
+          value: theValue,
+          avg: theValue,
+          min: theValue,
+          max: theValue,
+          percentile95th: theValue,
+          median: theValue,
+          empty: !angular.isNumber(point.value)
+        };
+      });
+    }
+
     public autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getJvmData();
@@ -108,12 +145,11 @@ module HawkularMetrics {
       });
     }
 
-    public getJvmData(currentTenantId?: TenantId): any {
+    public getJvmData(): any {
       this.alertList = []; // FIXME: when we have alerts for app server
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
-      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used',
         start: this.startTimeStamp,
@@ -128,15 +164,22 @@ module HawkularMetrics {
         buckets: 1}, (resource) => {
           this['heapMax'] = resource[0];
         }, this);
-      this.getJvmChartData(currentTenantId);
+      this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        counterId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Accumulated GC Duration',
+        start: this.startTimeStamp,
+        end: this.endTimeStamp,
+        buckets: 1}, (resource) => {
+          this['accGCDuration'] = resource[0].value - resource[resource.length-1].value;
+          this.chartGCDurationData = this.formatCounterChartOutput(resource);
+        }, this);
+      this.getJvmChartData();
     }
 
-    public getJvmChartData(currentTenantId?: TenantId): any {
+    public getJvmChartData(): any {
 
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
-      //var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Committed',
         start: this.startTimeStamp,
