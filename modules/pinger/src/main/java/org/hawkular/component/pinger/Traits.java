@@ -16,6 +16,7 @@
  */
 package org.hawkular.component.pinger;
 
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -96,7 +97,7 @@ public class Traits {
      * @param timestamp the UNIX timestamp when the response was received
      * @return a new {@link Traits}
      */
-    public static Traits collect(HttpResponse httpResponse, long timestamp) {
+    public static Traits collect(HttpResponse httpResponse, long timestamp, InetAddress remoteAddress) {
         /* We assume that the header keys will typically be unique
          * Therefore, we store the value into items Map on first hit
          * and only if there is a second hit, we lazily create a sorted Set in multiItems.
@@ -107,8 +108,11 @@ public class Traits {
         HeaderIterator headers = httpResponse.headerIterator();
         while (headers.hasNext()) {
             Header header = headers.nextHeader();
+            Log.LOG.tracef("Is this a trait header? %s:%s from %s", header.getName(), header.getValue(), remoteAddress);
             TraitHeader traitHeader = TraitHeader.fastValueOf(header.getName());
             if (traitHeader != null) {
+                Log.LOG.tracef("Found a trait header: %s:%s from %s", header.getName(), header.getValue(),
+                        remoteAddress);
                 if (items == null) {
                     items = new HashMap<>();
                     items.put(traitHeader, header.getValue());
@@ -149,7 +153,8 @@ public class Traits {
             }
         }
 
-        return new Traits(timestamp, items == null ? Collections.emptyMap() : Collections.unmodifiableMap(items));
+        return new Traits(timestamp, remoteAddress, items == null ? Collections.emptyMap()
+                : Collections.unmodifiableMap(items));
     };
 
     /**
@@ -159,11 +164,14 @@ public class Traits {
      * @return a new {@link Traits} with the given {@code timestamp} and no {@link #items}
      */
     public static Traits empty(long timestamp) {
-        return new Traits(timestamp, NO_ITEMS);
+        return new Traits(timestamp, null, NO_ITEMS);
     }
 
     /** The header name - header value map storing the traits */
     private final Map<TraitHeader, String> items;
+
+    /** The remote IP address that replied to the ping, can be {@code null} */
+    private final InetAddress remoteAddress;
 
     /** The UNIX timestamp when the response was received */
     private final long timestamp;
@@ -176,9 +184,10 @@ public class Traits {
      *
      * @see #collect(HttpResponse, long)
      */
-    Traits(long timestamp, Map<TraitHeader, String> items) {
+    Traits(long timestamp, InetAddress remoteAddress, Map<TraitHeader, String> items) {
         super();
         this.timestamp = timestamp;
+        this.remoteAddress = remoteAddress;
         this.items = items;
     }
 
@@ -187,6 +196,13 @@ public class Traits {
      */
     public Map<TraitHeader, String> getItems() {
         return items;
+    }
+
+    /**
+     * @return the remote IP address that replied to the ping, can be {@code null}
+     */
+    public InetAddress getRemoteAddress() {
+        return remoteAddress;
     }
 
     /**
@@ -206,12 +222,17 @@ public class Traits {
         if (getClass() != obj.getClass())
             return false;
         Traits other = (Traits) obj;
+        if (timestamp != other.timestamp)
+            return false;
+        if (remoteAddress == null) {
+            if (other.remoteAddress != null)
+                return false;
+        } else if (!remoteAddress.equals(other.remoteAddress))
+            return false;
         if (items == null) {
             if (other.items != null)
                 return false;
         } else if (!items.equals(other.items))
-            return false;
-        if (timestamp != other.timestamp)
             return false;
         return true;
     }
@@ -223,13 +244,14 @@ public class Traits {
         int result = 1;
         result = prime * result + ((items == null) ? 0 : items.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+        result = prime * result + ((remoteAddress == null) ? 0 : remoteAddress.hashCode());
         return result;
     }
 
     /** @see java.lang.Object#toString() */
     @Override
     public String toString() {
-        return "Traits [items=" + items + ", timestamp=" + timestamp + "]";
+        return "Traits [items=" + items + ", timestamp=" + timestamp + ", remoteAddress=" + remoteAddress + "]";
     }
 
 

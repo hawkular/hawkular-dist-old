@@ -52,7 +52,7 @@ public class TraitsTest {
         response.addHeader("Vary", "Accept-Encoding");
         response.addHeader("Transfer-Encoding", "chunked");
 
-        Map<TraitHeader, String> found = Traits.collect(response, 0).getItems();
+        Map<TraitHeader, String> found = Traits.collect(response, 0, null).getItems();
 
         Map<TraitHeader, String> expected = new ImmutableMap.Builder<TraitHeader, String>().put(
                 TraitHeader.SERVER, "gws").build();
@@ -65,7 +65,7 @@ public class TraitsTest {
     public void testCollectEmpty() {
 
         HttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_0, HttpStatus.SC_OK, "OK");
-        Map<TraitHeader, String> found = Traits.collect(response, 0).getItems();
+        Map<TraitHeader, String> found = Traits.collect(response, 0, null).getItems();
         Map<TraitHeader, String> expected = new ImmutableMap.Builder<TraitHeader, String>().build();
         Assert.assertEquals(expected, found);
 
@@ -78,7 +78,7 @@ public class TraitsTest {
         response.addHeader("sErVeR", "whatever");
         response.addHeader("X-POWERED-BY", "hawkular");
 
-        Map<TraitHeader, String> found = Traits.collect(response, 0).getItems();
+        Map<TraitHeader, String> found = Traits.collect(response, 0, null).getItems();
 
         Map<TraitHeader, String> expected = new ImmutableMap.Builder<TraitHeader, String>()
                 .put(TraitHeader.X_POWERED_BY, "hawkular")
@@ -101,7 +101,7 @@ public class TraitsTest {
         /* yes, https://www.digitec.ch returns ASP.NET twice */
         response.addHeader("X-Powered-By", "ASP.NET");
 
-        Map<TraitHeader, String> found = Traits.collect(response, 0).getItems();
+        Map<TraitHeader, String> found = Traits.collect(response, 0, null).getItems();
 
         Map<TraitHeader, String> expected = new ImmutableMap.Builder<TraitHeader, String>()
                 .put(TraitHeader.X_POWERED_BY, "ARR/2.5, ASP.NET")
