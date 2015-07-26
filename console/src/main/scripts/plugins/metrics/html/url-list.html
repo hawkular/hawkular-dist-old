@@ -44,9 +44,11 @@
 
   <div ng-class="{'hk-fade-in': vm.resourceList}">
     <div class="hk-url-item" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">
-      <div class="hk-url-heading">
+      <div class="panel panel-default hk-url-heading">
         <a href="/hawkular-ui/url/availability/{{res.id}}">{{res.properties.url}}</a>
+        <span ng-show="res.properties['trait-collected-on']" class="pull-right">{{res.traits}}</span>
       </div>
+
       <div class="panel panel-default hk-summary">
         <div class="row">
           <div class="col-sm-3 hk-summary-item">

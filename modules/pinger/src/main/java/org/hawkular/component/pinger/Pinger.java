@@ -17,6 +17,8 @@
 package org.hawkular.component.pinger;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -27,16 +29,23 @@ import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 /**
@@ -50,12 +59,37 @@ import org.apache.http.util.EntityUtils;
 @Stateless
 public class Pinger {
 
-    /**
-     * SSL Context trusting all certificates.
-     */
-    private final SSLContext sslContext;
+    /** A key to use when storing and retrieving remote IP address from and to {@link HttpContext} */
+    static final String REMOTE_ADDRESS_ATTRIBUTE = Pinger.class.getPackage().getName() + ".remoteAddress";
+
+    /** A custom connnection manager used by this pinger */
+    private final HttpClientConnectionManager connectionManager;
 
     public Pinger() throws Exception {
+        connectionManager = createConnectionManager();
+    }
+
+    /**
+     * Creates a custom {@link HttpClientConnectionManager} that will be used by this pinger. The returned connection
+     * manager accepts all SSL certificates, and stores remote IP address into {@link HttpContext} under
+     * {@link #REMOTE_ADDRESS_ATTRIBUTE}.
+     *
+     * @return a new {@link HttpClientConnectionManager}
+     */
+    private HttpClientConnectionManager createConnectionManager() {
+
+        PlainConnectionSocketFactory plainSf = new PlainConnectionSocketFactory() {
+            @Override
+            public Socket connectSocket(int connectTimeout, Socket socket, org.apache.http.HttpHost host,
+                    java.net.InetSocketAddress remoteAddress, java.net.InetSocketAddress localAddress,
+                    HttpContext context) throws IOException {
+                InetAddress remoteInetAddress = remoteAddress.getAddress();
+                Log.LOG.tracef("Putting remote IP address to HttpContext %s", remoteInetAddress);
+                context.setAttribute(REMOTE_ADDRESS_ATTRIBUTE, remoteInetAddress);
+                return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
+            }
+        };
+
         SSLContext tmpSslContext;
 
         try {
@@ -72,17 +106,11 @@ public class Pinger {
             tmpSslContext = null;
         }
 
-        sslContext = tmpSslContext;
-    }
+        SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(tmpSslContext, null, null,
+                SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
-    private CloseableHttpClient getHttpClient(final String url) {
-        if (url != null && url.startsWith("https://") && sslContext != null) {
-            return HttpClientBuilder.create()
-                    .setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
-                    .setSslcontext(sslContext).build();
-        } else {
-            return HttpClientBuilder.create().build();
-        }
+        return new PoolingHttpClientConnectionManager(RegistryBuilder.<ConnectionSocketFactory> create()
+                .register("http", plainSf).register("https", sslSocketFactory).build());
     }
 
     /**
@@ -96,19 +124,22 @@ public class Pinger {
         Log.LOG.debugf("About to ping %s", destination.getUrl());
         HttpUriRequest request = RequestBuilder.create(destination.getMethod()).setUri(destination.getUrl()).build();
 
-        try (CloseableHttpClient client = getHttpClient(destination.getUrl())) {
+        try (CloseableHttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build()) {
             long start = System.currentTimeMillis();
-            HttpResponse httpResponse = client.execute(request);
-            StatusLine statusLine = httpResponse.getStatusLine();
-            EntityUtils.consumeQuietly(httpResponse.getEntity());
-            long now = System.currentTimeMillis();
+            HttpClientContext context = HttpClientContext.create();
+            try (CloseableHttpResponse httpResponse = client.execute(request, context)) {
+                InetAddress remoteAddress = (InetAddress) context.getAttribute(REMOTE_ADDRESS_ATTRIBUTE);
+                StatusLine statusLine = httpResponse.getStatusLine();
+                EntityUtils.consumeQuietly(httpResponse.getEntity());
+                long now = System.currentTimeMillis();
 
-            final int code = statusLine.getStatusCode();
-            final int duration = (int) (now - start);
-            Traits traits = Traits.collect(httpResponse, now);
-            PingStatus result = new PingStatus(destination, code, now, duration, traits);
-            Log.LOG.debugf("Got status code %d from %s", code, destination.getUrl());
-            return new AsyncResult<>(result);
+                final int code = statusLine.getStatusCode();
+                final int duration = (int) (now - start);
+                Traits traits = Traits.collect(httpResponse, now, remoteAddress);
+                PingStatus result = new PingStatus(destination, code, now, duration, traits);
+                Log.LOG.debugf("Got status code %d from %s", code, destination.getUrl());
+                return new AsyncResult<>(result);
+            }
         } catch (UnknownHostException e) {
             PingStatus result = PingStatus.error(destination, 404, System.currentTimeMillis());
             Log.LOG.debugf("Got UnknownHostException for %s", destination.getUrl());

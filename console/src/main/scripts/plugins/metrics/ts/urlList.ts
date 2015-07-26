@@ -190,6 +190,14 @@ module HawkularMetrics {
         }, this);
         var promises = [];
         angular.forEach(aResourceList, function(res, idx) {
+          var traitsArray:string[] = [];
+          if (res.properties['trait-remote-address']) {
+            traitsArray.push('IP: ' + res.properties['trait-remote-address']);
+          }
+          if (res.properties['trait-powered-by']) {
+            traitsArray.push('Powered by: ' + res.properties['trait-powered-by']);
+          }
+          res['traits'] = traitsArray.join(' | ');
           promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
             resourceId: res.id, gaugeId: (res.id + '.status.duration'),
             start: moment().subtract(1, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {

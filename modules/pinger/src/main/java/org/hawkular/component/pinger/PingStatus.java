@@ -17,6 +17,7 @@
 package org.hawkular.component.pinger;
 
 
+
 /**
  * An outcome of a ping.
  *
@@ -67,9 +68,10 @@ public class PingStatus {
     private final boolean timedOut;
 
     /** The value of {@code System.currentTimeMillis()} when the response was received or when the timeout or other
-     * error was detected. */
+     * error was detected */
     private final long timestamp;
 
+    /** The {@link Traits} collected from the ping response */
     private final Traits traits;
 
     /**
@@ -95,6 +97,7 @@ public class PingStatus {
      *                  the timeout or other error was detected
      * @param duration Ping round trip duration in milliseconds or {@value #INVALID_DURATION} if the ping timed out
      * @param timedOut {@code true} if the ping timed out, {@code false} otherwise
+     * @param remoteAddress
      *
      * @see #timeout(PingDestination, long, int)
      * @see #error(PingDestination, int, long)
@@ -109,27 +112,46 @@ public class PingStatus {
         this.traits = traits;
     }
 
+    /**
+     * @return the HTTP status code of the ping response
+     */
     public int getCode() {
         return code;
     }
 
+    /**
+     * @return ping round trip duration in milliseconds or {@value #INVALID_DURATION} if the ping timed out
+     */
     public int getDuration() {
         return duration;
     }
 
+    /**
+     * @return {@code true} if the ping timed out, {@code false} otherwise
+     */
     public boolean isTimedOut() {
         return timedOut;
     }
 
 
+    /**
+     * @return the value of {@code System.currentTimeMillis()} when the response was received or when the timeout or
+     * other error was detected
+     */
     public long getTimestamp() {
         return timestamp;
     }
 
+    /**
+     * @return the destination where the ping was sent
+     */
     public PingDestination getDestination() {
         return destination;
     }
 
+    /**
+     * @return the {@link Traits} collected from the ping response
+     */
     public Traits getTraits() {
         return traits;
     }
