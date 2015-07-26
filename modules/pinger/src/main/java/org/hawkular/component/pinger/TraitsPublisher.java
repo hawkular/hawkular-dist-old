@@ -17,12 +17,10 @@
 package org.hawkular.component.pinger;
 
 import java.net.InetAddress;
-import java.util.Map.Entry;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 
-import org.hawkular.component.pinger.Traits.TraitHeader;
 import org.hawkular.inventory.api.EntityNotFoundException;
 import org.hawkular.inventory.api.Inventory;
 import org.hawkular.inventory.api.Resources;
@@ -73,8 +71,9 @@ public class TraitsPublisher {
             if (remoteAddress != null) {
                 updateBuilder.withProperty(TRAIT_PROPERTY_PREFIX + "remote-address", remoteAddress.getHostAddress());
             }
-            for (Entry<TraitHeader, String> entry : traits.getItems().entrySet()) {
-                updateBuilder.withProperty(TRAIT_PROPERTY_PREFIX + entry.getKey().toString(), entry.getValue());
+            String poweredBy = traits.getPoweredBy();
+            if (poweredBy != null) {
+                updateBuilder.withProperty(TRAIT_PROPERTY_PREFIX + "powered-by", poweredBy);
             }
 
             inventory.tenants().get(dest.getTenantId()).environments().get(dest.getEnvironmentId()).feedlessResources()

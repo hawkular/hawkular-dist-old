@@ -16,16 +16,11 @@
  */
 package org.hawkular.component.pinger;
 
-import java.util.Map;
-
-import org.hawkular.component.pinger.Traits.TraitHeader;
 import org.hawkular.inventory.api.model.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Simple test for the pinger
@@ -52,26 +47,25 @@ public class PingManagerTest {
 
         PingDestination expectedDest = PingerTestUtils.createTestPingDestination();
 
-        Map<TraitHeader, String> expectedTraitsItems = new ImmutableMap.Builder<TraitHeader, String>().put(
-                TraitHeader.SERVER, "GitHub.com").build();
+        String expectedPoweredBy = "GitHub.com";
 
         ArgumentCaptor<PingStatus> metricsRestStatusCaptor = ArgumentCaptor.forClass(PingStatus.class);
         Mockito.verify(manager.metricPublisher).sendToMetricsViaRest(metricsRestStatusCaptor.capture());
-        assertStatus(expectedDest, expectedTraitsItems, metricsRestStatusCaptor.getValue());
+        assertStatus(expectedDest, expectedPoweredBy, metricsRestStatusCaptor.getValue());
 
         ArgumentCaptor<PingStatus> metricsStatusCaptor = ArgumentCaptor.forClass(PingStatus.class);
         Mockito.verify(manager.metricPublisher).publishToTopic(metricsStatusCaptor.capture());
-        assertStatus(expectedDest, expectedTraitsItems, metricsStatusCaptor.getValue());
+        assertStatus(expectedDest, expectedPoweredBy, metricsStatusCaptor.getValue());
 
         ArgumentCaptor<PingStatus> traitsStatusCaptor = ArgumentCaptor.forClass(PingStatus.class);
         Mockito.verify(manager.traitsPublisher).publish(traitsStatusCaptor.capture());
-        assertStatus(expectedDest, expectedTraitsItems, traitsStatusCaptor.getValue());
+        assertStatus(expectedDest, expectedPoweredBy, traitsStatusCaptor.getValue());
 
     }
 
-    private static void assertStatus(PingDestination expectedDest, Map<TraitHeader, String> expectedTraitsItems,
+    private static void assertStatus(PingDestination expectedDest, String expectedPoweredBy,
             PingStatus foundStatus) {
         Assert.assertEquals(expectedDest, foundStatus.getDestination());
-        Assert.assertEquals(expectedTraitsItems, foundStatus.getTraits().getItems());
+        Assert.assertEquals(expectedPoweredBy, foundStatus.getTraits().getPoweredBy());
     }
 }
