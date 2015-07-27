@@ -148,6 +148,51 @@
               </filesets>
             </configuration>
           </plugin>
+
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>${node.maven.plugin.version}</version>
+
+            <configuration>
+              <workingDirectory>target/gulp-build/</workingDirectory>
+            </configuration>
+
+            <executions>
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>bower install</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>gulp build</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <arguments>build</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
