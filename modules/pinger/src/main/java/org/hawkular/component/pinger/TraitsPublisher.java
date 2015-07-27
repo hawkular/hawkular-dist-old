@@ -16,16 +16,16 @@
  */
 package org.hawkular.component.pinger;
 
-import org.hawkular.component.pinger.Traits.TraitHeader;
+import java.net.InetAddress;
+
+import javax.ejb.Asynchronous;
+import javax.ejb.Stateless;
+
 import org.hawkular.inventory.api.EntityNotFoundException;
 import org.hawkular.inventory.api.Inventory;
 import org.hawkular.inventory.api.Resources;
 import org.hawkular.inventory.api.model.Resource;
 import org.hawkular.inventory.api.model.Resource.Update.Builder;
-
-import javax.ejb.Asynchronous;
-import javax.ejb.Stateless;
-import java.util.Map.Entry;
 
 /**
  * Stores ping results to Hawkular Inventory.
@@ -35,14 +35,15 @@ import java.util.Map.Entry;
 @Stateless
 public class TraitsPublisher {
 
+    private static final String TRAIT_PROPERTY_PREFIX = "trait-";
+
     @javax.annotation.Resource(lookup = "java:global/Hawkular/Inventory")
     private Inventory inventory;
 
     /**
      * Stores the {@link Traits} of the given {@link PingStatus} in Hawkular Inventory.
      *
-     * @param status
-     *            the {@link PingStatus} to publish
+     * @param status the {@link PingStatus} to publish
      */
     @Asynchronous
     public void publish(PingStatus status) {
@@ -58,13 +59,21 @@ public class TraitsPublisher {
 
             Builder updateBuilder = Resource.Update.builder();
 
-            //keep the properties already present on the resource
-            updateBuilder.withProperties(resource.getProperties());
+            /* keep the props not starting with TRAIT_PROPERTY_PREFIX */
+            resource.getProperties().entrySet().stream()
+                    .filter(e -> !e.getKey().startsWith(TRAIT_PROPERTY_PREFIX))
+                    .forEach(e -> updateBuilder.withProperty(e.getKey(), e.getValue()));
 
-            //add/modify our own
-            updateBuilder.withProperty("traits-collected-on", traits.getTimestamp());
-            for (Entry<TraitHeader, String> entry : traits.getItems().entrySet()) {
-                updateBuilder.withProperty("trait-" + entry.getKey().toString(), entry.getValue());
+            /* add the new trait props */
+            updateBuilder.withProperty(TRAIT_PROPERTY_PREFIX + "collected-on", traits.getTimestamp());
+
+            InetAddress remoteAddress = traits.getRemoteAddress();
+            if (remoteAddress != null) {
+                updateBuilder.withProperty(TRAIT_PROPERTY_PREFIX + "remote-address", remoteAddress.getHostAddress());
+            }
+            String poweredBy = traits.getPoweredBy();
+            if (poweredBy != null) {
+                updateBuilder.withProperty(TRAIT_PROPERTY_PREFIX + "powered-by", poweredBy);
             }
 
             inventory.tenants().get(dest.getTenantId()).environments().get(dest.getEnvironmentId()).feedlessResources()

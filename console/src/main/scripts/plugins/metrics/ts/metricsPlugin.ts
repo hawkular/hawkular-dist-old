@@ -36,36 +36,6 @@ module HawkularMetrics {
     };
   });
 
-  /**
-   * Replicates AngularJS 1.4 limitTo filter
-   */
-  _module.filter('limitTo14', function () {
-    return function(input, limit, begin) {
-      if (Math.abs(Number(limit)) === Infinity) {
-        limit = Number(limit);
-      } else {
-        limit = parseInt(limit, 10);
-      }
-      if (isNaN(limit)) { return input; }
-
-      if (typeof input === 'number') { input = input.toString(); }
-      if (!Array.isArray(input) && !(typeof input === 'string')) { return input; }
-
-      begin = (!begin || isNaN(begin)) ? 0 : parseInt(begin, 10);
-      begin = (begin < 0 && begin >= -input.length) ? input.length + begin : begin;
-
-      if (limit >= 0) {
-        return input.slice(begin, begin + limit);
-      } else {
-        if (begin === 0) {
-          return input.slice(limit, input.length);
-        } else {
-          return input.slice(Math.max(0, begin + limit), begin);
-        }
-      }
-    };
-  });
-
   _module.config(['$routeProvider', ($routeProvider) => {
     $routeProvider.
       // this was for single page.. remove ?
@@ -94,14 +64,14 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/response-time.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory, AlertService) {
+          resource: function ($route, $location, HawkularInventory, NotificationService:INotificationService) {
             var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
               resourceId: $route.current.params.resourceId}).$promise;
             p.then((response) => {
                 return response.properties.url;
               },
               (error) => {
-                AlertService.info('You were redirected to this page because you requested an invalid URL.');
+                NotificationService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -112,14 +82,14 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/availability.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory, AlertService) {
+          resource: function ($route, $location, HawkularInventory, NotificationService:INotificationService) {
             var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
               resourceId: $route.current.params.resourceId}).$promise;
             p.then((response) => {
                 return response.properties.url;
               },
               (error) => {
-                AlertService.info('You were redirected to this page because you requested an invalid URL.');
+                NotificationService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -130,14 +100,14 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/alerts.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory, AlertService) {
+          resource: function ($route, $location, HawkularInventory, NotificaitonService:INotificationService) {
             var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
               resourceId: $route.current.params.resourceId}).$promise;
             p.then((response) => {
                 return response.properties.url;
               },
               (error) => {
-                AlertService.info('You were redirected to this page because you requested an invalid URL.');
+                NotificaitonService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -149,9 +119,9 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory, AlertService) {
+          resource: function ($route, $location, HawkularInventory, NotificationService:INotificationService) {
             var redirectMissingAppServer = function() {
-              AlertService.info('You were redirected to this page because you requested an invalid ' +
+              NotificationService.info('You were redirected to this page because you requested an invalid ' +
                   'Application Server.');
               $location.path('/hawkular-ui/app/app-list');
             };

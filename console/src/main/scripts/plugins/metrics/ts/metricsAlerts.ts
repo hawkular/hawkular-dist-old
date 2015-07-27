@@ -45,7 +45,7 @@ module HawkularMetrics {
                 private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
-                private $rootScope: any,
+                private $rootScope: IHawkularRootScope,
                 private $routeParams: any,
                 private $modal: any,
                 private $interval: ng.IIntervalService,

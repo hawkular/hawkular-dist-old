@@ -67,11 +67,11 @@ module HawkularMetrics {
 
   export class MetricService implements IMetricService {
 
-    public static $inject = ['$log', 'HawkularMetric', 'AlertService'];
+    public static $inject = ['$log', 'HawkularMetric', 'NotificationService'];
 
     constructor(private $log:ng.ILogService,
                 private HawkularMetric:any,
-                private AlertService:IAlertService) {
+                private NotificationService:INotificationService) {
     }
 
 

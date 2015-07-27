@@ -465,10 +465,16 @@ a:hover .fa-spinner {
   margin-top: @grid-gutter-width/4*3;
 
   .hk-url-heading {
-    margin-bottom: @grid-gutter-width/4;
+    margin-bottom: 1px;
+    padding: @grid-gutter-width/4 @grid-gutter-width/3;
 
     a {
       font-size: ceil(@font-size-base * 1.333333);
+    }
+
+    span {
+      color: @gray-light;
+      margin-top: ceil(@font-size-base * 1.333333) - @font-size-base;
     }
   }
 

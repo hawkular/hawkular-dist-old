@@ -40,7 +40,7 @@ module HawkularMetrics {
   export class MetricsViewController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularAlert',
-      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager', 'AlertService', 'MetricService'];
+      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager', 'NotificationService', 'MetricService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
@@ -57,14 +57,14 @@ module HawkularMetrics {
     public endTimeStamp:TimestampInMillis;
 
     constructor(private $scope:any,
-                private $rootScope:any,
+                private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private HawkularAlert:any,
                 private $routeParams:any,
                 private HawkularAlertsManager: IHawkularAlertsManager,
                 private HawkularErrorManager: IHawkularErrorManager,
-                private AlertService: IAlertService,
+                private NotificationService: INotificationService,
                 private MetricService: IMetricService ) {
       $scope.vm = this;
 
@@ -126,7 +126,7 @@ module HawkularMetrics {
 
     private noDataFoundForId(resourceId:ResourceId):void {
       this.$log.warn('No Data found for id: ' + resourceId);
-      ///this.AlertService.warning('No Data found for id: ' + id);
+      ///this.NotificationService.warning('No Data found for id: ' + id);
     }
 
     private refreshChartDataNow(metricId:MetricId, startTime?:TimestampInMillis):void {
@@ -176,7 +176,7 @@ module HawkularMetrics {
             this.average = Math.round(_.last(dataPoints).avg);
 
           }, (error) => {
-            this.AlertService.error('Error Loading Chart Data: ' + error);
+            this.NotificationService.error('Error Loading Chart Data: ' + error);
           });
 
       }
@@ -234,7 +234,7 @@ module HawkularMetrics {
             }
 
           }, (error) => {
-            this.AlertService.error('Error Loading Chart Data: ' + error);
+            this.NotificationService.error('Error Loading Chart Data: ' + error);
           });
       }
     }

@@ -15,9 +15,9 @@
         <span class="hk-item">Average Heap Usage</span>
       </div>
       <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data" ng-show="vm.garbageCollector">{{ vm.garbageCollector.gc / 1024 / 1024 | number : 0 }} s</span>
-        <span class="hk-data" ng-hide="vm.garbageCollector">n/a</span>
-        <span class="hk-item">Last Garbage Collection (Duration)</span>
+        <span class="hk-data" ng-show="vm.accGCDuration">{{ vm.accGCDuration }}ms</span>
+        <span class="hk-data" ng-hide="vm.accGCDuration">n/a</span>
+        <span class="hk-item">Accumulated GC Duration</span>
       </div>
       <div class="col-sm-3 hk-summary-item">
         <span class="hk-data" ng-show="vm.heapMax">{{ vm.heapMax.max / 1024 / 1024 | number : 0 }} MB</span>
@@ -86,6 +86,23 @@
     <div class="hk-legend text-left">
       <span><i class="fa fa-circle hk-blue"></i>Used</span>
       <span><i class="fa fa-circle hk-gray"></i>Commited</span>
+    </div>
+  </div>
+
+  <div class="panel panel-default hk-graph" ng-if="vm.chartNonHeapData[0]">
+    <h2>Accumulated GC Duration</h2>
+    <div class="metrics-chart">
+      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+      <hawkular-chart
+        data="{{vm.chartGCDurationData}}"
+        chart-type="histogram"
+        alert-value="{{vm.threshold}}"
+        use-zero-min-value="true"
+        y-axis-units="GC Duration (ms)"
+        chart-height="250">
+      </hawkular-chart>
+    </div>
+    <div class="hk-legend text-left">
     </div>
   </div>
 

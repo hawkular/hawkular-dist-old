@@ -16,12 +16,11 @@
  */
 package org.hawkular.component.pinger;
 
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.http.Header;
@@ -44,7 +43,6 @@ public class Traits {
     public enum TraitHeader {
         SERVER("server"), X_ASPNET_VERSION("x-aspnet-version"),
         X_POWERED_BY("x-powered-by"),
-        X_RUNTIME("x-runtime"),
         X_VERSION("x-version");
 
         private static final Map<String, TraitHeader> index;
@@ -83,8 +81,7 @@ public class Traits {
         }
     }
 
-    /** An empty map to use for {@link #items} */
-    private static final Map<TraitHeader, String> NO_ITEMS = Collections.emptyMap();
+    private static final String ASP_NET = "ASP.NET";
 
     /**
      * Collects the traits from the given {@link HttpResponse}.
@@ -96,60 +93,71 @@ public class Traits {
      * @param timestamp the UNIX timestamp when the response was received
      * @return a new {@link Traits}
      */
-    public static Traits collect(HttpResponse httpResponse, long timestamp) {
-        /* We assume that the header keys will typically be unique
-         * Therefore, we store the value into items Map on first hit
-         * and only if there is a second hit, we lazily create a sorted Set in multiItems.
-         */
-        Map<TraitHeader, String> items = null;
-        Map<TraitHeader, Set<String>> multiItems = null;
+    public static Traits collect(HttpResponse httpResponse, long timestamp, InetAddress remoteAddress) {
+
+        TreeSet<String> xPoweredBy = null;
+        StringBuilder poweredByBuilder = new StringBuilder();
+        boolean hasAspNet = false;
 
         HeaderIterator headers = httpResponse.headerIterator();
         while (headers.hasNext()) {
             Header header = headers.nextHeader();
+            Log.LOG.tracef("Is this a trait header? %s:%s from %s", header.getName(), header.getValue(), remoteAddress);
             TraitHeader traitHeader = TraitHeader.fastValueOf(header.getName());
             if (traitHeader != null) {
-                if (items == null) {
-                    items = new HashMap<>();
-                    items.put(traitHeader, header.getValue());
-                } else {
-                    String value = items.get(traitHeader);
-                    if (value == null) {
-                        /* no value so far - this is the first hit of the present key */
-                        items.put(traitHeader, header.getValue());
+                Log.LOG.tracef("Found a trait header: %s:%s from %s", header.getName(), header.getValue(),
+                        remoteAddress);
+
+                switch (traitHeader) {
+                case SERVER:
+                    if (poweredByBuilder.length() != 0) {
+                        /* multiple server headers do not make much sense, but let us be prepared */
+                        poweredByBuilder.append(", ");
+                    }
+                    poweredByBuilder.append(header.getValue());
+                    break;
+                case X_POWERED_BY:
+                    String powBy = header.getValue();
+                    if (xPoweredBy == null) {
+                        xPoweredBy = new TreeSet<>();
+                    }
+                    if (ASP_NET.equals(powBy)) {
+                        if (!hasAspNet) {
+                            xPoweredBy.add(powBy);
+                        }
+                        hasAspNet = true;
                     } else {
-                        /* value available - let's fall back to the multiValues map */
-                        if (multiItems == null) {
-                            multiItems = new HashMap<>();
-                        }
-                        Set<String> multiValues = multiItems.get(traitHeader);
-                        if (multiValues == null) {
-                            multiValues = new TreeSet<>();
-                            multiValues.add(value);
-                            multiItems.put(traitHeader, multiValues);
-                        }
-                        multiValues.add(header.getValue());
+                        xPoweredBy.add(powBy);
                     }
+                    break;
+                case X_ASPNET_VERSION:
+                    if (hasAspNet) {
+                        xPoweredBy.remove(ASP_NET);
+                    }
+                    if (xPoweredBy == null) {
+                        xPoweredBy = new TreeSet<>();
+                    }
+                    xPoweredBy.add(ASP_NET +"/"+ header.getValue());
+                    break;
+                default:
+                    break;
                 }
-
             }
         }
 
-        if (multiItems != null) {
-            /* Lets serialize the entries in multiItems and put them back to items. */
-            for (Entry<TraitHeader, Set<String>> en : multiItems.entrySet()) {
-                StringBuilder sb = new StringBuilder();
-                for (String item : en.getValue()) {
-                    if (sb.length() > 0) {
-                        sb.append(", ");
-                    }
-                    sb.append(item);
+        /* server was added to poweredByBuilder already
+         * now lets add the x-powered-by items in alphabetic order */
+        if (xPoweredBy != null) {
+            for (String val : xPoweredBy) {
+                if (poweredByBuilder.length() != 0) {
+                    poweredByBuilder.append(", ");
                 }
-                items.put(TraitHeader.X_POWERED_BY, sb.toString());
+                poweredByBuilder.append(val);
             }
         }
 
-        return new Traits(timestamp, items == null ? Collections.emptyMap() : Collections.unmodifiableMap(items));
+        return new Traits(timestamp, remoteAddress,
+                poweredByBuilder.length() == 0 ? null : poweredByBuilder.toString());
     };
 
     /**
@@ -159,11 +167,14 @@ public class Traits {
      * @return a new {@link Traits} with the given {@code timestamp} and no {@link #items}
      */
     public static Traits empty(long timestamp) {
-        return new Traits(timestamp, NO_ITEMS);
+        return new Traits(timestamp, null, null);
     }
 
-    /** The header name - header value map storing the traits */
-    private final Map<TraitHeader, String> items;
+    /** A comma separated list of "powered by" items */
+    private final String poweredBy;
+
+    /** The remote IP address that replied to the ping, can be {@code null} */
+    private final InetAddress remoteAddress;
 
     /** The UNIX timestamp when the response was received */
     private final long timestamp;
@@ -176,17 +187,25 @@ public class Traits {
      *
      * @see #collect(HttpResponse, long)
      */
-    Traits(long timestamp, Map<TraitHeader, String> items) {
+    Traits(long timestamp, InetAddress remoteAddress, String poweredBy) {
         super();
         this.timestamp = timestamp;
-        this.items = items;
+        this.remoteAddress = remoteAddress;
+        this.poweredBy = poweredBy;
     }
 
     /**
-     * @return an unmodifiable {@link Map} of trait headers
+     * @return a comma separated list of "powered by" items
      */
-    public Map<TraitHeader, String> getItems() {
-        return items;
+    public String getPoweredBy() {
+        return poweredBy;
+    }
+
+    /**
+     * @return the remote IP address that replied to the ping, can be {@code null}
+     */
+    public InetAddress getRemoteAddress() {
+        return remoteAddress;
     }
 
     /**
@@ -206,12 +225,17 @@ public class Traits {
         if (getClass() != obj.getClass())
             return false;
         Traits other = (Traits) obj;
-        if (items == null) {
-            if (other.items != null)
-                return false;
-        } else if (!items.equals(other.items))
-            return false;
         if (timestamp != other.timestamp)
+            return false;
+        if (remoteAddress == null) {
+            if (other.remoteAddress != null)
+                return false;
+        } else if (!remoteAddress.equals(other.remoteAddress))
+            return false;
+        if (poweredBy == null) {
+            if (other.poweredBy != null)
+                return false;
+        } else if (!poweredBy.equals(other.poweredBy))
             return false;
         return true;
     }
@@ -221,15 +245,16 @@ public class Traits {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((items == null) ? 0 : items.hashCode());
+        result = prime * result + ((poweredBy == null) ? 0 : poweredBy.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+        result = prime * result + ((remoteAddress == null) ? 0 : remoteAddress.hashCode());
         return result;
     }
 
     /** @see java.lang.Object#toString() */
     @Override
     public String toString() {
-        return "Traits [items=" + items + ", timestamp=" + timestamp + "]";
+        return "Traits [poweredBy=" + poweredBy + ", timestamp=" + timestamp + ", remoteAddress=" + remoteAddress + "]";
     }
 
 
