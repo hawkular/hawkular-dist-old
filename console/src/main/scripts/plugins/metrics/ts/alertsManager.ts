@@ -31,9 +31,18 @@ module HawkularMetrics {
     updateTrigger(triggerId: TriggerId, data: any): ng.IPromise<void>;
     createTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
                   email: EmailType): ng.IPromise<void>;
+
+    createJvmHeapTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
+                  email: EmailType): ng.IPromise<void>;
+    createJvmNonHeapTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
+                  email: EmailType): ng.IPromise<void>;
+    createJvmGarbageTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
+                  email: EmailType): ng.IPromise<void>;
+
     deleteTrigger(triggerId: TriggerId): ng.IPromise<void>;
     createCondition(triggerId: TriggerId, condition: any): ng.IPromise<void>;
     updateCondition(triggerId: TriggerId, conditionId: ConditionId, condition: any): ng.IPromise<void>;
+    deleteCondition(conditionId: ConditionId): ng.IPromise<void>;
     createDampening(triggerId: TriggerId, duration: number, triggerMode?: string): ng.IPromise<void>;
     updateDampening(triggerId: TriggerId, dampeningId: DampeningId, dampening: any): ng.IPromise<void>;
     getAction(email: EmailType): ng.IPromise<void>;
@@ -123,6 +132,65 @@ module HawkularMetrics {
         });
     }
 
+    public createJvmHeapTrigger(id: TriggerId, triggerName: string, enabled: boolean,
+                                conditionType: string, email: EmailType): ng.IPromise<void> {
+      // Create a trigger
+      var triggerId: TriggerId;
+      var DEFAULT_DAMPENING_INTERVAL = 7 * 60000;
+
+      return this.HawkularAlert.Trigger.save({
+        name: triggerName,
+        id: id,
+        description: 'Created on ' + Date(),
+        firingMatch: 'ALL',
+        autoResolveMatch: 'ALL',
+        enabled: enabled,
+        autoResolve: false,
+        actions: { email: [email] }
+      }).$promise.then((trigger)=> {
+
+          triggerId = trigger.id;
+
+          // Parse metrics id from the trigger name
+          var resourceId: string = triggerId.slice(0,-10);
+          var dataId: string = 'MI~R~[' + resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used';
+
+          // Create a conditions for that trigger
+          return this.createCondition(triggerId, {
+            type: conditionType,
+            triggerId: triggerId,
+            threshold: 80,
+            dataId: dataId,
+            operator: 'GT'
+          }).then(()=> {
+            return this.createCondition(triggerId, {
+              type: conditionType,
+              triggerId: triggerId,
+              threshold: 20,
+              dataId: dataId,
+              operator: 'LT'
+            });
+          });
+        }).then(() => {
+          // Create dampening for that trigger
+          return this.createDampening(triggerId, DEFAULT_DAMPENING_INTERVAL);
+        });
+    }
+
+    public createJvmNonHeapTrigger(id: TriggerId, triggerName: string, enabled: boolean,
+                                conditionType: string, email: EmailType): ng.IPromise<void> {
+      return this.$q.when('createJvmNonHeapTrigger').then(() => {
+        this.$log.debug('createJvmNonHeapTrigger');
+      });
+    }
+
+    public createJvmGarbageTrigger(id: TriggerId, triggerName: string, enabled: boolean,
+                                conditionType: string, email: EmailType): ng.IPromise<void> {
+      return this.$q.when('createJvmGarbageTrigger').then(() => {
+        this.$log.debug('createJvmGarbageTrigger');
+      });
+    }
+
     public deleteTrigger(triggerId: TriggerId): ng.IPromise<void> {
       return this.HawkularAlert.Trigger.delete({triggerId: triggerId}).$promise;
     }
@@ -175,6 +243,10 @@ module HawkularMetrics {
 
     public updateCondition(triggerId: TriggerId, conditionId: ConditionId, condition: any): ng.IPromise<void> {
       return this.HawkularAlert.Condition.put({triggerId: triggerId, conditionId: conditionId}, condition).$promise;
+    }
+
+    public deleteCondition(conditionId: ConditionId): ng.IPromise<void> {
+      return this.HawkularAlert.Condition.delete({conditionId: conditionId}).$promise;
     }
 
     public createDampening(triggerId: TriggerId, duration: number, triggerMode?: string): ng.IPromise<void> {

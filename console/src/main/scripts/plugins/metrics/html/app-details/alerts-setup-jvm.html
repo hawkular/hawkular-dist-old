@@ -1,0 +1,107 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="jas.cancel()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Alert Settings</h4>
+</div>
+<div class="modal-body alert-settings">
+  <p>Configure conditions settings for Heap usage alerts and notifications.</p>
+  <form class="form-horizontal">
+    <fieldset>
+      <legend>Threshold Conditions</legend>
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Maximum usage</label>
+        <div class="col-sm-6">
+          <span class="hk-input-text">500 MB</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="usage-greater">Usage greater than</label>
+        <div class="col-sm-5">
+          <div class="input-group hk-input-small">
+            <input type="number" min="0" max="100" ng-model="jas.conditionGt.threshold" class="form-control" id="usage-greater" ng-disabled="!jas.conditionGtEnabled">
+            <div class="input-group-addon">%</div>
+          </div>
+          <span class="input-detail">(400 MB)</span>
+        </div>
+        <div class="col-sm-4">
+          <div class="onoffswitch pull-right">
+            <input type="checkbox" id="usage-greater-switch" class="onoffswitch-checkbox" ng-model="jas.conditionGtEnabled" ng-click="jas.enableGt()">
+            <label class="onoffswitch-label" for="usage-greater-switch">
+                          <span class="onoffswitch-inner">
+                            <span class="onoffswitch-active ng-binding">ON</span>
+                            <span class="onoffswitch-inactive ng-binding">OFF</span>
+                          </span>
+              <span class="onoffswitch-switch"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="usage-less">Usage less than</label>
+        <div class="col-sm-5">
+          <div class="input-group hk-input-small">
+            <input type="number" min="0" max="100" ng-model="jas.conditionLt.threshold" class="form-control" id="usage-less" ng-disabled="!jas.conditionLtEnabled">
+            <div class="input-group-addon">%</div>
+          </div>
+          <span class="input-detail">(100 MB)</span>
+        </div>
+        <div class="col-sm-4">
+          <div class="onoffswitch pull-right">
+            <input type="checkbox" id="usage-less-switch" class="onoffswitch-checkbox"  ng-model="jas.conditionLtEnabled"  ng-click="jas.enableLt()">
+            <label class="onoffswitch-label" for="usage-less-switch">
+                          <span class="onoffswitch-inner">
+                            <span class="onoffswitch-active ng-binding">ON</span>
+                            <span class="onoffswitch-inactive ng-binding">OFF</span>
+                          </span>
+              <span class="onoffswitch-switch"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Alert</legend>
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Create Alert</label>
+        <div class="col-sm-9">
+          <div class="radio">
+            <label for="every-time-heap">
+              <input type="radio" name="alert-heap" id="every-time-heap" value="option1" checked="">
+              Every time conditions are met.
+            </label>
+          </div>
+          <div class="radio">
+            <label for="greater-time-heap">
+              <input type="radio" name="alert-heap" id="greater-time-heap" value="option2">
+              Only when conditions are met for greater than:
+            </label>
+          </div>
+          <div class="input-group input-select indented">
+            <input type="number" class="form-control" placeholder="Duration" ng-model="jas.dampening.evalTimeSetting">
+            <select class="selectpicker" style="display: none;">
+              <option>seconds</option>
+              <option selected="selected">minutes</option>
+              <option>hours</option>
+            </select><div class="btn-group bootstrap-select input-group-btn"><button type="button" class="btn dropdown-toggle selectpicker btn-default" data-toggle="dropdown" title="minutes"><span class="filter-option pull-left">minutes</span>&nbsp;<span class="caret"></span></button><div class="dropdown-menu open"><ul class="dropdown-menu inner selectpicker" role="menu"><li rel="0"><a tabindex="0" class="" style=""><span class="text">seconds</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li><li rel="1" class="selected"><a tabindex="0" class="" style=""><span class="text">minutes</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li><li rel="2"><a tabindex="0" class="" style=""><span class="text">hours</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li></ul></div></div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Notification</legend>
+      <p>Receive an email notification every time the conditions are met.</p>
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="email-heap">Email</label>
+        <div class="col-sm-6">
+          <input type="text" id="email-heap" class="form-control" ng-model="jas.trigger.actions.email[0]">
+        </div>
+      </div>
+    </fieldset>
+  </form>
+</div>
+<div class="modal-footer alert-settings">
+  <button type="button" class="btn btn-primary" ng-click="jas.save()">
+    <div ng-show="jas.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>Save</button>
+  <button type="button" class="btn btn-default" ng-click="jas.cancel()">Cancel</button>
+</div>
