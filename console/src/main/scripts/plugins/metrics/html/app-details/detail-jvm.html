@@ -15,7 +15,7 @@
         <span class="hk-item">Average Heap Usage</span>
       </div>
       <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data" ng-show="vm.accGCDuration">{{ vm.accGCDuration }}ms</span>
+        <span class="hk-data" ng-show="vm.accGCDuration">{{ vm.accGCDuration }} ms</span>
         <span class="hk-data" ng-hide="vm.accGCDuration">n/a</span>
         <span class="hk-item">Accumulated GC Duration</span>
       </div>
@@ -98,6 +98,7 @@
         chart-type="histogram"
         alert-value="{{vm.threshold}}"
         use-zero-min-value="true"
+        hide-high-low-values="true"
         y-axis-units="GC Duration (ms)"
         chart-height="250">
       </hawkular-chart>
