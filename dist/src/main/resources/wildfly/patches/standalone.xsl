@@ -417,6 +417,24 @@
                       attribute="thread-count" />
         </metric-set-dmr>
 
+        <metric-set-dmr name="WildFly Aggregated Web Metrics" enabled="true">
+          <metric-dmr name="Aggregated Active Web Sessions"
+                      interval="1"
+                      timeUnits="minutes"
+                      path="/deployment=*/subsystem=undertow"
+                      attribute="active-sessions" />
+          <metric-dmr name="Aggregated Servlet Request Time"
+                      interval="1"
+                      timeUnits="minutes"
+                      path="/deployment=*/subsystem=undertow/servlet=*"
+                      attribute="total-request-time" />
+          <metric-dmr name="Aggregated Servlet Request Count"
+                      interval="1"
+                      timeUnits="minutes"
+                      path="/deployment=*/subsystem=undertow/servlet=*"
+                      attribute="request-count" />
+        </metric-set-dmr>
+
         <metric-set-dmr name="Undertow Metrics" enabled="true">
           <metric-dmr name="Active Sessions"
                       interval="2"
@@ -794,7 +812,7 @@
           <resource-type-dmr name="WildFly Server"
                              resourceNameTemplate="WildFly Server [%ManagedServerName] [${{jboss.node.name:localhost}}]"
                              path="/"
-                             metricSets="WildFly Memory Metrics,WildFly Threading Metrics"
+                             metricSets="WildFly Memory Metrics,WildFly Threading Metrics,WildFly Aggregated Web Metrics"
                              availSets="Server Availability">
             <resource-config-dmr name="Hostname"
                                  path="/core-service=server-environment"
