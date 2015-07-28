@@ -1,6 +1,6 @@
 {
   "name": "hawkular-console",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": true,
   "keywords": [
     "hawtio hawkular console"
@@ -20,7 +20,7 @@
     "angular-ui-select": "0.11.2",
     "angular-toastr": "1.4.1",
     "bootstrap-select": "1.6",
-    "hawkular-charts": "0.4.9",
+    "hawkular-charts": "0.4.11",
     "hawkular-ui-services": "0.5.4",
     "hawtio-core-navigation": "2.0.51",
     "hawtio-core": "2.0.16",
