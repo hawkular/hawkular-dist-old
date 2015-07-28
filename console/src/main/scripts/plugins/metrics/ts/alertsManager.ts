@@ -33,26 +33,29 @@ module HawkularMetrics {
                   email: EmailType): ng.IPromise<void>;
 
     createJvmHeapTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
-                  email: EmailType): ng.IPromise<void>;
+                  email: EmailType): any;
     createJvmNonHeapTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
-                  email: EmailType): ng.IPromise<void>;
+                  email: EmailType): any;
     createJvmGarbageTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
-                  email: EmailType): ng.IPromise<void>;
+                  email: EmailType): any;
 
     deleteTrigger(triggerId: TriggerId): ng.IPromise<void>;
     createCondition(triggerId: TriggerId, condition: any): ng.IPromise<void>;
     updateCondition(triggerId: TriggerId, conditionId: ConditionId, condition: any): ng.IPromise<void>;
-    deleteCondition(conditionId: ConditionId): ng.IPromise<void>;
+    deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<void>;
     createDampening(triggerId: TriggerId, duration: number, triggerMode?: string): ng.IPromise<void>;
     updateDampening(triggerId: TriggerId, dampeningId: DampeningId, dampening: any): ng.IPromise<void>;
     getAction(email: EmailType): ng.IPromise<void>;
     getActions(triggerId: TriggerId): ng.IPromise<void>;
-    getTrigger(triggerId: TriggerId): ng.IPromise<void>;
+    getTrigger(triggerId: TriggerId): any;
     setEmail(triggerId: TriggerId, email: EmailType): ng.IPromise<void>;
     setResponseTime(triggerId: TriggerId, treshold: number, duration: number, enabled: boolean): ng.IPromise<void>;
     setDowntime(triggerId: TriggerId, duration: number, enabled: boolean): ng.IPromise<void>;
     queryConsoleAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType,
                        currentPage?:number, perPage?:number): any;
+    queryAlerts(metricId: MetricId, startTime?:TimestampInMillis,
+                endTime?:TimestampInMillis, alertType?:AlertType,
+                currentPage?:number, perPage?:number): any
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
@@ -142,10 +145,10 @@ module HawkularMetrics {
         name: triggerName,
         id: id,
         description: 'Created on ' + Date(),
-        firingMatch: 'ALL',
-        autoResolveMatch: 'ALL',
+        firingMatch: 'ANY',
         enabled: enabled,
         autoResolve: false,
+        autoResolveAlerts: false,
         actions: { email: [email] }
       }).$promise.then((trigger)=> {
 
@@ -245,8 +248,8 @@ module HawkularMetrics {
       return this.HawkularAlert.Condition.put({triggerId: triggerId, conditionId: conditionId}, condition).$promise;
     }
 
-    public deleteCondition(conditionId: ConditionId): ng.IPromise<void> {
-      return this.HawkularAlert.Condition.delete({conditionId: conditionId}).$promise;
+    public deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<void> {
+      return this.HawkularAlert.Condition.delete({triggerId: triggerId, conditionId: conditionId}).$promise;
     }
 
     public createDampening(triggerId: TriggerId, duration: number, triggerMode?: string): ng.IPromise<void> {
@@ -404,6 +407,106 @@ module HawkularMetrics {
           headers: headers
         };
       });
+    }
+
+
+    public queryAlerts(metricId: MetricId, startTime?:TimestampInMillis,
+                              endTime?:TimestampInMillis, alertType?:AlertType,
+                              currentPage?:number, perPage?:number): any {
+      var alertList = [];
+      var headers;
+
+      /* Format of Alerts:
+
+       alert: {
+       type: 'THRESHOLD' or 'AVAILABILITY'
+       avg: Average value based on the evalSets 'values'
+       start: The time of the first data ('dataTimestamp') in evalSets
+       threshold: The threshold taken from condition.threshold
+       end: The time when the alert was sent ('ctime')
+       }
+
+       */
+
+      var queryParams = {
+        statuses:'OPEN'
+      };
+
+      if (currentPage || currentPage === 0) {
+        queryParams['page'] = currentPage;
+      }
+
+      if (perPage) {
+        queryParams['per_page'] = perPage;
+      }
+
+      queryParams['triggerIds'] = metricId;
+
+      if (startTime) {
+        queryParams['startTime'] = startTime;
+      }
+
+      if (endTime) {
+        queryParams['endTime'] = endTime;
+      }
+
+      return this.HawkularAlert.Alert.query(queryParams, (serverAlerts: any, getHeaders: any) => {
+
+        headers = getHeaders();
+        var momentNow = this.$moment();
+
+        for (var i = 0; i < serverAlerts.length; i++) {
+          var consoleAlert: any = {};
+          var serverAlert = serverAlerts[i];
+
+          consoleAlert.id = serverAlert.alertId;
+          consoleAlert.end = serverAlert.ctime;
+
+          var sum: number = 0.0;
+          var count: number = 0.0;
+
+          for (var j = 0; j < serverAlert.evalSets.length; j++) {
+            var evalItem = serverAlert.evalSets[j][0];
+
+            if (!consoleAlert.start && evalItem.dataTimestamp) {
+              consoleAlert.start = evalItem.dataTimestamp;
+            }
+
+            if (!consoleAlert.threshold && evalItem.condition.threshold) {
+              consoleAlert.threshold = evalItem.condition.threshold;
+            }
+
+            if (!consoleAlert.type && evalItem.condition.type) {
+              consoleAlert.type = evalItem.condition.type;
+            }
+
+            var momentAlert = this.$moment(consoleAlert.end);
+
+            if (momentAlert.year() === momentNow.year()) {
+              consoleAlert.isThisYear = true;
+              if (momentAlert.dayOfYear() === momentNow.dayOfYear()) {
+                consoleAlert.isToday = true;
+              }
+            }
+
+            sum += evalItem.value;
+            count++;
+          }
+
+          consoleAlert.avg = sum/count;
+
+          consoleAlert.durationTime = consoleAlert.end - consoleAlert.start;
+
+          alertList.push(consoleAlert);
+        }
+      }, (error) => {
+        this.$log.debug('querying data error', error);
+      }).$promise.then(()=> {
+          return {
+            alertList: alertList,
+            headers: headers
+          };
+        });
     }
 
 

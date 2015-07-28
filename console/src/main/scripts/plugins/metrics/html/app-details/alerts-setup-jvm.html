@@ -12,7 +12,7 @@
       <div class="form-group">
         <label class="col-sm-3 control-label">Maximum usage</label>
         <div class="col-sm-6">
-          <span class="hk-input-text">500 MB</span>
+          <span class="hk-input-text">{{jas.maxUsage}} MB</span>
         </div>
       </div>
       <div class="form-group">
@@ -22,7 +22,7 @@
             <input type="number" min="0" max="100" ng-model="jas.conditionGt.threshold" class="form-control" id="usage-greater" ng-disabled="!jas.conditionGtEnabled">
             <div class="input-group-addon">%</div>
           </div>
-          <span class="input-detail">(400 MB)</span>
+          <span class="input-detail">({{jas.conditionGtEnabled && jas.conditionGt.threshold ? jas.maxUsage * jas.conditionGt.threshold / 100 : '-'}} MB)</span>
         </div>
         <div class="col-sm-4">
           <div class="onoffswitch pull-right">
@@ -44,7 +44,7 @@
             <input type="number" min="0" max="100" ng-model="jas.conditionLt.threshold" class="form-control" id="usage-less" ng-disabled="!jas.conditionLtEnabled">
             <div class="input-group-addon">%</div>
           </div>
-          <span class="input-detail">(100 MB)</span>
+          <span class="input-detail">({{jas.conditionLtEnabled && jas.conditionLt.threshold ? jas.maxUsage * jas.conditionLt.threshold / 100 : '-'}} MB)</span>
         </div>
         <div class="col-sm-4">
           <div class="onoffswitch pull-right">
@@ -67,23 +67,23 @@
         <div class="col-sm-9">
           <div class="radio">
             <label for="every-time-heap">
-              <input type="radio" name="alert-heap" id="every-time-heap" value="option1" checked="">
+              <input type="radio" name="alert-heap" id="every-time-heap" ng-value="false" ng-model="jas.durationEnabled" checked="">
               Every time conditions are met.
-            </label>
+            </label>eq
           </div>
           <div class="radio">
             <label for="greater-time-heap">
-              <input type="radio" name="alert-heap" id="greater-time-heap" value="option2">
+              <input type="radio" name="alert-heap" id="greater-time-heap" ng-value="true" ng-model="jas.durationEnabled">
               Only when conditions are met for greater than:
             </label>
           </div>
           <div class="input-group input-select indented">
-            <input type="number" class="form-control" placeholder="Duration" ng-model="jas.dampening.evalTimeSetting">
-            <select class="selectpicker" style="display: none;">
-              <option>seconds</option>
-              <option selected="selected">minutes</option>
-              <option>hours</option>
-            </select><div class="btn-group bootstrap-select input-group-btn"><button type="button" class="btn dropdown-toggle selectpicker btn-default" data-toggle="dropdown" title="minutes"><span class="filter-option pull-left">minutes</span>&nbsp;<span class="caret"></span></button><div class="dropdown-menu open"><ul class="dropdown-menu inner selectpicker" role="menu"><li rel="0"><a tabindex="0" class="" style=""><span class="text">seconds</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li><li rel="1" class="selected"><a tabindex="0" class="" style=""><span class="text">minutes</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li><li rel="2"><a tabindex="0" class="" style=""><span class="text">hours</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li></ul></div></div>
+            <input type="number" class="form-control" placeholder="Duration" ng-model="jas.responseDuration"
+                   ng-disabled="!jas.durationEnabled" ng-change="jas.alertSettingTouch()">
+            <select pf-select ng-model="jas.responseUnit" id="responseUnit"
+                    ng-disabled="!jas.durationEnabled"
+                    ng-options="item.value as item.label for item in jas.timeUnits"
+                    ng-change="jas.changeTimeUnits()"></select>
           </div>
         </div>
       </div>

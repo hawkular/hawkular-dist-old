@@ -75,7 +75,20 @@ module HawkularMetrics {
             (currentPersona) => currentPersona && this.getJvmData());
         }
 
+        var metricId = 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used';
+
+        this.getAlerts(metricId, this.startTimeStamp, this.endTimeStamp);
+
         this.autoRefresh(20);
+    }
+
+    private getAlerts(metricId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      this.HawkularAlertsManager.queryAlerts(metricId, startTime, endTime,
+        HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
+          this.alertList = data.alertList;
+        }, (error) => {
+          return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.');
+        });
     }
 
     private autoRefreshPromise: ng.IPromise<number>;

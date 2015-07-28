@@ -72,8 +72,8 @@ module HawkularMetrics {
           this.$log.debug('Jvm trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
-        this.HawkularAlertsManager.createJvmHeapTrigger(this.resourceId + '_jvm_pheap', this.resourceId + '_jvm_pheap',
-          true, 'THRESHOLD', this.defaultEmail);
+        return this.HawkularAlertsManager.createJvmHeapTrigger(this.resourceId + '_jvm_pheap',
+          this.resourceId + '_jvm_pheap', true, 'THRESHOLD', this.defaultEmail);
       });
 /*
       var nonHeapTriggerPromise = this.HawkularAlertsManager.getTrigger(this.resourceId + '_jvm_nheap').then(() => {
@@ -160,24 +160,26 @@ module HawkularMetrics {
 
   export class JvmAlertSetupController {
     public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q',
-      '$rootScope', '$routeParams', '$modalInstance'];
+      '$rootScope', '$routeParams', '$modalInstance', 'HawkularMetric'];
 
     private resourceId: string;
     private trigger: any;
     private dampening: any;
     private conditionGt: any;
     private conditionLt: any;
+    public responseDuration: number;
 
     private conditionGtEnabled: boolean;
     private conditionLtEnabled: boolean;
 
-    private alertSetupBackup: any = {};
+    // TODO - Get the actual data from backend
+    public maxUsage: number = 500;
 
     public saveProgress: boolean = false;
     public duration: number;
     public responseUnit: number = 1;
     public downtimeUnit: number = 1;
-    public thresDampDurationEnabled = false;
+    public durationEnabled = false;
 
     public isSettingChange = false;
 
@@ -203,7 +205,8 @@ module HawkularMetrics {
                 private $q: ng.IQService,
                 private $rootScope: any,
                 private $routeParams: any,
-                private $modalInstance: any) {
+                private $modalInstance: any,
+                private HawkularMetric: any) {
 
       this.$log.debug('querying data');
       this.$log.debug('$routeParams', $routeParams.resourceId);
@@ -214,13 +217,24 @@ module HawkularMetrics {
       this.$log.debug('this.resourceId', this.resourceId);
 
       var triggerId: string = this.resourceId + '_jvm_pheap';
-
+/*
+      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Max',
+        buckets: 1}, (resource) => {
+        this.maxUsage = resource[0];
+      }, this);
+*/
       this.HawkularAlertsManager.getTrigger(triggerId).then((data) => {
         this.$log.debug('getTrigger', data);
         this.trigger = data;
         return HawkularAlert.Dampening.query({triggerId: triggerId}).$promise;
       }).then((data) => {
         this.dampening = data[0];
+        this.durationEnabled = this.dampening.evalTimeSetting !== 0;
+
+        this.responseUnit = this.getTimeUnit(this.dampening.evalTimeSetting);
+        this.responseDuration = this.dampening.evalTimeSetting / this.responseUnit;
+
         this.$log.debug('HawkularAlert.Dampening.query', data);
         return HawkularAlert.Condition.query({triggerId: triggerId}).$promise;
       }).then((data)=> {
@@ -234,6 +248,7 @@ module HawkularMetrics {
     }
 
     public enableGt(): void {
+      this.$log.debug('enableGt');
 
       var triggerId: string = this.trigger.id;
       var resourceId: string = triggerId.slice(0,-10);
@@ -246,17 +261,20 @@ module HawkularMetrics {
           threshold: 80,
           dataId: dataId,
           operator: 'GT'
-        }).then( (data) => {
-          this.conditionGt = data[0];
+        }).then( (data:any) => {
+          this.conditionGt = _.filter(data, {operator: 'GT'})[0];
           this.$log.debug('this.conditionGt', this.conditionGt);
         });
       } else {
         this.$log.debug('Going to delete', this.conditionGt.conditionId);
-        this.HawkularAlertsManager.deleteCondition(this.conditionGt.conditionId);
+        this.HawkularAlertsManager.deleteCondition(triggerId, this.conditionGt.conditionId).then(()=> {
+          this.conditionGt = undefined;
+        });
       }
     }
 
     public enableLt(): void {
+      this.$log.debug('enableLt');
 
       var triggerId: string = this.trigger.id;
       var resourceId: string = triggerId.slice(0,-10);
@@ -269,13 +287,15 @@ module HawkularMetrics {
           threshold: 20,
           dataId: dataId,
           operator: 'LT'
-        }).then( (data) => {
-          this.conditionLt = data[0];
+        }).then( (data:any) => {
+          this.conditionLt = _.filter(data, {operator: 'LT'})[0];
           this.$log.debug('this.conditionLt', this.conditionLt);
         });
       } else {
         this.$log.debug('Going to delete', this.conditionLt.conditionId);
-        this.HawkularAlertsManager.deleteCondition(this.conditionLt.conditionId);
+        this.HawkularAlertsManager.deleteCondition(triggerId, this.conditionLt.conditionId).then(()=> {
+          this.conditionLt = undefined;
+        });
       }
     }
 
@@ -295,6 +315,8 @@ module HawkularMetrics {
 
     public changeTimeUnits():void {
       this.duration = this.dampening / this.responseUnit;
+
+      this.alertSettingTouch();
     }
 
     public cancel(): void {
@@ -323,19 +345,24 @@ module HawkularMetrics {
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error saving email action.', errorCallback);
       }).then(()=> {
-        if (!this.thresDampDurationEnabled) {
+        var dampening = angular.copy(this.dampening);
+
+        if (!this.durationEnabled) {
           this.dampening.evalTimeSetting = 0;
         }
 
-        return this.HawkularAlertsManager.updateDampening(this.trigger.id,this.dampening.dampeningId, this.dampening);
+        return this.HawkularAlertsManager.updateDampening(this.trigger.id,this.dampening.dampeningId,
+          dampening);
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating trigger', errorCallback);
       }).then(()=> {
-        return this.HawkularAlertsManager.updateCondition(this.trigger.id, this.conditionGt.conditionId, this.conditionGt);
+        return this.HawkularAlertsManager.updateCondition(this.trigger.id, this.conditionGt.conditionId,
+          this.conditionGt);
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating dampening.', errorCallback);
       }).then(() => {
-        return this.HawkularAlertsManager.updateCondition(this.trigger.id, this.conditionLt.conditionId, this.conditionLt);
+        return this.HawkularAlertsManager.updateCondition(this.trigger.id, this.conditionLt.conditionId,
+          this.conditionLt);
       }, (error) => {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating conditionGt condition.', errorCallback);
       }).then(angular.noop, (error)=> {
@@ -355,6 +382,12 @@ module HawkularMetrics {
         this.cancel();
       });
     }
+
+    public alertSettingTouch(): void {
+      this.$log.debug('alertSettingTouch');
+      this.dampening.evalTimeSetting = this.responseDuration * this.responseUnit;
+    }
+
   }
 
   _module.controller('JvmAlertSetupController', JvmAlertSetupController);
