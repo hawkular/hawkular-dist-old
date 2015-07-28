@@ -109,7 +109,7 @@
         <include>org.hawkular:hawkular-avail-creator</include>
         <include>org.hawkular.accounts:hawkular-accounts:war</include>
         <include>org.hawkular.alerts:hawkular-alerts-rest:war</include>
-        <include>org.hawkular.alerts:hawkular-actions-email</include>
+        <include>org.hawkular.alerts:hawkular-alerts-actions-email:war</include>
         <include>org.hawkular.metrics:hawkular-metrics-api-jaxrs</include>
         <include>org.hawkular.commons:hawkular-commons-embedded-cassandra-ear</include>
         <include>org.hawkular.accounts:hawkular-accounts-events-backend:war</include>
