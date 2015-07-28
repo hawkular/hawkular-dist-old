@@ -69,11 +69,10 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu disabled" role="menu" aria-labelledby="dropdownMenu1">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Enable</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Disable</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Redeploy</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Undeploy</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Delete</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Deploy', vm.resourceList)">Enable</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Redeploy', vm.resourceList)">Redeploy</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Undeploy', vm.resourceList)">Disable</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Remove', vm.resourceList)">Remove</a></li>
           </ul>
         </div>
       </div>
@@ -119,11 +118,10 @@
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Enable</a></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Disable</a></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Redeploy</a></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Undeploy</a></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Delete</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperation('Deploy', res.id)">Enable</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperation('Redeploy', res.id)">Redeploy</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperation('Undeploy', res.id)">Disable</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperation('Remove', res.id)">Remove</a></li>
                   </ul>
                 </div>
               </td>

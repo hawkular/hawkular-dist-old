@@ -21,7 +21,7 @@
     "angular-toastr": "1.4.1",
     "bootstrap-select": "1.6",
     "hawkular-charts": "0.4.11",
-    "hawkular-ui-services": "0.5.4",
+    "hawkular-ui-services": "0.6.0",
     "hawtio-core-navigation": "2.0.51",
     "hawtio-core": "2.0.16",
     "hawtio-template-cache": "2.0.3",
