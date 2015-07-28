@@ -809,6 +809,12 @@
                              resourceNameTemplate="Bus Broker"
                              path="/subsystem=hawkular-bus-broker"
                              parents="WildFly Server"/>
+          <resource-type-dmr name="Monitor Agent"
+                             resourceNameTemplate="Monitor Agent"
+                             path="/subsystem=hawkular-monitor"
+                             parents="WildFly Server">
+            <operation-dmr name="Status" operationName="status" path="/" />
+          </resource-type-dmr>
         </resource-type-set-dmr>
 
          <resource-type-set-dmr name="Deployment" enabled="true">
@@ -817,13 +823,21 @@
                                path="/deployment=*"
                                parents="WildFly Server"
                                metricSets="Undertow Metrics"
-                               availSets="Deployment Status" />
+                               availSets="Deployment Status">
+              <operation-dmr name="Redeploy" operationName="redeploy" path="/" />
+              <operation-dmr name="Remove" operationName="remove" path="/" />
+              <operation-dmr name="Undeploy" operationName="undeploy" path="/" />
+            </resource-type-dmr>
 
             <resource-type-dmr name="SubDeployment"
                                resourceNameTemplate="SubDeployment [%-]"
                                path="/subdeployment=*"
                                parents="Deployment"
-                               metricSets="Undertow Metrics" />
+                               metricSets="Undertow Metrics">
+              <operation-dmr name="Redeploy" operationName="redeploy" path="/" />
+              <operation-dmr name="Remove" operationName="remove" path="/" />
+              <operation-dmr name="Undeploy" operationName="undeploy" path="/" />
+            </resource-type-dmr>
          </resource-type-set-dmr>
 
         <resource-type-set-dmr name="Web Component" enabled="true">
@@ -881,7 +895,7 @@
 
           <local-dmr name="Local"
                      enabled="true"
-                     resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,Transaction Manager" />
+                     resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,Transaction Manager,Hawkular" />
 
         </managed-servers>
 
