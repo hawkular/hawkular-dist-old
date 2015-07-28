@@ -94,7 +94,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.alerts</groupId>
-      <artifactId>hawkular-actions-email</artifactId>
+      <artifactId>hawkular-alerts-actions-email</artifactId>
       <type>war</type>
     </dependency>
     <dependency>
