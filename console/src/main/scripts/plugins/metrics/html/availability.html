@@ -2,9 +2,13 @@
   <hawkular-sidebar ng-controller="Sidebar.SidebarController">
     <div class="hk-nav-tabs-container">
       <ul class="nav nav-tabs nav-tabs-pf">
-        <li><a href="/hawkular-ui/url/alerts/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-alerts">All Alerts</a></li>
-        <li class="active"><a href="/hawkular-ui/url/availability/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-availability">Availability</a></li>
-        <li><a href="/hawkular-ui/url/response-time/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}" class="hk-response-time">Response Time</a></li>
+        <li><a href="/hawkular-ui/url/alerts/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}"
+               class="hk-alerts">All Alerts</a></li>
+        <li class="active"><a
+          href="/hawkular-ui/url/availability/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}"
+          class="hk-availability">Availability</a></li>
+        <li><a href="/hawkular-ui/url/response-time/{{vm.$routeParams.resourceId}}/{{vm.$routeParams.timeOffset}}"
+               class="hk-response-time">Response Time</a></li>
       </ul>
     </div>
   </hawkular-sidebar>
@@ -15,7 +19,9 @@
 
     <!-- Summary -->
     <h3 class="pull-left">Availability Status</h3>
-    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i
+      class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+
     <div class="panel panel-default hk-summary">
       <div class="row">
         <div class="col-sm-3 hk-summary-item">
@@ -25,13 +31,17 @@
         </div>
         <div class="col-sm-3 hk-summary-item">
           <span class="hk-data" ng-hide="vm.downtimeDuration">Always Up</span>
-          <span class="hk-data" ng-show="vm.downtimeDuration" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1500" tooltip="{{ vm.downtimeDuration | duration:'d\'d \'h\'h \'m\'min \'s\' s\'' }}"><ph ng-repeat="val in vm.downtimeDurationJson">{{val.value}}<span> {{val.unit}}</span> </ph></span>
+          <span class="hk-data" ng-show="vm.downtimeDuration" tooltip-trigger tooltip-placement="top"
+                tooltip-popup-delay="1500"
+                tooltip="{{ vm.downtimeDuration | duration:'d\'d \'h\'h \'m\'min \'s\' s\'' }}"><ph
+            ng-repeat="val in vm.downtimeDurationJson">{{val.value}}<span> {{val.unit}}</span></ph></span>
           <span class="hk-item">Total Downtime Duration</span>
         </div>
         <div class="col-sm-3 hk-summary-item">
           <span class="hk-data"
                 ng-hide="vm.lastDowntime.valueOf() === 0 || (vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down')"> {{ vm.lastDowntime | date:'d MMM HH:mm:ss' }}</span>
-          <span class="hk-data" ng-show="vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down'">Always Down</span>
+          <span class="hk-data"
+                ng-show="vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down'">Always Down</span>
           <span class="hk-data" ng-show="!vm.lastDowntime || vm.lastDowntime.valueOf() === 0">Always Up</span>
           <span class="hk-item">Last Downtime</span>
         </div>
@@ -45,9 +55,15 @@
     <!-- Alerts -->
     <div class="hk-info-top clearfix">
       <h3 class="pull-left" data-toggle="tooltip" data-placement="top" title="" data-original-title="Expand/collapse">
-        <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : MetricsAvailabilityController.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+        <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts"><i class="fa"
+                                                                                             ng-show="vm.alertList.length > 0"
+                                                                                             ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>
+          Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : MetricsAvailabilityController.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span>
+        </button>
       </h3>
-      <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+      <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac"
+                                              ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert
+        Settings</a></span>
     </div>
 
     <div class="clearfix">
@@ -57,22 +73,26 @@
         <div class="hk-event">No Alerts have been fired in this category and time range.</div>
       </div>
       <!-- Alerts exist -->
-      <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList" hk-limit="(showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
+      <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList"
+                           hk-limit="(showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
     </div>
 
     <!-- Availability Chart -->
     <div class="hk-info-top clearfix">
       <h3 class="pull-left">Metrics</h3>
+
       <div class="hk-update pull-right">
-        <button ng-click="vm.refreshAvailPageNow(vm.getResourceId())" class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart"><i class="fa fa-refresh"></i></button>
+        <button ng-click="vm.refreshAvailPageNow(vm.getResourceId())" class="btn btn-link hk-chart-update"
+                tooltip-trigger tooltip-placement="top" tooltip="Update chart"><i class="fa fa-refresh"></i></button>
       </div>
     </div>
 
     <div class="panel panel-default hk-graph">
       <h2>Availability</h2>
       <availability-chart
-              data="{{vm.availabilityDataPoints}}"
-              chart-type="availability">
+        start-timestamp="{{vm.startTimeStamp}}"
+        end-timestamp="{{vm.endTimeStamp}}"
+        data="{{vm.availabilityDataPoints}}" >
       </availability-chart>
       <div class="hk-legend text-left hk-availability">
         <span><span class="hk-legend-square hk-green"></span>Available</span>
