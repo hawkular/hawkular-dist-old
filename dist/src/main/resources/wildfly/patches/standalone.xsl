@@ -423,6 +423,21 @@
                       timeUnits="minutes"
                       path="/deployment=*/subsystem=undertow"
                       attribute="active-sessions" />
+          <metric-dmr name="Aggregated Max Active Web Sessions"
+                      interval="1"
+                      timeUnits="minutes"
+                      path="/deployment=*/subsystem=undertow"
+                      attribute="max-active-sessions" />
+          <metric-dmr name="Aggregated Expired Web Sessions"
+                      interval="1"
+                      timeUnits="minutes"
+                      path="/deployment=*/subsystem=undertow"
+                      attribute="expired-sessions" />
+          <metric-dmr name="Aggregated Rejected Web Sessions"
+                      interval="1"
+                      timeUnits="minutes"
+                      path="/deployment=*/subsystem=undertow"
+                      attribute="rejected-sessions" />
           <metric-dmr name="Aggregated Servlet Request Time"
                       interval="1"
                       timeUnits="minutes"
