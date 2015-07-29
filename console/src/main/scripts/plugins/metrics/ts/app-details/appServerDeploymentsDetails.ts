@@ -125,10 +125,10 @@ module HawkularMetrics {
 
     public performOperationMulti(operationName: string, resourceList: any): any {
       this.$log.info('performOperationMulti ', operationName, resourceList);
-      angular.forEach(resourceList, function(res, idx) {
-        var operation = {operationName: operationName, resourceId: res.id};
+      for (var i = 0; i < resourceList.length; i++) {
+        var operation = {operationName: operationName, resourceId: resourceList[i].id};
         this.HawkularOps.performOperation(operation);
-      });
+      }
     }
   }
 
