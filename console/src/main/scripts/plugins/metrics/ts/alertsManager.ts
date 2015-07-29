@@ -162,10 +162,13 @@ module HawkularMetrics {
           return this.createCondition(triggerId, {
             type: conditionType,
             triggerId: triggerId,
-            threshold: 80,
             dataId: dataId,
-            operator: 'GT'
-          }).then(()=> {
+            operatorLow: 'INCLUSIVE',
+            operatorHigh: 'INCLUSIVE',
+            thresholdLow: 20.0,
+            thresholdHigh: 80.0,
+            inRange: false
+          })/*.then(()=> {
             return this.createCondition(triggerId, {
               type: conditionType,
               triggerId: triggerId,
@@ -173,7 +176,7 @@ module HawkularMetrics {
               dataId: dataId,
               operator: 'LT'
             });
-          });
+          })*/;
         }).then(() => {
           // Create dampening for that trigger
           return this.createDampening(triggerId, DEFAULT_DAMPENING_INTERVAL);

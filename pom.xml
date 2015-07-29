@@ -86,7 +86,7 @@
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.hawkular.accounts>1.0.8.Final</version.org.hawkular.accounts>
     <version.org.hawkular.agent>0.3.4.Final</version.org.hawkular.agent>
-    <version.org.hawkular.alerts>0.3.1.Final</version.org.hawkular.alerts>
+    <version.org.hawkular.alerts>0.3.2.Final</version.org.hawkular.alerts>
     <version.org.hawkular.availCreator>${project.version}</version.org.hawkular.availCreator>
     <version.org.hawkular.bus>0.3.3.Final</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.1.1.Final</version.org.hawkular.commons>

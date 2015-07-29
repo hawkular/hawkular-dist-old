@@ -109,12 +109,12 @@ module HawkularMetrics {
         angular.forEach(aResourceList, function(res, idx) {
           tmpResourceList.push(res);
           promises.push(this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-            gaugeId: 'MI~R~' + res.id + '~MT~Datasource Pool Metrics~Available Count',
+            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
             distinct: true}, (data) => {
               res.availableCount = data[0];
             }).$promise);
           promises.push(this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-            gaugeId: 'MI~R~' + res.id + '~MT~Datasource Pool Metrics~In Use Count',
+            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
             distinct: true}, (data) => {
               res.inUseCount = data[0];
             }).$promise);
@@ -141,7 +141,7 @@ module HawkularMetrics {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       angular.forEach(this.resourceList, function(res, idx) {
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-          gaugeId: 'MI~R~' + res.id + '~MT~Datasource Pool Metrics~Available Count',
+          gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
             this.chartAvailData[res.id] = this.chartAvailData[res.id] || [];
@@ -150,7 +150,7 @@ module HawkularMetrics {
               values: this.formatBucketedChartOutput(data) };
           }, this);
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-          gaugeId: 'MI~R~' + res.id + '~MT~Datasource Pool Metrics~In Use Count',
+          gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
             this.chartAvailData[res.id] = this.chartAvailData[res.id] || [];
@@ -159,7 +159,7 @@ module HawkularMetrics {
               values: this.formatBucketedChartOutput(data) };
           }, this);
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-          gaugeId: 'MI~R~' + res.id + '~MT~Datasource Pool Metrics~Timed Out',
+          gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Timed Out',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
             this.chartAvailData[res.id] = this.chartAvailData[res.id] || [];
@@ -169,7 +169,7 @@ module HawkularMetrics {
           }, this);
 
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-          gaugeId: 'MI~R~' + res.id + '~MT~Datasource Pool Metrics~Average Get Time',
+          gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Get Time',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
             this.chartRespData[res.id] = this.chartRespData[res.id] || [];
@@ -178,7 +178,7 @@ module HawkularMetrics {
               values: this.formatBucketedChartOutput(data) };
           }, this);
         this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-          gaugeId: 'MI~R~' + res.id + '~MT~Datasource Pool Metrics~Average Creation Time',
+          gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Creation Time',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
             this.chartRespData[res.id] = this.chartRespData[res.id] || [];

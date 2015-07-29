@@ -44,10 +44,12 @@
     <!-- Alerts exist -->
     <div class="panel panel-default alert alert-danger" ng-repeat="alert in vm.alertList | limitTo: (showAllAlerts ? 100000 : 3) track by $index">
       <div class="hk-alert-icon"><i class="fa fa-flag"></i></div>
-      <div class="hk-date">{{alert.evalSets[0][0].evalTimestamp | date:'medium' }}</div>
-      <div class="hk-event"><strong>Alert Summary</strong>: alert details.</div>
+      <div class="hk-date">{{alert.start | date:'medium' }}</div>
+      <div class="hk-event"><strong>Heap Memory</strong>: The Heap memory usage was {{alert.avg / 1024 / 1024 | number:2}} MB.</div>
     </div>
   </div>
+
+
   <div class="hk-info-top clearfix">
     <h3 class="pull-left">Metrics</h3>
     <div class="hk-update pull-right">

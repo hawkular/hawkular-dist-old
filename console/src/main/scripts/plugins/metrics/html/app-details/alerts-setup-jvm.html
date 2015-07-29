@@ -12,17 +12,17 @@
       <div class="form-group">
         <label class="col-sm-3 control-label">Maximum usage</label>
         <div class="col-sm-6">
-          <span class="hk-input-text">{{jas.maxUsage}} MB</span>
+          <span class="hk-input-text">{{jas.maxUsage / 1024 / 1024 | number : 2}} MB</span>
         </div>
       </div>
       <div class="form-group">
         <label class="col-sm-3 control-label" for="usage-greater">Usage greater than</label>
         <div class="col-sm-5">
           <div class="input-group hk-input-small">
-            <input type="number" min="0" max="100" ng-model="jas.conditionGt.threshold" class="form-control" id="usage-greater" ng-disabled="!jas.conditionGtEnabled">
+            <input type="number" min="0" max="100" ng-model="jas.conditionGtPercent" class="form-control" id="usage-greater" ng-disabled="!jas.conditionGtEnabled">
             <div class="input-group-addon">%</div>
           </div>
-          <span class="input-detail">({{jas.conditionGtEnabled && jas.conditionGt.threshold ? jas.maxUsage * jas.conditionGt.threshold / 100 : '-'}} MB)</span>
+          <span class="input-detail">({{jas.conditionGtEnabled && jas.conditionGtPercent ? (jas.maxUsage * jas.conditionGtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
         </div>
         <div class="col-sm-4">
           <div class="onoffswitch pull-right">
@@ -41,10 +41,10 @@
         <label class="col-sm-3 control-label" for="usage-less">Usage less than</label>
         <div class="col-sm-5">
           <div class="input-group hk-input-small">
-            <input type="number" min="0" max="100" ng-model="jas.conditionLt.threshold" class="form-control" id="usage-less" ng-disabled="!jas.conditionLtEnabled">
+            <input type="number" min="0" max="100" ng-model="jas.conditionLtPercent" class="form-control" id="usage-less" ng-disabled="!jas.conditionLtEnabled">
             <div class="input-group-addon">%</div>
           </div>
-          <span class="input-detail">({{jas.conditionLtEnabled && jas.conditionLt.threshold ? jas.maxUsage * jas.conditionLt.threshold / 100 : '-'}} MB)</span>
+          <span class="input-detail">({{jas.conditionLtEnabled && jas.conditionLtPercent ? (jas.maxUsage * jas.conditionLtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
         </div>
         <div class="col-sm-4">
           <div class="onoffswitch pull-right">
