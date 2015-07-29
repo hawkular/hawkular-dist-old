@@ -24,8 +24,8 @@ module HawkularMetrics {
   export class AppServerDeploymentsDetailsController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager',
-      '$q', 'md5'];
+      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularOps', 'HawkularAlertsManager',
+      'HawkularErrorManager', '$q', 'md5', 'NotificationService', '$resource'];
 
     private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
@@ -43,14 +43,17 @@ module HawkularMetrics {
       private HawkularInventory: any,
       private HawkularMetric: any,
       private HawkularAlert: any,
+      private HawkularOps: any,
       private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
       private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
       private $q: ng.IQService,
       private md5: any,
+      private NotificationService: INotificationService,
       public startTimeStamp:TimestampInMillis,
       public endTimeStamp:TimestampInMillis,
       public resourceUrl: string) {
         $scope.vm = this;
+        HawkularOps.init(this.NotificationService);
 
         this.startTimeStamp = +moment().subtract(1, 'hours');
         this.endTimeStamp = +moment();
@@ -115,6 +118,19 @@ module HawkularMetrics {
       });
     }
 
+    public performOperation(operationName: string, resourceId: string): any {
+      this.$log.info('performOperation ', operationName, resourceId);
+      var operation = {operationName: operationName, resourceId: resourceId};
+      this.HawkularOps.performOperation(operation);
+    }
+
+    public performOperationMulti(operationName: string, resourceList: any): any {
+      this.$log.info('performOperationMulti ', operationName, resourceList);
+      angular.forEach(aResourceList, function(res, idx) {
+        var operation = {operationName: operationName, resourceId: res.id};
+        this.HawkularOps.performOperation(operation);
+      });
+    }
   }
 
   _module.controller('HawkularMetrics.AppServerDeploymentsDetailsController', AppServerDeploymentsDetailsController);
