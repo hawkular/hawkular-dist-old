@@ -441,6 +441,7 @@
                       path="/deployment=*/subsystem=undertow"
                       attribute="rejected-sessions" />
           <metric-dmr name="Aggregated Servlet Request Time"
+                      metricType="counter"
                       interval="1"
                       timeUnits="minutes"
                       path="/deployment=*/subsystem=undertow/servlet=*"
