@@ -45,7 +45,7 @@ module HawkularMetrics {
         {id: 'transactions', name: 'Transactions', enabled: false,
           src:'plugins/metrics/html/app-details/detail-transactions.html',
           controller: HawkularMetrics.AppServerTransactionsDetailsController},
-        {id: 'web', name: 'Web', enabled: false,
+        {id: 'web', name: 'Web', enabled: true,
           src:'plugins/metrics/html/app-details/detail-web.html',
           controller: HawkularMetrics.AppServerWebDetailsController},
         {id: 'datasources', name: 'Datasources', enabled: true,
