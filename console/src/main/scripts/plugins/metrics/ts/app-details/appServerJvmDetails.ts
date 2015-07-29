@@ -37,6 +37,9 @@ module HawkularMetrics {
     public static MAXIMUM_COLOR = '#f57f20'; /// orange
     public static COMMITTED_COLOR = '#515252'; /// dark gray
 
+    public static MAX_HEAP = 1024*1024*1024;
+    public math = this.$window.Math;
+
     public alertList;
     public chartHeapData: IMultiDataPoint[];
     public chartNonHeapData: IMultiDataPoint[];
@@ -75,7 +78,20 @@ module HawkularMetrics {
             (currentPersona) => currentPersona && this.getJvmData());
         }
 
+        //var metricId = 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used';
+
+        this.getAlerts(this.$routeParams.resourceId + '_jvm_pheap', this.startTimeStamp, this.endTimeStamp);
+
         this.autoRefresh(20);
+    }
+
+    private getAlerts(metricId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      this.HawkularAlertsManager.queryAlerts(metricId, startTime, endTime,
+        HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
+          this.alertList = data.alertList;
+        }, (error) => {
+          return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.');
+        });
     }
 
     private autoRefreshPromise: ng.IPromise<number>;
@@ -138,6 +154,7 @@ module HawkularMetrics {
       this.autoRefreshPromise = this.$interval(() => {
         this.getJvmData();
         this.getJvmChartData();
+        this.getAlerts(this.$routeParams.resourceId + '_jvm_pheap', this.startTimeStamp, this.endTimeStamp);
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -163,6 +180,7 @@ module HawkularMetrics {
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
           this['heapMax'] = resource[0];
+          AppServerJvmDetailsController.MAX_HEAP = resource[0].max;
         }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Accumulated GC Duration',
