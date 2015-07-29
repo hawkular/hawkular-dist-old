@@ -857,6 +857,7 @@
                                parents="WildFly Server"
                                metricSets="Undertow Metrics"
                                availSets="Deployment Status">
+              <operation-dmr name="Deploy" operationName="deploy" path="/" />
               <operation-dmr name="Redeploy" operationName="redeploy" path="/" />
               <operation-dmr name="Remove" operationName="remove" path="/" />
               <operation-dmr name="Undeploy" operationName="undeploy" path="/" />
