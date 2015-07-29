@@ -71,7 +71,7 @@ module HawkularMetrics {
                 return response.properties.url;
               },
               (error) => {
-                NotificationService.info('You were redirected to this page because you requested an invalid URL.');
+                this.NotificationService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -89,7 +89,7 @@ module HawkularMetrics {
                 return response.properties.url;
               },
               (error) => {
-                NotificationService.info('You were redirected to this page because you requested an invalid URL.');
+                this.NotificationService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -100,14 +100,14 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/alerts.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory, NotificaitonService:INotificationService) {
+          resource: function ($route, $location, HawkularInventory, NotificationService:INotificationService) {
             var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
               resourceId: $route.current.params.resourceId}).$promise;
             p.then((response) => {
                 return response.properties.url;
               },
               (error) => {
-                NotificaitonService.info('You were redirected to this page because you requested an invalid URL.');
+                this.NotificationService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -121,7 +121,7 @@ module HawkularMetrics {
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationService:INotificationService) {
             var redirectMissingAppServer = function() {
-              NotificationService.info('You were redirected to this page because you requested an invalid ' +
+              this.NotificationService.info('You were redirected to this page because you requested an invalid ' +
                   'Application Server.');
               $location.path('/hawkular-ui/app/app-list');
             };
