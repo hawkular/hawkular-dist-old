@@ -494,6 +494,7 @@
                       path="/"
                       attribute="min-request-time" />
           <metric-dmr name="Total Request Time"
+                      metricType="counter"
                       interval="5"
                       timeUnits="minutes"
                       path="/"
