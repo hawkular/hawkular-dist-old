@@ -26,7 +26,7 @@ module HawkularMetrics {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
       '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager',
-      '$q', 'md5'];
+      '$q', '$window', 'md5'];
 
     public static MAX_ACTIVE_COLOR = '#1884c7'; /// blue
     public static EXPIRED_COLOR = '#f57f20'; /// orange
@@ -55,6 +55,7 @@ module HawkularMetrics {
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
                 private $q: ng.IQService,
+                private $window: any,
                 private md5: any,
                 public startTimeStamp:TimestampInMillis,
                 public endTimeStamp:TimestampInMillis) {
@@ -107,6 +108,41 @@ module HawkularMetrics {
       });
     }
 
+    private formatCounterChartOutput(response, buckets = 60):IChartDataPoint[] {
+      var result = response;
+      /// FIXME: Simulating buckets.. this should come from metrics.
+      if (response.length > buckets) {
+        var step = this.$window.Math.floor(response.length / buckets);
+        result = [];
+        var accValue = 0;
+        _.forEach(response, function(point:any, idx) {
+          if (parseInt(idx, 10) % step === (step-1)) {
+            result.push({timestamp: point.timestamp, value: accValue });
+            accValue = 0;
+          }
+          else {
+            accValue += point.value;
+          }
+        });
+      }
+
+      //  The schema is different for bucketed output
+      return _.map(result, (point:IChartDataPoint, idx) => {
+        var theValue = idx === 0 ? 0 : (result[idx-1].value - point.value);
+        return {
+          timestamp: point.timestamp,
+          date: new Date(point.timestamp),
+          value: theValue,
+          avg: theValue,
+          min: theValue,
+          max: theValue,
+          percentile95th: theValue,
+          median: theValue,
+          empty: !angular.isNumber(point.value)
+        };
+      });
+    }
+
     public getWebData(): any {
       this.alertList = []; // FIXME: when we have alerts for app server
       this.endTimeStamp = this.$routeParams.endTime || +moment();
@@ -120,15 +156,15 @@ module HawkularMetrics {
         buckets: 1}, (resource) => {
         this.activeWebSessions = resource[0].avg;
       }, this);
-      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: 'MI~R~[' + this.$routeParams.resourceId +
+      this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        counterId: 'MI~R~[' + this.$routeParams.resourceId +
           '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time',
         start: this.startTimeStamp,
         end: this.endTimeStamp}, (resource) => {
         this.requestTime = resource[0].value;
       }, this);
-      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: 'MI~R~[' + this.$routeParams.resourceId +
+      this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        counterId: 'MI~R~[' + this.$routeParams.resourceId +
           '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count',
         start: this.startTimeStamp,
         end: this.endTimeStamp}, (resource) => {
@@ -143,31 +179,31 @@ module HawkularMetrics {
 
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId +
+        '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions',
+        start: this.startTimeStamp,
+        end: this.endTimeStamp, buckets:60}, (data) => {
+        this.chartWebSessionData[0] = { key: 'Active Sessions',
+          color: AppServerWebDetailsController.ACTIVE_COLOR, values: this.formatBucketedChartOutput(data) };
+      }, this);
+      this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        counterId: 'MI~R~[' + this.$routeParams.resourceId +
           '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
-        this.chartWebSessionData[0] = { key: 'Expired Sessions',
-          color: AppServerWebDetailsController.EXPIRED_COLOR, values: this.formatBucketedChartOutput(data) };
+        this.chartWebSessionData[1] = { key: 'Expired Sessions',
+          color: AppServerWebDetailsController.EXPIRED_COLOR, values: this.formatCounterChartOutput(data) };
       }, this);
-      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: 'MI~R~[' + this.$routeParams.resourceId +
+      this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        counterId: 'MI~R~[' + this.$routeParams.resourceId +
           '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
-        this.chartWebSessionData[1] = { key: 'Rejected Sessions',
-          color: AppServerWebDetailsController.REJECTED_COLOR, values: this.formatBucketedChartOutput(data) };
-      }, this);
-      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: 'MI~R~[' + this.$routeParams.resourceId +
-          '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions',
-        start: this.startTimeStamp,
-        end: this.endTimeStamp, buckets:60}, (data) => {
-        this.chartWebSessionData[2] = { key: 'Active Sessions',
-          color: AppServerWebDetailsController.ACTIVE_COLOR, values: this.formatBucketedChartOutput(data) };
+        this.chartWebSessionData[2] = { key: 'Rejected Sessions',
+          color: AppServerWebDetailsController.REJECTED_COLOR, values: this.formatCounterChartOutput(data) };
       }, this);
       /* FIXME: Currently this is always returning negative values, as WFLY returns -1 per webapp. is it config value?
-      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: 'MI~R~[' + this.$routeParams.resourceId +
+      this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        counterId: 'MI~R~[' + this.$routeParams.resourceId +
         '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Max Active Web Sessions',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
@@ -177,21 +213,21 @@ module HawkularMetrics {
       */
 
       /*
-      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: 'MI~R~[' + this.$routeParams.resourceId +
+      this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        counterId: 'MI~R~[' + this.$routeParams.resourceId +
           '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
         this.chartWebData[4] = { key: 'NonHeap Committed',
-          color: AppServerWebDetailsController.COMMITTED_COLOR, values: this.formatBucketedChartOutput(data) };
+          color: AppServerWebDetailsController.COMMITTED_COLOR, values: this.formatCounterChartOutput(data) };
       }, this);
-      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: 'MI~R~[' + this.$routeParams.resourceId +
+      this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        counterId: 'MI~R~[' + this.$routeParams.resourceId +
           '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
         this.chartWebData[5] = { key: 'NonHeap Used',
-          color: AppServerWebDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data) };
+          color: AppServerWebDetailsController.USED_COLOR, values: this.formatCounterChartOutput(data) };
       }, this);
       */
     }
