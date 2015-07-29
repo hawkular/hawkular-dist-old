@@ -90,7 +90,7 @@ module HawkularMetrics {
             tmpResourceList.push(res);
             promises.push(this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
               tenantId: tenantId,
-              availabilityId: 'AI~R~' + res.id + '~AT~Deployment Status~Deployment Status',
+              availabilityId: 'AI~R~[' + res.id + ']~AT~Deployment Status~Deployment Status',
               distinct: true}, (resource) => {
                 var latestData = resource[resource.length-1];
                 if (latestData) {
