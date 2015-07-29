@@ -461,16 +461,19 @@
                       path="/subsystem=undertow"
                       attribute="active-sessions" />
           <metric-dmr name="Sessions Created"
+                      metricType="counter"
                       interval="2"
                       timeUnits="minutes"
                       path="/subsystem=undertow"
                       attribute="sessions-created" />
           <metric-dmr name="Expired Sessions"
+                      metricType="counter"
                       interval="2"
                       timeUnits="minutes"
                       path="/subsystem=undertow"
                       attribute="expired-sessions" />
           <metric-dmr name="Rejected Sessions"
+                      metricType="counter"
                       interval="2"
                       timeUnits="minutes"
                       path="/subsystem=undertow"
@@ -495,11 +498,13 @@
                       path="/"
                       attribute="min-request-time" />
           <metric-dmr name="Total Request Time"
+                      metricType="counter"
                       interval="5"
                       timeUnits="minutes"
                       path="/"
                       attribute="total-request-time" />
           <metric-dmr name="Request Count"
+                      metricType="counter"
                       interval="5"
                       timeUnits="minutes"
                       path="/"
@@ -513,6 +518,7 @@
                       path="/"
                       attribute="execution-time" />
           <metric-dmr name="Invocations"
+                      metricType="counter"
                       interval="5"
                       timeUnits="minutes"
                       path="/"
@@ -536,6 +542,7 @@
                       path="/"
                       attribute="execution-time" />
           <metric-dmr name="Invocations"
+                      metricType="counter"
                       interval="5"
                       timeUnits="minutes"
                       path="/"
@@ -584,6 +591,7 @@
                       path="/"
                       attribute="execution-time" />
           <metric-dmr name="Invocations"
+                      metricType="counter"
                       interval="5"
                       timeUnits="minutes"
                       path="/"
@@ -763,21 +771,25 @@
 
         <metric-set-dmr name="Transactions Metrics" enabled="true">
           <metric-dmr name="Number of Aborted Transactions"
+                      metricType="counter"
                       interval="10"
                       timeUnits="minutes"
                       path="/"
                       attribute="number-of-aborted-transactions" />
           <metric-dmr name="Number of Application Rollbacks"
+                      metricType="counter"
                       interval="10"
                       timeUnits="minutes"
                       path="/"
                       attribute="number-of-application-rollbacks" />
           <metric-dmr name="Number of Committed Transactions"
+                      metricType="counter"
                       interval="10"
                       timeUnits="minutes"
                       path="/"
                       attribute="number-of-committed-transactions" />
           <metric-dmr name="Number of Heuristics"
+                      metricType="counter"
                       interval="10"
                       timeUnits="minutes"
                       path="/"
@@ -793,11 +805,13 @@
                       path="/"
                       attribute="number-of-nested-transactions" />
           <metric-dmr name="Number of Resource Rollbacks"
+                      metricType="counter"
                       interval="10"
                       timeUnits="minutes"
                       path="/"
                       attribute="number-of-resource-rollbacks" />
           <metric-dmr name="Number of Timed Out Transactions"
+                      metricType="counter"
                       interval="10"
                       timeUnits="minutes"
                       path="/"
