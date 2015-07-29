@@ -25,12 +25,14 @@ module HawkularMetrics {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
       '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularOps', 'HawkularAlertsManager',
-      'HawkularErrorManager', '$q', 'md5', 'NotificationService', '$resource'];
+      'HawkularErrorManager', '$q', 'md5', 'NotificationService' ];
 
     private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
-    private metricsList;
+    public lastUpdateTimestamp:Date;
     public alertList;
+    public startTimeStamp:TimestampInMillis;
+    public endTimeStamp:TimestampInMillis;
 
     constructor(private $location: ng.ILocationService,
       private $scope: any,
@@ -48,10 +50,7 @@ module HawkularMetrics {
       private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
       private $q: ng.IQService,
       private md5: any,
-      private NotificationService: INotificationService,
-      public startTimeStamp:TimestampInMillis,
-      public endTimeStamp:TimestampInMillis,
-      public resourceUrl: string) {
+      private NotificationService: INotificationService ) {
         $scope.vm = this;
         HawkularOps.init(this.NotificationService);
 
