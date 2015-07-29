@@ -138,6 +138,7 @@ public class Traits {
                         xPoweredBy = new TreeSet<>();
                     }
                     xPoweredBy.add(ASP_NET +"/"+ header.getValue());
+                    hasAspNet = true;
                     break;
                 default:
                     break;

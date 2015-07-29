@@ -119,6 +119,7 @@ public class TraitsTest {
 
         Assert.assertEquals("ARR/2.5, ASP.NET/1.2.3", found);
 
+
         response = new BasicHttpResponse(HttpVersion.HTTP_1_0, HttpStatus.SC_OK, "OK");
         response.addHeader("X-Aspnet-Version", "1.2.3");
         response.addHeader("X-Powered-By", "ARR/2.5");
@@ -126,6 +127,16 @@ public class TraitsTest {
         found = Traits.collect(response, 0, null).getPoweredBy();
 
         Assert.assertEquals("ARR/2.5, ASP.NET/1.2.3", found);
+
+
+        response = new BasicHttpResponse(HttpVersion.HTTP_1_0, HttpStatus.SC_OK, "OK");
+        response.addHeader("Server", "Microsoft-IIS/8.0");
+        response.addHeader("X-Aspnet-Version", "1.2.3");
+        response.addHeader("X-Powered-By", "ASP.NET");
+
+        found = Traits.collect(response, 0, null).getPoweredBy();
+
+        Assert.assertEquals("Microsoft-IIS/8.0, ASP.NET/1.2.3", found);
 
 
     }
