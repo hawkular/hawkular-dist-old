@@ -1,34 +1,75 @@
 <section id="hk-web" class="hk-tab-content">
 
-  <h3 class="pull-left">Web</h3>
-  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+  <h3 class="pull-left">Web Status</h3>
+  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
   <div class="panel panel-default hk-summary">
     <div class="row">
       <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data">2 <i class="fa fa-flag"></i></span>
-        <span class="hk-item">Alerts</span>
+        <span class="hk-data">{{vm.alertList.length}} <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i></span>
+        <span class="hk-item">Web Alerts</span>
       </div>
       <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data">1270 MB</span>
-        <span class="hk-item">Average Heap Usage</span>
+        <span class="hk-data">{{ vm.activeWebSessions | number:0 }}</span>
+        <span class="hk-item">Active Sessions (Average)</span>
       </div>
       <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data">5 s</span>
-        <span class="hk-item">Last Garbage Collection (Duration)</span>
+        <span class="hk-data">{{ vm.requestTime / vm.requestCount | number:0 }} ms</span>
+        <span class="hk-item">Response Time (Average)</span>
       </div>
       <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data">2000 MB</span>
-        <span class="hk-item">Maximum Heap</span>
+        <span class="hk-data">{{ vm.requestCount }}</span>
+        <span class="hk-item">Request Count</span>
       </div>
     </div>
   </div>
 
+  <!-- Alerts -->
   <div class="hk-info-top clearfix">
-    <h3 class="pull-left" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><button class="btn btn-link hk-trigger"><i class="fa fa-plus-square-o"></i> Alerts <span>(0)</span></button></h3>
-    <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+    <h3 class="pull-left">
+      <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Web Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+    </h3>
+    <!--<span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>-->
   </div>
   <div class="clearfix">
-    <p>No alerts.</p>
+    <!-- No Alerts -->
+    <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
+      <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
+      <div>No alerts have been fired in this category and time range.</div>
+    </div>
+    <!-- Alerts exist -->
+    <div class="panel panel-default alert alert-danger" ng-repeat="alert in vm.alertList | limitTo: (showAllAlerts ? 100000 : 3) track by $index">
+      <div class="hk-alert-icon"><i class="fa fa-flag"></i></div>
+      <div class="hk-date">{{alert.evalSets[0][0].evalTimestamp | date:'medium' }}</div>
+      <div class="hk-event"><strong>Alert Summary</strong>: alert details.</div>
+    </div>
   </div>
+
+
+  <div class="hk-info-top clearfix">
+    <h3 class="pull-left">Metrics</h3>
+    <div class="hk-update pull-right">
+      <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart" ng-click="vm.getWebChartData()"><i class="fa fa-refresh"></i></button>
+    </div>
+  </div>
+
+  <div class="panel panel-default hk-graph" >
+    <h2>Web Sessions</h2>
+    <div class="metrics-chart">
+      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+      <hawkular-chart
+        multi-data="{{vm.chartWebSessionData}}"
+        chart-type="multiline"
+        y-axis-units="Count (#)"
+        chart-height="250">
+      </hawkular-chart>
+    </div>
+    <div class="hk-legend text-left">
+      <span><i class="fa fa-circle hk-green"></i>Active Sessions</span>
+      <!--<span><i class="fa fa-circle hk-blue"></i>Max Active Sessions</span>-->
+      <span><i class="fa fa-circle hk-orange"></i>Expired Sessions</span>
+      <span><i class="fa fa-circle hk-red"></i>Rejected Sessions</span>
+    </div>
+  </div>
+
 
 </section>
