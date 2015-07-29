@@ -867,9 +867,6 @@
                                path="/subdeployment=*"
                                parents="Deployment"
                                metricSets="Undertow Metrics">
-              <operation-dmr name="Redeploy" operationName="redeploy" path="/" />
-              <operation-dmr name="Remove" operationName="remove" path="/" />
-              <operation-dmr name="Undeploy" operationName="undeploy" path="/" />
             </resource-type-dmr>
          </resource-type-set-dmr>
 
