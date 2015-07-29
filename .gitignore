@@ -12,8 +12,10 @@
 # virtual machine crash logs
 hs_err_pid*
 
-# maven target directories
+# Maven
 target/
+pom.xml.releaseBackup
+release.properties
 
 # IDE files
 .project
