@@ -33,7 +33,7 @@ module HawkularMetrics {
                   email: EmailType): ng.IPromise<void>;
 
     createJvmHeapTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
-                  email: EmailType): any;
+                  email: EmailType, low: number, high: number): any;
     createJvmNonHeapTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
                   email: EmailType): any;
     createJvmGarbageTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
@@ -136,7 +136,7 @@ module HawkularMetrics {
     }
 
     public createJvmHeapTrigger(id: TriggerId, triggerName: string, enabled: boolean,
-                                conditionType: string, email: EmailType): ng.IPromise<void> {
+                                conditionType: string, email: EmailType, low: number, high: number): ng.IPromise<void> {
       // Create a trigger
       var triggerId: TriggerId;
       var DEFAULT_DAMPENING_INTERVAL = 7 * 60000;
@@ -165,8 +165,8 @@ module HawkularMetrics {
             dataId: dataId,
             operatorLow: 'INCLUSIVE',
             operatorHigh: 'INCLUSIVE',
-            thresholdLow: 20.0,
-            thresholdHigh: 80.0,
+            thresholdLow: low || 20.0,
+            thresholdHigh: high || 80.0,
             inRange: false
           })/*.then(()=> {
             return this.createCondition(triggerId, {

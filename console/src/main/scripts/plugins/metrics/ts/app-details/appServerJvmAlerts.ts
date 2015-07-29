@@ -72,8 +72,10 @@ module HawkularMetrics {
           this.$log.debug('Jvm trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
+        var low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
+        var high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
         return this.HawkularAlertsManager.createJvmHeapTrigger(this.resourceId + '_jvm_pheap',
-          this.resourceId + '_jvm_pheap', true, 'RANGE', this.defaultEmail);
+          this.resourceId + '_jvm_pheap', true, 'RANGE', this.defaultEmail, low, high);
       });
 /*
       var nonHeapTriggerPromise = this.HawkularAlertsManager.getTrigger(this.resourceId + '_jvm_nheap').then(() => {

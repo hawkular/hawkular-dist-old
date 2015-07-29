@@ -38,6 +38,7 @@ module HawkularMetrics {
     public static COMMITTED_COLOR = '#515252'; /// dark gray
 
     public static MAX_HEAP = 1024*1024*1024;
+    public math = this.$window.Math;
 
     public alertList;
     public chartHeapData: IMultiDataPoint[];
