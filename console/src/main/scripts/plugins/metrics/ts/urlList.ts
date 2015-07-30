@@ -19,7 +19,7 @@
 /// <reference path='alertsManager.ts'/>
 /// <reference path='pagination.ts'/>
 /// <reference path='errorManager.ts'/>
-/// <reference path='notificationService.ts'/>
+/// <reference path='services/notificationService.ts'/>
 
 module HawkularMetrics {
 
