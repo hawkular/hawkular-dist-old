@@ -24,7 +24,7 @@ module HawkularMetrics {
     'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr']);
 
   _module.config(['$httpProvider', '$locationProvider', '$routeProvider',
-    ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider) => {
+    ($httpProvider, $locationProvider) => {
     $locationProvider.html5Mode(true);
   }]);
 
@@ -67,11 +67,11 @@ module HawkularMetrics {
           resource: function ($route, $location, HawkularInventory, NotificationService:INotificationService) {
             var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
               resourceId: $route.current.params.resourceId}).$promise;
-            p.then((response) => {
+            p.then((response:any) => {
                 return response.properties.url;
               },
               (error) => {
-                this.NotificationService.info('You were redirected to this page because you requested an invalid URL.');
+                NotificationService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -85,11 +85,11 @@ module HawkularMetrics {
           resource: function ($route, $location, HawkularInventory, NotificationService:INotificationService) {
             var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
               resourceId: $route.current.params.resourceId}).$promise;
-            p.then((response) => {
+            p.then((response:any) => {
                 return response.properties.url;
               },
               (error) => {
-                this.NotificationService.info('You were redirected to this page because you requested an invalid URL.');
+                NotificationService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -103,11 +103,11 @@ module HawkularMetrics {
           resource: function ($route, $location, HawkularInventory, NotificationService:INotificationService) {
             var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
               resourceId: $route.current.params.resourceId}).$promise;
-            p.then((response) => {
+            p.then((response:any) => {
                 return response.properties.url;
               },
               (error) => {
-                this.NotificationService.info('You were redirected to this page because you requested an invalid URL.');
+                NotificationService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
               });
             return p;
@@ -121,14 +121,19 @@ module HawkularMetrics {
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationService:INotificationService) {
             var redirectMissingAppServer = function() {
-              this.NotificationService.info('You were redirected to this page because you requested an invalid ' +
+              NotificationService.info('You were redirected to this page because you requested an invalid ' +
                   'Application Server.');
               $location.path('/hawkular-ui/app/app-list');
             };
             var checkAppServerExists = function() {
+              var idParts = $route.current.params.resourceId.split('~');
+              if (idParts.length !== 2) {
+                redirectMissingAppServer();
+                return;
+              }
               var p = HawkularInventory.FeedResource.get({
                 environmentId: globalEnvironmentId,
-                feedId: globalFeedId,
+                feedId: idParts[0],
                 resourceId: $route.current.params.resourceId + '~/'
               }).$promise;
               p.then((response) => {
@@ -138,23 +143,7 @@ module HawkularMetrics {
               );
               return p;
             };
-            var isValidAppServer = function() {
-              if (!globalFeedId) {
-                return HawkularInventory.Feed.query({environmentId: globalEnvironmentId}).$promise
-                  .then((response) => {
-                    globalFeedId = response.length && response[0].id;
-                    if (globalFeedId) {
-                      return checkAppServerExists();
-                    }
-                  }
-                  /*,
-                   (error) => redirectMissingAppServer()*/
-                );
-              } else {
-                return checkAppServerExists();
-              }
-            };
-            return isValidAppServer();
+            return checkAppServerExists();
           }
         }
       }).
