@@ -107,17 +107,19 @@ module HawkularMetrics {
         var promises = [];
         var tmpResourceList = [];
         angular.forEach(aResourceList, function(res, idx) {
-          tmpResourceList.push(res);
-          promises.push(this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
-            distinct: true}, (data) => {
+          if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
+            tmpResourceList.push(res);
+            promises.push(this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+              gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
+              distinct: true}, (data) => {
               res.availableCount = data[0];
             }).$promise);
-          promises.push(this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
-            distinct: true}, (data) => {
+            promises.push(this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+              gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
+              distinct: true}, (data) => {
               res.inUseCount = data[0];
             }).$promise);
+          }
         }, this);
         this.$q.all(promises).then((result) => {
           this.resourceList = tmpResourceList;
