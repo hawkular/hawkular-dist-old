@@ -24,7 +24,7 @@
 
   <body style="background-color: #f5f5f5" class="ng-cloak"> <!-- FIXME: Add CSS rule -->
     <nav class="navbar navbar-default navbar-pf" role="navigation">
-      <div data-idle-countdown="countdown" data-ng-init="countdown=30" id="idle">
+      <div idle-countdown="countdown" ng-init="countdown=30" id="idle">
         <strong>You'll be logged out in {{countdown}} second(s).</strong>.
       </div>
 
@@ -42,18 +42,18 @@
         </div>
         <div class="collapse navbar-collapse navbar-collapse-1">
           <ul class="nav navbar-nav navbar-utility pull-right">
-            <li class="dropdown" data-ng-controller="HawkularAccounts.PersonaController">
+            <li class="dropdown" ng-controller="HawkularAccounts.PersonaController">
               <a href="#" dropdown-toggle>
                 <span class="pficon pficon-user"></span>
                 {{currentPersona.name}} <b class="caret"></b>
               </a>
               <ul class="dropdown-menu" id="personaSwitcher">
-                <li data-ng-repeat="persona in personas">
-                  <a href="#" data-ng-click="switchPersona(persona)">{{persona.name}}</a>
+                <li ng-repeat="persona in personas">
+                  <a href="#" ng-click="switchPersona(persona)">{{persona.name}}</a>
                 </li>
-                <li class="divider" data-ng-show="personas.length"></li>
+                <li class="divider" ng-show="personas.length"></li>
                 <li>
-                  <a id="logout" href="#" data-ng-click="userDetails.logout()">Log Out</a>
+                  <a id="logout" href="#" ng-click="userDetails.logout()">Log Out</a>
                 </li>
               </ul>
             </li>
