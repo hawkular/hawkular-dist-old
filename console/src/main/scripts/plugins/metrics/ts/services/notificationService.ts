@@ -15,7 +15,7 @@
 /// limitations under the License.
 ///
 
-/// <reference path="metricsPlugin.ts"/>
+/// <reference path="../metricsPlugin.ts"/>
 /*
  TODO
  Move to shared service location
