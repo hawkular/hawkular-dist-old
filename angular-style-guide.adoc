@@ -1,6 +1,6 @@
 = Hawkular UI - Angular Style Guide
 
-Based on: _Opinionated AngularJS styleguide for teams by link://twitter.com/toddmotto[@toddmotto]_ and modified for use
+Based on: _Opinionated AngularJS style guide for teams by link://twitter.com/toddmotto[@toddmotto]_ and modified for use
 with Hawkular and typescript instead of javascript.
 
 == Table of Contents
@@ -75,7 +75,9 @@ This aids with readability and reduces the volume of code "wrapped" inside the A
 
 == Controllers
 
-* 
+*
+
+Controller names should always end in `*Controller` (not `*Ctrl` or anything else)
 
 *controllerAs syntax*: Controllers are classes, so use the `controllerAs` syntax at all times
 
