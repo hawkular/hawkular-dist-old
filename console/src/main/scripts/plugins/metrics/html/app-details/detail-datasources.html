@@ -58,7 +58,7 @@
 
       <div class="panel panel-default hk-graph" ng-if="vm.chartAvailData[ds.id][2]">
         <h2>Availability</h2>
-        <div class="metrics-chart">
+        <div class="hk-graph-container hk-graph-metrics">
           <hawkular-chart
               multi-data="{{vm.chartAvailData[ds.id]}}"
               chart-type="multiline"
@@ -66,8 +66,8 @@
               chart-height="250">
           </hawkular-chart>
         </div>
-        <div class="row hk-legend hk-legend-inline text-left">
-          <div class="col-md-7 col-lg-6">
+        <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
+          <div class="col-md-12">
             <h4>Connection Availability</h4>
             <div class="hk-graphselector hk-blue">
               <input type="checkbox" checked="checked" disabled>
@@ -87,7 +87,7 @@
 
       <div class="panel panel-default hk-graph" ng-if="vm.chartRespData[ds.id][1]">
         <h2>Responsiveness</h2>
-        <div class="metrics-chart">
+        <div class="hk-graph-container hk-graph-metrics">
           <hawkular-chart
               multi-data="{{vm.chartRespData[ds.id]}}"
               chart-type="multiline"
@@ -95,8 +95,8 @@
               chart-height="250">
           </hawkular-chart>
         </div>
-        <div class="row hk-legend hk-legend-inline text-left">
-          <div class="col-md-7 col-lg-6">
+        <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
+          <div class="col-md-12">
             <h4>Responsiveness</h4>
             <div class="hk-graphselector hk-yellow">
               <input type="checkbox" checked="checked" disabled>
