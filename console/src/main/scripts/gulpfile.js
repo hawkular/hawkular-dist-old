@@ -121,7 +121,7 @@ gulp.task('git-sha', function(cb) {
     plugins.git.exec({args: "log -n 1 --pretty='%h'"}, function (err, stdout) {
       if (err) throw err;
       var gitSha = stdout.slice(0, -1);
-      jsString = 'var HawkularVersion = \'' + gitSha + '\';';
+      jsString = 'var HawkularVersion = \"' + gitSha + '\";';
       fs.writeFileSync(versionFile, jsString);
       cb();
     });
