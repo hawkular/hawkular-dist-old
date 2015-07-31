@@ -1,6 +1,6 @@
 # Hawkular UI - AngularTS Styleguide
 
-Based on: *Opinionated AngularJS styleguide for teams by [@toddmotto](//twitter.com/toddmotto)* and modified for use 
+Based on: *Opinionated AngularJS styleguide for teams by [@toddmotto](//twitter.com/toddmotto)* and modified for use
 with Hawkular and typescript instead of javascript.
 
 
@@ -63,7 +63,6 @@ with Hawkular and typescript instead of javascript.
     ```
 
   - This aids with readability and reduces the volume of code "wrapped" inside the Angular framework
-  
 
 **[Back to top](#table-of-contents)**
 
@@ -122,22 +121,16 @@ with Hawkular and typescript instead of javascript.
     function MainCtrl () {
       var vm = this;
       var doSomething = function () {
-        
       };
       vm.doSomething = doSomething;
     }
     ```
-
     *Why?* : Function context changes the `this` value, use it to avoid `.bind()` calls and scoping issues
-    
- 
-
   - **Presentational logic only (MVVM)**: Presentational logic only inside a controller, avoid Business logic (delegate to Services)
 
     ```javascript
     // avoid
     function MainCtrl () {
-      
       var vm = this;
 
       $http
@@ -520,15 +513,12 @@ with Hawkular and typescript instead of javascript.
     // recommended
     <h1>{{ ::vm.title }}</h1>
     ```
-    
     *Why?* : Binding once removes the watcher from the scope's `$$watchers` array after the `undefined` variable becomes resolved, thus improving performance in each dirty-check
-    
   - **Consider $scope.$digest**: Use `$scope.$digest` over `$scope.$apply` where it makes sense. Only child scopes will update
 
     ```javascript
     $scope.$digest();
     ```
-    
     *Why?* : `$scope.$apply` will call `$rootScope.$digest`, which causes the entire application `$$watchers` to dirty-check again. Using `$scope.$digest` will dirty check current and child scopes from the initiated `$scope`
 
 **[Back to top](#table-of-contents)**
