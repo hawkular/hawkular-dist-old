@@ -16,19 +16,6 @@
  */
 package org.hawkular.component.pinger;
 
-import org.hawkular.inventory.api.Action;
-import org.hawkular.inventory.api.Interest;
-import org.hawkular.inventory.api.Inventory;
-import org.hawkular.inventory.api.filters.With;
-import org.hawkular.inventory.api.model.Resource;
-
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.ejb.Lock;
-import javax.ejb.LockType;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +25,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
+import javax.ejb.Schedule;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+
+import org.hawkular.inventory.api.Action;
+import org.hawkular.inventory.api.Interest;
+import org.hawkular.inventory.api.Inventory;
+import org.hawkular.inventory.api.filters.With;
+import org.hawkular.inventory.api.model.Resource;
 
 /**
  * A SLSB that coordinates the pinging of resources
