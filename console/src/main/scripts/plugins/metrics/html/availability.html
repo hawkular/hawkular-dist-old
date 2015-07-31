@@ -56,7 +56,7 @@
         <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts"><i class="fa"
                                                                                              ng-show="vm.alertList.length > 0"
                                                                                              ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>
-          Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : MetricsAvailabilityController.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span>
+          Availability Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : MetricsAvailabilityController.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span>
         </button>
       </h3>
       <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac"
@@ -87,12 +87,14 @@
 
     <div class="panel panel-default hk-graph">
       <h2>Availability</h2>
-      <availability-chart
-        start-timestamp="{{vm.startTimeStamp}}"
-        end-timestamp="{{vm.endTimeStamp}}"
-        data="{{vm.availabilityDataPoints}}" >
-      </availability-chart>
-      <div class="hk-legend text-left hk-availability">
+      <div class="hk-graph-container hk-graph-availability">
+        <availability-chart
+          start-timestamp="{{vm.startTimeStamp}}"
+          end-timestamp="{{vm.endTimeStamp}}"
+          data="{{vm.availabilityDataPoints}}" >
+        </availability-chart>
+      </div>
+      <div class="hk-legend text-left hk-legend-availability">
         <span><span class="hk-legend-square hk-green"></span>Available</span>
         <span><span class="hk-legend-square hk-red"></span>Down</span>
         <span><span class="hk-legend-square hk-gray-light"></span>Unknown</span>

@@ -59,7 +59,7 @@
 
   <div class="panel panel-default hk-graph" ng-if="vm.chartHeapData[0]">
     <h2>JVM Heap Usage</h2>
-    <div class="metrics-chart">
+    <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
           multi-data="{{vm.chartHeapData}}"
@@ -68,7 +68,7 @@
           chart-height="250">
       </hawkular-chart>
     </div>
-    <div class="hk-legend text-left">
+    <div class="hk-legend text-left hk-legend-metrics">
       <span><i class="fa fa-circle hk-blue"></i>Used</span>
       <span><i class="fa fa-circle hk-orange"></i>Maximum</span>
       <span><i class="fa fa-circle hk-gray"></i>Commited</span>
@@ -77,7 +77,7 @@
 
   <div class="panel panel-default hk-graph" ng-if="vm.chartNonHeapData[0]">
     <h2>Non Heap Usage</h2>
-    <div class="metrics-chart">
+    <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
           multi-data="{{vm.chartNonHeapData}}"
@@ -86,7 +86,7 @@
           chart-height="250">
       </hawkular-chart>
     </div>
-    <div class="hk-legend text-left">
+    <div class="hk-legend text-left hk-legend-metrics">
       <span><i class="fa fa-circle hk-blue"></i>Used</span>
       <span><i class="fa fa-circle hk-gray"></i>Commited</span>
     </div>
@@ -94,7 +94,7 @@
 
   <div class="panel panel-default hk-graph" ng-if="vm.chartNonHeapData[0]">
     <h2>Accumulated GC Duration</h2>
-    <div class="metrics-chart">
+    <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
         data="{{vm.chartGCDurationData}}"
@@ -106,7 +106,7 @@
         chart-height="250">
       </hawkular-chart>
     </div>
-    <div class="hk-legend text-left">
+    <div class="hk-legend text-left hk-legend-metrics">
     </div>
   </div>
 

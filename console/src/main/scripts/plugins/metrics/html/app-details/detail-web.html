@@ -54,7 +54,7 @@
 
   <div class="panel panel-default hk-graph" >
     <h2>Web Sessions</h2>
-    <div class="metrics-chart">
+    <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
         multi-data="{{vm.chartWebSessionData}}"
@@ -63,7 +63,7 @@
         chart-height="250">
       </hawkular-chart>
     </div>
-    <div class="hk-legend text-left">
+    <div class="hk-legend text-left hk-legend-metrics">
       <span><i class="fa fa-circle hk-green"></i>Active Sessions</span>
       <!--<span><i class="fa fa-circle hk-blue"></i>Max Active Sessions</span>-->
       <span><i class="fa fa-circle hk-orange"></i>Expired Sessions</span>

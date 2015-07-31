@@ -660,7 +660,7 @@ a:hover .fa-spinner {
   margin-top: @grid-gutter-width/2;
 }
 
-// alert settings modal
+// alert settings modals
 
 .modal-body fieldset p {
   margin-top: -10px;
@@ -741,6 +741,11 @@ a:hover .fa-spinner {
     margin-top: 5px;
   }
 }
+
+.modal-backdrop {
+  width: 100%!important;
+}
+
 
 // on off switch
 
@@ -846,6 +851,37 @@ a:hover .fa-spinner {
     margin-bottom: 5px;
   }
 
+  .hk-graph-container  {
+    margin: 0 auto;
+    width: 750px;
+
+    &.hk-graph-availability svg { /* top 40px, bottom 30px, align center */
+      margin-bottom: -18px;
+      margin-left: -24px;
+      margin-top: -3px;
+    }
+
+    &.hk-graph-metrics {
+      height: 262px;
+
+      svg {
+        margin-bottom: -13px;
+        margin-left: -5px;
+        margin-top: -14px;
+      }
+    }
+
+    &.hk-graph-jvm {
+      height: 262px;
+
+      svg {
+        margin-bottom: -13px;
+        margin-left: -5px;
+        margin-top: -14px;
+      }
+    }
+  }
+
   .hk-spinner-container {
     margin-bottom: @grid-gutter-width/4*5;
     margin-top: @grid-gutter-width*1.5;
@@ -853,15 +889,32 @@ a:hover .fa-spinner {
 
   .hk-legend {
     font-size: ceil(@font-size-base - 1);
+    margin-bottom: 10px;
     margin-left: 38px;
     margin-top: 15px;
 
-    &.hk-availability {
-      margin-left: 47px;
+    &.hk-legend-availability {
+      margin-left: 248px;
+
+      @media (max-width: @screen-md-max) {
+        margin-left: 148px;
+      }
     }
 
-    &.hk-response-time {
-      margin-left: 57px;
+    &.hk-legend-metrics {
+      margin-left: 270px;
+
+      @media (max-width: @screen-md-max) {
+        margin-left: 170px;
+      }
+    }
+
+    &.hk-legend-inline {
+      margin-top: 8px;
+
+      > div {
+        padding-left: 0;
+      }
     }
 
     span {
@@ -1177,24 +1230,7 @@ section {
 }
 
 
-// modal
-
-.modal-backdrop {
-  width: 100%!important;
-}
-
-
 // dev styles
-
-// metrics response
-
-#metric-chart-container {
-  width: 800px;
-}
-
-.metrics-chart {
-  height: 270px;
-}
 
 // bootstrap select quick&dirty workaround
 
