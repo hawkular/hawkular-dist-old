@@ -111,8 +111,10 @@ docker run -v /Users/hrupp/tmp/cassandra:/var/lib/cassandra/data --name my_cassa
 
 === Using docker-compose
 
-Docker has a tool `docker-compose`, that can be used to instrument a full application including linking of containers.
-You need to separately http://docs.docker.com/compose/#installation-and-set-up[download compose] and can then start
+Docker has a tool http://docs.docker.com/compose/[`docker-compose`], that can be used to instrument a full application
+ including linking of containers.
+
+You need to separately http://docs.docker.com/compose/install/[download compose] and can then start
 Hawkular with a linked Cassandra container:
 
 [source,shell]
