@@ -108,3 +108,14 @@ you can mount an explicit host directory to be used.
 --
 docker run -v /Users/hrupp/tmp/cassandra:/var/lib/cassandra/data --name my_cassandra -d  cassandra:2.1
 --
+
+=== Using docker-compose
+
+Docker has a tool `docker-compose`, that can be used to instrument a full application including linking of containers.
+You need to separately http://docs.docker.com/compose/#installation-and-set-up[download compose] and can then start
+Hawkular with a linked Cassandra container:
+
+[source,shell]
+--
+docker-compose up
+--

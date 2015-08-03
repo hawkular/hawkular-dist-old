@@ -1,0 +1,15 @@
+#This is a definition for Docker-compose to fire cassandra and Hawkular in one go
+hawkular:
+  image: hawkular:snapshot-l
+  ports:
+    - "8080:8080"
+    - "8443:8443"
+    - "9990:9990"
+  links:
+    - myCassandra
+  environment:
+    - HAWKULAR_BACKEND=cassandra
+    - CASSANDRA_NODES=myCassandra
+myCassandra:
+  image: cassandra:2.1
+
