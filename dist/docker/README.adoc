@@ -1,13 +1,110 @@
-== Build the Kettle Docker image
-Make sure you are in hawkular/dist directory
+= Hawkular in Docker
+
+This explains a bit building and running Hawkular in Docker
+
+== Build the Docker image
+
+Make sure you are in `hawkular/dist` directory and have Docker running
+(try running `docker ps` before the next step).
+
+.Simple build
 [source,shell]
 ----
 mvn package docker:build
 ----
 
-Running Hawkular
+.Build of a development container:
+[source,shell]
+----
+mvn -Pdev,dozip package docker:build
+----
+
+The development container has a user _jdoe/password_ built in and this thus
+also able to run the Hawkular agent that is embedded in the Hawkular server.
+
+== Running Hawkular
+
+The Hawkular container is by default self-contained for quick start. You may want to look at the options below
+regarding the persistence of data.
+
+=== With the embedded Cassandra
+
+The Hawkular image provides an integrated Cassandra instance for quick testing purposes, which is used
+by default if you do not provide any additional settings.
+
+.NOTE Embedded Cassandra is not recommended for serious testing or even production use.
+
 [source,shell]
 ----
 docker run -dP --name hawkular hawkular:snapshot
 docker port hawkular
 ----
+
+=== Mounting an explicit external data directory
+
+With the above, the storage for embedded Cassandra an other system data
+lives inside a file created the container and thus goes away when the container is deleted.
+This may be very welcome for testing purposes, but not so if the data should
+be re-used over container upgrades. In this case it is possible to mount an external
+data directory via Docker's `-v` flag:
+
+.Mount host directory `/tmp/h` in to the container
+[source,shell]
+----
+docker run -dP --name hawkular -v /tmp/h:/opt/data hawkular:snapshot  #<1>
+docker port hawkular
+----
+<1> Note that the host dir on e.g. OS/X needs to live inside the users home
+running Docker. See https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume
+
+
+=== With Cassandra on the host (outside of Docker)
+
+If you already have a Cassandra instance/cluster up and running, you can use this for storage.
+In this case you need to provide the IP-address(es) of the hosts running Cassandra in the
+`CASSANDRA_NODES` environment variable.
+
+.Run Hawkular with Cassandra outside the container.
+[source,shell]
+--
+docker run -dP  -e HAWKULAR_BACKEND=cassandra -e CASSANDRA_NODES=10.1.2.3 hawkular:snapshot #<1>
+--
+<1> Here Cassandra runs on host 10.1.2.3
+
+=== With Cassandra in a Docker container
+
+It is possible to use a linked Cassandra Docker container. For this to work you need to
+first start Cassandra and then Hawkular.
+
+.NOTE Hawkular needs Cassandra 2.1.x - so best use an image with the 2.1 tag.
+
+.Start the Cassandra container
+[source,shell]
+--
+docker run --name my_cassandra -d cassandra:2.1  # <1>
+--
+<1> We have provided an explicit container name of _my_cassandra_ to distinguish it from other potentially available
+Cassandra containers. If you don't provide a name _cassandra_ is taken.
+
+.Run Hawkular with a link to the above Cassandra container
+[source,shell]
+--
+docker run  --link my_cassandra -e HAWKULAR_BACKEND=cassandra -e CASSANDRA_NODES=my_cassandra -P  hawkular:snapshot
+--
+
+It is important to use the name of the Cassandra container from above (_my_cassandra_) both for the name of the
+link and also the environment variable for Cassandra nodes.
+
+See also https://registry.hub.docker.com/_/cassandra/ for more information about Cassandra in Docker
+
+=== Mounting an external data directory for Cassandra
+
+By default Cassandra is using a technique to mount a host volume as data directory, that stays
+valid as long as the container is not deleted (you can restart it though). As with Hawkular above,
+you can mount an explicit host directory to be used.
+
+.Run Cassandra with external data directory
+[source,shell]
+--
+docker run -v /Users/hrupp/tmp/cassandra:/var/lib/cassandra/data --name my_cassandra -d  cassandra:2.1
+--
