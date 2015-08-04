@@ -15,20 +15,16 @@
 /// limitations under the License.
 ///
 
-/// <reference path="metricsPlugin.ts"/>
+/// <reference path="../metricsPlugin.ts"/>
 
-/*
- TODO
- Move to shared service location
-  */
 
 module HawkularMetrics {
 
-  export interface IHawkularErrorManager {
+  export interface IErrorsManager {
     errorHandler(error: any, msg: string, cb?: (error: any, msg: string) => void): any;
   }
 
-  export class HawkularErrorManager implements IHawkularErrorManager {
+  export class ErrorsManager implements IErrorsManager {
 
     public static $inject = ['$q', '$log', 'NotificationsService'];
 
@@ -60,5 +56,5 @@ module HawkularMetrics {
     }
   }
 
-  _module.service('HawkularErrorManager', HawkularErrorManager);
+  _module.service('ErrorsManager', ErrorsManager);
 }

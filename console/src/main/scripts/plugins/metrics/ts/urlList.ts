@@ -18,7 +18,7 @@
 /// <reference path='metricsPlugin.ts'/>
 /// <reference path='services/alertsManager.ts'/>
 /// <reference path='pagination.ts'/>
-/// <reference path='errorManager.ts'/>
+/// <reference path='services/errorsManager.ts'/>
 /// <reference path='services/notificationsService.ts'/>
 
 module HawkularMetrics {
@@ -27,7 +27,7 @@ module HawkularMetrics {
   export class UrlListController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
-      'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q',
+      'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','ErrorsManager', '$q',
       'md5', 'HkHeaderParser', 'NotificationsService'];
 
     private autoRefreshPromise:ng.IPromise<number>;
@@ -51,7 +51,7 @@ module HawkularMetrics {
                 private HawkularMetric:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: IHawkularAlertsManager,
-                private HawkularErrorManager: IHawkularErrorManager,
+                private ErrorsManager: IErrorsManager,
                 private $q: ng.IQService,
                 private md5: any,
                 private HkHeaderParser: IHkHeaderParser,
@@ -99,7 +99,7 @@ module HawkularMetrics {
 
       var metricId: string;
       var defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
-      var err = (error: any, msg: string): void => this.HawkularErrorManager.errorHandler(error, msg);
+      var err = (error: any, msg: string): void => this.ErrorsManager.errorHandler(error, msg);
       var currentTenantId: TenantId = this.$rootScope.currentPersona.id;
 
       /// Add the Resource and its metrics

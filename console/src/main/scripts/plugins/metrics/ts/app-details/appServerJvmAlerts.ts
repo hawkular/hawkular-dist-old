@@ -18,12 +18,12 @@
 /// <reference path="../metricsPlugin.ts"/>
 /// <reference path="../../includes.ts"/>
 /// <reference path="../services/alertsManager.ts"/>
-/// <reference path="../errorManager.ts"/>
+/// <reference path="../services/errorsManager.ts"/>
 
 module HawkularMetrics {
 
   export class JvmAlertController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q',
+    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
       '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
 
     private resourceId: string;
@@ -43,7 +43,7 @@ module HawkularMetrics {
     constructor(private $scope:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
+                private ErrorsManager: HawkularMetrics.IErrorsManager,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: any,
@@ -136,7 +136,7 @@ module HawkularMetrics {
         this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
         this.alertList = queriedAlerts.alertList;
         this.alertList.$resolved = true; // FIXME
-      }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
+      }, (error) => { return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.'); });
       */
     }
 
@@ -163,7 +163,7 @@ module HawkularMetrics {
   _module.controller('JvmAlertController', JvmAlertController);
 
   export class JvmAlertSetupController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q',
+    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
       '$rootScope', '$routeParams', '$modalInstance', 'HawkularMetric'];
 
     private resourceId: string;
@@ -188,7 +188,7 @@ module HawkularMetrics {
     constructor(public $scope:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
+                private ErrorsManager: HawkularMetrics.IErrorsManager,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: any,
@@ -291,13 +291,13 @@ module HawkularMetrics {
       this.HawkularAlertsManager.addEmailAction(this.trigger.actions.email[0]).then(()=> {
           return this.HawkularAlertsManager.updateTrigger(this.trigger.id, this.trigger);
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error saving email action.', errorCallback);
+        return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
       }).then(()=> {
         this.dampening.evalTimeSetting = this.responseDuration;
 
         return this.HawkularAlertsManager.updateDampening(this.trigger.id,this.dampening.dampeningId, this.dampening);
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error updating trigger', errorCallback);
+        return this.ErrorsManager.errorHandler(error, 'Error updating trigger', errorCallback);
       }).then(()=> {
         this.conditionGt.thresholdHigh = this.conditionGtEnabled ? this.maxUsage * this.conditionGtPercent / 100 :
           this.maxUsage;
@@ -305,10 +305,10 @@ module HawkularMetrics {
         return this.HawkularAlertsManager.updateCondition(this.trigger.id, this.conditionGt.conditionId,
           this.conditionGt);
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error updating dampening.', errorCallback);
+        return this.ErrorsManager.errorHandler(error, 'Error updating dampening.', errorCallback);
       }).then(angular.noop, (error)=> {
         isError = true;
-        return this.HawkularErrorManager.errorHandler(error, 'Error updating conditionGt condition.', errorCallback);
+        return this.ErrorsManager.errorHandler(error, 'Error updating conditionGt condition.', errorCallback);
       }).finally(()=> {
         this.saveProgress = false;
 

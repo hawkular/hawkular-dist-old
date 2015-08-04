@@ -17,7 +17,7 @@
 
 /// <reference path="../metricsPlugin.ts"/>
 /// <reference path="../services/alertsManager.ts"/>
-/// <reference path="../errorManager.ts"/>
+/// <reference path="../services/errorsManager.ts"/>
 
 module HawkularMetrics {
 
@@ -25,7 +25,7 @@ module HawkularMetrics {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
       '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularOps', 'HawkularAlertsManager',
-      'HawkularErrorManager', '$q', 'md5', 'NotificationsService' ];
+      'ErrorsManager', '$q', 'md5', 'NotificationsService' ];
 
     private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
@@ -47,7 +47,7 @@ module HawkularMetrics {
       private HawkularAlert: any,
       private HawkularOps: any,
       private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-      private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
+      private ErrorsManager: HawkularMetrics.IErrorsManager,
       private $q: ng.IQService,
       private md5: any,
       private NotificationsService: INotificationsService ) {
