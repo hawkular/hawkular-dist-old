@@ -40,7 +40,7 @@ module HawkularMetrics {
   export class MetricsViewController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularAlert',
-      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager', 'NotificationService', 'MetricService'];
+      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager', 'NotificationService', 'MetricsService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
@@ -65,7 +65,7 @@ module HawkularMetrics {
                 private HawkularAlertsManager: IHawkularAlertsManager,
                 private HawkularErrorManager: IHawkularErrorManager,
                 private NotificationService: INotificationService,
-                private MetricService: IMetricService ) {
+                private MetricsService: IMetricsService ) {
       $scope.vm = this;
 
       this.startTimeStamp = +moment().subtract(1, 'hours');
@@ -124,10 +124,6 @@ module HawkularMetrics {
       });
     }
 
-    private noDataFoundForId(resourceId:ResourceId):void {
-      this.$log.warn('No Data found for id: ' + resourceId);
-      ///this.NotificationService.warning('No Data found for id: ' + id);
-    }
 
     private refreshChartDataNow(metricId:MetricId, startTime?:TimestampInMillis):void {
       this.$scope.hkEndTimestamp = +moment();
@@ -140,7 +136,7 @@ module HawkularMetrics {
       this.retrieveThreshold();
     }
 
-    public getMetricId():ResourceId {
+    public getMetricId() :MetricId {
       return this.resourceId + '.status.duration';
     }
 
@@ -165,11 +161,11 @@ module HawkularMetrics {
 
       if (metricId) {
 
-        this.MetricService.retrieveGaugeMetric(this.$rootScope.currentPersona.id,
+        this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
           metricId, startTime, endTime, 1)
           .then((response) => {
 
-            dataPoints = MetricService.formatBucketedChartOutput(response);
+            dataPoints = MetricsService.formatBucketedChartOutput(response);
 
             this.median = Math.round(_.last(dataPoints).median);
             this.percentile95th = Math.round(_.last(dataPoints).percentile95th);
@@ -210,12 +206,12 @@ module HawkularMetrics {
 
       if (metricId) {
 
-        this.MetricService.retrieveGaugeMetric(this.$rootScope.currentPersona.id, metricId,
+        this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id, metricId,
           startTime, endTime, 120)
           .then((response) => {
 
             // we want to isolate the response from the data we are feeding to the chart
-            this.bucketedDataPoints = MetricService.formatBucketedChartOutput(response);
+            this.bucketedDataPoints = MetricsService.formatBucketedChartOutput(response);
             ///console.dir(this.bucketedDataPoints);
 
             if (this.bucketedDataPoints.length) {
