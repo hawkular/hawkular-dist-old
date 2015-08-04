@@ -26,7 +26,7 @@ module HawkularMetrics {
   }
 
   export class QuickAlertController implements IQuickAlertController {
-    public static  $inject = ['$scope', 'HawkularAlert', '$log', '$q', 'NotificationService'];
+    public static  $inject = ['$scope', 'HawkularAlert', '$log', '$q', 'NotificationsService'];
 
     private metricId:MetricId;
     private PROMISE_BREAK: string = 'magicValue1234';
@@ -35,7 +35,7 @@ module HawkularMetrics {
                 private HawkularAlert:any,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
-                private NotificationService: INotificationService) {
+                private NotificationsService: INotificationsService) {
       this.$scope.showQuickAlert = false;
       this.$scope.quickTrigger = {
         operator: 'LT',
@@ -72,7 +72,7 @@ module HawkularMetrics {
         errorMsgComplete = errorMsg + ' ' + error;
       }
 
-      this.NotificationService.error(errorMsgComplete);
+      this.NotificationsService.error(errorMsgComplete);
     }
 
     private errorHandler(error: any, msg: string) {
@@ -143,7 +143,7 @@ module HawkularMetrics {
           // Success ThresholdCondition save
           () => {
             this.$log.debug('Success ThresholdCondition save');
-            this.NotificationService.success('Alert Created!');
+            this.NotificationsService.success('Alert Created!');
 
             this.toggleQuickAlert();
 
@@ -166,7 +166,7 @@ module HawkularMetrics {
           }
         );
       } else {
-        this.NotificationService.warning('No metric selected');
+        this.NotificationsService.warning('No metric selected');
       }
     }
   }

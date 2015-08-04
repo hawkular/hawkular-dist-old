@@ -16,8 +16,8 @@
 ///
 
 /// <reference path="../metricsPlugin.ts"/>
-/// <reference path="../alertsManager.ts"/>
-/// <reference path="../errorManager.ts"/>
+/// <reference path="../services/alertsManager.ts"/>
+/// <reference path="../services/errorsManager.ts"/>
 
 module HawkularMetrics {
 
@@ -25,7 +25,7 @@ module HawkularMetrics {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
       '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularOps', 'HawkularAlertsManager',
-      'HawkularErrorManager', '$q', 'md5', 'NotificationService' ];
+      'ErrorsManager', '$q', 'md5', 'NotificationsService' ];
 
     private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
@@ -47,12 +47,12 @@ module HawkularMetrics {
       private HawkularAlert: any,
       private HawkularOps: any,
       private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-      private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
+      private ErrorsManager: HawkularMetrics.IErrorsManager,
       private $q: ng.IQService,
       private md5: any,
-      private NotificationService: INotificationService ) {
+      private NotificationsService: INotificationsService ) {
         $scope.vm = this;
-        HawkularOps.init(this.NotificationService);
+        HawkularOps.init(this.NotificationsService);
 
         this.startTimeStamp = +moment().subtract(1, 'hours');
         this.endTimeStamp = +moment();
@@ -87,7 +87,7 @@ module HawkularMetrics {
           (aResourceList, getResponseHeaders) => {
         var promises = [];
         var tmpResourceList = [];
-        angular.forEach(aResourceList, function(res, idx) {
+        angular.forEach(aResourceList, function(res) {
           if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
             tmpResourceList.push(res);
             promises.push(this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
@@ -103,7 +103,7 @@ module HawkularMetrics {
           }
           this.lastUpdateTimestamp = new Date();
         }, this);
-        this.$q.all(promises).then((result) => {
+        this.$q.all(promises).then((notUsed) => {
           this.resourceList = tmpResourceList;
           this.resourceList.$resolved = true;
         });
@@ -112,7 +112,7 @@ module HawkularMetrics {
         if (!this.resourceList) {
           this.resourceList = [];
           this.resourceList.$resolved = true;
-          this['lastUpdateTimestamp'] = new Date();
+          this.lastUpdateTimestamp = new Date();
         }
       });
     }

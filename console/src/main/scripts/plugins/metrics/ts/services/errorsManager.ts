@@ -15,26 +15,22 @@
 /// limitations under the License.
 ///
 
-/// <reference path="metricsPlugin.ts"/>
+/// <reference path="../metricsPlugin.ts"/>
 
-/*
- TODO
- Move to shared service location
-  */
 
 module HawkularMetrics {
 
-  export interface IHawkularErrorManager {
+  export interface IErrorsManager {
     errorHandler(error: any, msg: string, cb?: (error: any, msg: string) => void): any;
   }
 
-  export class HawkularErrorManager implements IHawkularErrorManager {
+  export class ErrorsManager implements IErrorsManager {
 
-    public static $inject = ['$q', '$log', 'NotificationService'];
+    public static $inject = ['$q', '$log', 'NotificationsService'];
 
     constructor(private $q: ng.IQService,
                 private $log: ng.ILogService,
-                private NotificationService: INotificationService) {
+                private NotificationsService: INotificationsService) {
     }
 
     private errorToastr(error: any, errorMsg: string): void {
@@ -46,7 +42,7 @@ module HawkularMetrics {
         errorMsgComplete = errorMsg + ' ' + error;
       }
 
-      this.NotificationService.error(errorMsgComplete);
+      this.NotificationsService.error(errorMsgComplete);
     }
 
     public errorHandler(error: any, msg: string, cb?: (error: any, msg: string) => void): ng.IPromise<void> {
@@ -60,5 +56,5 @@ module HawkularMetrics {
     }
   }
 
-  _module.service('HawkularErrorManager', HawkularErrorManager);
+  _module.service('ErrorsManager', ErrorsManager);
 }

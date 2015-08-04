@@ -16,12 +16,11 @@
 ///
 
 /// <reference path="../metricsPlugin.ts"/>
- /// @TODO Move to shared service location
 
 module HawkularMetrics {
 
 
-  export interface IMetricResponse {
+  export interface IMetricsResponse {
     timestamp: number;
     value?: number;
     avg: number;
@@ -58,20 +57,20 @@ module HawkularMetrics {
     annotationDataPoints: IChartDataPoint[];
   }
 
-  export interface IMetricService {
-    retrieveGaugeMetric(personaId:PersonaId, metricId:MetricId,
+  export interface IMetricsService {
+    retrieveGaugeMetrics(personaId:PersonaId, metricId:MetricId,
                         startTime?:TimestampInMillis,
                         endTime?:TimestampInMillis,
                         buckets?:number):ng.IPromise<IChartDataPoint[]>;
   }
 
-  export class MetricService implements IMetricService {
+  export class MetricsService implements IMetricsService {
 
-    public static $inject = ['$log', 'HawkularMetric', 'NotificationService'];
+    public static $inject = ['$log', 'HawkularMetric', 'NotificationsService'];
 
     constructor(private $log:ng.ILogService,
                 private HawkularMetric:any,
-                private NotificationService:INotificationService) {
+                private NotificationsService:INotificationsService) {
     }
 
 
@@ -98,7 +97,7 @@ module HawkularMetrics {
     }
 
     /**
-     * RetrieveGaugeMetric
+     * RetrieveGaugeMetrics
      * @param personaId
      * @param metricId
      * @param startTime
@@ -106,7 +105,7 @@ module HawkularMetrics {
      * @param buckets
      * @returns ng.IPromise<IChartDataPoint[]>
      */
-    public retrieveGaugeMetric(personaId:PersonaId,
+    public retrieveGaugeMetrics(personaId:PersonaId,
                                metricId:MetricId,
                                startTime?:TimestampInMillis,
                                endTime?:TimestampInMillis,
@@ -132,5 +131,5 @@ module HawkularMetrics {
 
   }
 
-  _module.service('MetricService', MetricService);
+  _module.service('MetricsService', MetricsService);
 }

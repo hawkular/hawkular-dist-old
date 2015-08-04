@@ -16,13 +16,17 @@
 ///
 
 /// <reference path="../metricsPlugin.ts"/>
-/// <reference path="../services/alertsManager.ts"/>
-/// <reference path="../services/errorsManager.ts"/>
+/// <reference path="../../includes.ts"/>
+
 
 module HawkularMetrics {
 
-  export class AppServerJmsDetailsController {
-  }
+  _module.filter('firstUpper', function () {
+    return function (input, all) {
+      return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function (txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1);
+      }) : '';
+    };
+  });
 
-  _module.controller('HawkularMetrics.AppServerJmsDetailsController', AppServerJmsDetailsController);
 }

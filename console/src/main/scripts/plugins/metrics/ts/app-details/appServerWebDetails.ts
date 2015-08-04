@@ -16,8 +16,8 @@
 ///
 
 /// <reference path="../metricsPlugin.ts"/>
-/// <reference path="../alertsManager.ts"/>
-/// <reference path="../errorManager.ts"/>
+/// <reference path="../services/alertsManager.ts"/>
+/// <reference path="../services/errorsManager.ts"/>
 
 module HawkularMetrics {
 
@@ -25,7 +25,7 @@ module HawkularMetrics {
 
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager',
+      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager',
       '$q', '$window', 'md5'];
 
     public static MAX_ACTIVE_COLOR = '#1884c7'; /// blue
@@ -53,7 +53,7 @@ module HawkularMetrics {
                 private HawkularMetric: any,
                 private HawkularAlert: any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
+                private ErrorsManager: HawkularMetrics.IErrorsManager,
                 private $q: ng.IQService,
                 private $window: any,
                 private md5: any,

@@ -38,7 +38,7 @@ module HawkularMetrics {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric',
       'HawkularAlert', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
-      'HawkularErrorManager', 'NotificationService'];
+      'ErrorsManager', 'NotificationsService'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
@@ -66,8 +66,8 @@ module HawkularMetrics {
                 private $filter:ng.IFilterService,
                 private $moment:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
-                private HawkularErrorManager:IHawkularErrorManager,
-                private NotificationService:INotificationService) {
+                private ErrorsManager:IErrorsManager,
+                private NotificationsService:INotificationsService) {
       $scope.vm = this;
 
       this.startTimeStamp = +$moment().subtract(1, 'hours');
@@ -104,7 +104,7 @@ module HawkularMetrics {
         HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
           this.alertList = data.alertList;
         }, (error) => {
-          return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.');
+          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
     }
 
@@ -165,7 +165,7 @@ module HawkularMetrics {
             }
 
           }, (error) => {
-            this.NotificationService.error('Error Loading Avail Summary Data: ' + error);
+            this.NotificationsService.error('Error Loading Avail Summary Data: ' + error);
           });
 
       }
@@ -209,7 +209,7 @@ module HawkularMetrics {
             this.uptimeRatio = 1 - downtimeDuration / (+this.$moment() - response[0].timestamp);
             this.downtimeCount = downtimeCount;
           }, (error) => {
-            this.NotificationService.error('Error Loading Avail Data: ' + error);
+            this.NotificationsService.error('Error Loading Avail Data: ' + error);
           });
       }
     }
