@@ -16,7 +16,7 @@
 ///
 
 /// <reference path='metricsPlugin.ts'/>
-/// <reference path='alertsManager.ts'/>
+/// <reference path='services/alertsManager.ts'/>
 /// <reference path='pagination.ts'/>
 /// <reference path='errorManager.ts'/>
 /// <reference path='services/notificationsService.ts'/>
