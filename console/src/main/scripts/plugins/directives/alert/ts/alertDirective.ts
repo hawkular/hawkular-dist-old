@@ -140,4 +140,138 @@ module Alert {
   _module.directive('hkAlertPanelList', Alert.HkAlertPanelList.Factory());
   _module.directive('hkAlertPanel', Alert.HkAlertPanel.Factory());
   _module.directive('hkTimeInterval', Alert.HkTimeInterval.Factory());
+
+  export class HkFieldsetNotification {
+
+    public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+    public replace = 'true';
+    public scope = {
+      hkAlertEmail: '='
+    };
+    public templateUrl = 'plugins/directives/alert/html/fieldset-notification.html';
+
+    constructor() {
+      this.link = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+        console.debug('empty link');
+      };
+    }
+    public static Factory() {
+      var directive = () => {
+        return new HkFieldsetNotification();
+      };
+
+      directive['$inject'] = [];
+
+      return directive;
+    }
+  }
+
+  _module.directive('hkFieldsetNotification', Alert.HkFieldsetNotification.Factory());
+
+  export class HkTimeUnit {
+
+    public static $inject = [];
+
+    public timeUnits: Array<any> = [
+      {value: 1, label: 'milliseconds'},
+      {value: 1000, label: 'seconds'},
+      {value: 60000, label: 'minutes'},
+      {value: 3600000, label: 'hours'}
+    ];
+
+    public timeUnitDictionary: any = {};
+
+    constructor() {
+      console.debug('HkTimeUnit constructor');
+      _.forEach(this.timeUnits, (timeUnit: any) => {
+        this.timeUnitDictionary[timeUnit.value] = timeUnit.label;
+      });
+    }
+
+    // Get the most meaningful time unit (so that time value is not a very long fraction).
+    public getFittestTimeUnit(timeValue: number): number {
+      if (timeValue === 0) {
+        return 1;
+      }
+
+      var timeUnit = 1;
+
+      _.forEach(this.timeUnits, function(unit: any){
+        if (timeValue % unit.value === 0 && unit.value > timeUnit) {
+          timeUnit = unit.value;
+        }
+      });
+
+      return timeUnit;
+    }
+
+    public static Factory() {
+      var directive = () => {
+        return new HkTimeUnit();
+      };
+
+      directive['$inject'] = [];
+
+      return directive;
+    }
+  }
+
+  _module.service('hkTimeUnit', Alert.HkTimeUnit.Factory());
+
+  export class HkFieldsetDampening {
+
+    public link: (scope: any) => void;
+    public replace = 'true';
+    public scope = {
+      hkDuration: '='
+    };
+    public templateUrl = 'plugins/directives/alert/html/fieldset-dampening.html';
+
+    constructor(private hkTimeUnit: any) {
+      this.link = (scope: any) => {
+        var durationBackup = scope.hkDuration || 0;
+
+        scope.timeUnits = hkTimeUnit.timeUnits;
+        scope.timeUnitsDict = hkTimeUnit.timeUnitDictionary;
+
+        scope.durationChange = (): void => {
+          scope.hkDuration = scope.hkConvertedDuration * scope.responseUnit;
+        };
+
+        scope.computeTimeInUnits = ():void => {
+          scope.hkConvertedDuration = scope.hkDuration / scope.responseUnit;
+        };
+
+        scope.durationToggle = ():void => {
+          if (scope.durationEnabled) {
+            scope.hkDuration = durationBackup;
+            if (scope.hkDuration === 0) {
+              scope.responseUnit = hkTimeUnit.getFittestTimeUnit(scope.hkDuration);
+            }
+          } else {
+            durationBackup = scope.hkDuration;
+            scope.hkDuration = 0;
+          }
+        };
+
+        scope.$watch('hkDuration', (newDuration, oldDuration) => {
+          scope.durationEnabled = scope.hkDuration !== 0;
+          scope.responseUnit = hkTimeUnit.getFittestTimeUnit(scope.hkDuration);
+          scope.computeTimeInUnits();
+        });
+      };
+    }
+
+    public static Factory() {
+      var directive = (hkTimeUnit: any) => {
+        return new HkFieldsetDampening(hkTimeUnit);
+      };
+
+      directive['$inject'] = ['hkTimeUnit'];
+
+      return directive;
+    }
+  }
+
+  _module.directive('hkFieldsetDampening', Alert.HkFieldsetDampening.Factory());
 }

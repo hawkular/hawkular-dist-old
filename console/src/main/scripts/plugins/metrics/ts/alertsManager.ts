@@ -413,9 +413,8 @@ module HawkularMetrics {
     }
 
 
-    public queryAlerts(metricId: MetricId, startTime?:TimestampInMillis,
-                              endTime?:TimestampInMillis, alertType?:AlertType,
-                              currentPage?:number, perPage?:number): any {
+    public queryAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis,
+                       alertType?:AlertType, currentPage?:number, perPage?:number): any {
       var alertList = [];
       var headers;
 

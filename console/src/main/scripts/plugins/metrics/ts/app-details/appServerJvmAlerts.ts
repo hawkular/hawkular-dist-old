@@ -182,26 +182,8 @@ module HawkularMetrics {
     public maxUsage: number = AppServerJvmDetailsController.MAX_HEAP;
 
     public saveProgress: boolean = false;
-    public duration: number;
-    public responseUnit: number = 1;
-    public downtimeUnit: number = 1;
-    public durationEnabled = false;
 
     public isSettingChange = false;
-
-    public timeUnits = [
-      {value: 1, label: 'milliseconds'},
-      {value: 1000, label: 'seconds'},
-      {value: 60000, label: 'minutes'},
-      {value: 3600000, label: 'hours'}
-    ];
-
-    public timeUnitsDict = {
-      '1': 'milliseconds',
-      '1000': 'seconds',
-      '60000': 'minutes',
-      '3600000': 'hours'
-    };
 
     constructor(public $scope:any,
                 private HawkularAlert:any,
@@ -238,10 +220,7 @@ module HawkularMetrics {
         return HawkularAlert.Dampening.query({triggerId: triggerId}).$promise;
       }).then((data) => {
         this.dampening = data[0];
-        this.durationEnabled = this.dampening.evalTimeSetting !== 0;
-
-        this.responseUnit = this.getTimeUnit(this.dampening.evalTimeSetting);
-        this.responseDuration = this.dampening.evalTimeSetting / this.responseUnit;
+        this.responseDuration = this.dampening.evalTimeSetting;
 
         this.$log.debug('HawkularAlert.Dampening.query', data);
         return HawkularAlert.Condition.query({triggerId: triggerId}).$promise;
@@ -288,27 +267,6 @@ module HawkularMetrics {
       });
     }
 
-
-    // Get the most meaningful time unit (so that time value is not a very long fraction).
-    private getTimeUnit(timeValue: number): number {
-      var timeUnit = 1;
-
-      for (var i = 0; i < this.timeUnits.length; i++) {
-        var unit = this.timeUnits[i].value;
-        if (timeValue % unit === 0 && unit > timeUnit) {
-          timeUnit = unit;
-        }
-      }
-
-      return timeUnit;
-    }
-
-    public changeTimeUnits():void {
-      this.duration = this.dampening / this.responseUnit;
-
-      this.alertSettingTouch();
-    }
-
     public cancel(): void {
       this.$modalInstance.dismiss('cancel');
     }
@@ -335,13 +293,9 @@ module HawkularMetrics {
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error saving email action.', errorCallback);
       }).then(()=> {
-        var dampening = angular.copy(this.dampening);
+        this.dampening.evalTimeSetting = this.responseDuration;
 
-        if (!this.durationEnabled) {
-          dampening.evalTimeSetting = 0;
-        }
-
-        return this.HawkularAlertsManager.updateDampening(this.trigger.id,this.dampening.dampeningId, dampening);
+        return this.HawkularAlertsManager.updateDampening(this.trigger.id,this.dampening.dampeningId, this.dampening);
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating trigger', errorCallback);
       }).then(()=> {
@@ -372,7 +326,6 @@ module HawkularMetrics {
 
     public alertSettingTouch(): void {
       this.$log.debug('alertSettingTouch');
-      this.dampening.evalTimeSetting = this.responseDuration * this.responseUnit;
     }
 
   }
