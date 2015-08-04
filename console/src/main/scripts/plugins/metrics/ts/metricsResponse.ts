@@ -22,25 +22,11 @@
 module HawkularMetrics {
 
 
-  /**
-   * @ngdoc controller
-   * @name MetricsViewController
-   * @description This controller is responsible for handling activity related to the metrics response tab.
-   * @param $scope
-   * @param $rootScope for publishing $broadcast events only
-   * @param $interval
-   * @param $log
-   * @param HawkularMetric
-   * @param HawkularAlert
-   * @param $routeParams
-   * @param HawkularAlertsManager
-   * @param HawkularErrorManager
-   * @param AlertService
-   */
+
   export class MetricsViewController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularAlert',
-      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager', 'NotificationService', 'MetricsService'];
+      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager', 'NotificationsService', 'MetricsService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
@@ -64,7 +50,7 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private HawkularAlertsManager: IHawkularAlertsManager,
                 private HawkularErrorManager: IHawkularErrorManager,
-                private NotificationService: INotificationService,
+                private NotificationsService: INotificationsService,
                 private MetricsService: IMetricsService ) {
       $scope.vm = this;
 
@@ -172,7 +158,7 @@ module HawkularMetrics {
             this.average = Math.round(_.last(dataPoints).avg);
 
           }, (error) => {
-            this.NotificationService.error('Error Loading Chart Data: ' + error);
+            this.NotificationsService.error('Error Loading Chart Data: ' + error);
           });
 
       }
@@ -230,7 +216,7 @@ module HawkularMetrics {
             }
 
           }, (error) => {
-            this.NotificationService.error('Error Loading Chart Data: ' + error);
+            this.NotificationsService.error('Error Loading Chart Data: ' + error);
           });
       }
     }

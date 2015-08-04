@@ -19,7 +19,7 @@
 /// <reference path='alertsManager.ts'/>
 /// <reference path='pagination.ts'/>
 /// <reference path='errorManager.ts'/>
-/// <reference path='services/notificationService.ts'/>
+/// <reference path='services/notificationsService.ts'/>
 
 module HawkularMetrics {
 
@@ -28,7 +28,7 @@ module HawkularMetrics {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
       'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q',
-      'md5', 'HkHeaderParser', 'NotificationService'];
+      'md5', 'HkHeaderParser', 'NotificationsService'];
 
     private autoRefreshPromise:ng.IPromise<number>;
     private httpUriPart = 'http://';
@@ -55,7 +55,7 @@ module HawkularMetrics {
                 private $q: ng.IQService,
                 private md5: any,
                 private HkHeaderParser: IHkHeaderParser,
-                private NotificationService: INotificationService,
+                private NotificationsService: INotificationsService,
                 public resourceUrl:string
                 ) {
       $scope.vm = this;
@@ -158,7 +158,7 @@ module HawkularMetrics {
           (e) => err(e, 'Error saving threshold trigger.'))
 
         //this.$location.url('/hawkular/' + metricId);
-        .then(() => this.NotificationService.info('Your data is being collected. Please be patient (should be about ' +
+        .then(() => this.NotificationsService.info('Your data is being collected. Please be patient (should be about ' +
               'another minute).'),
           (e) => err(e, 'Error saving availability trigger.'))
 
@@ -246,7 +246,7 @@ module HawkularMetrics {
   class DeleteResourceModalController {
 
     static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularInventory', 'HawkularAlertsManager',
-      'NotificationService', 'resource'];
+      'NotificationsService', 'resource'];
 
     constructor(private $scope: any,
                 private $rootScope: any,
@@ -254,7 +254,7 @@ module HawkularMetrics {
                 private $q: ng.IQService,
                 private HawkularInventory,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private NotificationService: INotificationService,
+                private NotificationsService: INotificationsService,
                 public resource) {
       $scope.vm = this;
     }
@@ -280,7 +280,7 @@ module HawkularMetrics {
                    this.HawkularAlertsManager.deleteTrigger(triggerIds[1])])
       .then(removeResource)
       .then((res) => {
-          this.NotificationService.success('The URL ' + this.resource.properties.url +
+          this.NotificationsService.success('The URL ' + this.resource.properties.url +
             ' is no longer being monitored.');
           this.$modalInstance.close(res);
       });
