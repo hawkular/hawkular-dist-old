@@ -49,13 +49,7 @@
 
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
-      <artifactId>inventory-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.inventory</groupId>
-      <artifactId>inventory-bus-api</artifactId>
+      <artifactId>hawkular-inventory-api</artifactId>
       <scope>provided</scope>
     </dependency>
 

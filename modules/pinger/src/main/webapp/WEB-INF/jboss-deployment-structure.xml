@@ -22,7 +22,7 @@
     <dependencies>
       <module name="org.hawkular.nest" />
       <module name="org.jboss.resteasy.resteasy-jackson2-provider" services="import"/>
-      <module name="deployment.hawkular-integrated-inventory-rest.war" services="import"/>
+      <module name="deployment.hawkular-inventory-dist.war" services="import"/>
     </dependencies>
   </deployment>
 </jboss-deployment-structure>

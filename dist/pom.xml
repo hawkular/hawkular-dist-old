@@ -69,7 +69,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
-      <artifactId>hawkular-integrated-inventory-rest</artifactId>
+      <artifactId>hawkular-inventory-dist</artifactId>
       <type>war</type>
     </dependency>
     <dependency>
