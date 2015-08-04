@@ -26,7 +26,7 @@ module HawkularMetrics {
   export class MetricsViewController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularAlert',
-      '$routeParams', 'HawkularAlertsManager', 'HawkularErrorManager', 'NotificationsService', 'MetricsService'];
+      '$routeParams', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService', 'MetricsService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
@@ -49,7 +49,7 @@ module HawkularMetrics {
                 private HawkularAlert:any,
                 private $routeParams:any,
                 private HawkularAlertsManager: IHawkularAlertsManager,
-                private HawkularErrorManager: IHawkularErrorManager,
+                private ErrorsManager: IErrorsManager,
                 private NotificationsService: INotificationsService,
                 private MetricsService: IMetricsService ) {
       $scope.vm = this;
@@ -89,7 +89,7 @@ module HawkularMetrics {
         HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
           this.alertList = data.alertList;
         }, (error) => {
-          return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.');
+          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
     }
 

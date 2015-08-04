@@ -38,7 +38,7 @@ module HawkularMetrics {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric',
       'HawkularAlert', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
-      'HawkularErrorManager', 'NotificationsService'];
+      'ErrorsManager', 'NotificationsService'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
@@ -66,7 +66,7 @@ module HawkularMetrics {
                 private $filter:ng.IFilterService,
                 private $moment:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
-                private HawkularErrorManager:IHawkularErrorManager,
+                private ErrorsManager:IErrorsManager,
                 private NotificationsService:INotificationsService) {
       $scope.vm = this;
 
@@ -104,7 +104,7 @@ module HawkularMetrics {
         HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
           this.alertList = data.alertList;
         }, (error) => {
-          return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.');
+          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
     }
 

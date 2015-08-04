@@ -17,7 +17,7 @@
 
 /// <reference path="metricsPlugin.ts"/>
 /// <reference path="../../includes.ts"/>
-/// <reference path="errorManager.ts"/>
+/// <reference path="services/errorsManager.ts"/>
 
 
 module HawkularMetrics {

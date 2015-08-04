@@ -18,12 +18,12 @@
 /// <reference path="metricsPlugin.ts"/>
 /// <reference path="../../includes.ts"/>
 /// <reference path="services/alertsManager.ts"/>
-/// <reference path="errorManager.ts"/>
+/// <reference path="services/errorsManager.ts"/>
 
 module HawkularMetrics {
 
   export class MetricsAlertController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q',
+    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
       '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
 
     private metricId: string; /// @todo: use MetricId
@@ -42,7 +42,7 @@ module HawkularMetrics {
     constructor(private $scope:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
+                private ErrorsManager: HawkularMetrics.IErrorsManager,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: IHawkularRootScope,
@@ -96,7 +96,7 @@ module HawkularMetrics {
         this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
         this.alertList = queriedAlerts.alertList;
         this.alertList.$resolved = true; // FIXME
-      }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
+      }, (error) => { return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.'); });
     }
 
     public setPage(page:number):void {
@@ -124,7 +124,7 @@ module HawkularMetrics {
   _module.controller('MetricsAlertController', MetricsAlertController);
 
   export class MetricsAlertSetupController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q',
+    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
       '$rootScope', '$routeParams', '$modalInstance'];
 
     private metricId: string;
@@ -161,7 +161,7 @@ module HawkularMetrics {
     constructor(public $scope:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
+                private ErrorsManager: HawkularMetrics.IErrorsManager,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: any,
@@ -181,7 +181,7 @@ module HawkularMetrics {
         this.$log.debug('this.trigger_thres', this.trigger_thres);
         return HawkularAlert.Dampening.query({triggerId: $routeParams.resourceId + '_trigger_thres'}).$promise;
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error fetching threshold trigger.');
+        return this.ErrorsManager.errorHandler(error, 'Error fetching threshold trigger.');
       }).then((data)=> {
 
         // Make sure, the AUTORESOLVE entity is the 2nd one
@@ -200,7 +200,7 @@ module HawkularMetrics {
         this.$log.debug('this.trigger_thres_damp', this.trigger_thres_damp);
         return HawkularAlert.Condition.query({triggerId: $routeParams.resourceId + '_trigger_thres'}).$promise;
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error fetching threshold trigger dampening.');
+        return this.ErrorsManager.errorHandler(error, 'Error fetching threshold trigger dampening.');
       }).then((data)=> {
 
         // Make sure, the AUTORESOLVE condition is the 2nd one
@@ -211,7 +211,7 @@ module HawkularMetrics {
         this.alertSetupBackup.trigger_thres_cond = angular.copy(this.trigger_thres_cond);
         this.$log.debug('this.trigger_thres_cond', this.trigger_thres_cond);
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error fetching threshold trigger condition.');
+        return this.ErrorsManager.errorHandler(error, 'Error fetching threshold trigger condition.');
       });
 
       // Get the data about Availability Trigger
@@ -221,7 +221,7 @@ module HawkularMetrics {
         this.$log.debug('this.trigger_avail', this.trigger_avail);
         return HawkularAlert.Dampening.query({triggerId: $routeParams.resourceId + '_trigger_avail'}).$promise;
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error fetching availability trigger.');
+        return this.ErrorsManager.errorHandler(error, 'Error fetching availability trigger.');
       }).then((data)=> {
         this.trigger_avail_damp = [];
         this.trigger_avail_damp[0] = data[data[1].triggerMode === 'AUTORESOLVE' ? 0 : 1];
@@ -235,7 +235,7 @@ module HawkularMetrics {
 
         this.$log.debug('this.trigger_avail_damp', this.trigger_avail_damp);
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error fetching availability trigger dampening.');
+        return this.ErrorsManager.errorHandler(error, 'Error fetching availability trigger dampening.');
       });
 
       this.metricId = $routeParams.resourceId;
@@ -290,14 +290,14 @@ module HawkularMetrics {
           return this.HawkularAlertsManager.updateTrigger(this.trigger_thres.id, this.trigger_thres);
         }
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error saving email action.', errorCallback);
+        return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
       }).then(() => {
         this.trigger_avail.actions = this.trigger_thres.actions;
         if(!angular.equals(this.alertSetupBackup.trigger_avail, this.trigger_avail)) {
           return this.HawkularAlertsManager.updateTrigger(this.trigger_avail.id, this.trigger_avail);
         }
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger.', errorCallback);
+        return this.ErrorsManager.errorHandler(error, 'Error updating threshold trigger.', errorCallback);
       }).then(()=> {
         if (!this.thresDampDurationEnabled) {
           this.trigger_thres_damp[0].evalTimeSetting = 0;
@@ -308,14 +308,14 @@ module HawkularMetrics {
               this.trigger_thres_damp[0].dampeningId, this.trigger_thres_damp[0]);
         }
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error updating availability trigger.', errorCallback);
+        return this.ErrorsManager.errorHandler(error, 'Error updating availability trigger.', errorCallback);
       }).then(()=> {
         if(!angular.equals(this.alertSetupBackup.trigger_avail_damp[0], this.trigger_avail_damp[0])) {
           this.HawkularAlertsManager.updateDampening(this.trigger_avail.id, this.trigger_avail_damp[0].dampeningId,
               this.trigger_avail_damp[0]);
         }
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger dampening.',
+        return this.ErrorsManager.errorHandler(error, 'Error updating threshold trigger dampening.',
             errorCallback);
       }).then(()=> {
         if(!angular.equals(this.alertSetupBackup.trigger_thres_cond[0], this.trigger_thres_cond[0])) {
@@ -329,10 +329,10 @@ module HawkularMetrics {
           });
         }
       }, (error)=> {
-        return this.HawkularErrorManager.errorHandler(error, 'Error updating availability dampening.', errorCallback);
+        return this.ErrorsManager.errorHandler(error, 'Error updating availability dampening.', errorCallback);
       }).then(angular.noop, (error)=> {
         isError = true;
-        return this.HawkularErrorManager.errorHandler(error, 'Error updating availability condition.', errorCallback);
+        return this.ErrorsManager.errorHandler(error, 'Error updating availability condition.', errorCallback);
       }).finally(()=> {
         this.saveProgress = false;
 
