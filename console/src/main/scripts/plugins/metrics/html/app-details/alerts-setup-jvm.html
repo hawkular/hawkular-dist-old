@@ -60,44 +60,9 @@
         </div>
       </div>
     </fieldset>
-    <fieldset>
-      <legend>Alert</legend>
-      <div class="form-group">
-        <label class="col-sm-3 control-label">Create Alert</label>
-        <div class="col-sm-9">
-          <div class="radio">
-            <label for="every-time-heap">
-              <input type="radio" name="alert-heap" id="every-time-heap" ng-value="false" ng-model="jas.durationEnabled" checked="">
-              Every time conditions are met.
-            </label>eq
-          </div>
-          <div class="radio">
-            <label for="greater-time-heap">
-              <input type="radio" name="alert-heap" id="greater-time-heap" ng-value="true" ng-model="jas.durationEnabled">
-              Only when conditions are met for greater than:
-            </label>
-          </div>
-          <div class="input-group input-select indented">
-            <input type="number" class="form-control" placeholder="Duration" ng-model="jas.responseDuration"
-                   ng-disabled="!jas.durationEnabled" ng-change="jas.alertSettingTouch()">
-            <select pf-select ng-model="jas.responseUnit" id="responseUnit"
-                    ng-disabled="!jas.durationEnabled"
-                    ng-options="item.value as item.label for item in jas.timeUnits"
-                    ng-change="jas.changeTimeUnits()"></select>
-          </div>
-        </div>
-      </div>
-    </fieldset>
-    <fieldset>
-      <legend>Notification</legend>
-      <p>Receive an email notification every time the conditions are met.</p>
-      <div class="form-group">
-        <label class="col-sm-3 control-label" for="email-heap">Email</label>
-        <div class="col-sm-6">
-          <input type="text" id="email-heap" class="form-control" ng-model="jas.trigger.actions.email[0]">
-        </div>
-      </div>
-    </fieldset>
+    <hk-fieldset-dampening hk-duration="jas.responseDuration"></hk-fieldset-dampening>
+
+    <hk-fieldset-notification hk-alert-email="jas.trigger.actions.email[0]"></hk-fieldset-notification>
   </form>
 </div>
 <div class="modal-footer alert-settings">
