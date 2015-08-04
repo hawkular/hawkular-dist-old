@@ -183,7 +183,7 @@
 
       <dependency>
         <groupId>org.hawkular.inventory</groupId>
-        <artifactId>inventory-api</artifactId>
+        <artifactId>hawkular-inventory-api</artifactId>
         <version>${version.org.hawkular.inventory}</version>
       </dependency>
 
@@ -195,13 +195,7 @@
 
       <dependency>
         <groupId>org.hawkular.inventory</groupId>
-        <artifactId>inventory-bus-api</artifactId>
-        <version>${version.org.hawkular.inventory}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.hawkular.inventory</groupId>
-        <artifactId>hawkular-integrated-inventory-rest</artifactId>
+        <artifactId>hawkular-inventory-dist</artifactId>
         <version>${version.org.hawkular.inventory}</version>
         <type>war</type>
       </dependency>
