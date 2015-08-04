@@ -27,8 +27,19 @@ USER root
 
 RUN unzip -qq -d /opt /opt/hawkular.zip;\
     rm /opt/hawkular.zip;\
-    /opt/wildfly-8.2.0.Final/bin/add-user.sh hawkularadmin hawkularadmin --silent
+    mkdir /opt/data;\
+    /opt/hawkular-1.0.0.Alpha4-SNAPSHOT/bin/add-user.sh hawkularadmin hawkularadmin --silent
 
-EXPOSE 8080 9990
+# env variable controlling which Cassandra to use. Choose 'embeded_cassandra' or 'cassandra'
+env HAWKULAR_BACKEND=embedded_cassandra
 
-CMD ["/opt/wildfly-8.2.0.Final/bin/standalone.sh","-b","0.0.0.0","-bmanagement","0.0.0.0"]
+# host name(s) of the cassandra nodes. When linking containers, use the C* container name
+env CASSANDRA_NODES=cassandra
+
+# We put the WildFly data dir into this mount
+VOLUME /opt/data
+
+# Internal ports visible to the outside
+EXPOSE 8080 8443 9990
+
+CMD ["/opt/hawkular-1.0.0.Alpha4-SNAPSHOT/bin/standalone.sh","-b","0.0.0.0","-bmanagement","0.0.0.0","-Djboss.server.data.dir=/opt/data"]
