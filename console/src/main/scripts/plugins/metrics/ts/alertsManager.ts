@@ -60,13 +60,13 @@ module HawkularMetrics {
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
 
-    public static $inject = ['HawkularAlert', '$q', '$log', '$moment','NotificationService'];
+    public static $inject = ['HawkularAlert', '$q', '$log', '$moment','NotificationsService'];
 
     constructor(private HawkularAlert: any,
                 private $q: ng.IQService,
                 private $log: ng.ILogService,
                 private $moment: any,
-                private NotificationService:INotificationService) {
+                private NotificationsService:INotificationsService) {
     }
 
     public createTrigger(id: TriggerId, triggerName: string, enabled: boolean,
