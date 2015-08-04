@@ -103,7 +103,7 @@
       <outputDirectory>${hawkular.dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.hawkular.inventory:hawkular-integrated-inventory-rest</include>
+        <include>org.hawkular.inventory:hawkular-inventory-dist</include>
         <include>org.hawkular.bus:hawkular-feed-comm-war</include>
         <include>org.hawkular:hawkular-pinger</include>
         <include>org.hawkular:hawkular-avail-creator</include>
