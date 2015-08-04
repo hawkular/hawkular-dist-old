@@ -3,6 +3,8 @@
 Based on: _Opinionated AngularJS style guide for teams by link://twitter.com/toddmotto[@toddmotto]_ and modified for use
 with Hawkular and typescript instead of javascript.
 
+TIP:  This is by no means an Angular or Typescript tutorial. For tutorial resources please see: https://github.com/mtho11/java2angular[Angular/Typescript Resources]
+
 == Table of Contents
 
 . link:#modules[Modules]
@@ -71,6 +73,9 @@ angular
 
 This aids with readability and reduces the volume of code "wrapped" inside the Angular framework
 
+TIP:  Since our controllers will be Typescript, we will just use Typescript Classes and not functions to package
+the controllers, services, etc...
+
 *link:#table-of-contents[Back to top]*
 
 == Controllers
@@ -107,11 +112,14 @@ function MainController ($scope) {
 }
 
 // recommended
-function MainController () {
- this.someObject = {};
- this.doSomething = function () {
+class MainController {
+  public someObject :any;
+  constructor() {
+    this.someObject = {};
+  }
+  public doSomething ():void {
 
-};
+  };
 }
 ```
 
@@ -168,28 +176,33 @@ vm.removeUser = function (user, index) {
 }
 
 // recommended
-function MainController (UserService) {
+class MainController  {
+  constructor(private $scope :any,
+              private UserService :IUserService) {
+    $scope.vm = this;
+  }
 
-var vm = this;
+  public getUsers() {
+  UserService.getUsers()
+  .then(function (response) {
+    this.users = response;
+  });
+ }
 
-UserService
- .getUsers()
- .then(function (response) {
- vm.users = response;
- });
-
-vm.removeUser = function (user, index) {
- UserService
- .removeUser(user)
- .then(function (response) {
- vm.users.splice(index, 1);
- });
+ public removeUser (user :string, index :number) :void  {
+    UserService.removeUser(user)
+    .then(function (response) {
+      this.users.splice(index, 1);
+  });
  };
 
 }
 ```
 
 _Why?_ : Controllers should fetch Model data from Services, avoiding any Business logic. Controllers should act as a ViewModel and control the data flowing between the Model and the View presentational layer. Business logic in Controllers makes testing Services impossible.
+
+TIP: Please try to always provide a type to the _response_ objects returned from an external call -- otherwise, we
+have to goto the external source to find out what the schema is.
 
 *link:#table-of-contents[Back to top]*
 
@@ -213,13 +226,13 @@ angular
 ```
 ----
 
-*Factory*: Business logic or provider modules, return an Object or closure
+*Factory*:
+TIP:  Factories are not really useful with Typescript like they are in javascript, use Services instead.
 
-* 
 
-Always return a host Object instead of the revealing Module pattern due to the way Object references are bound and updated
 
 ```javascript
+// avoid
 function AnotherService () {
  var AnotherService = {};
  AnotherService.someValue = '';
@@ -233,7 +246,24 @@ angular
  .factory('AnotherService', AnotherService);
 ```
 
-_Why?_ : Primitive values cannot update alone using the revealing module pattern
+```javascript
+// recommended
+ export class SomeService implements ISomeService {
+
+    public static $inject = ['$log', 'toastr'];
+
+    constructor(private $log: ng.ILogService,
+                private toastr: any) {
+    }
+
+    public doSomeThing(message: string): void {
+      this.toastr.info(message, 'info');
+    }
+
+}
+
+  _module.service('SomeService', SomeService);
+```
 
 *link:#table-of-contents[Back to top]*
 
@@ -253,34 +283,6 @@ _Why?_ : Primitive values cannot update alone using the revealing module pattern
 * 
 
 Comment and class name declarations are confusing and should be avoided. Comments do not play nicely with older versions of IE. Using an attribute is the safest method for browser coverage.
-
-* 
-
-*Templating*: Use `Array.join(&#39;&#39;)` for clean templating
-
-```javascript
-// avoid
-function someDirective () {
- return {
- template: '<div class="some-directive">' +
- '<h1>My directive</h1>' +
- '</div>'
- };
-}
-
-// recommended
-function someDirective () {
- return {
- template: [
- '<div class="some-directive">',
- '<h1>My directive</h1>',
- '</div>'
- ].join('')
- };
-}
-```
-
-_Why?_ : Improves readability as code can be indented properly, it also avoids the `+` operator which is less clean and can lead to errors if used incorrectly to split lines
 
 * 
 
@@ -316,7 +318,8 @@ angular
 * 
 
 *Naming conventions*: Never `ng-*` prefix custom directives, they might conflict future native directives, instead
-for Hawkular use `hk-*` so its easy to tell that it came from our project.
+for Hawkular use `hk-*` so its easy to tell that it came from our project. [Also, don't use data-my-directive, it is
+ just not necessary].
 
 ```javascript
 // avoid
@@ -555,7 +558,7 @@ var unbind = [
   $rootScope.$on('customEvent2'[, callback]),
   $rootScope.$on('customEvent3'[, callback])
 ];
-$scope.$on('$destroy', function () {
+$scope.$on('$destroy',  () => {
   unbind.forEach(function (fn) {
     fn();
   });
@@ -617,8 +620,8 @@ function dragUpload () {
 // recommended
 function dragUpload () {
  return {
- link: function ($scope, $element, $attrs, $document) {
- $document.addEventListener('click', function () {
+ link: ($scope, $element, $attrs, $document) =>  {
+ $document.addEventListener('click', () => {
 
 [source]
 ----
@@ -648,7 +651,7 @@ function dragUpload () {
 // recommended
 function dragUpload ($timeout) {
  return {
- link: function ($scope, $element, $attrs) {
+ link: ($scope, $element, $attrs) => {
  $timeout(function () {
  //
  }, 1000);
@@ -663,7 +666,9 @@ function dragUpload ($timeout) {
 
 * 
 
-*jsDoc*: Use jsDoc syntax to document function names, description, params and returns
+*jsDoc*: Use jsDoc syntax to document function names, description, params and returns.
+INFO: When jsDoc is present, some IDEs like WebStorm will use that documentation to assist in code completion
+and help.
 
 ```javascript
 /**
