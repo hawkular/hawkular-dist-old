@@ -16,10 +16,6 @@
 ///
 
 /// <reference path="../metricsPlugin.ts"/>
-/*
- TODO
- Move to shared service location
- */
 
 module HawkularMetrics {
 
