@@ -95,6 +95,11 @@
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.inventory:INFO}</xsl:text></xsl:attribute>
       </level>
     </logger>
+    <logger category="org.hawkular.inventory.rest.requests">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.inventory.rest.requests:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
     <logger category="org.hawkular.metrics">
       <level>
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.metrics:INFO}</xsl:text></xsl:attribute>
@@ -349,7 +354,7 @@
                  numAvailSchedulerThreads="3">
         <xsl:attribute name="enabled">
           <xsl:choose>
-            <xsl:when test="$kettle.build.type='dev'">true</xsl:when>
+            <xsl:when test="$kettle.build.type='dev'">${hawkular.agent.enabled:true}</xsl:when>
             <xsl:otherwise>false</xsl:otherwise>
           </xsl:choose>
         </xsl:attribute>
