@@ -165,7 +165,7 @@
             defaultUser
           </config-property>
         ]]></xsl:comment>
-        <config-property name="ServerUrl">vm://org.hawkular.bus.broker.${jboss.node.name}?create=false</config-property>
+        <config-property name="ServerUrl">vm://org.hawkular.bus.broker.${jboss.node.name}?create=false&amp;jms.blobTransferPolicy.uploadUrl=file:${jboss.server.data.dir}/hawkular-bus-blobs</config-property>
         <connection-definitions>
           <connection-definition class-name="org.apache.activemq.ra.ActiveMQManagedConnectionFactory"
                                  jndi-name="java:/HawkularBusConnectionFactory"
