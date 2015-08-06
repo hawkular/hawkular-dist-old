@@ -56,17 +56,73 @@ module HawkularMetrics {
     queryAlerts(metricId: MetricId, startTime?:TimestampInMillis,
                 endTime?:TimestampInMillis, alertType?:AlertType,
                 currentPage?:number, perPage?:number): any
+
+    // Alert definitions part
+
+    getAlertDefinition(triggerId): any
+    saveAlertDefinition(alertDefinition:any, errorCallback: any, backup?: any): any
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
 
-    public static $inject = ['HawkularAlert', '$q', '$log', '$moment','NotificationsService'];
+    public static $inject = ['HawkularAlert', '$q', '$log', '$moment', 'NotificationsService', 'ErrorsManager'];
 
     constructor(private HawkularAlert: any,
                 private $q: ng.IQService,
                 private $log: ng.ILogService,
                 private $moment: any,
-                private NotificationsService:INotificationsService) {
+                private NotificationsService:INotificationsService,
+                private ErrorsManager: HawkularMetrics.IErrorsManager) {
+    }
+
+    public saveAlertDefinition(alertDefinition:any, errorCallback: any, backup?: any): any {
+      return this.addEmailAction(alertDefinition.trigger.actions.email[0]).then(()=> {
+        if (angular.equals(alertDefinition.trigger, backup.trigger)) {
+          return;
+        }
+
+        return this.updateTrigger(alertDefinition.trigger.id, alertDefinition.trigger);
+      }, (error)=> {
+        return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
+      }).then(()=> {
+        if (angular.equals(alertDefinition.dampenings[0], backup.dampenings[0])) {
+          return;
+        }
+
+        return this.updateDampening(alertDefinition.trigger.id,
+          alertDefinition.dampenings[0].dampeningId, alertDefinition.dampenings[0]);
+      }, (error)=> {
+        return this.ErrorsManager.errorHandler(error, 'Error updating trigger', errorCallback);
+      }).then(()=> {
+        if (angular.equals(alertDefinition.conditions[0], backup.conditions[0])) {
+          return;
+        }
+
+        return this.updateCondition(alertDefinition.trigger.id,
+          alertDefinition.conditions[0].conditionId, alertDefinition.conditions[0]);
+      }, (error)=> {
+        return this.ErrorsManager.errorHandler(error, 'Error updating dampening.', errorCallback);
+      }).then(angular.noop, (error)=> {
+        return this.ErrorsManager.errorHandler(error, 'Error updating condition.', errorCallback);
+      });
+    }
+
+    public getAlertDefinition(triggerId): any {
+      var deffered = this.$q.defer();
+      var trigger = {};
+
+      this.getTrigger(triggerId).then((triggerData) => {
+        trigger['trigger'] = triggerData;
+        return this.HawkularAlert.Dampening.query({triggerId: triggerId}).$promise;
+      }).then((dampeningData) => {
+        trigger['dampenings'] = dampeningData;
+        return this.HawkularAlert.Condition.query({triggerId: triggerId}).$promise;
+      }).then((conditionData)=> {
+        trigger['conditions'] = conditionData;
+        deffered.resolve(trigger);
+      });
+
+      return deffered.promise;
     }
 
     public createTrigger(id: TriggerId, triggerName: string, enabled: boolean,

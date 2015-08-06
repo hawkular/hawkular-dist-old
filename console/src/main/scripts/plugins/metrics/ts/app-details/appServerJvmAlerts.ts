@@ -163,20 +163,19 @@ module HawkularMetrics {
   _module.controller('JvmAlertController', JvmAlertController);
 
   export class JvmAlertSetupController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
-      '$rootScope', '$routeParams', '$modalInstance', 'HawkularMetric'];
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
+      '$rootScope', '$routeParams', '$modalInstance'];
 
-    private resourceId: string;
-    private trigger: any;
-    private dampening: any;
-    private conditionGt: any;
-    public responseDuration: number;
+    // Trigger definitions are GET in the constructor. They are used as backup reference to avoid persisting
+    // non-changed entities.
+    private triggerDefinition: any = {};
 
-    private conditionGtEnabled: boolean;
-    private conditionLtEnabled: boolean;
-
-    public conditionGtPercent: number;
-    public conditionLtPercent: number;
+    // Alert Definition Model, used in the view
+    public adm: any = {
+      heap: {},
+      nheap: {},
+      gcol: {}
+    };
 
     // TODO - Get the actual data from backend
     public maxUsage: number = AppServerJvmDetailsController.MAX_HEAP;
@@ -186,84 +185,72 @@ module HawkularMetrics {
     public isSettingChange = false;
 
     constructor(public $scope:any,
-                private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 private ErrorsManager: HawkularMetrics.IErrorsManager,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: any,
                 private $routeParams: any,
-                private $modalInstance: any,
-                private HawkularMetric: any) {
-
-      this.$log.debug('querying data');
-      this.$log.debug('$routeParams', $routeParams.resourceId);
+                private $modalInstance: any) {
 
       this.maxUsage = AppServerJvmDetailsController.MAX_HEAP;
 
       // TODO - update the pfly notification service to support more and category based notifications containers.
       this.$rootScope.hkNotifications = {alerts: []};
-      this.resourceId = $routeParams.resourceId;
-      this.$log.debug('this.resourceId', this.resourceId);
 
-      var triggerId: string = this.resourceId + '_jvm_pheap';
-/*
-      this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Max',
-        buckets: 1}, (resource) => {
-        this.maxUsage = resource[0];
-      }, this);
-*/
-      this.HawkularAlertsManager.getTrigger(triggerId).then((data) => {
-        this.$log.debug('getTrigger', data);
-        this.trigger = data;
-        return HawkularAlert.Dampening.query({triggerId: triggerId}).$promise;
-      }).then((data) => {
-        this.dampening = data[0];
-        this.responseDuration = this.dampening.evalTimeSetting;
+      var triggerId: string = $routeParams.resourceId + '_jvm_pheap';
 
-        this.$log.debug('HawkularAlert.Dampening.query', data);
-        return HawkularAlert.Condition.query({triggerId: triggerId}).$promise;
-      }).then((data)=> {
-        this.conditionGt = data[0];
-        this.conditionGtEnabled = this.conditionGt.thresholdHigh < this.maxUsage;
-        this.conditionGtPercent = this.conditionGt.thresholdHigh > 0 ?
-          this.conditionGt.thresholdHigh * 100 / this.maxUsage : 0;
+      // Heap Usage trigger definition
+      this.HawkularAlertsManager.getAlertDefinition(triggerId).then( (alertDefinitionData) => {
+        this.triggerDefinition['heap'] = alertDefinitionData;
 
-        this.conditionLtEnabled = this.conditionGt.thresholdLow > 0;
-        this.conditionLtPercent = this.conditionGt.thresholdLow > 0 ?
-          this.conditionGt.thresholdLow * 100 / this.maxUsage : 0;
+        this.adm.heap['trigger'] = alertDefinitionData.trigger;
 
-        this.$log.debug('HawkularAlert.Condition.query', this.conditionGt);
+        this.adm.heap['email'] = alertDefinitionData.trigger.actions.email[0];
+
+        this.adm.heap['dampening'] = alertDefinitionData.dampenings[0];
+        this.adm.heap['responseDuration'] = this.adm.heap.dampening.evalTimeSetting;
+
+        this.adm.heap['condition'] = alertDefinitionData.conditions[0];
+        this.adm.heap['conditionGtEnabled'] = this.adm.heap.condition.thresholdHigh < this.maxUsage;
+        this.adm.heap['conditionGtPercent'] = this.adm.heap.condition.thresholdHigh > 0 ?
+        this.adm.heap.condition.thresholdHigh * 100 / this.maxUsage : 0;
+
+        this.adm.heap['conditionLtEnabled'] = this.adm.heap.condition.thresholdLow > 0;
+        this.adm.heap['conditionLtPercent'] = this.adm.heap.condition.thresholdLow > 0 ?
+        this.adm.heap.condition.thresholdLow * 100 / this.maxUsage : 0;
+      });
+
+      // Non-Heap Usage trigger definition
+
+      // Garbage Collection trigger definition
+    }
+
+    public enableHeapGt(): void {
+      var triggerId: string = this.adm.heap.trigger.id;
+      var conditionId: string = this.adm.heap.condition.conditionId;
+
+      this.adm.heap.condition.thresholdHigh = this.adm.heap.conditionGtEnabled ?
+        (this.maxUsage / this.adm.heap.conditionGtPercent) : this.maxUsage;
+
+      this.HawkularAlertsManager.updateCondition(triggerId, conditionId, this.adm.heap.condition).then((data:any) => {
+        this.triggerDefinition.heap.conditions = data;
+        this.adm.heap.condition = data[0];
+        this.$log.debug('this.conditionGt', this.adm.heap.condition);
       });
     }
 
-    public enableGt(): void {
-      this.$log.debug('enableGt');
+    public enableHeapLt(): void {
+      var triggerId: string = this.adm.heap.trigger.id;
+      var conditionId: string = this.adm.heap.condition.conditionId;
 
-      var triggerId: string = this.trigger.id;
-      var conditionId: string = this.conditionGt.conditionId;
+      this.adm.heap.condition.thresholdLow = this.adm.heap.conditionLtEnabled ?
+        (this.maxUsage / this.adm.heap.conditionLtPercent) : 0;
 
-      this.conditionGt.thresholdHigh = this.conditionGtEnabled ? (this.maxUsage / this.conditionGtPercent) :
-        this.maxUsage;
-
-      this.HawkularAlertsManager.updateCondition(triggerId, conditionId, this.conditionGt).then((data:any) => {
-        this.conditionGt = data[0];
-        this.$log.debug('this.conditionGt', this.conditionGt);
-      });
-    }
-
-    public enableLt(): void {
-      this.$log.debug('enableLt');
-
-      var triggerId: string = this.trigger.id;
-      var conditionId: string = this.conditionGt.conditionId;
-
-      this.conditionGt.thresholdLow = this.conditionLtEnabled ? (this.maxUsage / this.conditionLtPercent) : 0;
-
-      this.HawkularAlertsManager.updateCondition(triggerId, conditionId, this.conditionGt).then((data:any) => {
-        this.conditionGt = data[0];
-        this.$log.debug('this.conditionGt', this.conditionGt);
+      this.HawkularAlertsManager.updateCondition(triggerId, conditionId, this.adm.heap.condition).then((data:any) => {
+        this.triggerDefinition.heap.conditions = data;
+        this.adm.heap.condition = data[0];
+        this.$log.debug('this.conditionGt', this.adm.heap.condition);
       });
     }
 
@@ -277,51 +264,47 @@ module HawkularMetrics {
       // Clear alerts notifications on save (discard previous success/error list)
       this.$rootScope.hkNotifications.alerts = [];
 
+      var isError = false;
+
       // Error notification done with callback function on error
       var errorCallback = (error: any, msg: string) => {
         this.$rootScope.hkNotifications.alerts.push({
           type: 'error',
           message: msg
         });
+        isError = true;
       };
 
+      // Field helping to disable the save button while save action is in progress.
       this.saveProgress = true;
-      var isError = false;
-      // Check if email action exists
-      this.HawkularAlertsManager.addEmailAction(this.trigger.actions.email[0]).then(()=> {
-          return this.HawkularAlertsManager.updateTrigger(this.trigger.id, this.trigger);
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
-      }).then(()=> {
-        this.dampening.evalTimeSetting = this.responseDuration;
 
-        return this.HawkularAlertsManager.updateDampening(this.trigger.id,this.dampening.dampeningId, this.dampening);
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error updating trigger', errorCallback);
-      }).then(()=> {
-        this.conditionGt.thresholdHigh = this.conditionGtEnabled ? this.maxUsage * this.conditionGtPercent / 100 :
-          this.maxUsage;
-        this.conditionGt.thresholdLow = this.conditionLtEnabled ? this.maxUsage * this.conditionLtPercent / 100 : 0;
-        return this.HawkularAlertsManager.updateCondition(this.trigger.id, this.conditionGt.conditionId,
-          this.conditionGt);
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error updating dampening.', errorCallback);
-      }).then(angular.noop, (error)=> {
-        isError = true;
-        return this.ErrorsManager.errorHandler(error, 'Error updating conditionGt condition.', errorCallback);
-      }).finally(()=> {
-        this.saveProgress = false;
+      // Create an alert definition objects (trigger, dampening, condition) to
+      var heapAlertDefinition = angular.copy(this.triggerDefinition.heap);
+      heapAlertDefinition.trigger.actions.email[0] = this.adm.heap.email;
+      heapAlertDefinition.dampenings[0].evalTimeSetting = this.adm.heap.responseDuration;
 
-        if(!isError)  {
-          // notify success
-          this.$rootScope.hkNotifications.alerts.push({
-            type: 'success',
-            message: 'Changes saved successfully.'
-          });
-        }
+      heapAlertDefinition.conditions[0].thresholdHigh = this.adm.heap.conditionGtEnabled ?
+        this.maxUsage * this.adm.heap.conditionGtPercent / 100 : this.maxUsage;
 
-        this.cancel();
-      });
+      heapAlertDefinition.conditions[0].thresholdLow = this.adm.heap.conditionLtEnabled ?
+        this.maxUsage * this.adm.heap.conditionLtPercent / 100 : 0;
+
+      // Actual save of the alert definition
+      this.HawkularAlertsManager.saveAlertDefinition(heapAlertDefinition, errorCallback,
+        this.triggerDefinition.heap).finally(()=> {
+
+          this.saveProgress = false;
+
+          if(!isError)  {
+            // notify success
+            this.$rootScope.hkNotifications.alerts.push({
+              type: 'success',
+              message: 'Changes saved successfully.'
+            });
+          }
+
+          this.cancel();
+        });
     }
 
     public alertSettingTouch(): void {
@@ -332,4 +315,3 @@ module HawkularMetrics {
 
   _module.controller('JvmAlertSetupController', JvmAlertSetupController);
 }
-

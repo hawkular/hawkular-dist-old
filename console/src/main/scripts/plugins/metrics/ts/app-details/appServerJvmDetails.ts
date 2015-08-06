@@ -172,24 +172,33 @@ module HawkularMetrics {
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
+        console.log('!!! heap used', resource);
+        if (resource.length) {
           this['heapUsage'] = resource[0];
-        }, this);
+        }
+      }, this);
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Max',
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
+        console.log('!!! heap max', resource);
+        if (resource.length) {
           this['heapMax'] = resource[0];
           AppServerJvmDetailsController.MAX_HEAP = resource[0].max;
-        }, this);
+        }
+      }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Accumulated GC Duration',
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
+        console.log('!!! GC', resource);
+        if (resource.length) {
           this['accGCDuration'] = resource[0].value - resource[resource.length-1].value;
           this.chartGCDurationData = this.formatCounterChartOutput(resource);
-        }, this);
+        }
+      }, this);
       this.getJvmChartData();
     }
 
