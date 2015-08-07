@@ -20,7 +20,7 @@ TIP:  This is by no means an Angular or Typescript tutorial. For tutorial resour
 
 == Modules
 
-* 
+*
 
 *Definitions*: Declare modules without a variable using the setter and getter syntax
 
@@ -37,11 +37,11 @@ angular
  .factory();
 ```
 
-* 
+*
 
 Note: Using `angular.module(&#39;app&#39;, []);` sets a module, whereas `angular.module(&#39;app&#39;);` gets the module. Only set once and get for all other instances.
 
-* 
+*
 
 *Methods*: Pass functions into module methods rather than assign as a callback
 
@@ -69,7 +69,7 @@ angular
  .service('SomeService', SomeService);
 ```
 
-* 
+*
 
 This aids with readability and reduces the volume of code "wrapped" inside the Angular framework
 
@@ -94,11 +94,11 @@ Controller names should always end in `*Controller` (not `*Ctrl` or anything els
 
 ```
 
-* 
+*
 
 In the DOM we get a variable per controller, which aids nested controller methods, avoiding any `$parent` calls
 
-* 
+*
 
 The `controllerAs` syntax uses `this` inside controllers, which gets bound to `$scope`
 
@@ -123,11 +123,11 @@ class MainController {
 }
 ```
 
-* 
+*
 
 Only use `$scope` in `controllerAs` when necessary; for example, publishing and subscribing events using `$emit`, `$broadcast`, `$on` or `$watch`. Try to limit the use of these, however, and treat `$scope` as a special use case
 
-* 
+*
 
 *controllerAs 'vm'*: Capture the `this` context of the Controller using `vm`, standing for `ViewModel`
 
@@ -150,7 +150,7 @@ function MainController () {
 ```
 *Why?* : Function context changes the`this`value, use it to avoid`.bind()` calls and scoping issues
 
-* 
+*
 
 *Presentational logic only (MVVM)*: Presentational logic only inside a controller, avoid Business logic (delegate to Services)
 
@@ -269,7 +269,7 @@ angular
 
 == Directives
 
-* 
+*
 
 *Declaration restrictions*: Only use `custom element` and `custom attribute` methods for declaring your Directives (`{ restrict: &#39;EA&#39; }`) depending on the Directive's role
 
@@ -280,11 +280,11 @@ angular
 <div my-directive></div>
 ```
 
-* 
+*
 
 Comment and class name declarations are confusing and should be avoided. Comments do not play nicely with older versions of IE. Using an attribute is the safest method for browser coverage.
 
-* 
+*
 
 *DOM manipulation*: Takes place only inside Directives, never a controller/service
 
@@ -315,7 +315,7 @@ angular
  .directive('dragUpload', dragUpload);
 ```
 
-* 
+*
 
 *Naming conventions*: Never `ng-*` prefix custom directives, they might conflict future native directives, instead
 for Hawkular use `hk-*` so its easy to tell that it came from our project. [Also, don't use data-my-directive, it is
@@ -341,11 +341,11 @@ angular
  .directive('hkDragUpload', dragUpload);
 ```
 
-* 
+*
 
 Directives and Filters are the _only_ providers that have the first letter as lowercase; this is due to strict naming conventions in Directives. Angular hyphenates `camelCase`, so `dragUpload` will become `&lt;div drag-upload&gt;&lt;/div&gt;` when used on an element.
 
-* 
+*
 
 *controllerAs*: Use the `controllerAs` syntax inside Directives as well
 
@@ -388,7 +388,7 @@ angular
 
 == Filters
 
-* 
+*
 
 *Global filters*: Create global filters using `angular.filter()` only. Never use local filters inside Controllers/Services
 
@@ -418,7 +418,7 @@ angular
  .filter('startsWithLetterA', startsWithLetterA);
 ```
 
-* 
+*
 
 This enhances testing and reusability
 
@@ -426,7 +426,7 @@ This enhances testing and reusability
 
 == Routing resolves
 
-* 
+*
 
 *Promises*: Resolve Controller dependencies in the `$routeProvider` (or `$stateProvider` for `ui-router`), not the Controller itself
 
@@ -460,7 +460,7 @@ angular
  .config(config);
 ```
 
-* 
+*
 
 *Controller.resolve property*: Never bind logic to the router itself. Reference a `resolve` property for each Controller to couple the logic
 
@@ -506,7 +506,7 @@ function config ($routeProvider) {
 }
 ```
 
-* 
+*
 
 This keeps resolve dependencies inside the same file as the Controller and the router free from logic
 
@@ -514,7 +514,7 @@ This keeps resolve dependencies inside the same file as the Controller and the r
 
 == Publish and subscribe events
 
-* 
+*
 
 *$scope*: Use the `$emit` and `$broadcast` methods to trigger events to direct relationship scopes only
 
@@ -526,7 +526,7 @@ $scope.$emit('customEvent', data);
 $scope.$broadcast('customEvent', data);
 ```
 
-* 
+*
 
 *$rootScope*: Use only `$emit` as an application-wide event bus and remember to unbind listeners
 
@@ -536,7 +536,7 @@ $scope.$broadcast('customEvent', data);
 $rootScope.$emit('customEvent', data);
 ----
 
-* 
+*
 
 Hint: Because the `$rootScope` is never destroyed, `$rootScope.$on` listeners aren't either, unlike `$scope.$on` listeners and will always persist, so they need destroying when the relevant `$scope` fires the `$destroy` event
 
@@ -547,7 +547,7 @@ var unbind = $rootScope.$on('customEvent'[, callback]);
 $scope.$on('$destroy', unbind);
 ----
 
-* 
+*
 
 For multiple `$rootScope` listeners, use an Object literal and loop each one on the `$destroy` event to unbind all automatically
 
@@ -569,7 +569,7 @@ $scope.$on('$destroy',  () => {
 
 == Performance
 
-* 
+*
 
 *One-time binding syntax*: In newer versions of Angular (v1.3.0-beta.10+), use the one-time binding syntax `{{ ::value }}` where it makes sense
 
@@ -582,7 +582,7 @@ $scope.$on('$destroy',  () => {
 ```
 *Why?* : Binding once removes the watcher from the scope&#39;s`$$watchers`array after the`undefined` variable becomes resolved, thus improving performance in each dirty-check
 
-* 
+*
 
 *Consider $scope.$digest*: Use `$scope.$digest` over `$scope.$apply` where it makes sense. Only child scopes will update
 
@@ -597,7 +597,7 @@ _Why?_ : `$scope.$apply` will call `$rootScope.$digest`, which causes the entire
 
 == Angular wrapper references
 
-* 
+*
 
 *$document and $window*: Use `$document` and `$window` at all times to aid testing and Angular references
 
@@ -632,7 +632,7 @@ function dragUpload () {
  };
 }
 ```
-* 
+*
 
 *$timeout and $interval*: Use `$timeout` and `$interval` over their native counterparts to keep Angular's two-way data binding up to date
 
@@ -664,7 +664,7 @@ function dragUpload ($timeout) {
 
 == Comment standards
 
-* 
+*
 
 *jsDoc*: Use jsDoc syntax to document function names, description, params and returns.
 INFO: When jsDoc is present, some IDEs like WebStorm will use that documentation to assist in code completion
