@@ -92,11 +92,18 @@ module HawkularMetrics {
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
 
       this.HawkularAlertsManager.queryConsoleAlerts(this.metricId, this.alertsTimeStart, this.alertsTimeEnd, undefined,
-          this.resCurPage, this.resPerPage).then((queriedAlerts)=> {
-        this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
-        this.alertList = queriedAlerts.alertList;
-        this.alertList.$resolved = true; // FIXME
-      }, (error) => { return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.'); });
+        this.resCurPage, this.resPerPage).then((queriedAlerts)=> {
+          this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
+          _.forEach(queriedAlerts.alertList, (item) => {
+            if (item['type'] === 'THRESHOLD') {
+              item['alertType'] = 'PINGRESPONSE';
+            } else if (item['type'] === 'AVAILABILITY') {
+              item['alertType'] = 'PINGAVAIL';
+            }
+          });
+          this.alertList = queriedAlerts.alertList;
+          this.alertList.$resolved = true; // FIXME
+        }, (error) => { return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.'); });
     }
 
     public setPage(page:number):void {

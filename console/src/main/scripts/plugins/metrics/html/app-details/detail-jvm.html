@@ -27,26 +27,32 @@
     </div>
   </div>
 
-  <!-- Alerts -->
   <div class="hk-info-top clearfix">
     <h3 class="pull-left">
-      <button class="btn btn-link hk-trigger" ng-click="vm.showAllAlerts = !vm.showAllAlerts" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> JVM Alerts <span ng-show="vm.alertList.length > 0">({{vm.showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+      <button class="btn btn-link hk-trigger" ng-click="vm.showAllAlerts = !vm.showAllAlerts" tooltip-trigger
+              tooltip-placement="top" tooltip="Expand/collapse">
+        <i class="fa" ng-show="vm.alertList.length > 0"
+           ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> JVM Alerts
+        <span ng-show="vm.alertList.length > 0">
+          ({{vm.showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})
+        </span>
+      </button>
     </h3>
-    <span class="hk-settings pull-right"><a href="#" ng-controller="JvmAlertController as jac" ng-click="jac.openSetup()"><i class="fa fa-cog"></i>JVM Alert Settings</a></span>
-    <!--<span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>-->
+    <span class="hk-settings pull-right">
+      <a href="#" ng-controller="JvmAlertController as jac" ng-click="jac.openSetup()">
+        <i class="fa fa-cog"></i>JVM Alert Settings
+      </a>
+    </span>
   </div>
   <div class="clearfix">
     <!-- No Alerts -->
     <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
       <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-      <div>No alerts have been fired in this category and time range.</div>
+      <div class="hk-event">No Alerts have been fired in this category and time range.</div>
     </div>
     <!-- Alerts exist -->
-    <div class="panel panel-default alert alert-danger" ng-repeat="alert in vm.alertList | limitTo: (vm.showAllAlerts ? 100000 : 3) track by $index">
-      <div class="hk-alert-icon"><i class="fa fa-flag"></i></div>
-      <div class="hk-date">{{alert.start | date:'medium' }}</div>
-      <div class="hk-event"><strong>Heap Memory</strong>: The Heap memory usage was {{alert.avg / 1024 / 1024 | number:2}} MB.</div>
-    </div>
+    <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList"
+                         hk-limit="(vm.showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
   </div>
 
 

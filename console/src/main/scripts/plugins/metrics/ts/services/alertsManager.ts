@@ -37,7 +37,7 @@ module HawkularMetrics {
     deleteTrigger(triggerId: TriggerId): ng.IPromise<void>;
     createCondition(triggerId: TriggerId, condition: any): ng.IPromise<void>;
     updateCondition(triggerId: TriggerId, conditionId: ConditionId, condition: any): ng.IPromise<void>;
-    deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<void>;
+    deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<any>;
     createDampening(triggerId: TriggerId, duration: number, triggerMode?: string): ng.IPromise<void>;
     updateDampening(triggerId: TriggerId, dampeningId: DampeningId, dampening: any): ng.IPromise<void>;
     getAction(email: EmailType): ng.IPromise<void>;
@@ -49,8 +49,7 @@ module HawkularMetrics {
     queryConsoleAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType,
                        currentPage?:number, perPage?:number): any;
     queryAlerts(metricId: MetricId, startTime?:TimestampInMillis,
-                endTime?:TimestampInMillis, alertType?:AlertType,
-                currentPage?:number, perPage?:number): any
+                endTime?:TimestampInMillis, currentPage?:number, perPage?:number): any
 
     // Alert definitions part
 
@@ -261,7 +260,7 @@ module HawkularMetrics {
       return this.HawkularAlert.Condition.put({triggerId: triggerId, conditionId: conditionId}, condition).$promise;
     }
 
-    public deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<void> {
+    public deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<any> {
       return this.HawkularAlert.Condition.delete({triggerId: triggerId, conditionId: conditionId}).$promise;
     }
 
@@ -424,7 +423,7 @@ module HawkularMetrics {
 
 
     public queryAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis,
-                       alertType?:AlertType, currentPage?:number, perPage?:number): any {
+                       currentPage?:number, perPage?:number): any {
       var alertList = [];
       var headers;
 

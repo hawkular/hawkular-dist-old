@@ -298,41 +298,8 @@ module HawkularMetrics {
       this.$scope.$watch(angular.bind(this, () => {
         return this.adm;
       }), () => {
-        console.log('watching', this.adm, this.admBak, !angular.equals(this.adm, this.admBak));
         this.isSettingChange = !angular.equals(this.adm, this.admBak);
       }, true);
-    }
-
-    public xenableHeapGt(): void {
-      /*
-      var triggerId: string = this.adm.heap.trigger.id;
-      var conditionId: string = this.adm.heap.condition.conditionId;
-
-      this.adm.heap.condition.thresholdHigh = this.adm.heap.conditionGtEnabled ?
-        (this.maxUsage / this.adm.heap.conditionGtPercent) : this.maxUsage;
-
-      this.HawkularAlertsManager.updateCondition(triggerId, conditionId, this.adm.heap.condition).then((data:any) => {
-        this.triggerDefinition.heap.conditions = data;
-        this.adm.heap.condition = data[0];
-        this.$log.debug('this.conditionGt', this.adm.heap.condition);
-      });
-      */
-    }
-
-    public xenableHeapLt(): void {
-      /*
-      var triggerId: string = this.adm.heap.trigger.id;
-      var conditionId: string = this.adm.heap.condition.conditionId;
-
-      this.adm.heap.condition.thresholdLow = this.adm.heap.conditionLtEnabled ?
-        (this.maxUsage / this.adm.heap.conditionLtPercent) : 0;
-
-      this.HawkularAlertsManager.updateCondition(triggerId, conditionId, this.adm.heap.condition).then((data:any) => {
-        this.triggerDefinition.heap.conditions = data;
-        this.adm.heap.condition = data[0];
-        this.$log.debug('this.conditionGt', this.adm.heap.condition);
-      });
-      */
     }
 
     public cancel(): void {
@@ -382,11 +349,14 @@ module HawkularMetrics {
       garbaAlertDefinition.conditions[0].threshold = this.adm.garba.conditionEnabled ?
         this.adm.garba.conditionThreshold : 0;
 
-      var garbaConditionDelete = this.$q.defer().promise;
+      var garbaConditionDeleteDefer = this.$q.defer();
+      var garbaConditionDelete: any = garbaConditionDeleteDefer.promise;
       if(!this.adm.garba.conditionEnabled) {
-        this.HawkularAlertsManager.deleteCondition(garbaAlertDefinition.trigger.id,
+        garbaConditionDelete = this.HawkularAlertsManager.deleteCondition(garbaAlertDefinition.trigger.id,
           garbaAlertDefinition.conditions[0].conditionId);
         delete garbaAlertDefinition.conditions;
+      } else {
+        garbaConditionDeleteDefer.resolve('Nothing to do');
       }
 
       var heapSavePromise = this.HawkularAlertsManager.saveAlertDefinition(heapAlertDefinition, errorCallback,

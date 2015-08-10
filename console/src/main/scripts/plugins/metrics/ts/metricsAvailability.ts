@@ -101,8 +101,9 @@ module HawkularMetrics {
 
     private getAlerts(metricId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
-        HawkularMetrics.AlertType.AVAILABILITY).then((data)=> {
-          this.alertList = data.alertList;
+        HawkularMetrics.AlertType.AVAILABILITY).then((alertAvailData)=> {
+          _.forEach(alertAvailData.alertList, (item) => { item['alertType']='PINGAVAIL';});
+          this.alertList = alertAvailData.alertList;
         }, (error) => {
           return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
