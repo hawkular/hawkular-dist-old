@@ -23,17 +23,9 @@
       <div class="form-group onffswitch-form-group">
         <label class="col-md-3 control-label" for="trigger_thres.enabled">Status</label>
         <div class="onoffswitch-container">
-          <div class="onoffswitch">
-            <input type="checkbox" id="trigger_thres.enabled" class="onoffswitch-checkbox"
-                   ng-model="mas.trigger_thres.enabled" ng-change="mas.alertSettingTouch()">
-            <label class="onoffswitch-label" for="trigger_thres.enabled">
-              <span class="onoffswitch-inner">
-                <span class="onoffswitch-active ng-binding">ON</span>
-                <span class="onoffswitch-inactive ng-binding">OFF</span>
-              </span>
-              <span class="onoffswitch-switch"></span>
-            </label>
-          </div>
+          <hk-switch hk-model="mas.trigger_thres.enabled"
+                     hk-change="mas.alertSettingTouch()"
+                     id="trigger_thres.enabled"></hk-switch>
         </div>
       </div>
       <div ng-show="mas.trigger_thres.enabled">
@@ -83,17 +75,9 @@
       <div class="form-group onffswitch-form-group">
         <label class="col-md-3 control-label" for="trigger_avail.enabled">Status</label>
         <div class="onoffswitch-container">
-          <div class="onoffswitch">
-            <input type="checkbox" id="trigger_avail.enabled" name="trigger_avail.enabled" class="onoffswitch-checkbox"
-                   ng-model="mas.trigger_avail.enabled" ng-change="mas.alertSettingTouch()">
-            <label class="onoffswitch-label" for="trigger_avail.enabled">
-              <span class="onoffswitch-inner">
-                <span class="onoffswitch-active ng-binding">ON</span>
-                <span class="onoffswitch-inactive ng-binding">OFF</span>
-              </span>
-              <span class="onoffswitch-switch"></span>
-            </label>
-          </div>
+          <hk-switch hk-model="mas.trigger_avail.enabled"
+                     hk-change="mas.alertSettingTouch()"
+                     id="trigger_avail.enabled"></hk-switch>
         </div>
       </div>
       <div ng-show="mas.trigger_avail.enabled">
