@@ -2,170 +2,210 @@
   <button type="button" class="close" ng-click="jas.cancel()">
     <span class="pficon pficon-close"></span>
   </button>
-  <h4 class="modal-title">Alert Settings</h4>
+  <h4 class="modal-title">JVM Alert Settings</h4>
 </div>
 <div class="modal-body alert-settings">
   <tabset>
     <tab heading="Heap Usage">
-      <p>Configure conditions settings for Heap usage alerts and notifications.</p>
-      <form class="form-horizontal">
-        <fieldset>
-          <legend>Threshold Conditions</legend>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Maximum usage</label>
-            <div class="col-sm-6">
-              <span class="hk-input-text">{{jas.maxUsage / 1024 / 1024 | number : 2}} MB</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label" for="usage-greater">Usage greater than {{jas.adm.heap.conditionGtPercent}}</label>
-            <div class="col-sm-5">
-              <div class="input-group hk-input-small">
-                <input type="number" min="0" max="100" ng-model="jas.adm.heap.conditionGtPercent" class="form-control" id="usage-greater" ng-disabled="!jas.adm.heap.conditionGtEnabled">
-                <div class="input-group-addon">%</div>
-              </div>
-              <span class="input-detail">({{jas.adm.heap.conditionGtEnabled && jas.adm.heap.conditionGtPercent ? (jas.maxUsage * jas.adm.heap.conditionGtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
-            </div>
-            <div class="col-sm-4">
-              <div class="onoffswitch pull-right">
-                <input type="checkbox" id="usage-greater-switch" class="onoffswitch-checkbox" ng-model="jas.adm.heap.conditionGtEnabled" ng-click="jas.enableHeapGt()">
-                <label class="onoffswitch-label" for="usage-greater-switch">
-                          <span class="onoffswitch-inner">
-                            <span class="onoffswitch-active ng-binding">ON</span>
-                            <span class="onoffswitch-inactive ng-binding">OFF</span>
-                          </span>
-                  <span class="onoffswitch-switch"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label" for="usage-less">Usage less than {{jas.adm.heap.conditionLtPercent}}</label>
-            <div class="col-sm-5">
-              <div class="input-group hk-input-small">
-                <input type="number" min="0" max="100" ng-model="jas.adm.heap.conditionLtPercent" class="form-control" id="usage-less" ng-disabled="!jas.adm.heap.conditionLtEnabled">
-                <div class="input-group-addon">%</div>
-              </div>
-              <span class="input-detail">({{jas.adm.heap.conditionLtEnabled && jas.adm.heap.conditionLtPercent ? (jas.maxUsage * jas.adm.heap.conditionLtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
-            </div>
-            <div class="col-sm-4">
-              <div class="onoffswitch pull-right">
-                <input type="checkbox" id="usage-less-switch" class="onoffswitch-checkbox"  ng-model="jas.adm.heap.conditionLtEnabled"  ng-click="jas.enableHeapLt()">
-                <label class="onoffswitch-label" for="usage-less-switch">
-                          <span class="onoffswitch-inner">
-                            <span class="onoffswitch-active ng-binding">ON</span>
-                            <span class="onoffswitch-inactive ng-binding">OFF</span>
-                          </span>
-                  <span class="onoffswitch-switch"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-        <hk-fieldset-dampening hk-duration="jas.adm.heap.responseDuration"></hk-fieldset-dampening>
 
-        <hk-fieldset-notification hk-alert-email="jas.adm.heap.email"></hk-fieldset-notification>
-      </form>
+      <div id="hk-heap" class="hk-tab-content">
+        <p>Configure conditions settings for Heap usage alerts and notifications.</p>
+
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>Threshold Conditions</legend>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Maximum usage</label>
+
+              <div class="col-sm-6">
+                <span class="hk-input-text">{{jas.maxUsage / 1024 / 1024 | number : 2}} MB</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="usage-greater">Usage greater than</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="100" ng-model="jas.adm.heap.conditionGtPercent" class="form-control"
+                         id="usage-greater" ng-disabled="!jas.adm.heap.conditionGtEnabled">
+
+                  <div class="input-group-addon">%</div>
+                </div>
+                <span class="input-detail">({{jas.adm.heap.conditionGtEnabled && jas.adm.heap.conditionGtPercent ? (jas.maxUsage * jas.adm.heap.conditionGtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
+              </div>
+              <div class="col-sm-4">
+                <div class="onoffswitch pull-right">
+                  <input type="checkbox" id="usage-greater-switch" class="onoffswitch-checkbox"
+                         ng-model="jas.adm.heap.conditionGtEnabled" ng-click="jas.enableHeapGt()">
+                  <label class="onoffswitch-label" for="usage-greater-switch">
+                          <span class="onoffswitch-inner">
+                            <span class="onoffswitch-active ng-binding">ON</span>
+                            <span class="onoffswitch-inactive ng-binding">OFF</span>
+                          </span>
+                    <span class="onoffswitch-switch"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="usage-less">Usage less than</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="100" ng-model="jas.adm.heap.conditionLtPercent" class="form-control"
+                         id="usage-less" ng-disabled="!jas.adm.heap.conditionLtEnabled">
+
+                  <div class="input-group-addon">%</div>
+                </div>
+                <span class="input-detail">({{jas.adm.heap.conditionLtEnabled && jas.adm.heap.conditionLtPercent ? (jas.maxUsage * jas.adm.heap.conditionLtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
+              </div>
+              <div class="col-sm-4">
+                <div class="onoffswitch pull-right">
+                  <input type="checkbox" id="usage-less-switch" class="onoffswitch-checkbox"
+                         ng-model="jas.adm.heap.conditionLtEnabled" ng-click="jas.enableHeapLt()">
+                  <label class="onoffswitch-label" for="usage-less-switch">
+                          <span class="onoffswitch-inner">
+                            <span class="onoffswitch-active ng-binding">ON</span>
+                            <span class="onoffswitch-inactive ng-binding">OFF</span>
+                          </span>
+                    <span class="onoffswitch-switch"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <hk-fieldset-dampening hk-duration="jas.adm.heap.responseDuration"></hk-fieldset-dampening>
+
+          <hk-fieldset-notification hk-alert-email="jas.adm.heap.email"></hk-fieldset-notification>
+        </form>
+      </div>
     </tab>
     <tab heading="Non-Heap Usage">
-      <p>Configure conditions settings for Non-Heap usage alerts and notifications.</p>
-      <form class="form-horizontal">
-        <fieldset>
-          <legend>Threshold Conditions</legend>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Maximum usage</label>
-            <div class="col-sm-6">
-              <span class="hk-input-text">{{jas.maxUsage / 1024 / 1024 | number : 2}} MB</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label" for="usage-greater">Usage greater than {{jas.adm.nheap.conditionGtPercent}}</label>
-            <div class="col-sm-5">
-              <div class="input-group hk-input-small">
-                <input type="number" min="0" max="100" ng-model="jas.adm.nheap.conditionGtPercent" class="form-control" id="usage-greater" ng-disabled="!jas.adm.nheap.conditionGtEnabled">
-                <div class="input-group-addon">%</div>
-              </div>
-              <span class="input-detail">({{jas.adm.nheap.conditionGtEnabled && jas.adm.nheap.conditionGtPercent ? (jas.maxUsage * jas.adm.nheap.conditionGtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
-            </div>
-            <div class="col-sm-4">
-              <div class="onoffswitch pull-right">
-                <input type="checkbox" id="usage-ngreater-switch" class="onoffswitch-checkbox" ng-model="jas.adm.nheap.conditionGtEnabled" ng-click="jas.enableNHeapGt()">
-                <label class="onoffswitch-label" for="usage-ngreater-switch">
-                          <span class="onoffswitch-inner">
-                            <span class="onoffswitch-active ng-binding">ON</span>
-                            <span class="onoffswitch-inactive ng-binding">OFF</span>
-                          </span>
-                  <span class="onoffswitch-switch"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label" for="usage-less">Usage less than {{jas.adm.nheap.conditionLtPercent}}</label>
-            <div class="col-sm-5">
-              <div class="input-group hk-input-small">
-                <input type="number" min="0" max="100" ng-model="jas.adm.nheap.conditionLtPercent" class="form-control" id="usage-less" ng-disabled="!jas.adm.nheap.conditionLtEnabled">
-                <div class="input-group-addon">%</div>
-              </div>
-              <span class="input-detail">({{jas.adm.nheap.conditionLtEnabled && jas.adm.nheap.conditionLtPercent ? (jas.maxUsage * jas.adm.nheap.conditionLtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
-            </div>
-            <div class="col-sm-4">
-              <div class="onoffswitch pull-right">
-                <input type="checkbox" id="usage-nless-switch" class="onoffswitch-checkbox"  ng-model="jas.adm.nheap.conditionLtEnabled"  ng-click="jas.enableNHeapLt()">
-                <label class="onoffswitch-label" for="usage-nless-switch">
-                          <span class="onoffswitch-inner">
-                            <span class="onoffswitch-active ng-binding">ON</span>
-                            <span class="onoffswitch-inactive ng-binding">OFF</span>
-                          </span>
-                  <span class="onoffswitch-switch"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-        <hk-fieldset-dampening hk-duration="jas.adm.nheap.responseDuration"></hk-fieldset-dampening>
+      <div id="hk-heap" class="hk-tab-content">
+        <p>Configure conditions settings for Non-Heap usage alerts and notifications.</p>
+        
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>Threshold Conditions</legend>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Maximum usage</label>
 
-        <hk-fieldset-notification hk-alert-email="jas.adm.nheap.email"></hk-fieldset-notification>
-      </form>
+              <div class="col-sm-6">
+                <span class="hk-input-text">{{jas.maxUsage / 1024 / 1024 | number : 2}} MB</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="usage-greater">Usage greater than
+                {{jas.adm.nheap.conditionGtPercent}}</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="100" ng-model="jas.adm.nheap.conditionGtPercent"
+                         class="form-control"
+                         id="usage-greater" ng-disabled="!jas.adm.nheap.conditionGtEnabled">
+
+                  <div class="input-group-addon">%</div>
+                </div>
+                <span class="input-detail">({{jas.adm.nheap.conditionGtEnabled && jas.adm.nheap.conditionGtPercent ? (jas.maxUsage * jas.adm.nheap.conditionGtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
+              </div>
+              <div class="col-sm-4">
+                <div class="onoffswitch pull-right">
+                  <input type="checkbox" id="usage-ngreater-switch" class="onoffswitch-checkbox"
+                         ng-model="jas.adm.nheap.conditionGtEnabled" ng-click="jas.enableNHeapGt()">
+                  <label class="onoffswitch-label" for="usage-ngreater-switch">
+                          <span class="onoffswitch-inner">
+                            <span class="onoffswitch-active ng-binding">ON</span>
+                            <span class="onoffswitch-inactive ng-binding">OFF</span>
+                          </span>
+                    <span class="onoffswitch-switch"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="usage-less">Usage less than
+                {{jas.adm.nheap.conditionLtPercent}}</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="100" ng-model="jas.adm.nheap.conditionLtPercent"
+                         class="form-control"
+                         id="usage-less" ng-disabled="!jas.adm.nheap.conditionLtEnabled">
+
+                  <div class="input-group-addon">%</div>
+                </div>
+                <span class="input-detail">({{jas.adm.nheap.conditionLtEnabled && jas.adm.nheap.conditionLtPercent ? (jas.maxUsage * jas.adm.nheap.conditionLtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
+              </div>
+              <div class="col-sm-4">
+                <div class="onoffswitch pull-right">
+                  <input type="checkbox" id="usage-nless-switch" class="onoffswitch-checkbox"
+                         ng-model="jas.adm.nheap.conditionLtEnabled" ng-click="jas.enableNHeapLt()">
+                  <label class="onoffswitch-label" for="usage-nless-switch">
+                          <span class="onoffswitch-inner">
+                            <span class="onoffswitch-active ng-binding">ON</span>
+                            <span class="onoffswitch-inactive ng-binding">OFF</span>
+                          </span>
+                    <span class="onoffswitch-switch"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <hk-fieldset-dampening hk-duration="jas.adm.nheap.responseDuration"></hk-fieldset-dampening>
+
+          <hk-fieldset-notification hk-alert-email="jas.adm.nheap.email"></hk-fieldset-notification>
+        </form>
+      </div>
     </tab>
     <tab heading="Garbage Collection">
-      <p>Configure conditions settings for Garbage Collection alerts and notifications.</p>
-      <form class="form-horizontal">
-        <fieldset>
-          <legend>Duration (major)</legend>
-          <div class="form-group">
-            <label class="col-sm-3 control-label" for="usage-greater">Greater than {{jas.adm.garba.conditionThreshold}}</label>
-            <div class="col-sm-5">
-              <div class="input-group hk-input-small">
-                <input type="number" ng-model="jas.adm.garba.conditionThreshold" class="form-control" id="usage-garba" ng-disabled="!jas.adm.garba.conditionEnabled">
-                <div class="input-group-addon">ms</div>
+      <div id="hk-heap" class="hk-tab-content">
+        <p>Configure conditions settings for Garbage Collection alerts and notifications.</p>
+
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>Duration (major)</legend>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="usage-greater">Greater than
+                {{jas.adm.garba.conditionThreshold}}</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" ng-model="jas.adm.garba.conditionThreshold" class="form-control" id="usage-garba"
+                         ng-disabled="!jas.adm.garba.conditionEnabled">
+
+                  <div class="input-group-addon">ms</div>
+                </div>
               </div>
-            </div>
-            <div class="col-sm-4">
-              <div class="onoffswitch pull-right">
-                <input type="checkbox" id="usage-garba-switch" class="onoffswitch-checkbox" ng-model="jas.adm.garba.conditionEnabled">
-                <label class="onoffswitch-label" for="usage-garba-switch">
+              <div class="col-sm-4">
+                <div class="onoffswitch pull-right">
+                  <input type="checkbox" id="usage-garba-switch" class="onoffswitch-checkbox"
+                         ng-model="jas.adm.garba.conditionEnabled">
+                  <label class="onoffswitch-label" for="usage-garba-switch">
                           <span class="onoffswitch-inner">
                             <span class="onoffswitch-active ng-binding">xON</span>
                             <span class="onoffswitch-inactive ng-binding">xOFF</span>
                           </span>
-                  <span class="onoffswitch-switch"></span>
-                </label>
+                    <span class="onoffswitch-switch"></span>
+                  </label>
+                </div>
               </div>
             </div>
-          </div>
-        </fieldset>
-        <hk-fieldset-dampening hk-duration="jas.adm.garba.responseDuration"></hk-fieldset-dampening>
+          </fieldset>
+          <hk-fieldset-dampening hk-duration="jas.adm.garba.responseDuration"></hk-fieldset-dampening>
 
-        <hk-fieldset-notification hk-alert-email="jas.adm.garba.email"></hk-fieldset-notification>
-      </form>
+          <hk-fieldset-notification hk-alert-email="jas.adm.garba.email"></hk-fieldset-notification>
+        </form>
+      </div>
     </tab>
   </tabset>
 
 
 </div>
 <div class="modal-footer alert-settings">
-  <button type="button" class="btn btn-primary" ng-click="jas.save()" ng-disabled="jas.saveProgress || !jas.isSettingChange">
-    <div ng-show="jas.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>Save</button>
+  <button type="button" class="btn btn-primary" ng-click="jas.save()"
+          ng-disabled="jas.saveProgress || !jas.isSettingChange">
+    <div ng-show="jas.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>
+    Save
+  </button>
   <button type="button" class="btn btn-default" ng-click="jas.cancel()">Cancel</button>
 </div>

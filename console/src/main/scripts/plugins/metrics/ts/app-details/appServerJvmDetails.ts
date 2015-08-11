@@ -87,7 +87,6 @@ module HawkularMetrics {
 
     private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       var pheapArray: any, nheapArray: any, garbaArray:any;
-      
       var pheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_pheap', startTime, endTime)
         .then((pheapData)=> {
           _.forEach(pheapData.alertList, (item) => {item['alertType']='PHEAP';});
@@ -267,10 +266,6 @@ module HawkularMetrics {
             color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data) };
         }, this);
     }
-
-
-
-
   }
 
   _module.controller('HawkularMetrics.AppServerJvmDetailsController', AppServerJvmDetailsController);

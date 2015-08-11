@@ -1252,6 +1252,134 @@ section {
   .input-group-btn {
     width: auto;
   }
+
+  .nav-tabs {
+
+    margin-left: -15px;
+    margin-right: -15px;
+    padding-left: 15px;
+
+    > li.active > a {
+      background-color: white;
+    }
+  }
+
+  .hk-tab-content {
+    border-bottom: 1px solid #e5e5e5;
+    margin-left: -15px;
+    margin-right: -15px;
+    padding: 1.5em 1.5em 0;
+  }
+
+  .alert-settings .form-horizontal {
+    margin-top: @grid-gutter-width/2;
+  }
+
+  p + .form-horizontal {
+    margin-top: @grid-gutter-width/2;
+  }
+
+  .form-horizontal {
+
+    fieldset {
+      margin-bottom: 5px;
+      position: relative;
+    }
+
+    legend {
+      border-bottom: none;
+      border-top: 1px solid #e5e5e5;
+      font-size: ceil(@font-size-base * 1.25);
+      padding-top: @grid-gutter-width/4;
+    }
+
+    label {
+      padding-right: 0;
+    }
+
+    .hk-input-text {
+      line-height: 1.66666667;
+    }
+
+    .input-group {
+      float: left;
+
+      &.hk-input-small {
+        max-width: 100px;
+      }
+    }
+
+    .hk-input-small {
+      max-width: 75px;
+    }
+
+    .input-detail {
+      color: @gray-light;
+      line-height: 1.66666667;
+      margin-left: @grid-gutter-width/4;
+    }
+
+
+
+
+    .onffswitch-form-group {
+      margin-bottom: 0;
+      position: relative;
+
+      .control-label {
+        display: none;
+      }
+    }
+
+    .onoffswitch-container {
+      position: absolute;
+      right: 20px;
+      top: -52px;
+      width: 62px;
+    }
+
+
+    .help-block {
+      margin-top: @grid-gutter-width/8;
+    }
+
+    .inline-row {
+
+      > div,
+      > span {
+        float: left;
+        margin-right: @grid-gutter-width/4;
+      }
+
+      .between-inputs {
+        line-height: 26px;
+      }
+    }
+
+    .input-addon {
+      width: 180px;
+    }
+
+    .input-select {
+
+      width: 180px;
+
+      input.form-control {
+        width: 80px;
+      }
+
+      .bootstrap-select {
+        float: left;
+        width: 100px;
+      }
+    }
+
+    .indented {
+      margin-left: 20px;
+      margin-top: 5px;
+    }
+  }
+
 }
 
 /* Toastr Overrides */
