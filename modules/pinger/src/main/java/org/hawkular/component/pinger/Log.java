@@ -41,8 +41,8 @@ public interface Log extends BasicLogger {
     void wNoAction();
 
     @LogMessage(level = Logger.Level.DEBUG)
-    @Message(id = 5001, value = "Could not ping URL '%s': %s")
-    void dCouldNotPingUrl(String url, String message);
+    @Message(id = 5001, value = "Could not ping URL '%s'")
+    void dCouldNotPingUrl(String url, @Cause Throwable e);
 
     @LogMessage(level = Logger.Level.WARN)
     @Message(id = 5002, value = "Post to Hawkular Metrics failed with post status : %s")
