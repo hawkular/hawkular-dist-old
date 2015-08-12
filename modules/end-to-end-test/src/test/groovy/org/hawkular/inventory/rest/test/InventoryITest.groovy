@@ -225,12 +225,47 @@ class InventoryITest extends AbstractTestBase {
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$copyMachine2ResourceId", response.headers.Location)
 
-        /* add a child resource */
+        /* add child resources */
         response = postDeletable(path: "$environmentId/resources/$room1ResourceId",
                 body: [id: "table", resourceTypePath: "/" + roomRTypeId])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table",
                 response.headers.Location)
+        response = postDeletable(path: "$environmentId/resources/$room1ResourceId/table",
+                body: [id: "leg/1", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table/leg%2F1",
+                response.headers.Location)
+        response = postDeletable(path: "$environmentId/resources/$room1ResourceId/table",
+                body: [id: "leg 2", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table/leg%202",
+                response.headers.Location)
+        response = postDeletable(path: "$environmentId/resources/$room1ResourceId/table",
+                body: [id: "leg;3", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table/leg;3",
+                response.headers.Location)
+        response = postDeletable(path: "$environmentId/resources/$room1ResourceId/table",
+                body: [id: "leg-4", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table/leg-4",
+                response.headers.Location)
+
+        //alternative child hierarchies
+        response = postDeletable(path: "$environmentId/resources",
+                body: [id: "weapons", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/weapons",
+                response.headers.Location)
+
+        path = "$basePath/$environmentId/resources/weapons/children"
+        response = client.post(path: path,
+                body: ["/e;" + environmentId + "/r;" + room1ResourceId + "/r;table/r;leg%2F1", "../" + room1ResourceId
+                        + "/table/leg-4"])
+        assertEquals(204, response.status)
+        pathsToDelete.put("$path/../table/leg%2F1", "$path/../table/leg%2F1")
+        pathsToDelete.put("$path/../table/leg-4", "$path/../table/leg-4")
 
         /* link the metric to resource */
         path = "$basePath/$environmentId/resources/$host1ResourceId/metrics"
@@ -378,7 +413,7 @@ class InventoryITest extends AbstractTestBase {
 
         response = client.get(path: "$basePath/$environmentId/resources",
             query: ["type.id": roomRTypeId, "type.version": typeVersion])
-        assertEquals(1, response.data.size())
+        assertEquals(2, response.data.size())
 
     }
 
@@ -607,6 +642,20 @@ class InventoryITest extends AbstractTestBase {
                 "/t;$tenantId/e;$environmentId/r;$host2ResourceId",
                 "inTheSameRoom",
                 "/t;$tenantId/e;$environmentId/r;$host1ResourceId", [named: "inTheSameRoom"])
+    }
+
+    @Test
+    void testResourceHierarchyQuerying() {
+        assertEntitiesExist("$environmentId/resources/$room1ResourceId/children",
+                ["/e;$environmentId/r;$room1ResourceId/r;table".toString()])
+
+        def base = "/e;$environmentId/r;$room1ResourceId/r;table".toString()
+        assertEntitiesExist("$environmentId/resources/$room1ResourceId/table/children",
+                [base + "/r;leg%2F1", base + "/r;leg%202", base + "/r;leg;3", base + "/r;leg-4"])
+
+        assertEntitiesExist("$environmentId/resources/weapons/children",
+                ["/e;$environmentId/r;$room1ResourceId/r;table/r;leg%2F1".toString(),
+                 "/e;$environmentId/r;$room1ResourceId/r;table/r;leg-4".toString()])
     }
 
     private static void assertEntityExists(path, cp) {
