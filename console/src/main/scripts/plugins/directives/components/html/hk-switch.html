@@ -1,15 +1,15 @@
 <div class="onoffswitch" tabindex='0'>
   <input type="checkbox"
          class="onoffswitch-checkbox"
-         ng-model="ngModel"
-         ng-disabled="ngDisabled"
+         ng-model="hkModel"
+         ng-disabled="hkDisabled"
          ng-click="hkClick()"
          ng-change="hkChange()"
          id="{{id}}">
   <label class="onoffswitch-label" for="{{id}}">
     <span class="onoffswitch-inner">
       <span class="onoffswitch-active ng-binding">{{hkOnText}}</span>
-      <span class="onoffswitch-inactive ng-binding">{{hkOnText}}</span>
+      <span class="onoffswitch-inactive ng-binding">{{hkOffText}}</span>
     </span>
     <span class="onoffswitch-switch"></span>
   </label>

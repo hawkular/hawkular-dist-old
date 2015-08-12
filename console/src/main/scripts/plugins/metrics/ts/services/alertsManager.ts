@@ -69,33 +69,42 @@ module HawkularMetrics {
                 private ErrorsManager: HawkularMetrics.IErrorsManager) {
     }
 
-    public saveAlertDefinition(alertDefinition:any, errorCallback: any, backup?: any): any {
-      return this.addEmailAction(alertDefinition.trigger.actions.email[0]).then(()=> {
+    public saveAlertDefinition(alertDefinition:any, errorCallback:any, backup?:any):any {
+
+      var emailPromise = this.addEmailAction(alertDefinition.trigger.actions.email[0]).then(()=> {
         if (angular.equals(alertDefinition.trigger, backup.trigger) || !alertDefinition.trigger) {
           return;
         }
         return this.updateTrigger(alertDefinition.trigger.id, alertDefinition.trigger);
       }, (error)=> {
         return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
-      }).then(()=> {
-        if (angular.equals(alertDefinition.dampenings[0], backup.dampenings[0]) || !alertDefinition.dampenings) {
-          return;
-        }
-        return this.updateDampening(alertDefinition.trigger.id,
-          alertDefinition.dampenings[0].dampeningId, alertDefinition.dampenings[0]);
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error updating trigger', errorCallback);
-      }).then(()=> {
-        if (angular.equals(alertDefinition.conditions[0], backup.conditions[0]) || !alertDefinition.conditions) {
-          return;
-        }
-        return this.updateCondition(alertDefinition.trigger.id,
-          alertDefinition.conditions[0].conditionId, alertDefinition.conditions[0]);
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error updating dampening.', errorCallback);
-      }).then(angular.noop, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error updating condition.', errorCallback);
       });
+
+      var dampeningPromises = [];
+      for (var i = 0; alertDefinition.dampenings && i < alertDefinition.dampenings.length; i++) {
+        if (alertDefinition.dampenings[i] && !angular.equals(alertDefinition.dampenings[i], backup.dampenings[i])) {
+          var dampeningPromise = this.updateDampening(alertDefinition.trigger.id,
+            alertDefinition.dampenings[i].dampeningId, alertDefinition.dampenings[i]).then(null, (error)=> {
+              return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
+            });
+
+          dampeningPromises.push(dampeningPromise);
+        }
+      }
+
+      var conditionPromises = [];
+      for (var j = 0; alertDefinition.conditions && j < alertDefinition.conditions.length; j++) {
+        if (alertDefinition.conditions[j] && !angular.equals(alertDefinition.conditions[j], backup.conditions[j])) {
+          var conditionPromise = this.updateCondition(alertDefinition.trigger.id,
+            alertDefinition.conditions[j].conditionId, alertDefinition.conditions[j]).then(null, (error)=> {
+              return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
+            });
+
+          conditionPromises.push(conditionPromise);
+        }
+      }
+
+      return this.$q.all(Array.prototype.concat(emailPromise, dampeningPromises, conditionPromises));
     }
 
     public getAlertDefinition(triggerId): any {

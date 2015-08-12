@@ -22,6 +22,92 @@
 
 module HawkularMetrics {
 
+  export class AlertSetupController {
+
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
+      '$rootScope', '$routeParams', '$modalInstance'];
+
+    public triggerDefinition:any = {};
+
+    public adm:any = {};
+    public admBak:any = {};
+    public saveProgress:boolean = false;
+    public isSettingChange:boolean = false;
+
+    constructor(public $scope:any,
+                public HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
+                public ErrorsManager:HawkularMetrics.IErrorsManager,
+                public $log:ng.ILogService,
+                public $q:ng.IQService,
+                public $rootScope:any,
+                public $routeParams:any,
+                public $modalInstance:any) {
+      // TODO - update the pfly notification service to support more and category based notifications containers.
+      this.$rootScope.hkNotifications = {alerts: []};
+
+      var definitionPromises = this.loadDefinitions();
+
+      this.$q.all(definitionPromises).then(() => {
+        this.admBak = angular.copy(this.adm);
+        this.isSettingChange = false;
+      });
+
+      this.$scope.$watch(angular.bind(this, () => {
+        return this.adm;
+      }), () => {
+        this.isSettingChange = !angular.equals(this.adm, this.admBak);
+      }, true);
+    }
+
+    public save():void {
+      this.$log.debug('Saving Alert Settings');
+
+      // Clear alerts notifications on save (discard previous success/error list)
+      this.$rootScope.hkNotifications.alerts = [];
+
+      // Error notification done with callback function on error
+      var errorCallback = (error:any, msg:string) => {
+        this.$rootScope.hkNotifications.alerts.push({
+          type: 'error',
+          message: msg
+        });
+      };
+
+      this.saveProgress = true;
+      var isError = false;
+      // Check if email action exists
+
+      var saveDefinitionPromises = this.saveDefinitions(errorCallback);
+
+      this.$q.all(saveDefinitionPromises).finally(()=> {
+        this.saveProgress = false;
+
+        if (!isError) {
+          // notify success
+          this.$rootScope.hkNotifications.alerts.push({
+            type: 'success',
+            message: 'Changes saved successfully.'
+          });
+        }
+
+        this.cancel();
+      });
+    }
+
+    public cancel():void {
+      this.$modalInstance.dismiss('cancel');
+    }
+
+    loadDefinitions():Array<ng.IPromise<any>> {
+      throw new Error('This method is abstract');
+    }
+
+    saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
+      throw new Error('This method is abstract');
+    }
+  }
+
+
   export class MetricsAlertController {
     public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
       '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
@@ -53,18 +139,6 @@ module HawkularMetrics {
 
       this.$log.debug('querying data');
       this.$log.debug('$routeParams', $routeParams);
-      this.openSetup = () => {
-        var modalInstance = $modal.open({
-          templateUrl: 'plugins/metrics/html/alerts-setup.html',
-          controller: 'MetricsAlertSetupController as mas'
-        });
-
-        modalInstance.result.then(function (selectedItem) {
-          $scope.selected = selectedItem;
-        }, function () {
-          $log.info('Modal dismissed at: ' + new Date());
-        });
-      };
 
       this.metricId = $routeParams.resourceId;
 
@@ -76,6 +150,20 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
+    public openResponseSetup() {
+      var modalInstance = this.$modal.open({
+        templateUrl: 'plugins/metrics/html/modals/alerts-url-response-setup.html',
+        controller: 'AlertUrlResponseSetupController as mas'
+      });
+
+      var logger = this.$log;
+
+      modalInstance.result.then(function (selectedItem) {
+        this.selected = selectedItem;
+      }, function () {
+        logger.info('Modal dismissed at: ' + new Date());
+      });
+    }
 
     private autoRefresh(intervalInSeconds:number):void {
       var autoRefreshPromise = this.$interval(()  => {
@@ -130,250 +218,129 @@ module HawkularMetrics {
 
   _module.controller('MetricsAlertController', MetricsAlertController);
 
-  export class MetricsAlertSetupController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
-      '$rootScope', '$routeParams', '$modalInstance'];
+  export class AlertUrlAvailabilitySetupController extends AlertSetupController {
 
-    private metricId: string;
-    private trigger_thres: any;
-    private trigger_thres_damp: any;
-    private trigger_thres_cond: any;
-    private trigger_avail: any;
-    private trigger_avail_damp: any;
-    private alertSetupBackup: any = {};
+    loadDefinitions():Array<ng.IPromise<any>> {
+      var availabilityTriggerId = this.$routeParams.resourceId + '_trigger_avail';
 
-    public saveProgress: boolean = false;
-    public responseDuration: number;
-    public downtimeDuration: number;
-    public responseUnit: number = 1;
-    public downtimeUnit: number = 1;
-    public thresDampDurationEnabled = false;
+      var availabilityDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(availabilityTriggerId)
+        .then((alertDefinitionData) => {
+          this.$log.debug('alertDefinitionData', alertDefinitionData);
+          this.triggerDefinition['avail'] = alertDefinitionData;
 
-    public isSettingChange = false;
-
-    public timeUnits = [
-      {value: 1, label: 'milliseconds'},
-      {value: 1000, label: 'seconds'},
-      {value: 60000, label: 'minutes'},
-      {value: 3600000, label: 'hours'}
-    ];
-
-    public timeUnitsDict = {
-      '1': 'milliseconds',
-      '1000': 'seconds',
-      '60000': 'minutes',
-      '3600000': 'hours'
-    };
-
-    constructor(public $scope:any,
-                private HawkularAlert:any,
-                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private ErrorsManager: HawkularMetrics.IErrorsManager,
-                private $log: ng.ILogService,
-                private $q: ng.IQService,
-                private $rootScope: any,
-                private $routeParams: any,
-                private $modalInstance: any) {
-
-      this.$log.debug('querying data');
-      this.$log.debug('$routeParams',$routeParams.resourceId);
-
-      // TODO - update the pfly notification service to support more and category based notifications containers.
-      this.$rootScope.hkNotifications = {alerts: []};
-
-      // Get the data about Threshold Trigger
-      HawkularAlertsManager.getTrigger($routeParams.resourceId + '_trigger_thres').then((data)=> {
-        this.trigger_thres = data;
-        this.alertSetupBackup.trigger_thres = angular.copy(this.trigger_thres);
-        this.$log.debug('this.trigger_thres', this.trigger_thres);
-        return HawkularAlert.Dampening.query({triggerId: $routeParams.resourceId + '_trigger_thres'}).$promise;
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching threshold trigger.');
-      }).then((data)=> {
-
-        // Make sure, the AUTORESOLVE entity is the 2nd one
-        this.trigger_thres_damp = [];
-        this.trigger_thres_damp[0] = data[data[1].triggerMode === 'AUTORESOLVE' ? 0 : 1];
-        this.trigger_thres_damp[1] = data[data[1].triggerMode === 'AUTORESOLVE' ? 1 : 0];
-
-        this.alertSetupBackup.trigger_thres_damp = angular.copy(this.trigger_thres_damp);
-
-        this.responseUnit = this.getTimeUnit(this.trigger_thres_damp[0].evalTimeSetting);
-        this.responseDuration = this.trigger_thres_damp[0].evalTimeSetting / this.responseUnit;
-        this.alertSetupBackup.responseDuration = angular.copy(this.responseDuration);
-
-        this.thresDampDurationEnabled = this.trigger_thres_damp[0].evalTimeSetting !== 0;
-        this.alertSetupBackup.thresDampDurationEnabled = angular.copy(this.thresDampDurationEnabled);
-        this.$log.debug('this.trigger_thres_damp', this.trigger_thres_damp);
-        return HawkularAlert.Condition.query({triggerId: $routeParams.resourceId + '_trigger_thres'}).$promise;
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching threshold trigger dampening.');
-      }).then((data)=> {
-
-        // Make sure, the AUTORESOLVE condition is the 2nd one
-        this.trigger_thres_cond = [];
-        this.trigger_thres_cond[0] = data[data[1].triggerMode === 'AUTORESOLVE' ? 0 : 1];
-        this.trigger_thres_cond[1] = data[data[1].triggerMode === 'AUTORESOLVE' ? 1 : 0];
-
-        this.alertSetupBackup.trigger_thres_cond = angular.copy(this.trigger_thres_cond);
-        this.$log.debug('this.trigger_thres_cond', this.trigger_thres_cond);
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching threshold trigger condition.');
-      });
-
-      // Get the data about Availability Trigger
-      HawkularAlertsManager.getTrigger($routeParams.resourceId + '_trigger_avail').then((data)=> {
-        this.trigger_avail = data;
-        this.alertSetupBackup.trigger_avail = angular.copy(this.trigger_avail);
-        this.$log.debug('this.trigger_avail', this.trigger_avail);
-        return HawkularAlert.Dampening.query({triggerId: $routeParams.resourceId + '_trigger_avail'}).$promise;
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching availability trigger.');
-      }).then((data)=> {
-        this.trigger_avail_damp = [];
-        this.trigger_avail_damp[0] = data[data[1].triggerMode === 'AUTORESOLVE' ? 0 : 1];
-        this.trigger_avail_damp[1] = data[data[1].triggerMode === 'AUTORESOLVE' ? 1 : 0];
-
-        this.alertSetupBackup.trigger_avail_damp = angular.copy(this.trigger_avail_damp);
-
-        this.downtimeUnit = this.getTimeUnit(data[0].evalTimeSetting);
-        this.downtimeDuration = data[0].evalTimeSetting / this.downtimeUnit;
-        this.alertSetupBackup.downtimeDuration = angular.copy(this.downtimeDuration);
-
-        this.$log.debug('this.trigger_avail_damp', this.trigger_avail_damp);
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching availability trigger dampening.');
-      });
-
-      this.metricId = $routeParams.resourceId;
-      this.$log.debug('this.metricId', this.metricId);
-    }
-
-    // Get the most meaningful time unit (so that time value is not a very long fraction).
-    private getTimeUnit(timeValue: number): number {
-      var timeUnit = 1;
-
-      for (var i = 0; i < this.timeUnits.length; i++) {
-        var unit = this.timeUnits[i].value;
-        if (timeValue % unit === 0 && unit > timeUnit) {
-          timeUnit = unit;
-        }
-      }
-
-      return timeUnit;
-    }
-
-    public changeResponseTimeUnits():void {
-      this.responseDuration = this.trigger_thres_damp[0].evalTimeSetting / this.responseUnit;
-    }
-
-    public changeDowntimeTimeUnits():void {
-      this.downtimeDuration = this.trigger_avail_damp[0].evalTimeSetting / this.downtimeUnit;
-    }
-
-    public cancel(): void {
-      this.$modalInstance.dismiss('cancel');
-    }
-
-    public save(): void {
-      this.$log.debug('Saving Alert Settings');
-
-      // Clear alerts notifications on save (discard previous success/error list)
-      this.$rootScope.hkNotifications.alerts = [];
-
-      // Error notification done with callback function on error
-      var errorCallback = (error: any, msg: string) => {
-        this.$rootScope.hkNotifications.alerts.push({
-          type: 'error',
-          message: msg
+          this.adm['avail'] = {};
+          this.adm.avail['email'] = alertDefinitionData.trigger.actions.email[0];
+          this.adm.avail['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
+          this.adm.avail['conditionEnabled'] = alertDefinitionData.trigger.enabled;
         });
-      };
 
-      this.saveProgress = true;
-      var isError = false;
-      // Check if email action exists
-      this.HawkularAlertsManager.addEmailAction(this.trigger_thres.actions.email[0]).then(()=> {
-        if(!angular.equals(this.alertSetupBackup.trigger_thres, this.trigger_thres)) {
-          return this.HawkularAlertsManager.updateTrigger(this.trigger_thres.id, this.trigger_thres);
-        }
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
-      }).then(() => {
-        this.trigger_avail.actions = this.trigger_thres.actions;
-        if(!angular.equals(this.alertSetupBackup.trigger_avail, this.trigger_avail)) {
-          return this.HawkularAlertsManager.updateTrigger(this.trigger_avail.id, this.trigger_avail);
-        }
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error updating threshold trigger.', errorCallback);
-      }).then(()=> {
-        if (!this.thresDampDurationEnabled) {
-          this.trigger_thres_damp[0].evalTimeSetting = 0;
-        }
-
-        if(!angular.equals(this.alertSetupBackup.trigger_thres_damp[0], this.trigger_thres_damp[0])) {
-          return this.HawkularAlertsManager.updateDampening(this.trigger_thres.id,
-              this.trigger_thres_damp[0].dampeningId, this.trigger_thres_damp[0]);
-        }
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error updating availability trigger.', errorCallback);
-      }).then(()=> {
-        if(!angular.equals(this.alertSetupBackup.trigger_avail_damp[0], this.trigger_avail_damp[0])) {
-          this.HawkularAlertsManager.updateDampening(this.trigger_avail.id, this.trigger_avail_damp[0].dampeningId,
-              this.trigger_avail_damp[0]);
-        }
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error updating threshold trigger dampening.',
-            errorCallback);
-      }).then(()=> {
-        if(!angular.equals(this.alertSetupBackup.trigger_thres_cond[0], this.trigger_thres_cond[0])) {
-          return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id,
-              this.trigger_thres_cond[0].conditionId, this.trigger_thres_cond[0]).then(()=> {
-            // Update the threshold on AUTORESOLVE condition
-            var autoResolveCondition = angular.copy(this.trigger_thres_cond[1]);
-            autoResolveCondition.threshold = this.trigger_thres_cond[0].threshold;
-            return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id, autoResolveCondition.conditionId,
-                autoResolveCondition);
-          });
-        }
-      }, (error)=> {
-        return this.ErrorsManager.errorHandler(error, 'Error updating availability dampening.', errorCallback);
-      }).then(angular.noop, (error)=> {
-        isError = true;
-        return this.ErrorsManager.errorHandler(error, 'Error updating availability condition.', errorCallback);
-      }).finally(()=> {
-        this.saveProgress = false;
-
-        if(!isError)  {
-          // notify success
-          this.$rootScope.hkNotifications.alerts.push({
-            type: 'success',
-            message: 'Changes saved successfully.'
-          });
-        }
-
-        this.cancel();
-      });
+      return [availabilityDefinitionPromise];
     }
 
-    public alertSettingTouch(): void {
-      this.trigger_thres_damp[0].evalTimeSetting = this.responseDuration * this.responseUnit;
-      this.trigger_avail_damp[0].evalTimeSetting = this.downtimeDuration * this.downtimeUnit;
+    saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
+      // Set the actual object to save
+      var availabilityAlertDefinition = angular.copy(this.triggerDefinition.avail);
+      availabilityAlertDefinition.trigger.actions.email[0] = this.adm.avail.email;
+      availabilityAlertDefinition.trigger.enabled = this.adm.avail.conditionEnabled;
+      availabilityAlertDefinition.dampenings[0].evalTimeSetting = this.adm.avail.responseDuration;
+      availabilityAlertDefinition.dampenings[1].evalTimeSetting = this.adm.avail.responseDuration;
 
-      if (!angular.equals(!!this.alertSetupBackup.thresDampDurationEnabled,!!this.thresDampDurationEnabled) ||
-        !angular.equals(this.alertSetupBackup.responseDuration, this.responseDuration) ||
-        !angular.equals(this.alertSetupBackup.trigger_thres, this.trigger_thres) ||
-        !angular.equals(this.alertSetupBackup.trigger_avail, this.trigger_avail) ||
-        !angular.equals(this.alertSetupBackup.trigger_thres_damp[0], this.trigger_thres_damp[0]) ||
-        !angular.equals(this.alertSetupBackup.trigger_avail_damp[0], this.trigger_avail_damp[0]) ||
-        !angular.equals(this.alertSetupBackup.trigger_thres_cond[0], this.trigger_thres_cond[0])) {
-        this.isSettingChange = true;
-      } else {
-        this.isSettingChange = false;
-      }
+      var availabilitySavePromise = this.HawkularAlertsManager.saveAlertDefinition(availabilityAlertDefinition,
+        errorCallback, this.triggerDefinition.avail);
+
+      return [availabilityConditionDelete, availabilitySavePromise];
     }
   }
 
-  _module.controller('MetricsAlertSetupController', MetricsAlertSetupController);
+  _module.controller('AlertUrlAvailabilitySetupController', AlertUrlAvailabilitySetupController);
+
+  export class AlertUrlResponseSetupController extends AlertSetupController {
+    loadDefinitions():Array<ng.IPromise<any>> {
+      var responseTriggerId = this.$routeParams.resourceId + '_trigger_thres';
+
+      var responseDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(responseTriggerId).then(
+        (alertDefinitionData) => {
+          this.$log.debug('alertDefinitionData', alertDefinitionData);
+          this.triggerDefinition['thres'] = alertDefinitionData;
+
+          this.adm['thres'] = {};
+          this.adm.thres['email'] = alertDefinitionData.trigger.actions.email[0];
+          this.adm.thres['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
+          this.adm.thres['conditionEnabled'] = !!(alertDefinitionData.conditions && alertDefinitionData.conditions[0]);
+
+          if (this.adm.thres.conditionEnabled) {
+            this.adm.thres['conditionThreshold'] = alertDefinitionData.conditions[0].threshold;
+          } else {
+            this.adm.thres['conditionThreshold'] = 0;
+          }
+        });
+
+      return [responseDefinitionPromise];
+    }
+
+    saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
+      // Set the actual object to save
+      var responseAlertDefinition = angular.copy(this.triggerDefinition.thres);
+      responseAlertDefinition.trigger.actions.email[0] = this.adm.thres.email;
+      responseAlertDefinition.dampenings[0].evalTimeSetting = this.adm.thres.responseDuration;
+      responseAlertDefinition.dampenings[1].evalTimeSetting = this.adm.thres.responseDuration;
+
+      // Conditions
+      var responseCondition1Defer = this.$q.defer();
+      var responseCondition2Defer = this.$q.defer();
+      var responseConditionPromise1:any = responseCondition1Defer.promise;
+      var responseConditionPromise2:any = responseCondition2Defer.promise;
+
+      // If the condition was newly created
+      var triggerId:string = responseAlertDefinition.trigger.id;
+      var dataId:string = triggerId.slice(0, -14) + '.status.duration';
+
+      if (!this.admBak.thres.conditionEnabled && this.adm.thres.conditionEnabled) {
+        responseConditionPromise1 = this.HawkularAlertsManager.createCondition(triggerId, {
+          type: 'THRESHOLD',
+          triggerId: triggerId,
+          threshold: this.adm.thres.conditionThreshold,
+          dataId: dataId,
+          operator: 'GT'
+        });
+
+        responseConditionPromise2 = this.HawkularAlertsManager.createCondition(triggerId, {
+          type: 'THRESHOLD',
+          triggerId: triggerId,
+          triggerMode: 'AUTORESOLVE',
+          threshold: this.adm.thres.conditionThreshold,
+          dataId: dataId,
+          operator: 'LT'
+        });
+      }
+      // If the condition was deleted
+      else if (this.admBak.thres.conditionEnabled && !this.adm.thres.conditionEnabled) {
+        responseConditionPromise1 = this.HawkularAlertsManager.deleteCondition(responseAlertDefinition.trigger.id,
+          responseAlertDefinition.conditions[0].conditionId);
+        responseConditionPromise2 = this.HawkularAlertsManager.deleteCondition(responseAlertDefinition.trigger.id,
+          responseAlertDefinition.conditions[1].conditionId);
+        delete responseAlertDefinition.conditions;
+      }
+      // If the condition stays deleted
+      else if (!this.admBak.thres.conditionEnabled && !this.admBak.thres.conditionEnabled) {
+        var idleMsg = 'Not deleted nor created';
+        responseCondition1Defer.resolve(idleMsg);
+        responseCondition2Defer.resolve(idleMsg);
+      }
+      // If the condition was just updated
+      else {
+        responseAlertDefinition.conditions[0].threshold = this.adm.thres.conditionThreshold;
+        responseAlertDefinition.conditions[1].threshold = this.adm.thres.conditionThreshold;
+      }
+
+      var responseSavePromise = this.HawkularAlertsManager.saveAlertDefinition(responseAlertDefinition,
+        errorCallback, this.triggerDefinition.thres);
+
+      return [responseConditionPromise1, responseConditionPromise2, responseSavePromise];
+    }
+  }
+
+  _module.controller('AlertUrlResponseSetupController', AlertUrlResponseSetupController);
 
   // TODO - update the pfly notification service to support other methods of notification container dismissal.
   export interface IHkClearNotifications extends ng.IScope {

@@ -38,7 +38,7 @@ module HawkularMetrics {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric',
       'HawkularAlert', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
-      'ErrorsManager', 'NotificationsService'];
+      'ErrorsManager', 'NotificationsService', '$modal'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
@@ -67,7 +67,8 @@ module HawkularMetrics {
                 private $moment:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
-                private NotificationsService:INotificationsService) {
+                private NotificationsService:INotificationsService,
+                private $modal: any) {
       $scope.vm = this;
 
       this.startTimeStamp = +$moment().subtract(1, 'hours');
@@ -96,6 +97,20 @@ module HawkularMetrics {
 
       $scope.$on('RefreshAvailabilityChart', (/*event*/) => {
         this.refreshAvailPageNow(this.getResourceId());
+      });
+    }
+
+    public openAvailabilitySetup(): void {
+      console.log('openAvailabilitySetup');
+
+      var modalInstance = this.$modal.open({
+        templateUrl: 'plugins/metrics/html/modals/alerts-url-availability-setup.html',
+        controller: 'AlertUrlAvailabilitySetupController as mas'
+      });
+
+      var logger = this.$log;
+      modalInstance.result.then(null, function () {
+        logger.debug('Modal dismissed at: ' + new Date());
       });
     }
 

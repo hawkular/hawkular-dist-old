@@ -22,7 +22,7 @@ module HawkularMetrics {
 
   export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkular.charts',
     'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr',
-    'hawkular.components']);
+    'hawkular-components']);
 
   _module.config(['$httpProvider', '$locationProvider', '$routeProvider',
     ($httpProvider, $locationProvider) => {
