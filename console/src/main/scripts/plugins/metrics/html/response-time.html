@@ -44,7 +44,7 @@
           <i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>
           Response Time Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : MetricsViewController.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
       </h3>
-      <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
+      <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openResponseSetup()"><i class="fa fa-cog"></i>Response Time Alert Settings</a></span>
     </div>
     <div class="clearfix">
       <!-- No Alerts -->

@@ -17,11 +17,10 @@
 
 /// <reference path='metricsTypes.ts'/>
 /// <reference path='metricsPlugin.ts'/>
+/// <reference path='services/metricsService.ts'/>
 /// <reference path='../../includes.ts'/>
 
 module HawkularMetrics {
-
-
 
   export class MetricsViewController {
     /// for minification only
@@ -48,10 +47,10 @@ module HawkularMetrics {
                 private $log:ng.ILogService,
                 private HawkularAlert:any,
                 private $routeParams:any,
-                private HawkularAlertsManager: IHawkularAlertsManager,
-                private ErrorsManager: IErrorsManager,
-                private NotificationsService: INotificationsService,
-                private MetricsService: IMetricsService ) {
+                private HawkularAlertsManager:IHawkularAlertsManager,
+                private ErrorsManager:IErrorsManager,
+                private NotificationsService:INotificationsService,
+                private MetricsService:IMetricsService) {
       $scope.vm = this;
 
       this.startTimeStamp = +moment().subtract(1, 'hours');
@@ -86,8 +85,9 @@ module HawkularMetrics {
 
     private getAlerts(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
-        HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
-          this.alertList = data.alertList;
+        HawkularMetrics.AlertType.THRESHOLD).then((responseAlertData)=> {
+          _.forEach(responseAlertData.alertList, (item) => { item['alertType']='PINGRESPONSE';});
+          this.alertList = responseAlertData.alertList;
         }, (error) => {
           return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
@@ -122,14 +122,13 @@ module HawkularMetrics {
       this.retrieveThreshold();
     }
 
-    public getMetricId() :MetricId {
+    public getMetricId():MetricId {
       return this.resourceId + '.status.duration';
     }
 
     public static min(a:number, b:number):number {
       return Math.min(a, b);
     }
-
 
 
     public refreshSummaryData(metricId:MetricId,
@@ -198,7 +197,6 @@ module HawkularMetrics {
 
             // we want to isolate the response from the data we are feeding to the chart
             this.bucketedDataPoints = MetricsService.formatBucketedChartOutput(response);
-            ///console.dir(this.bucketedDataPoints);
 
             if (this.bucketedDataPoints.length) {
               // this is basically the DTO for the chart

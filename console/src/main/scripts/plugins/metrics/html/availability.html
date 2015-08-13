@@ -59,9 +59,9 @@
           Availability Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : MetricsAvailabilityController.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span>
         </button>
       </h3>
-      <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac"
-                                              ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert
-        Settings</a></span>
+      <span class="hk-settings pull-right">
+        <a href="#" ng-click="vm.openAvailabilitySetup()"><i class="fa fa-cog"></i>Availability Alert Settings</a>
+      </span>
     </div>
 
     <div class="clearfix">

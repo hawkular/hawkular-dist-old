@@ -1,0 +1,8 @@
+<div class="input-group input-select indented">
+  <input type="number" class="form-control" placeholder="Duration" ng-model="hkConvertedDuration"
+         ng-disabled="hkDisabled" ng-change="durationChange()" id="{{id}}">
+  <select pf-select ng-model="responseUnit" id="responseUnit"
+          ng-disabled="hkDisabled"
+          ng-options="item.value as item.label for item in timeUnits"
+          ng-change="computeTimeInUnits()"></select>
+</div>

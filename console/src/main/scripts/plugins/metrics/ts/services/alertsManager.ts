@@ -23,6 +23,7 @@ module HawkularMetrics {
   export enum AlertType {
     AVAILABILITY,
     THRESHOLD,
+    RANGE
   }
 
   export interface IHawkularAlertsManager {
@@ -32,17 +33,11 @@ module HawkularMetrics {
     createTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
                   email: EmailType): ng.IPromise<void>;
 
-    createJvmHeapTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
-                  email: EmailType, low: number, high: number): any;
-    createJvmNonHeapTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
-                  email: EmailType): any;
-    createJvmGarbageTrigger(triggerId: TriggerId, triggerName: string, enabled: boolean, conditionType: string,
-                  email: EmailType): any;
-
+    createAlertDefinition(trigger: any, condition: any): ng.IPromise<void>;
     deleteTrigger(triggerId: TriggerId): ng.IPromise<void>;
     createCondition(triggerId: TriggerId, condition: any): ng.IPromise<void>;
     updateCondition(triggerId: TriggerId, conditionId: ConditionId, condition: any): ng.IPromise<void>;
-    deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<void>;
+    deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<any>;
     createDampening(triggerId: TriggerId, duration: number, triggerMode?: string): ng.IPromise<void>;
     updateDampening(triggerId: TriggerId, dampeningId: DampeningId, dampening: any): ng.IPromise<void>;
     getAction(email: EmailType): ng.IPromise<void>;
@@ -54,19 +49,80 @@ module HawkularMetrics {
     queryConsoleAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType,
                        currentPage?:number, perPage?:number): any;
     queryAlerts(metricId: MetricId, startTime?:TimestampInMillis,
-                endTime?:TimestampInMillis, alertType?:AlertType,
-                currentPage?:number, perPage?:number): any
+                endTime?:TimestampInMillis, currentPage?:number, perPage?:number): any
+
+    // Alert definitions part
+
+    getAlertDefinition(triggerId): any
+    saveAlertDefinition(alertDefinition:any, errorCallback: any, backup?: any): any
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
 
-    public static $inject = ['HawkularAlert', '$q', '$log', '$moment','NotificationsService'];
+    public static $inject = ['HawkularAlert', '$q', '$log', '$moment', 'NotificationsService', 'ErrorsManager'];
 
     constructor(private HawkularAlert: any,
                 private $q: ng.IQService,
                 private $log: ng.ILogService,
                 private $moment: any,
-                private NotificationsService:INotificationsService) {
+                private NotificationsService:INotificationsService,
+                private ErrorsManager: HawkularMetrics.IErrorsManager) {
+    }
+
+    public saveAlertDefinition(alertDefinition:any, errorCallback:any, backup?:any):any {
+
+      var emailPromise = this.addEmailAction(alertDefinition.trigger.actions.email[0]).then(()=> {
+        if (angular.equals(alertDefinition.trigger, backup.trigger) || !alertDefinition.trigger) {
+          return;
+        }
+        return this.updateTrigger(alertDefinition.trigger.id, alertDefinition.trigger);
+      }, (error)=> {
+        return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
+      });
+
+      var dampeningPromises = [];
+      for (var i = 0; alertDefinition.dampenings && i < alertDefinition.dampenings.length; i++) {
+        if (alertDefinition.dampenings[i] && !angular.equals(alertDefinition.dampenings[i], backup.dampenings[i])) {
+          var dampeningPromise = this.updateDampening(alertDefinition.trigger.id,
+            alertDefinition.dampenings[i].dampeningId, alertDefinition.dampenings[i]).then(null, (error)=> {
+              return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
+            });
+
+          dampeningPromises.push(dampeningPromise);
+        }
+      }
+
+      var conditionPromises = [];
+      for (var j = 0; alertDefinition.conditions && j < alertDefinition.conditions.length; j++) {
+        if (alertDefinition.conditions[j] && !angular.equals(alertDefinition.conditions[j], backup.conditions[j])) {
+          var conditionPromise = this.updateCondition(alertDefinition.trigger.id,
+            alertDefinition.conditions[j].conditionId, alertDefinition.conditions[j]).then(null, (error)=> {
+              return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
+            });
+
+          conditionPromises.push(conditionPromise);
+        }
+      }
+
+      return this.$q.all(Array.prototype.concat(emailPromise, dampeningPromises, conditionPromises));
+    }
+
+    public getAlertDefinition(triggerId): any {
+      var deffered = this.$q.defer();
+      var trigger = {};
+
+      this.getTrigger(triggerId).then((triggerData) => {
+        trigger['trigger'] = triggerData;
+        return this.HawkularAlert.Dampening.query({triggerId: triggerId}).$promise;
+      }).then((dampeningData) => {
+        trigger['dampenings'] = dampeningData;
+        return this.HawkularAlert.Condition.query({triggerId: triggerId}).$promise;
+      }).then((conditionData)=> {
+        trigger['conditions'] = conditionData;
+        deffered.resolve(trigger);
+      });
+
+      return deffered.promise;
     }
 
     public createTrigger(id: TriggerId, triggerName: string, enabled: boolean,
@@ -135,65 +191,27 @@ module HawkularMetrics {
         });
     }
 
-    public createJvmHeapTrigger(id: TriggerId, triggerName: string, enabled: boolean,
-                                conditionType: string, email: EmailType, low: number, high: number): ng.IPromise<void> {
-      // Create a trigger
-      var triggerId: TriggerId;
+    public createAlertDefinition(trigger: any, condition: any): ng.IPromise<void> {
       var DEFAULT_DAMPENING_INTERVAL = 7 * 60000;
 
-      return this.HawkularAlert.Trigger.save({
-        name: triggerName,
-        id: id,
+      var triggerDefaults = {
         description: 'Created on ' + Date(),
-        firingMatch: 'ANY',
-        enabled: enabled,
-        autoResolve: false,
-        autoResolveAlerts: false,
-        actions: { email: [email] }
-      }).$promise.then((trigger)=> {
+        firingMatch: 'ALL',
+        autoResolveMatch: 'ALL',
+        enabled: true,
+        autoResolve: true,
+        actions: {}
+      };
 
-          triggerId = trigger.id;
-
-          // Parse metrics id from the trigger name
-          var resourceId: string = triggerId.slice(0,-10);
-          var dataId: string = 'MI~R~[' + resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used';
-
-          // Create a conditions for that trigger
-          return this.createCondition(triggerId, {
-            type: conditionType,
-            triggerId: triggerId,
-            dataId: dataId,
-            operatorLow: 'INCLUSIVE',
-            operatorHigh: 'INCLUSIVE',
-            thresholdLow: low || 20.0,
-            thresholdHigh: high || 80.0,
-            inRange: false
-          })/*.then(()=> {
-            return this.createCondition(triggerId, {
-              type: conditionType,
-              triggerId: triggerId,
-              threshold: 20,
-              dataId: dataId,
-              operator: 'LT'
-            });
-          })*/;
-        }).then(() => {
-          // Create dampening for that trigger
-          return this.createDampening(triggerId, DEFAULT_DAMPENING_INTERVAL);
-        });
-    }
-
-    public createJvmNonHeapTrigger(id: TriggerId, triggerName: string, enabled: boolean,
-                                conditionType: string, email: EmailType): ng.IPromise<void> {
-      return this.$q.when('createJvmNonHeapTrigger').then(() => {
-        this.$log.debug('createJvmNonHeapTrigger');
-      });
-    }
-
-    public createJvmGarbageTrigger(id: TriggerId, triggerName: string, enabled: boolean,
-                                conditionType: string, email: EmailType): ng.IPromise<void> {
-      return this.$q.when('createJvmGarbageTrigger').then(() => {
-        this.$log.debug('createJvmGarbageTrigger');
+      return this.HawkularAlert.Trigger.save(angular.extend(triggerDefaults, trigger)).$promise.then((triggerData) => {
+        var triggerId = triggerData.id;
+        var conditionDefaults: any = {
+          triggerId: triggerId
+        };
+        return this.$q.all([
+          this.createCondition(triggerId, angular.extend(conditionDefaults, condition)),
+          this.createDampening(triggerId, DEFAULT_DAMPENING_INTERVAL)
+        ]);
       });
     }
 
@@ -251,7 +269,7 @@ module HawkularMetrics {
       return this.HawkularAlert.Condition.put({triggerId: triggerId, conditionId: conditionId}, condition).$promise;
     }
 
-    public deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<void> {
+    public deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<any> {
       return this.HawkularAlert.Condition.delete({triggerId: triggerId, conditionId: conditionId}).$promise;
     }
 
@@ -414,7 +432,7 @@ module HawkularMetrics {
 
 
     public queryAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis,
-                       alertType?:AlertType, currentPage?:number, perPage?:number): any {
+                       currentPage?:number, perPage?:number): any {
       var alertList = [];
       var headers;
 

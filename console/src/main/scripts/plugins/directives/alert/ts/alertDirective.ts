@@ -146,7 +146,8 @@ module Alert {
     public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
     public replace = 'true';
     public scope = {
-      hkAlertEmail: '='
+      hkAlertEmail: '=',
+      hkDisabled: '='
     };
     public templateUrl = 'plugins/directives/alert/html/fieldset-notification.html';
 
@@ -223,23 +224,20 @@ module Alert {
     public link: (scope: any) => void;
     public replace = 'true';
     public scope = {
-      hkDuration: '='
+      hkDuration: '=',
+      hkSwitch: '=',
+      hkDisabled: '=',
+      hkTitle: '@'
     };
     public templateUrl = 'plugins/directives/alert/html/fieldset-dampening.html';
 
     constructor(private hkTimeUnit: any) {
       this.link = (scope: any) => {
+        var localChange = false;
         var durationBackup = scope.hkDuration || 0;
 
-        scope.timeUnits = hkTimeUnit.timeUnits;
-        scope.timeUnitsDict = hkTimeUnit.timeUnitDictionary;
-
-        scope.durationChange = (): void => {
-          scope.hkDuration = scope.hkConvertedDuration * scope.responseUnit;
-        };
-
-        scope.computeTimeInUnits = ():void => {
-          scope.hkConvertedDuration = scope.hkDuration / scope.responseUnit;
+        scope.durationChange = ():void => {
+          localChange = true;
         };
 
         scope.durationToggle = ():void => {
@@ -254,10 +252,15 @@ module Alert {
           }
         };
 
-        scope.$watch('hkDuration', (newDuration, oldDuration) => {
-          scope.durationEnabled = scope.hkDuration !== 0;
-          scope.responseUnit = hkTimeUnit.getFittestTimeUnit(scope.hkDuration);
-          scope.computeTimeInUnits();
+        scope.$watch('hkDuration', () => {
+          if (!localChange) {
+            scope.durationEnabled = scope.hkDuration !== 0;
+          }
+          localChange = false;
+        });
+
+        scope.$watch('hkSwitch', () => {
+            scope.hkSwitchEnabled = (scope.hkSwitch !== undefined);
         });
       };
     }

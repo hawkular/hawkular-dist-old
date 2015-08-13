@@ -80,18 +80,40 @@ module HawkularMetrics {
 
         //var metricId = 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used';
 
-        this.getAlerts(this.$routeParams.resourceId + '_jvm_pheap', this.startTimeStamp, this.endTimeStamp);
+        this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
 
         this.autoRefresh(20);
     }
 
-    private getAlerts(metricId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      this.HawkularAlertsManager.queryAlerts(metricId, startTime, endTime,
-        HawkularMetrics.AlertType.THRESHOLD).then((data)=> {
-          this.alertList = data.alertList;
+    private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      var pheapArray: any, nheapArray: any, garbaArray:any;
+      var pheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_pheap', startTime, endTime)
+        .then((pheapData)=> {
+          _.forEach(pheapData.alertList, (item) => {item['alertType']='PHEAP';});
+          pheapArray = pheapData.alertList;
         }, (error) => {
           return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
+
+      var nheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_nheap', startTime, endTime)
+        .then((nheapData)=> {
+          _.forEach(nheapData.alertList, (item) => {item['alertType']='NHEAP';});
+          nheapArray = nheapData.alertList;
+        }, (error) => {
+          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+        });
+
+      var garbaPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_garba', startTime, endTime)
+        .then((garbaData)=> {
+          _.forEach(garbaData.alertList, (item) => {item['alertType']='GARBA';});
+          garbaArray = garbaData.alertList;
+        }, (error) => {
+          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+        });
+
+      this.$q.all([pheapPromise, nheapPromise, garbaPromise]).finally(()=> {
+        this.alertList = [].concat(pheapArray, nheapArray, garbaArray);
+      });
     }
 
     private autoRefreshPromise: ng.IPromise<number>;
@@ -154,7 +176,7 @@ module HawkularMetrics {
       this.autoRefreshPromise = this.$interval(() => {
         this.getJvmData();
         this.getJvmChartData();
-        this.getAlerts(this.$routeParams.resourceId + '_jvm_pheap', this.startTimeStamp, this.endTimeStamp);
+        this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -172,24 +194,33 @@ module HawkularMetrics {
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
+        console.log('!!! heap used', resource);
+        if (resource.length) {
           this['heapUsage'] = resource[0];
-        }, this);
+        }
+      }, this);
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Max',
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
+        console.log('!!! heap max', resource);
+        if (resource.length) {
           this['heapMax'] = resource[0];
           AppServerJvmDetailsController.MAX_HEAP = resource[0].max;
-        }, this);
+        }
+      }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Accumulated GC Duration',
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
+        console.log('!!! GC', resource);
+        if (resource.length) {
           this['accGCDuration'] = resource[0].value - resource[resource.length-1].value;
           this.chartGCDurationData = this.formatCounterChartOutput(resource);
-        }, this);
+        }
+      }, this);
       this.getJvmChartData();
     }
 
@@ -235,10 +266,6 @@ module HawkularMetrics {
             color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data) };
         }, this);
     }
-
-
-
-
   }
 
   _module.controller('HawkularMetrics.AppServerJvmDetailsController', AppServerJvmDetailsController);

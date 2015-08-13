@@ -1,54 +1,47 @@
 <div>
-  <div class="panel panel-default alert alert-danger" ng-if="alert.type=='AVAILABILITY'">
+  <div class="panel panel-default alert alert-danger">
     <div class="hk-alert-icon">
       <i class="fa fa-flag"></i>
     </div>
+
     <div class="hk-date">
       {{alert.start | date:'d MMM y HH:mm:ss' }}
     </div>
-    <div class="hk-event">
-      Server <strong>down</strong> for
-      <hk-time-interval hk-time="alert.durationTime"></hk-time-interval>
-      (until
-      <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'HH:mm' }}).</span>
-      <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'d MMM HH:mm:ss' }}).</span>
-      <span ng-show="!alert.isThisYear">{{alert.end | date:'d MMM y HH:mm:ss' }}).</span>
+
+    <div class="hk-event" ng-switch on="alert.alertType">
+      <div ng-switch-when="PINGAVAIL">
+        Server <strong>down</strong> for
+        <hk-time-interval hk-time="alert.durationTime"></hk-time-interval>
+        (until
+        <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'HH:mm' }}).</span>
+        <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'d MMM HH:mm:ss' }}).</span>
+        <span ng-show="!alert.isThisYear">{{alert.end | date:'d MMM y HH:mm:ss' }}).</span>
+      </div>
+      <div ng-switch-when="PINGRESPONSE">
+        <strong>Response time</strong> was above the threshold ({{alert.threshold | number: 0}} ms) for
+        <hk-time-interval hk-time="alert.durationTime"></hk-time-interval>
+        (until
+        <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'HH:mm' }}).</span>
+        <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'d MMM HH:mm:ss' }}).</span>
+        <span ng-show="!alert.isThisYear">{{alert.end | date:'d MMM y HH:mm:ss' }}).</span>
+        The average response time was {{alert.avg | number: 0}} ms.
+      </div>
+      <div ng-switch-when="PHEAP">
+        <strong>Heap Memory</strong>: The Heap memory usage was {{alert.avg / 1024 / 1024 | number:2}} MB.
+      </div>
+      <div ng-switch-when="NHEAP">
+        <strong>Non Heap Memory</strong>: The Non Heap memory usage was {{alert.avg / 1024 / 1024 | number:2}} MB.
+      </div>
+      <div ng-switch-when="GARBA">
+        <strong>Garbage collection</strong>: The garbage collection took more than {{alert.avg | number:2}} ms.
+      </div>
+      <div ng-switch-default>
+        <strong>Alert</strong>: <code>{{alert}}</code>
+      </div>
     </div>
 
     <div class="alert-resolver">
       <a ng-click="alertResolve(alert, $index)" tooltip="Mark as resolved"
-         tooltip-placement="top"
-         tooltip-trigger="mouseenter"
-         tooltip-popup-delay="500">
-        <i class="fa" ng-class="{'fa-check-square-o': hover, 'fa-square-o': !hover}"
-           ng-mouseenter="hover = true"
-           ng-mouseleave="hover = false">
-        </i>
-      </a>
-    </div>
-  </div>
-
-  <div class="panel panel-default alert alert-danger" ng-if="alert.type=='THRESHOLD'">
-    <div class="hk-alert-icon">
-      <i class="fa fa-flag"></i>
-    </div>
-    <div class="hk-date">
-      {{alert.start | date:'d MMM y HH:mm:ss' }}
-    </div>
-    <div class="hk-event">
-      <strong>Response time</strong> was above the threshold ({{alert.threshold | number: 0}} ms) for
-
-      <hk-time-interval hk-time="alert.durationTime"></hk-time-interval>
-
-      (until
-      <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'HH:mm' }}).</span>
-      <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'d MMM HH:mm:ss' }}).</span>
-      <span ng-show="!alert.isThisYear">{{alert.end | date:'d MMM y HH:mm:ss' }}).</span>
-      The average response time was {{alert.avg  | number: 0}} ms.
-    </div>
-
-    <div class="alert-resolver">
-      <a ng-click="alertResolve()" tooltip="Mark as resolved"
          tooltip-placement="top"
          tooltip-trigger="mouseenter"
          tooltip-popup-delay="500">
