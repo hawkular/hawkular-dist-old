@@ -9,19 +9,19 @@
       <div class="radio">
         <label for="every-time-heap">
           <input type="radio" name="alert-heap" id="every-time-heap" ng-value="false" ng-model="durationEnabled"
-                 ng-click="durationToggle()" checked="" ng-disabled="!hkSwitch">
+                 ng-click="durationToggle()" checked="" ng-disabled="hkDisabled || (hkSwitchEnabled && !hkSwitch)">
           {{hkTitleMet || 'Every time conditions are met.'}}
         </label>
       </div>
       <div class="radio">
         <label for="greater-time-heap">
           <input type="radio" name="alert-heap" id="greater-time-heap" ng-value="true" ng-model="durationEnabled"
-                 ng-click="durationToggle()" ng-disabled="!hkSwitch">
+                 ng-click="durationToggle()" ng-disabled="hkDisabled || (hkSwitchEnabled && !hkSwitch)">
           {{hkTitleUnmet || 'Only when conditions are met for greater than:'}}
         </label>
       </div>
       <hk-time-input hk-duration="hkDuration"
-                     hk-disabled="!durationEnabled || !hkSwitch"
+                     hk-disabled="hkDisabled || !durationEnabled || (hkSwitchEnabled && !hkSwitch)"
                      hk-change="durationChange()"
                      id="dw-duration"></hk-time-input>
     </div>

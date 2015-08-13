@@ -146,7 +146,8 @@ module Alert {
     public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
     public replace = 'true';
     public scope = {
-      hkAlertEmail: '='
+      hkAlertEmail: '=',
+      hkDisabled: '='
     };
     public templateUrl = 'plugins/directives/alert/html/fieldset-notification.html';
 
@@ -225,6 +226,7 @@ module Alert {
     public scope = {
       hkDuration: '=',
       hkSwitch: '=',
+      hkDisabled: '=',
       hkTitle: '@'
     };
     public templateUrl = 'plugins/directives/alert/html/fieldset-dampening.html';

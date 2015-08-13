@@ -56,16 +56,20 @@
               </div>
             </div>
           </fieldset>
-          <hk-fieldset-dampening hk-duration="jas.adm.heap.responseDuration"></hk-fieldset-dampening>
+          <hk-fieldset-dampening hk-duration="jas.adm.heap.responseDuration"
+                                 hk-disabled="!jas.adm.heap.conditionLtEnabled && !jas.adm.heap.conditionGtEnabled">
+          </hk-fieldset-dampening>
 
-          <hk-fieldset-notification hk-alert-email="jas.adm.heap.email"></hk-fieldset-notification>
+          <hk-fieldset-notification hk-alert-email="jas.adm.heap.email"
+                                    hk-disabled="!jas.adm.heap.conditionLtEnabled && !jas.adm.heap.conditionGtEnabled">
+          </hk-fieldset-notification>
         </form>
       </div>
     </tab>
     <tab heading="Non-Heap Usage">
       <div id="hk-heap" class="hk-tab-content">
         <p>Configure conditions settings for Non-Heap usage alerts and notifications.</p>
-        
+
         <form class="form-horizontal">
           <fieldset>
             <legend>Threshold Conditions</legend>
@@ -77,8 +81,7 @@
               </div>
             </div>
             <div class="form-group">
-              <label class="col-sm-3 control-label" for="usage-greater">Usage greater than
-                {{jas.adm.nheap.conditionGtPercent}}</label>
+              <label class="col-sm-3 control-label" for="usage-greater">Usage greater than</label>
 
               <div class="col-sm-5">
                 <div class="input-group hk-input-small">
@@ -96,8 +99,7 @@
               </div>
             </div>
             <div class="form-group">
-              <label class="col-sm-3 control-label" for="usage-less">Usage less than
-                {{jas.adm.nheap.conditionLtPercent}}</label>
+              <label class="col-sm-3 control-label" for="usage-less">Usage less than</label>
 
               <div class="col-sm-5">
                 <div class="input-group hk-input-small">
@@ -115,9 +117,13 @@
               </div>
             </div>
           </fieldset>
-          <hk-fieldset-dampening hk-duration="jas.adm.nheap.responseDuration"></hk-fieldset-dampening>
+          <hk-fieldset-dampening hk-duration="jas.adm.nheap.responseDuration"
+                                 hk-disabled="!jas.adm.nheap.conditionLtEnabled && !jas.adm.nheap.conditionGtEnabled">
+          </hk-fieldset-dampening>
 
-          <hk-fieldset-notification hk-alert-email="jas.adm.nheap.email"></hk-fieldset-notification>
+          <hk-fieldset-notification hk-alert-email="jas.adm.nheap.email"
+                                    hk-disabled="!jas.adm.nheap.conditionLtEnabled && !jas.adm.nheap.conditionGtEnabled">
+          </hk-fieldset-notification>
         </form>
       </div>
     </tab>
@@ -129,8 +135,7 @@
           <fieldset>
             <legend>Duration (major)</legend>
             <div class="form-group">
-              <label class="col-sm-3 control-label" for="usage-greater">Greater than
-                {{jas.adm.garba.conditionThreshold}}</label>
+              <label class="col-sm-3 control-label" for="usage-greater">Greater than</label>
 
               <div class="col-sm-5">
                 <div class="input-group hk-input-small">
@@ -146,9 +151,11 @@
               </div>
             </div>
           </fieldset>
-          <hk-fieldset-dampening hk-duration="jas.adm.garba.responseDuration"></hk-fieldset-dampening>
+          <hk-fieldset-dampening hk-duration="jas.adm.garba.responseDuration"
+                                 hk-disabled="!jas.adm.garba.conditionEnabled"></hk-fieldset-dampening>
 
-          <hk-fieldset-notification hk-alert-email="jas.adm.garba.email"></hk-fieldset-notification>
+          <hk-fieldset-notification hk-alert-email="jas.adm.garba.email"
+                                    hk-disabled="!jas.adm.garba.conditionEnabled"></hk-fieldset-notification>
         </form>
       </div>
     </tab>

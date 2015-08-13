@@ -248,7 +248,7 @@ module HawkularMetrics {
       var availabilitySavePromise = this.HawkularAlertsManager.saveAlertDefinition(availabilityAlertDefinition,
         errorCallback, this.triggerDefinition.avail);
 
-      return [availabilityConditionDelete, availabilitySavePromise];
+      return [availabilitySavePromise];
     }
   }
 
@@ -266,13 +266,8 @@ module HawkularMetrics {
           this.adm['thres'] = {};
           this.adm.thres['email'] = alertDefinitionData.trigger.actions.email[0];
           this.adm.thres['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
-          this.adm.thres['conditionEnabled'] = !!(alertDefinitionData.conditions && alertDefinitionData.conditions[0]);
-
-          if (this.adm.thres.conditionEnabled) {
-            this.adm.thres['conditionThreshold'] = alertDefinitionData.conditions[0].threshold;
-          } else {
-            this.adm.thres['conditionThreshold'] = 0;
-          }
+          this.adm.thres['conditionEnabled'] = alertDefinitionData.trigger.enabled;
+          this.adm.thres['conditionThreshold'] = alertDefinitionData.conditions[0].threshold;
         });
 
       return [responseDefinitionPromise];
@@ -281,54 +276,12 @@ module HawkularMetrics {
     saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
       // Set the actual object to save
       var responseAlertDefinition = angular.copy(this.triggerDefinition.thres);
-      responseAlertDefinition.trigger.actions.email[0] = this.adm.thres.email;
-      responseAlertDefinition.dampenings[0].evalTimeSetting = this.adm.thres.responseDuration;
-      responseAlertDefinition.dampenings[1].evalTimeSetting = this.adm.thres.responseDuration;
+      responseAlertDefinition.trigger.enabled = this.adm.thres.conditionEnabled;
 
-      // Conditions
-      var responseCondition1Defer = this.$q.defer();
-      var responseCondition2Defer = this.$q.defer();
-      var responseConditionPromise1:any = responseCondition1Defer.promise;
-      var responseConditionPromise2:any = responseCondition2Defer.promise;
-
-      // If the condition was newly created
-      var triggerId:string = responseAlertDefinition.trigger.id;
-      var dataId:string = triggerId.slice(0, -14) + '.status.duration';
-
-      if (!this.admBak.thres.conditionEnabled && this.adm.thres.conditionEnabled) {
-        responseConditionPromise1 = this.HawkularAlertsManager.createCondition(triggerId, {
-          type: 'THRESHOLD',
-          triggerId: triggerId,
-          threshold: this.adm.thres.conditionThreshold,
-          dataId: dataId,
-          operator: 'GT'
-        });
-
-        responseConditionPromise2 = this.HawkularAlertsManager.createCondition(triggerId, {
-          type: 'THRESHOLD',
-          triggerId: triggerId,
-          triggerMode: 'AUTORESOLVE',
-          threshold: this.adm.thres.conditionThreshold,
-          dataId: dataId,
-          operator: 'LT'
-        });
-      }
-      // If the condition was deleted
-      else if (this.admBak.thres.conditionEnabled && !this.adm.thres.conditionEnabled) {
-        responseConditionPromise1 = this.HawkularAlertsManager.deleteCondition(responseAlertDefinition.trigger.id,
-          responseAlertDefinition.conditions[0].conditionId);
-        responseConditionPromise2 = this.HawkularAlertsManager.deleteCondition(responseAlertDefinition.trigger.id,
-          responseAlertDefinition.conditions[1].conditionId);
-        delete responseAlertDefinition.conditions;
-      }
-      // If the condition stays deleted
-      else if (!this.admBak.thres.conditionEnabled && !this.admBak.thres.conditionEnabled) {
-        var idleMsg = 'Not deleted nor created';
-        responseCondition1Defer.resolve(idleMsg);
-        responseCondition2Defer.resolve(idleMsg);
-      }
-      // If the condition was just updated
-      else {
+      if (this.adm.thres.conditionEnabled) {
+        responseAlertDefinition.trigger.actions.email[0] = this.adm.thres.email;
+        responseAlertDefinition.dampenings[0].evalTimeSetting = this.adm.thres.responseDuration;
+        responseAlertDefinition.dampenings[1].evalTimeSetting = this.adm.thres.responseDuration;
         responseAlertDefinition.conditions[0].threshold = this.adm.thres.conditionThreshold;
         responseAlertDefinition.conditions[1].threshold = this.adm.thres.conditionThreshold;
       }
@@ -336,7 +289,7 @@ module HawkularMetrics {
       var responseSavePromise = this.HawkularAlertsManager.saveAlertDefinition(responseAlertDefinition,
         errorCallback, this.triggerDefinition.thres);
 
-      return [responseConditionPromise1, responseConditionPromise2, responseSavePromise];
+      return [responseSavePromise];
     }
   }
 

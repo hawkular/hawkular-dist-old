@@ -13,7 +13,7 @@
       <fieldset>
         <legend>Response Time</legend>
         <div class="form-group">
-          <label class="col-sm-3 control-label" for="dw-duration">Time (maximum)</label>
+          <label class="col-sm-3 control-label" for="dw-duration">Time (maximum, {{mas.adm.thres.conditionThreshold}})</label>
           <div class="col-sm-5 inline-row">
             <hk-time-input hk-duration="mas.adm.thres.conditionThreshold"
                            hk-disabled="!mas.adm.thres.conditionEnabled"
@@ -26,9 +26,11 @@
         </div>
       </fieldset>
 
-      <hk-fieldset-dampening hk-duration="mas.adm.thres.responseDuration"></hk-fieldset-dampening>
+      <hk-fieldset-dampening hk-duration="mas.adm.thres.responseDuration"
+                             hk-disabled="!mas.adm.thres.conditionEnabled"></hk-fieldset-dampening>
 
-      <hk-fieldset-notification hk-alert-email="mas.adm.thres.email"></hk-fieldset-notification>
+      <hk-fieldset-notification hk-alert-email="mas.adm.thres.email"
+                                hk-disabled="!mas.adm.thres.conditionEnabled"></hk-fieldset-notification>
     </form>
   </div>
 </div>
