@@ -1,8 +1,15 @@
 = Hawkular
 
+ifdef::env-github[]
+[link=https://travis-ci.org/hawkular/hawkular]
+image:https://travis-ci.org/hawkular/hawkular.svg?branch=master["Build Status", link="https://travis-ci.org/hawkular/hawkular"]
+endif::[]
+
 Hawkular is a modular systems monitoring suite, that consists of several sub-projects for
 storing of metrics, alerting on incoming events and more. Those projects are developed
 in their own GitHub repositories and integrated in this project.
+
+Project website: http://www.hawkular.org (its code: https://github.com/hawkular/hawkular.github.io)
 
 Sub-projects are currently:
 
@@ -17,12 +24,10 @@ Sub-projects are currently:
 == About this repository
 
 In this repository we are assembling the individual pieces, sub projects and UI into
-the overall Hawkular instance
+the overall Hawkular instance.
 
-ifdef::env-github[]
-[link=https://travis-ci.org/hawkular/hawkular]
-image:https://travis-ci.org/hawkular/hawkular.svg?branch=master["Build Status", link="https://travis-ci.org/hawkular/hawkular"]
-endif::[]
+In the root `pom.xml` you can actually set the particular versions of the components, but we can't
+guarantee the various permutation of component versions to work together.
 
 == Building
 
@@ -36,18 +41,18 @@ $ mvn install
 ----
 Once those steps are achieved, .zip and .tgz archives will be available in `dist/target` directory.
 
-TIP: If you build with `mvn install -Pdev` an uncompressed directory will be created in `dist/target`.
+TIP: If you build with `mvn install -Pdev`, an uncompressed directory will be created in `dist/target`.
 A default user will be created, the username is `jdoe` and the password is `password`. This can be convenient
 when you are working on the project as you won't have to unzip/untar and register a new user. The uncompressed directory
-can be found in 'dist/target/hawkular-1.0.0-SNAPSHOT/wildfly-8.2.0.Final/' and run with 'bin/standalone.sh' as normally
+can be found in `dist/target/hawkular-${version}/hawkular-${version}/` and run with `bin/standalone.sh` as normally
 starting a WildFly server.
 
 Please have a look at the
-http://www.hawkular.org/docs/dev/development.html[developer documentation] for more information
+http://www.hawkular.org/docs/dev/development.html[developer documentation] for more information.
 
 == License
 
-Hawkular is released under Apache License, Version 2.0 as described in the link:LICENSE[LICENSE] document
+Hawkular is released under Apache License, Version 2.0 as described in the link:LICENSE[LICENSE] document.
 
 ----
    Copyright 2015 Red Hat, Inc.
