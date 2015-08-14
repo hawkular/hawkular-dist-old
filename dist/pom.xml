@@ -210,7 +210,8 @@
             <configuration>
               <outputDirectory>${project.build.directory}/wildfly</outputDirectory>
               <includeArtifactIds>wildfly-dist</includeArtifactIds>
-              <excludes>*/appclient/**,*/docs/**,*/domain/**</excludes>
+              <!-- In */domain, we remove everything except for /configuration/*.properties that are need because of HAWKULAR-430 -->
+              <excludes>*/appclient/**,*/docs/**,*/domain/data/**,*/domain/tmp/**,*/domain/configuration/*.xml</excludes>
             </configuration>
           </execution>
           <execution>
