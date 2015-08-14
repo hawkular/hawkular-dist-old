@@ -84,6 +84,11 @@ module HawkularMetrics {
     }
 
     public addUrl(url:string):void {
+
+      if (this.$scope.addUrlForm.$invalid) {
+        return;
+      }
+
       this.addProgress = true;
 
       var resourceId = this.md5.createHash(url || '');
