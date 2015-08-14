@@ -15,23 +15,25 @@
 /// limitations under the License.
 ///
 
-/// <reference path="alertPlugin.ts"/>
-module Alert {
+/// <reference path="../metricsPlugin.ts"/>
+/// <reference path="../../../includes.ts"/>
+
+module HawkularMetrics {
 
   export class HkAlertPanel {
 
-    public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+    public link:(scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
     public replace = 'true';
     public scope = {
       alert: '=hkAlert',
       refresh: '&hkRefresh'
     };
-    public templateUrl = 'plugins/directives/alert/html/alert.html';
+    public templateUrl = 'plugins/metrics/html/directives/alert.html';
 
 
     constructor(private HawkularAlert) {
-      this.link = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
-        scope.alertResolve = (): void => {
+      this.link = (scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+        scope.alertResolve = ():void => {
           this.HawkularAlert.Alert.resolve({alertIds: scope.alert.id}, {}, () => {
             scope.refresh({hkAlert: scope.alert});
           });
@@ -40,7 +42,7 @@ module Alert {
     }
 
     public static Factory() {
-      var directive = (HawkularAlert: any) => {
+      var directive = (HawkularAlert:any) => {
         return new HkAlertPanel(HawkularAlert);
       };
 
@@ -52,18 +54,18 @@ module Alert {
 
   export class HkAlertPanelList {
 
-    public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+    public link:(scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
     public replace = 'true';
     public scope = {
       alertList: '=hkAlertList',
       limit: '=hkLimit'
     };
-    public templateUrl = 'plugins/directives/alert/html/alertList.html';
+    public templateUrl = 'plugins/metrics/html/directives/alert-list.html';
 
     constructor() {
-      this.link = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
-        scope.alertResolve = (alert): void => {
-          for (var i = 0; i< scope.alertList.length; i++) {
+      this.link = (scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+        scope.alertResolve = (alert):void => {
+          for (var i = 0; i < scope.alertList.length; i++) {
             if (scope.alertList[i].id === alert.id) {
               scope.alertList.splice(i, 1);
               break;
@@ -88,13 +90,13 @@ module Alert {
 
     public static $inject = [];
 
-    public humanizeTime(timeMillis: number): any {
-      var result: any = {};
+    public humanizeTime(timeMillis:number):any {
+      var result:any = {};
 
-      var sec_num: number = Math.floor(timeMillis / 1000);
-      var hours: number   = Math.floor(sec_num / 3600);
-      var minutes: number = Math.floor((sec_num - (hours * 3600)) / 60);
-      var seconds: number = sec_num - (hours * 3600) - (minutes * 60);
+      var sec_num:number = Math.floor(timeMillis / 1000);
+      var hours:number = Math.floor(sec_num / 3600);
+      var minutes:number = Math.floor((sec_num - (hours * 3600)) / 60);
+      var seconds:number = sec_num - (hours * 3600) - (minutes * 60);
 
       if (hours !== 0) {
         result.hours = hours;
@@ -112,21 +114,21 @@ module Alert {
 
   export class HkTimeInterval {
 
-    public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+    public link:(scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
     public replace = 'true';
     public scope = {
       hkTimeMillis: '=hkTime'
     };
-    public templateUrl = 'plugins/directives/alert/html/timeInterval.html';
+    public templateUrl = 'plugins/metrics/html/directives/time-interval.html';
 
     constructor(private HkTime) {
-      this.link = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+      this.link = (scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
         scope.hkTime = HkTime.humanizeTime(scope.hkTimeMillis);
       };
     }
 
     public static Factory() {
-      var directive = (HkTime: any) => {
+      var directive = (HkTime:any) => {
         return new HkTimeInterval(HkTime);
       };
 
@@ -136,26 +138,21 @@ module Alert {
     }
   }
 
-  _module.service('hkTime', Alert.HkTime);
-  _module.directive('hkAlertPanelList', Alert.HkAlertPanelList.Factory());
-  _module.directive('hkAlertPanel', Alert.HkAlertPanel.Factory());
-  _module.directive('hkTimeInterval', Alert.HkTimeInterval.Factory());
+  _module.service('hkTime', HawkularMetrics.HkTime);
+  _module.directive('hkAlertPanelList', HawkularMetrics.HkAlertPanelList.Factory());
+  _module.directive('hkAlertPanel', HawkularMetrics.HkAlertPanel.Factory());
+  _module.directive('hkTimeInterval', HawkularMetrics.HkTimeInterval.Factory());
 
   export class HkFieldsetNotification {
 
-    public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+    public link:(scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
     public replace = 'true';
     public scope = {
       hkAlertEmail: '=',
       hkDisabled: '='
     };
-    public templateUrl = 'plugins/directives/alert/html/fieldset-notification.html';
+    public templateUrl = 'plugins/metrics/html/directives/fieldset-notification.html';
 
-    constructor() {
-      this.link = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
-        console.debug('empty link');
-      };
-    }
     public static Factory() {
       var directive = () => {
         return new HkFieldsetNotification();
@@ -167,37 +164,36 @@ module Alert {
     }
   }
 
-  _module.directive('hkFieldsetNotification', Alert.HkFieldsetNotification.Factory());
+  _module.directive('hkFieldsetNotification', HawkularMetrics.HkFieldsetNotification.Factory());
 
   export class HkTimeUnit {
 
     public static $inject = [];
 
-    public timeUnits: Array<any> = [
+    public timeUnits:Array<any> = [
       {value: 1, label: 'milliseconds'},
       {value: 1000, label: 'seconds'},
       {value: 60000, label: 'minutes'},
       {value: 3600000, label: 'hours'}
     ];
 
-    public timeUnitDictionary: any = {};
+    public timeUnitDictionary:any = {};
 
     constructor() {
-      console.debug('HkTimeUnit constructor');
-      _.forEach(this.timeUnits, (timeUnit: any) => {
+      _.forEach(this.timeUnits, (timeUnit:any) => {
         this.timeUnitDictionary[timeUnit.value] = timeUnit.label;
       });
     }
 
     // Get the most meaningful time unit (so that time value is not a very long fraction).
-    public getFittestTimeUnit(timeValue: number): number {
+    public getFittestTimeUnit(timeValue:number):number {
       if (timeValue === 0) {
         return 1;
       }
 
       var timeUnit = 1;
 
-      _.forEach(this.timeUnits, function(unit: any){
+      _.forEach(this.timeUnits, function (unit:any) {
         if (timeValue % unit.value === 0 && unit.value > timeUnit) {
           timeUnit = unit.value;
         }
@@ -217,11 +213,11 @@ module Alert {
     }
   }
 
-  _module.service('hkTimeUnit', Alert.HkTimeUnit.Factory());
+  _module.service('hkTimeUnit', HawkularMetrics.HkTimeUnit.Factory());
 
   export class HkFieldsetDampening {
 
-    public link: (scope: any) => void;
+    public link:(scope:any) => void;
     public replace = 'true';
     public scope = {
       hkDuration: '=',
@@ -229,10 +225,10 @@ module Alert {
       hkDisabled: '=',
       hkTitle: '@'
     };
-    public templateUrl = 'plugins/directives/alert/html/fieldset-dampening.html';
+    public templateUrl = 'plugins/metrics/html/directives/fieldset-dampening.html';
 
-    constructor(private hkTimeUnit: any) {
-      this.link = (scope: any) => {
+    constructor(private hkTimeUnit:any) {
+      this.link = (scope:any) => {
         var localChange = false;
         var durationBackup = scope.hkDuration || 0;
 
@@ -260,13 +256,13 @@ module Alert {
         });
 
         scope.$watch('hkSwitch', () => {
-            scope.hkSwitchEnabled = (scope.hkSwitch !== undefined);
+          scope.hkSwitchEnabled = (scope.hkSwitch !== undefined);
         });
       };
     }
 
     public static Factory() {
-      var directive = (hkTimeUnit: any) => {
+      var directive = (hkTimeUnit:any) => {
         return new HkFieldsetDampening(hkTimeUnit);
       };
 
@@ -276,5 +272,5 @@ module Alert {
     }
   }
 
-  _module.directive('hkFieldsetDampening', Alert.HkFieldsetDampening.Factory());
+  _module.directive('hkFieldsetDampening', HawkularMetrics.HkFieldsetDampening.Factory());
 }

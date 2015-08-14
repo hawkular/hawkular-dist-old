@@ -15,10 +15,10 @@
 /// limitations under the License.
 ///
 
-/// <reference path="../../includes.ts"/>
-module HawkularComponents {
+/// <reference path="../metricsPlugin.ts"/>
+/// <reference path="../../../includes.ts"/>
 
-  export var _module = angular.module('hawkular-components', []);
+module HawkularMetrics {
 
   export class HkSwitch {
 
@@ -33,7 +33,7 @@ module HawkularComponents {
       hkChange: '&',
       hkClick: '&'
     };
-    public templateUrl = 'plugins/directives/components/html/hk-switch.html';
+    public templateUrl = 'plugins/metrics/html/directives/hk-switch.html';
 
     constructor() {
       this.link = (scope:any, element:any, attrs:any) => {
@@ -65,7 +65,7 @@ module HawkularComponents {
     }
   }
 
-  _module.directive('hkSwitch', HawkularComponents.HkSwitch.Factory());
+  _module.directive('hkSwitch', HawkularMetrics.HkSwitch.Factory());
 
   export class HkTimeInput {
 
@@ -79,7 +79,7 @@ module HawkularComponents {
       hkAutoConvert: '=',
       hkChange: '&'
     };
-    public templateUrl = 'plugins/directives/components/html/time-input.html';
+    public templateUrl = 'plugins/metrics/html/directives/time-input.html';
 
     constructor(private hkTimeUnit:any) {
       this.link = (scope:any, element:any, attrs:any) => {
@@ -122,5 +122,5 @@ module HawkularComponents {
     }
   }
 
-  _module.directive('hkTimeInput', HawkularComponents.HkTimeInput.Factory());
+  _module.directive('hkTimeInput', HawkularMetrics.HkTimeInput.Factory());
 }
