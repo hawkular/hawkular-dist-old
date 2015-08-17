@@ -145,7 +145,7 @@ public class Pinger {
             Log.LOG.debugf("Got UnknownHostException for %s", destination.getUrl());
             return new AsyncResult<>(result);
         } catch (IOException e) {
-            Log.LOG.dCouldNotPingUrl(destination.getUrl(), e.getMessage());
+            Log.LOG.dCouldNotPingUrl(destination.getUrl(), e);
             PingStatus result = PingStatus.error(destination, 500, System.currentTimeMillis());
             return new AsyncResult<>(result);
         }

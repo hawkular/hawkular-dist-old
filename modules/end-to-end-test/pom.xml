@@ -89,6 +89,8 @@
         <!-- $hawkular.management.port must be equal to $hawkular.port.offset + 9990 -->
         <hawkular.management.port>9990</hawkular.management.port>
 
+        <hawkular.agent.enabled>false</hawkular.agent.enabled>
+
         <hawkular.log>INFO</hawkular.log>
         <hawkular.log.accounts>INFO</hawkular.log.accounts>
         <hawkular.log.agent>INFO</hawkular.log.agent>
@@ -163,6 +165,7 @@
                 <javaOpt>-Djava.awt.headless=true</javaOpt>
                 <javaOpt>-Djboss.bind.address=${hawkular.bind.address}</javaOpt>
                 <javaOpt>-Djboss.socket.binding.port-offset=${hawkular.port.offset}</javaOpt>
+                <javaOpt>-Dhawkular.agent.enabled=${hawkular.agent.enabled}</javaOpt>
                 <javaOpt>-Dhawkular.log=${hawkular.log}</javaOpt>
                 <javaOpt>-Dhawkular.log.accounts=${hawkular.log.accounts}</javaOpt>
                 <javaOpt>-Dhawkular.log.agent=${hawkular.log.agent}</javaOpt>
