@@ -154,7 +154,7 @@ class InventoryITest extends AbstractTestBase {
 
 
         /* Create a metric type */
-        response = postDeletable(path: "metricTypes", body: [id : responseTimeMTypeId, unit : "MILLI_SECOND",
+        response = postDeletable(path: "metricTypes", body: [id : responseTimeMTypeId, unit : "MILLISECONDS",
                 type: "COUNTER"])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/metricTypes/$responseTimeMTypeId", response.headers.Location)
@@ -282,16 +282,148 @@ class InventoryITest extends AbstractTestBase {
 
         /* add a custom relationship, no need to clean up, it'll be deleted together with the resources */
         def relation = [id        : 42, // it's ignored anyway
-                        source: "/t;" + tenantId + "/e;" + environmentId + "/r;" + host2ResourceId,
+                        source    : "/t;" + tenantId + "/e;" + environmentId + "/r;" + host2ResourceId,
                         name      : "inTheSameRoom",
-                        target: "/t;" + tenantId + "/e;" + environmentId + "/r;" + host1ResourceId,
+                        target    : "/t;" + tenantId + "/e;" + environmentId + "/r;" + host1ResourceId,
                         properties: [
-                                from      : "2000-01-01",
-                                confidence: "90%"
+                            from      : "2000-01-01",
+                            confidence: "90%"
                         ]]
         response = client.post(path: "$basePath/$environmentId/resources/$host2ResourceId/relationships",
                 body: relation)
         assertEquals(201, response.status)
+
+        /* add a resource type json schema */
+        def schema = [
+            value: [
+                title     : "Character",
+                type      : "object",
+                properties: [
+                    firstName : [type: "string"],
+                    secondName: [type: "string"],
+                    age       : [
+                        type            : "integer",
+                        minimum         : 0,
+                        exclusiveMinimum: false
+                    ],
+                    male      : [
+                        description: "true if the character is a male",
+                        type       : "boolean"
+                    ],
+                    foo       : [
+                        type      : "object",
+                        properties: [
+                            something: [type: "string"],
+                            someArray: [
+                                type       : "array",
+                                minItems   : 3,
+                                items      : [type: "integer"],
+                                uniqueItems: false
+                            ],
+                            foo      : [
+                                type      : "object",
+                                properties: [
+                                    question: [
+                                        type   : "string",
+                                        pattern: "^.*\\?\$"
+                                    ],
+                                    answer  : [
+                                        description: "the answer (example of any type)"
+                                    ],
+                                    foo     : [
+                                        type      : "object",
+                                        properties: [
+                                            foo: [
+                                                type      : "object",
+                                                properties: [
+                                                    fear : [
+                                                        type: "string",
+                                                        oneOf: [
+                                                            [format: "dentists"],
+                                                            [format: "lawyers"],
+                                                            [format: "rats"],
+                                                        ]
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                required  : ["firstName", "secondName", "male", "age", "foo"]
+            ],
+            role : "configurationSchema"
+        ]
+        response = client.post(path: "$basePath/resourceTypes/$pingableHostRTypeId/data",
+                body: schema)
+        assertEquals(201, response.status)
+
+        /* add an invalid config data to a resource (invalid ~ not valid against the json schema) */
+        def invalidData = [
+            value: [
+                firstName : "John",
+                secondName: "Smith"
+            ]
+            ,
+            role : "configuration"
+        ]
+
+        try {
+            response = client.post(path: "$basePath/$environmentId/resources/$host2ResourceId/data",
+                body: invalidData)
+            assertEquals(400, response.status) // validation should fail resulting in http 400 (BAD REQUEST)
+        } catch (Exception e) {
+            println(e)
+        }
+
+        /* add a config data to a resource, no need to clean up, it'll be deleted together with the resources */
+        def data = [
+            value     : [
+                firstName : "Winston",
+                secondName: "Smith",
+                sdf       : "sdf",
+                male      : true,
+                age       : 42,
+                foo       : [
+                    something: "whatever",
+                    someArray: [1, 1, 2, 3, 5, 8],
+                    foo      : [
+                        answer  : 5,
+                        question: "2+2=?",
+                        foo     : [
+                            foo: [
+                                fear: "rats"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            role      : "configuration",
+            properties: [
+                war      : "peace",
+                freedom  : "slavery",
+                ignorance: "strength"
+            ]
+        ]
+        response = client.post(path: "$basePath/$environmentId/resources/$host2ResourceId/data",
+                body: data)
+        assertEquals(201, response.status)
+
+        /* add a config data to a child resource, no need to clean up, it'll be deleted together with the resources */
+//        def simpleData = [
+//            value: [
+//                a: 1,
+//                b: "abc",
+//                c: true
+//            ],
+//            role : "connectionConfiguration"
+//        ]
+//        response = client.post(path: "$basePath/$environmentId/resources/$room1ResourceId%2Ftable/data",
+//            body: simpleData)
+//        assertEquals(201, response.status)
 
     }
 
@@ -432,6 +564,14 @@ class InventoryITest extends AbstractTestBase {
         assertEntitiesExist("$environmentId/resources/$host1ResourceId/metrics",
                 ["/e;" + environmentId + "/m;" + responseTimeMetricId, "/e;" + environmentId + "/m;" +
                responseStatusCodeMetricId])
+    }
+
+    @Test
+    void testConfigCreated() {
+        assertEntitiesExist("$environmentId/resources/$host2ResourceId/data",
+                ["/e;" + environmentId + "/r;" + host2ResourceId + "/d;configuration"])
+//        assertEntitiesExist("$environmentId/resources/$host2ResourceId%2Ftable/data?dataType=connectionConfiguration",
+//                ["/e;" + environmentId + "/r;" + host2ResourceId + "/d;connectionConfiguration"])
     }
 
     @Test
@@ -669,6 +809,7 @@ class InventoryITest extends AbstractTestBase {
 
         //noinspection GroovyAssignabilityCheck
         def expectedPaths = new ArrayList<>(cps)
+        println response.data
         def entityPaths = response.data.collect { it.path }
         cps.forEach { entityPaths.remove(it); expectedPaths.remove(it) }
 
