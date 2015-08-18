@@ -64,7 +64,7 @@
       <div class="actions-table">
         <button class="btn btn-default add" type="button" disabled>Add Deployment</button>
         <div class="dropdown">
-          <button class="btn btn-default" type="button" id="dropdownMenu1" dropdown-toggle>
+          <button class="btn btn-default" type="button" id="dropdownMenu1" dropdown-toggle ng-disabled="vm.selectCount === 0">
             Actions
             <span class="caret"></span>
           </button>
@@ -83,24 +83,25 @@
         <div id="DataTables_Table_0_filter" class="dataTables_filter">
           <label><input type="search" ng-model="vm.search" aria-controls="DataTables_Table_0"></label>
         </div>
-        <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing <b>1</b> to <b>{{vm.resourceList.length}}</b> of <b>{{vm.resourceList.length}}</b> Items</div>
+        <div class="dataTables_info" role="status" aria-live="polite" ng-hide="vm.selectCount > 0">Showing <b>1</b> to <b>{{vm.resourceList.length}}</b> of <b>{{vm.resourceList.length}}</b> Items</div>
+        <div class="dataTables_info" role="status" aria-live="polite" ng-show="vm.selectCount > 0"><b>{{vm.selectCount}}</b> item<span ng-show="vm.selectCount > 1">s</span> selected</div>
       </div>
       <div class="table-responsive">
         <table class="datatable table table-striped table-bordered table-checkbox dataTable no-footer" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" role="grid">
           <thead>
             <tr role="row">
-              <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label=": activate to sort column descending"><input type="checkbox"></th>
+              <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Select All" ng-click="vm.selectAll()"><input type="checkbox" ng-checked="vm.selectCount === vm.resourceList.length"></th>
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Current State: activate to sort column ascending">Current State</th>
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Deployments 10: activate to sort column ascending">Deployments <span class="label label-default label-alert pull-right" tooltip-trigger tooltip-placement="top" tooltip="Total alerts" ng-show="vm.alertList.length">{{vm.alertList.length}}</span></th>
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Enabled/Disabled: activate to sort column ascending">Enabled/Disabled</th>
-              <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Computer Health: activate to sort column ascending">Computed Health</th>
+              <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Computed Health: activate to sort column ascending">Computed Health</th>
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Actions: activate to sort column ascending">Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr class="odd"><td valign="top" colspan="6" class="dataTables_empty" ng-show="vm.search && (vm.resourceList | filter:vm.search).length === 0"><p>Suggestions</p><ul><li>Check the syntax of the search term.</li><li>Check that the correct menu option is chosen (token ID vs. user ID).</li><li>Use wildcards (* to match zero or more characters or ? to match a single character).</li><li>Clear the search field, then click Search to return to the 20 most recent records.</li></ul></td></tr>
-            <tr role="row" ng-repeat="res in vm.resourceList | filter:vm.search" class="odd">
-              <td class="sorting_1"><input type="checkbox"></td>
+            <tr role="row" ng-repeat="res in vm.resourceList | filter:vm.search" ng-class="{'selected': res.selected}" ng-click="vm.selectItem(res)">
+              <td><input type="checkbox" ng-checked="res.selected"></td>
               <td class="state" ng-show="res.state === 'up'"><i class="fa fa-check-circle-o"></i> OK</td>
               <td class="state" ng-show="res.state === 'down'"><i class="fa fa-square"></i> Stopped</td>
               <td class="state" ng-show="res.state === 'unknown'"><i class="fa fa-times-circle-o"></i> Failed</td>
@@ -113,7 +114,7 @@
               <td class="danger" ng-show="false">Poor</td>
               <td class="actions">
                 <div class="dropdown">
-                  <button class="btn btn-default" type="button" id="dropdownMenu2" dropdown-toggle>
+                  <button class="btn btn-default" type="button" id="dropdownMenu2" ng-click="vm.selectItem(res)" dropdown-toggle>
                     Actions
                     <span class="caret"></span>
                   </button>
