@@ -29,6 +29,7 @@ module HawkularMetrics {
 
     private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
+    public selectCount: number = 0;
     public lastUpdateTimestamp:Date;
     public alertList;
     public startTimeStamp:TimestampInMillis;
@@ -87,9 +88,10 @@ module HawkularMetrics {
           (aResourceList, getResponseHeaders) => {
         var promises = [];
         var tmpResourceList = [];
-        angular.forEach(aResourceList, function(res) {
+        angular.forEach(aResourceList, function(res: any) {
           if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
             tmpResourceList.push(res);
+            res.selected = _.result(_.find(this.resourceList, {'id': res.id}), 'selected');
             promises.push(this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
               tenantId: tenantId,
               availabilityId: 'AI~R~[' + res.id + ']~AT~Deployment Status~Deployment Status',
@@ -124,11 +126,25 @@ module HawkularMetrics {
     }
 
     public performOperationMulti(operationName: string, resourceList: any): any {
-      this.$log.info('performOperationMulti ', operationName, resourceList);
-      for (var i = 0; i < resourceList.length; i++) {
-        var operation = {operationName: operationName, resourceId: resourceList[i].id};
+      var selectedList = _.filter(this.resourceList, 'selected');
+      this.$log.info('performOperationMulti ', operationName, selectedList);
+      _.forEach(selectedList, (item: any) => {
+        var operation = {operationName: operationName, resourceId: item.id};
         this.HawkularOps.performOperation(operation);
-      }
+      });
+    }
+
+    public selectItem(item): any {
+      item.selected = !item.selected;
+      this.selectCount = _.filter(this.resourceList, 'selected').length;
+    }
+
+    public selectAll(): any {
+      var toggleTo = this.selectCount !== this.resourceList.length;
+      _.forEach(this.resourceList, (item: any) => {
+        item.selected = toggleTo;
+      });
+      this.selectCount = toggleTo ? this.resourceList.length : 0;
     }
   }
 
