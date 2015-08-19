@@ -38,7 +38,7 @@
           <span class="hk-item">Total Downtime Duration</span>
         </div>
         <div class="col-sm-3 hk-summary-item">
-          <span class="hk-data" ng-hide="vm.lastDowntime.valueOf() === 0 || (vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down')" am-time-ago="vm.lastDowntime" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1500" tooltip="{{ vm.lastDowntime | date:'d MMM HH:mm:ss' }}"></span>
+          <span class="hk-data" ng-hide="vm.lastDowntime.valueOf() === 0 || (vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down')" am-time-ago="vm.lastDowntime" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1500" tooltip="{{ vm.lastDowntime | date:'d MMM yyyy, HH:mm:ss' }}"></span>
           <span class="hk-data" ng-show="vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down'">Always Down</span>
           <span class="hk-data" ng-show="!vm.lastDowntime || vm.lastDowntime.valueOf() === 0">Always Up</span>
           <span class="hk-item">Last Downtime</span>
