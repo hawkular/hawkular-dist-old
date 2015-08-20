@@ -341,7 +341,7 @@ class InventoryITest extends AbstractTestBase {
                                                         oneOf: [
                                                             [format: "dentists"],
                                                             [format: "lawyers"],
-                                                            [format: "rats"],
+                                                            [format: "rats"]
                                                         ]
                                                     ]
                                                 ]
