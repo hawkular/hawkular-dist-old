@@ -34,8 +34,8 @@ module HawkularMetrics {
                   email: EmailType): ng.IPromise<void>;
 
     createAlertDefinition(trigger: any, condition: any): ng.IPromise<void>;
-    deleteTrigger(triggerId: TriggerId): ng.IPromise<void>;
-    createCondition(triggerId: TriggerId, condition: any): ng.IPromise<void>;
+    deleteTrigger(triggerId: TriggerId): ng.IPromise<any>;
+    createCondition(triggerId: TriggerId, condition: any): ng.IPromise<any>;
     updateCondition(triggerId: TriggerId, conditionId: ConditionId, condition: any): ng.IPromise<void>;
     deleteCondition(triggerId: TriggerId, conditionId: ConditionId): ng.IPromise<any>;
     createDampening(triggerId: TriggerId, duration: number, triggerMode?: string): ng.IPromise<void>;
@@ -261,7 +261,7 @@ module HawkularMetrics {
       }).$promise;
     }
 
-    public createCondition(triggerId: TriggerId, condition: any): ng.IPromise<void> {
+    public createCondition(triggerId: TriggerId, condition: any): ng.IPromise<any> {
       return this.HawkularAlert.Condition.save({triggerId: triggerId}, condition).$promise;
     }
 

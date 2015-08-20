@@ -1,0 +1,94 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="das.cancel()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Datasource Alert Settings</h4>
+</div>
+<div class="modal-body alert-settings">
+  <tabset>
+    <tab heading="Connection Availability">
+
+      <div class="hk-tab-content">
+        <p>Configure conditions settings for Connection Availability alerts and notifications.</p>
+
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>Available Connections</legend>
+
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="dsc-connections">Less than</label>
+              <div class="col-sm-5">
+                <input ng-model="das.adm.conn.conditionThreshold"
+                       type="number" min="0" value="200" class="form-control hk-input-small" id="dsc-connections">
+              </div>
+              <div class="col-sm-4">
+                <hk-switch hk-model="das.adm.conn.conditionEnabled"
+                           id="usage-greater-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+          </fieldset>
+          <hk-fieldset-dampening hk-duration="das.adm.conn.responseDuration"
+                                 hk-disabled="!das.adm.conn.conditionEnabled">
+          </hk-fieldset-dampening>
+
+          <hk-fieldset-notification hk-alert-email="das.adm.conn.email"
+                                    hk-disabled="!das.adm.conn.conditionEnabled">
+          </hk-fieldset-notification>
+        </form>
+      </div>
+    </tab>
+    <tab heading="Responsivness">
+      <div class="hk-tab-content">
+        <p>Configure conditions settings for Responsiveness alerts and notifications.</p>
+
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>Wait Time</legend>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="dsc-connections">Less than</label>
+              <div class="col-sm-5">
+                <input ng-model="das.adm.resp.waitTimeThreshold"
+                       type="number" min="0" value="200" class="form-control hk-input-small" id="dsc-connections">
+              </div>
+              <div class="col-sm-4">
+                <hk-switch hk-model="das.adm.resp.waitTimeEnabled"
+                           id="usage-greater-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Creation Time</legend>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="dsc-connections">Less than</label>
+              <div class="col-sm-5">
+                <input ng-model="das.adm.resp.creationTimeThreshold"
+                       type="number" min="0" value="200" class="form-control hk-input-small" id="dsc-connections">
+              </div>
+              <div class="col-sm-4">
+                <hk-switch hk-model="das.adm.resp.creationTimeEnabled"
+                           id="usage-greater-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+          </fieldset>
+
+          <hk-fieldset-dampening hk-duration="das.adm.resp.responseDuration"
+                                 hk-disabled="!das.adm.resp.waitTimeEnabled && !das.adm.resp.creationTimeEnabled">
+          </hk-fieldset-dampening>
+
+          <hk-fieldset-notification hk-alert-email="das.adm.resp.email"
+                                    hk-disabled="!das.adm.resp.waitTimeEnabled && !das.adm.resp.creationTimeEnabled">
+          </hk-fieldset-notification>
+        </form>
+      </div>
+    </tab>
+  </tabset>
+</div>
+<div class="modal-footer alert-settings">
+  <button type="button" class="btn btn-primary" ng-click="das.save()"
+          ng-disabled="das.saveProgress || !das.isSettingChange">
+    <div ng-show="das.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>
+    Save
+  </button>
+  <button type="button" class="btn btn-default" ng-click="das.cancel()">Cancel</button>
+</div>

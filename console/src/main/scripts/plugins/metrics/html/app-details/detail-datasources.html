@@ -28,26 +28,55 @@
 
     <div class="hk-collapsible-area" ng-class="{ 'hide': !vm.expandedList[ds.id]}" ng-if="vm.expandedList[ds.id]">
 
-      <!-- Alerts -->
+
       <div class="hk-info-top clearfix">
         <h3 class="pull-left">
-          <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Deployment Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+          <button class="btn btn-link hk-trigger" ng-click="vm.showAllAlerts = !vm.showAllAlerts" tooltip-trigger
+                  tooltip-placement="top" tooltip="Expand/collapse">
+            <i class="fa" ng-show="vm.alertList.length > 0"
+               ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> JVM Alerts
+            <span ng-show="vm.alertList.length > 0">
+              ({{vm.showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})
+            </span>
+          </button>
         </h3>
-        <!-- <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span> -->
+        <span class="hk-settings pull-right">
+          <a href="#" ng-click="vm.openSetup(ds.id)">
+            <i class="fa fa-cog"></i>Datasource Alert Settings
+          </a>
+        </span>
       </div>
       <div class="clearfix">
         <!-- No Alerts -->
         <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
           <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-          <div>No alerts have been fired in this category and time range.</div>
+          <div class="hk-event">No Alerts have been fired in this category and time range.</div>
         </div>
         <!-- Alerts exist -->
+        <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList"
+                             hk-limit="(vm.showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
+      </div>
+
+      <!-- Alerts ->
+      <div class="hk-info-top clearfix">
+        <h3 class="pull-left">
+          <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Deployment Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+        </h3>
+        <!-- <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span> ->
+      </div>
+      <div class="clearfix">
+        <!-- No Alerts ->
+        <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
+          <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
+          <div>No alerts have been fired in this category and time range.</div>
+        </div>
+        <!-- Alerts exist --
         <div class="panel panel-default alert alert-danger" ng-repeat="alert in vm.alertList | limitTo: (showAllAlerts ? 100000 : 3) track by $index">
           <div class="hk-alert-icon"><i class="fa fa-flag"></i></div>
           <div class="hk-date">{{alert.evalSets[0][0].evalTimestamp | date:'medium' }}</div>
           <div class="hk-event"><strong>Alert Summary</strong>: alert details.</div>
         </div>
-      </div>
+      </div-->
 
       <div class="hk-info-top clearfix">
         <h3 class="pull-left">Metrics</h3>
