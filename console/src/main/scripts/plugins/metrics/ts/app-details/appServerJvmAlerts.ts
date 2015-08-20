@@ -209,7 +209,7 @@ module HawkularMetrics {
       var triggerId: string = this.resourceId + '_jvm_pheap';
 /*
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~/]~MT~WildFly Memory Metrics~Heap Max',
+        gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max',
         buckets: 1}, (resource) => {
         this.maxUsage = resource[0];
       }, this);
