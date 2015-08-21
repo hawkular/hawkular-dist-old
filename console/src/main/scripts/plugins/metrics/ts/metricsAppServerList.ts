@@ -119,6 +119,7 @@ module HawkularMetrics {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId},
         (aFeedList) => {
+          this.resourceList = [];
           angular.forEach(aFeedList, (feed) => {
             this.getResourceListForOneFeed(feed.id, tenantId);
           });
