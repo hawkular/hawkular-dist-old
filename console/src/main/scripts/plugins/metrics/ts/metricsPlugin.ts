@@ -36,9 +36,6 @@ module HawkularMetrics {
       when('/metrics/response-time', {
         templateUrl: 'plugins/metrics/html/response-time.html',
         resolve: {
-          hkResourceList: ($filter, $location, $rootScope, $q, HawkularInventory) => {
-            var resPromise = HawkularInventory.Resource.query({
-              environmentId: globalEnvironmentId
           hkResourceList: function ($route, $filter, $location, $rootScope, $q, HawkularInventory) {
             var idParts = $route.current.params.resourceId.split('~');
             var feedId = idParts[0];
@@ -46,9 +43,9 @@ module HawkularMetrics {
               environmentId: globalEnvironmentId,
               feedId: feedId
             }).$promise;
-            resPromise.then((hkResourceList) => {
+            resPromise.then(function (hkResourceList) {
               $location.path('/metrics/response-time/' + hkResourceList[0].id);
-            }, () => {
+            }, function () {
               $location.url('/error');
             });
 
@@ -62,11 +59,11 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/response-time.html',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
-            var p = HawkularInventory.Resource.get({
-              environmentId: globalEnvironmentId,
-              resourceId: $route.current.params.resourceId
-            }).$promise;
+          resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
+            var idParts = $route.current.params.resourceId.split('~');
+            var feedId = idParts[0];
+            var p = HawkularInventory.ResourceUnderFeed.get({environmentId: globalEnvironmentId,
+              feedId: feedId, resourceId: $route.current.params.resourceId}).$promise;
             p.then((response:any) => {
                 return response.properties.url;
               },
@@ -82,11 +79,11 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/availability.html',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
-            var p = HawkularInventory.Resource.get({
-              environmentId: globalEnvironmentId,
-              resourceId: $route.current.params.resourceId
-            }).$promise;
+          resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
+            var idParts = $route.current.params.resourceId.split('~');
+            var feedId = idParts[0];
+            var p = HawkularInventory.ResourceUnderFeed.get({environmentId: globalEnvironmentId,
+              feedId: feedId, resourceId: $route.current.params.resourceId}).$promise;
             p.then((response:any) => {
                 return response.properties.url;
               },
@@ -102,11 +99,11 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/alerts.html',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
-            var p = HawkularInventory.Resource.get({
-              environmentId: globalEnvironmentId,
-              resourceId: $route.current.params.resourceId
-            }).$promise;
+          resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
+            var idParts = $route.current.params.resourceId.split('~');
+            var feedId = idParts[0];
+            var p = HawkularInventory.ResourceUnderFeed.get({environmentId: globalEnvironmentId,
+              feedId: feedId, resourceId: $route.current.params.resourceId}).$promise;
             p.then((response:any) => {
                 return response.properties.url;
               },
@@ -123,13 +120,13 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
-            var redirectMissingAppServer = () => {
+          resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
+            var redirectMissingAppServer = function() {
               NotificationsService.info('You were redirected to this page because you requested an invalid ' +
-                'Application Server.');
+                  'Application Server.');
               $location.path('/hawkular-ui/app/app-list');
             };
-            var checkAppServerExists = () => {
+            var checkAppServerExists = function() {
               var idParts = $route.current.params.resourceId.split('~');
               if (idParts.length !== 2) {
                 redirectMissingAppServer();
