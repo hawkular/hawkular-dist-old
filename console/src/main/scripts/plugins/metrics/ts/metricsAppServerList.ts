@@ -81,10 +81,12 @@ module HawkularMetrics {
       });
     }
 
-    public getResourceList(currentTenantId?: TenantId):any {
+    public getResourceListForOneFeed(feedId: string, currentTenantId?: TenantId):any {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'WildFly Server', per_page: this.resPerPage,
-              page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
+      this.HawkularInventory.ResourceOfTypeUnderFeed.query({
+        environmentId: globalEnvironmentId, feedId: feedId,
+        resourceTypeId: 'WildFly Server', per_page: this.resPerPage,
+        page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
         this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
         var promises = [];
         angular.forEach(aResourceList, function(res, idx) {
@@ -100,7 +102,7 @@ module HawkularMetrics {
           this.lastUpdateTimestamp = new Date();
         }, this);
         this.$q.all(promises).then((result) => {
-          this.resourceList = aResourceList;
+          this.resourceList = _.union(this.resourceList, aResourceList);
         });
       },
       () => { // error
@@ -110,6 +112,17 @@ module HawkularMetrics {
           this['lastUpdateTimestamp'] = new Date();
         }
       });
+    }
+
+    public getResourceList(currentTenantId?: TenantId):any {
+      // for each feed get all WF resources
+      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId},
+        (aFeedList) => {
+          angular.forEach(aFeedList, (feed) => {
+            this.getResourceListForOneFeed(feed.id, tenantId);
+          });
+        });
     }
 
   }
