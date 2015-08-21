@@ -126,7 +126,7 @@ module HawkularMetrics {
               var p = HawkularInventory.FeedResource.get({
                 environmentId: globalEnvironmentId,
                 feedId: idParts[0],
-                resourceId: $route.current.params.resourceId + '~/'
+                resourceId: $route.current.params.resourceId + '~~'
               }).$promise;
               p.then((response) => {
                   return response;
