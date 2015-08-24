@@ -29,6 +29,7 @@ hawkular:
   environment:
     - HAWKULAR_BACKEND=cassandra
     - CASSANDRA_NODES=myCassandra
+
 myCassandra:
-  image: cassandra:2.1
+  image: cassandra:2.2
 
