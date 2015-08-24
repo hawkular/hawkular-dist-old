@@ -272,10 +272,37 @@ gulp.task('copy-kettle-js', ['build-live','set-server-path'] , function() {
     .pipe(gulp.dest(config.serverPath));
 });
 
+gulp.task('copy-vendor-fonts', function(done) {
+  var src = [config.srcPrefix + 'plugins/**/vendor/fonts/*.*'];
+
+  gulp.src(src)
+    .pipe(gulp.dest(config.dist)).on('end', function(){
+      done();
+    });
+});
+
+gulp.task('copy-vendor-js', function(done) {
+  var src = [config.srcPrefix + 'plugins/**/vendor/**/*.js'];
+
+  gulp.src(src)
+    .pipe(gulp.dest(config.dist)).on('end', function(){
+      done();
+    });
+});
+
+gulp.task('copy-vendor-css', function(done) {
+  var src = [config.srcPrefix + 'plugins/**/vendor/**/*.css'];
+
+  gulp.src(src)
+    .pipe(gulp.dest(config.dist)).on('end', function(){
+      done();
+    });
+});
+
 gulp.task('copy-kettle-css', ['less-live','set-server-path'] , function() {
   gulp.src(['dist/hawkular-console.css'])
     .pipe(gulp.dest(config.serverPath));
 });
 
-gulp.task('build', ['bower', 'path-adjust', 'tslint', 'tsc', 'less', 'template', 'concat', 'clean']);
-gulp.task('build-live', ['copy-sources', 'bower', 'path-adjust', 'tslint-watch', 'tsc-live', 'less-live', 'template-live', 'concat-live']);
+gulp.task('build', ['bower', 'path-adjust', 'tslint', 'tsc', 'less', 'template', 'concat', 'copy-vendor-js', 'copy-vendor-css', 'copy-vendor-fonts', 'clean']);
+gulp.task('build-live', ['copy-sources', 'bower', 'path-adjust', 'tslint-watch', 'tsc-live', 'less-live', 'template-live', 'concat-live', 'copy-vendor-js', 'copy-vendor-css', 'copy-vendor-fonts']);

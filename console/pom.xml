@@ -39,6 +39,13 @@
     <node.version>v0.12.7</node.version>
     <node.npm.version>2.13.2</node.npm.version>
     <node.maven.plugin.version>0.0.23</node.maven.plugin.version>
+    <hawkular.checkstyle.excludes>
+      release.properties,
+      **/*.d.ts,
+      **/vendor/**/*.js,
+      **/vendor/**/*.css,
+      **/vendor/fonts/*.*,
+    </hawkular.checkstyle.excludes>
   </properties>
 
   <dependencies>
@@ -117,6 +124,27 @@
           </webResources>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <excludes combine.children="append">
+            <exclude>**/vendor/**/*.js</exclude>
+            <exclude>**/vendor/**/*.css</exclude>
+            <exclude>**/vendor/fonts/*.*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <excludes>${hawkular.checkstyle.excludes}</excludes>
+        </configuration>
+      </plugin>
+
     </plugins>
 
   </build>
