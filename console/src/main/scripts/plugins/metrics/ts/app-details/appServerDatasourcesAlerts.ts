@@ -30,7 +30,7 @@ module HawkularMetrics {
 
       var connDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(connTriggerId)
         .then((alertDefinitionData) => {
-          this.$log.debug('alertDefinitionData', alertDefinitionData);
+          this.$log.debug('alertDefinitionData', 'conn', alertDefinitionData);
           this.triggerDefinition['conn'] = alertDefinitionData;
 
           this.adm['conn'] = {};
@@ -46,25 +46,36 @@ module HawkularMetrics {
       var respDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(respTriggerId)
         .then((alertDefinitionData) => {
 
-          this.$log.debug('alertDefinitionData', alertDefinitionData);
+          this.$log.debug('alertDefinitionData', 'resp', alertDefinitionData);
           this.triggerDefinition['resp'] = alertDefinitionData;
 
           this.adm['resp'] = {};
           this.adm.resp['email'] = alertDefinitionData.trigger.actions.email[0];
           this.adm.resp['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
 
-          var idCreation = 0,
-            idWait = 1;
+          if (alertDefinitionData.conditions.length > 0) {
+            var idCreation = 0,
+              idWait = 1;
 
-          if (alertDefinitionData.conditions[1].dataId.indexOf('Creation') > -1) {
-            idCreation = 1;
-            idWait = 0;
+            if (alertDefinitionData.conditions[0].dataId.indexOf('Creation') === -1) {
+              idCreation = 1;
+              idWait = 0;
+            }
+
+            if (alertDefinitionData.conditions[idWait]) {
+              this.adm.resp['waitTimeThreshold'] = alertDefinitionData.conditions[idWait].threshold;
+              this.adm.resp['waitTimeEnabled'] = !!alertDefinitionData.conditions[idWait].threshold;
+            }
+            if (alertDefinitionData.conditions[idCreation]) {
+              this.adm.resp['creationTimeThreshold'] = alertDefinitionData.conditions[idCreation].threshold;
+              this.adm.resp['creationTimeEnabled'] = !!alertDefinitionData.conditions[idCreation].threshold;
+            }
           }
 
-          this.adm.resp['waitTimeThreshold'] = alertDefinitionData.conditions[idWait].threshold;
-          this.adm.resp['waitTimeEnabled'] = !!alertDefinitionData.conditions[idWait].threshold;
-          this.adm.resp['creationTimeThreshold'] = alertDefinitionData.conditions[idCreation].threshold;
-          this.adm.resp['creationTimeEnabled'] = !!alertDefinitionData.conditions[idCreation].threshold;
+          this.adm.resp['waitTimeThreshold'] = this.adm.resp['waitTimeThreshold'] ||
+            AppServerDatasourcesDetailsController.DEFAULT_WAIT_THRESHOLD;
+          this.adm.resp['creationTimeThreshold'] = this.adm.resp['creationTimeThreshold'] ||
+            AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD;
         });
 
 
@@ -79,7 +90,7 @@ module HawkularMetrics {
       if (this.adm.conn.conditionEnabled) {
         connAlertDefinition.trigger.actions.email[0] = this.adm.conn.email;
         connAlertDefinition.dampenings[0].evalTimeSetting = this.adm.conn.responseDuration;
-        connAlertDefinition.conditions[0].treshold = this.adm.conn.conditionThreshold;
+        connAlertDefinition.conditions[0].threshold = this.adm.conn.conditionThreshold;
       }
 
       var connSavePromise = this.HawkularAlertsManager.saveAlertDefinition(connAlertDefinition,
@@ -90,7 +101,7 @@ module HawkularMetrics {
 
       var idCreation = 0,
         idWait = 1;
-      if (respAlertDefinition.conditions[1].dataId.indexOf('Creation') > -1) {
+      if (respAlertDefinition.conditions[0] && respAlertDefinition.conditions[0].dataId.indexOf('Creation') === -1) {
         idCreation = 1;
         idWait = 0;
       }
@@ -111,7 +122,7 @@ module HawkularMetrics {
           respAlertDefinition.conditions[idWait].conditionId);
 
         delete respAlertDefinition.conditions[idWait];
-      } else if (this.adm.resp.waitTimeEnabled && !this.adm.resp.waitTimeEnabled) {
+      } else if (this.adm.resp.waitTimeEnabled && !this.admBak.resp.waitTimeEnabled) {
         // create
         var resId = respTriggerId.slice(0,-8);
 
@@ -119,7 +130,7 @@ module HawkularMetrics {
           triggerId: respTriggerId,
           type: 'THRESHOLD',
           dataId: 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Get Time',
-          threshold: respAlertDefinition.conditions[idWait].treshold,
+          threshold: this.adm.resp.waitTimeThreshold,
           operator: 'GT'
         });
       } else {
@@ -128,14 +139,41 @@ module HawkularMetrics {
 
       var condCreaDefer = this.$q.defer();
       var condCreaPromise = condCreaDefer.promise;
-      condCreaDefer.resolve();
+      var self = this;
 
-      respAlertDefinition.conditions[idWait].treshhold = this.adm.resp.waitTimeThreshold;
-      respAlertDefinition.conditions[idCreation].treshhold = this.adm.resp.creationTimeThreshold;
+      // FIXME: The condition id changes if previous was added/deleted ..
+      if (!self.adm.resp.creationTimeEnabled && self.admBak.resp.creationTimeEnabled) {
+        // delete
+        condCreaPromise = self.HawkularAlertsManager.deleteCondition(respTriggerId,
+          respAlertDefinition.conditions[idCreation].conditionId);
+
+        delete respAlertDefinition.conditions[idCreation];
+      } else if (self.adm.resp.creationTimeEnabled && !self.admBak.resp.creationTimeEnabled) {
+        // create
+        resId = respTriggerId.slice(0,-8);
+
+        condCreaPromise = self.HawkularAlertsManager.createCondition(respTriggerId, {
+          triggerId: respTriggerId,
+          type: 'THRESHOLD',
+          dataId: 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time',
+          threshold: self.adm.resp.creationTimeThreshold,
+          operator: 'GT'
+        });
+      } else {
+        condCreaDefer.resolve();
+      }
+
+      if (respAlertDefinition.conditions[idWait]) {
+        respAlertDefinition.conditions[idWait].threshold = this.adm.resp.waitTimeThreshold;
+      }
+      if (respAlertDefinition.conditions[idCreation]) {
+        respAlertDefinition.conditions[idCreation].threshold = this.adm.resp.creationTimeThreshold;
+      }
 
       var respSavePromise = this.HawkularAlertsManager.saveAlertDefinition(respAlertDefinition,
         errorCallback, this.triggerDefinition.resp);
 
+      console.log('@PROMISES', connSavePromise, respSavePromise, condWaitPromise, condCreaPromise);
       return [connSavePromise, respSavePromise, condWaitPromise, condCreaPromise];
     }
   }

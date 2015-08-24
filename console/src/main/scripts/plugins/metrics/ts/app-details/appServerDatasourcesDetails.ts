@@ -33,6 +33,10 @@ module HawkularMetrics {
     public static WAIT_COLOR = '#d5d026'; /// yellow
     public static CREATION_COLOR = '#95489c'; /// purple
 
+    public static DEFAULT_CONN_THRESHOLD = 200; // < 200 # connections available
+    public static DEFAULT_WAIT_THRESHOLD = 200; // > 200 ms average wait time
+    public static DEFAULT_CREA_THRESHOLD = 200; // > 200 ms average creatiion time
+
     private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
     private expandedList;
@@ -73,6 +77,36 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
+    private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      var pheapArray: any, nheapArray: any, garbaArray:any;
+      var pheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_ds_conn', startTime, endTime)
+        .then((pheapData)=> {
+          _.forEach(pheapData.alertList, (item) => {
+            item['alertType']='DSCONN';
+            item['condition']=item['dataId'].substr(item['dataId'].lastIndexOf('~')+1);
+          });
+          pheapArray = pheapData.alertList;
+        }, (error) => {
+          //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+        });
+
+      var nheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_ds_resp', startTime, endTime)
+        .then((nheapData)=> {
+          _.forEach(nheapData.alertList, (item) => {
+            item['alertType']='DSRESP';
+            item['condition']=item['dataId'].substr(item['dataId'].lastIndexOf('~')+1);
+          });
+          nheapArray = nheapData.alertList;
+        }, (error) => {
+          //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+        });
+
+
+      this.$q.all([pheapPromise, nheapPromise]).finally(()=> {
+        this.alertList = [].concat(pheapArray, nheapArray);
+      });
+    }
+
     public openSetup(resId):void {
       // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
 
@@ -93,7 +127,7 @@ module HawkularMetrics {
           triggerId: triggerId,
           type: 'THRESHOLD',
           dataId: dataId,
-          threshold: 200,
+          threshold: AppServerDatasourcesDetailsController.DEFAULT_CONN_THRESHOLD,
           operator: 'LT'
         });
       });
@@ -114,19 +148,19 @@ module HawkularMetrics {
           triggerId: triggerId,
           type: 'THRESHOLD',
           dataId: dataId,
-          threshold: 200,
+          threshold: AppServerDatasourcesDetailsController.DEFAULT_WAIT_THRESHOLD,
           operator: 'GT'
-        });
-      }).then(()=> {
-        var triggerId:string = resId + '_ds_resp';
-        var dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time';
+        }).then(()=> {
+          var triggerId:string = resId + '_ds_resp';
+          var dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time';
 
-        return this.HawkularAlertsManager.createCondition(triggerId, {
-          triggerId: triggerId,
-          type: 'THRESHOLD',
-          dataId: dataId,
-          threshold: 200,
-          operator: 'GT'
+          return this.HawkularAlertsManager.createCondition(triggerId, {
+            triggerId: triggerId,
+            type: 'THRESHOLD',
+            dataId: dataId,
+            threshold: AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD,
+            operator: 'GT'
+          });
         });
       });
 
@@ -181,7 +215,6 @@ module HawkularMetrics {
     }
 
     public getDatasources(currentTenantId?: TenantId): any {
-      this.alertList = []; // FIXME: when we have alerts for app server
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
@@ -203,6 +236,7 @@ module HawkularMetrics {
               distinct: true}, (data) => {
               res.inUseCount = data[0];
             }).$promise);
+            this.getAlerts(res.id, this.startTimeStamp, this.endTimeStamp);
           }
         }, this);
         this.$q.all(promises).then((result) => {

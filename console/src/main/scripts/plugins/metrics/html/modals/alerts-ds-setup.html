@@ -23,7 +23,7 @@
               </div>
               <div class="col-sm-4">
                 <hk-switch hk-model="das.adm.conn.conditionEnabled"
-                           id="usage-greater-switch" class="pull-right"></hk-switch>
+                           id="dsc-connections-switch" class="pull-right"></hk-switch>
               </div>
             </div>
           </fieldset>
@@ -45,14 +45,14 @@
           <fieldset>
             <legend>Wait Time</legend>
             <div class="form-group">
-              <label class="col-sm-3 control-label" for="dsc-connections">Less than</label>
+              <label class="col-sm-3 control-label" for="dsc-wait">Greater than</label>
               <div class="col-sm-5">
-                <input ng-model="das.adm.resp.waitTimeThreshold"
-                       type="number" min="0" value="200" class="form-control hk-input-small" id="dsc-connections">
+                <input ng-model="das.adm.resp.waitTimeThreshold" ng-disabled="!das.adm.resp.waitTimeEnabled"
+                       type="number" min="0" value="200" class="form-control hk-input-small" id="dsc-wait">
               </div>
               <div class="col-sm-4">
                 <hk-switch hk-model="das.adm.resp.waitTimeEnabled"
-                           id="usage-greater-switch" class="pull-right"></hk-switch>
+                           id="dsc-wait-switch" class="pull-right"></hk-switch>
               </div>
             </div>
           </fieldset>
@@ -60,14 +60,14 @@
           <fieldset>
             <legend>Creation Time</legend>
             <div class="form-group">
-              <label class="col-sm-3 control-label" for="dsc-connections">Less than</label>
+              <label class="col-sm-3 control-label" for="dsc-creation">Greater than</label>
               <div class="col-sm-5">
-                <input ng-model="das.adm.resp.creationTimeThreshold"
-                       type="number" min="0" value="200" class="form-control hk-input-small" id="dsc-connections">
+                <input ng-model="das.adm.resp.creationTimeThreshold" ng-disabled="!das.adm.resp.creationTimeEnabled"
+                       type="number" min="0" value="200" class="form-control hk-input-small" id="dsc-creation">
               </div>
               <div class="col-sm-4">
                 <hk-switch hk-model="das.adm.resp.creationTimeEnabled"
-                           id="usage-greater-switch" class="pull-right"></hk-switch>
+                           id="dsc-creation-switch" class="pull-right"></hk-switch>
               </div>
             </div>
           </fieldset>

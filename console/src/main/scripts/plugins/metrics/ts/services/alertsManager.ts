@@ -480,6 +480,9 @@ module HawkularMetrics {
           var serverAlert = serverAlerts[i];
 
           consoleAlert.id = serverAlert.alertId;
+
+          consoleAlert.dataId = serverAlert.evalSets[0][0].condition.dataId;
+
           consoleAlert.end = serverAlert.ctime;
 
           var sum: number = 0.0;
