@@ -40,7 +40,7 @@ module AccessPortal {
 
   export var AccessPortalMainController = _module.controller('AccessPortal.AccessPortalMainController', [
     '$window', ($window) => {
-      var iframeHeight = parseInt($window.innerHeight * 0.8, 10);
+      var iframeHeight = parseInt($window.innerHeight) * 0.8;
 
       ['myCasesWindow', 'openCaseWindow', 'searchWindow'].forEach((iframeId) => {
         var iframeWindow = document.getElementById(iframeId);
