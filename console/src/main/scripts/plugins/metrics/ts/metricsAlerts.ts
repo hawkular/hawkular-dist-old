@@ -25,7 +25,7 @@ module HawkularMetrics {
   export class AlertSetupController {
 
     public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
-      '$rootScope', '$routeParams', '$modalInstance'];
+      '$rootScope', '$routeParams', '$modalInstance', 'resourceId'];
 
     public triggerDefinition:any = {};
 
@@ -41,7 +41,8 @@ module HawkularMetrics {
                 public $q:ng.IQService,
                 public $rootScope:any,
                 public $routeParams:any,
-                public $modalInstance:any) {
+                public $modalInstance:any,
+                public resourceId) {
       // TODO - update the pfly notification service to support more and category based notifications containers.
       this.$rootScope.hkNotifications = {alerts: []};
 

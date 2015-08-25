@@ -35,6 +35,12 @@
       <div ng-switch-when="GARBA">
         <strong>Garbage collection</strong>: The garbage collection took more than {{alert.avg | number:2}} ms.
       </div>
+      <div ng-switch-when="DSCONN">
+        <strong>Available Connections</strong>: The number of available connections was {{alert.avg}}.
+      </div>
+      <div ng-switch-when="DSRESP">
+        <strong>Responsiveness</strong>: The connection {{alert.condition}} was {{alert.avg}}ms.
+      </div>
       <div ng-switch-default>
         <strong>Alert</strong>: <code>{{alert}}</code>
       </div>

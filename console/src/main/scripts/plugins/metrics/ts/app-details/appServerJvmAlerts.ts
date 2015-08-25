@@ -147,7 +147,12 @@ module HawkularMetrics {
       this.$q.all([heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise]).then( () => {
         var modalInstance = this.$modal.open({
           templateUrl: 'plugins/metrics/html/modals/alerts-jvm-setup.html',
-          controller: 'JvmAlertSetupController as jas'
+          controller: 'JvmAlertSetupController as jas',
+          resolve: {
+            resourceId: function () {
+              return this.resourceId;
+            }
+          }
         });
 
         modalInstance.result.then(angular.noop, function () {
