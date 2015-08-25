@@ -166,6 +166,41 @@ a:hover .fa-spinner {
   margin-top: @grid-gutter-width/8;
 }
 
+.hk-input-text {
+  line-height: 1.66666667;
+}
+
+.dl-horizontal dt {
+  margin-bottom: 5px;
+}
+
+
+// buttons
+
+.dropdown.clean {
+  .btn-default {
+    background-color: transparent;
+    background-image: none;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .btn-default:hover,
+  .btn-default:focus,
+  .btn-default:active,
+  .btn-default.active,
+  &.open .dropdown-toggle.btn-default {
+    background-color: #eeeeee;
+    border-color: #b7b7b7;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1)
+  }
+
+  .fa {
+    margin-right: 5px;
+  }
+}
+
+
 // tables
 
 .table > thead > tr > th,
@@ -177,19 +212,36 @@ a:hover .fa-spinner {
   text-decoration: underline;
 }
 
-.table-striped > tbody > tr:nth-child(odd) > td {
+.table > tbody > tr.hk-alert-open {
+  background-color: rgba(204, 0, 0, 0.07);
+
+  &:nth-child(odd) > td {
+    background-color: transparent;
+  }
+}
+
+.table-striped > tbody {
+
   background-color: white;
 
-  &.success {
-    background-color: #dff0d8;
+  > tr:nth-child(odd) > td {
+    background-color: white;
+
+    &.success {
+      background-color: #dff0d8;
+    }
+
+    &.danger {
+      background-color: rgba(204, 0, 0, 0.07);
+    }
+
+    &.warning {
+      background-color: #fcf8e3;
+    }
   }
 
-  &.danger {
-    background-color: #f2dede;
-  }
-
-  &.warning {
-    background-color: #fcf8e3;
+  > tr.open:nth-child(odd) > td {
+    background-color: transparent;
   }
 }
 
@@ -295,6 +347,87 @@ a:hover .fa-spinner {
   .add {
     margin-right: 8px;
   }
+}
+
+.hk-table-container {
+  position: relative;
+
+  .hk-actions-table {
+    position: absolute;
+    top: 6px;
+    z-index: 10;
+    right: 5px;
+  }
+}
+
+.hk-alert-center .hk-table-container {
+  .dataTables_wrapper {
+    margin-top: 10px;
+  }
+
+/*
+  .dataTables_header {
+    background-color: white;
+    border-left: none;
+    border-right: none;
+    border-bottom: @list-group-border;
+  }
+*/
+}
+
+.hk-table-alerts {
+
+  background-color: white;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+
+  &.hk-alerts-contextual {
+    border-left: none;
+    border-right: none;
+    border: none;
+    font-size: ceil(@font-size-base + 1);
+  }
+
+  &.table-bordered > thead > tr > th,
+  &.table-bordered > tbody > tr > th,
+  &.table-bordered > tfoot > tr > th,
+  &.table-bordered > thead > tr > td,
+  &.table-bordered > tbody > tr > td,
+  &.table-bordered > tfoot > tr > td {
+    border-left: none;
+    border-right: none;
+  }
+
+  &.hk-alerts-contextual > tbody > tr {
+     > td {
+      border-bottom: none;
+      border-top: none;
+    }
+
+    &:last-child > td {
+      border-top: 1px solid @table-border-color;
+    }
+  }
+
+  &.table > thead > tr > th,
+  &.table > tbody > tr > td {
+    padding: @grid-gutter-width/3 @grid-gutter-width/2;
+  }
+
+  .fa-flag {
+    font-size: 20px;
+  }
+
+  tr.hk-alert-resolved .fa-flag {
+    color: @gray-light;
+  }
+
+  .hk-alert-open .fa-flag {
+    color: @brand-danger;
+  }
+}
+
+.dataTables_header {
+
 }
 
 
@@ -466,7 +599,7 @@ a:hover .fa-spinner {
 
   .hk-url-heading {
     margin-bottom: 1px;
-    padding: @grid-gutter-width/4 @grid-gutter-width/3;
+    padding: @grid-gutter-width/4 0;
 
     a {
       font-size: ceil(@font-size-base * 1.333333);
@@ -638,6 +771,18 @@ a:hover .fa-spinner {
   }
 }
 
+.hk-info-top + .hk-panel-table-list {
+  margin-top: @grid-gutter-width/4;
+}
+
+.panel.hk-alert-details {
+  padding: 10px;
+}
+
+.hk-alert-center-detail .hk-panel-table-list {
+  padding: @grid-gutter-width/2;
+}
+
 .blank-slate-pf {
   margin-bottom: 20px;
   background-color: #ffffff;
@@ -666,7 +811,7 @@ a:hover .fa-spinner {
   margin-top: -10px;
 }
 
-.alert-settings .form-horizontal {
+.hk-alert-settings .form-horizontal {
   margin-top: @grid-gutter-width/2;
 }
 
@@ -744,6 +889,11 @@ a:hover .fa-spinner {
 
 .modal-backdrop {
   width: 100%!important;
+}
+
+.hk-alert-settings + .modal-footer {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 
@@ -1153,7 +1303,6 @@ section {
 }
 
 .hk-info-top {
-
   position: relative;
 
   .hk-settings {
@@ -1163,6 +1312,10 @@ section {
   .btn-link {
     margin-top: -7px;
     margin-right: -11px;
+  }
+
+  .pull-left:first-child {
+    margin-right: @grid-gutter-width/2;
   }
 
   + .dataTables_wrapper {
@@ -1230,10 +1383,6 @@ section {
 }
 
 
-// dev styles
-
-// bootstrap select quick&dirty workaround
-
 .hk-alerts {
   .input-group-btn {
     width: auto;
@@ -1248,7 +1397,7 @@ section {
   }
 }
 
-.alert-settings {
+.hk-alert-settings {
   .input-group-btn {
     width: auto;
   }
@@ -1271,7 +1420,7 @@ section {
     padding: 1.5em 1.5em 0;
   }
 
-  .alert-settings .form-horizontal {
+  .hk-alert-settings .form-horizontal {
     margin-top: @grid-gutter-width/2;
   }
 
@@ -1297,10 +1446,6 @@ section {
       padding-right: 0;
     }
 
-    .hk-input-text {
-      line-height: 1.66666667;
-    }
-
     .input-group {
       float: left;
 
@@ -1319,9 +1464,6 @@ section {
       margin-left: @grid-gutter-width/4;
     }
 
-
-
-
     .onffswitch-form-group {
       margin-bottom: 0;
       position: relative;
@@ -1337,7 +1479,6 @@ section {
       top: -52px;
       width: 62px;
     }
-
 
     .help-block {
       margin-top: @grid-gutter-width/8;
@@ -1384,6 +1525,24 @@ section {
     position: absolute;
     right: 0;
     top: -3.5em;
+  }
+}
+
+// Modal
+
+#modal-jbdc-drivers .btn-primary + .hk-table-list {
+  margin-top: @grid-gutter-width/4;
+}
+
+// Access portal
+
+.navbar-pf .navbar-utility li.dropdown > .dropdown-toggle .pficon-user {
+  position: static;
+}
+
+@media (min-width: 768px) {
+  .navbar-pf .navbar-utility li.dropdown:first-child > .dropdown-toggle {
+    padding-left: 15px;
   }
 }
 
