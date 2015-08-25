@@ -77,33 +77,33 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      var pheapArray: any, nheapArray: any, garbaArray:any;
-      var pheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_ds_conn', startTime, endTime)
-        .then((pheapData)=> {
-          _.forEach(pheapData.alertList, (item) => {
+    private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis, res:any):void {
+      var connArray: any, respArray: any;
+      var connPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_ds_conn', startTime, endTime)
+        .then((connData)=> {
+          _.forEach(connData.alertList, (item) => {
             item['alertType']='DSCONN';
             item['condition']=item['dataId'].substr(item['dataId'].lastIndexOf('~')+1);
           });
-          pheapArray = pheapData.alertList;
+          connArray = connData.alertList;
         }, (error) => {
           //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
 
-      var nheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_ds_resp', startTime, endTime)
-        .then((nheapData)=> {
-          _.forEach(nheapData.alertList, (item) => {
+      var respPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_ds_resp', startTime, endTime)
+        .then((respData)=> {
+          _.forEach(respData.alertList, (item) => {
             item['alertType']='DSRESP';
             item['condition']=item['dataId'].substr(item['dataId'].lastIndexOf('~')+1);
           });
-          nheapArray = nheapData.alertList;
+          respArray = respData.alertList;
         }, (error) => {
           //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
 
 
-      this.$q.all([pheapPromise, nheapPromise]).finally(()=> {
-        this.alertList = [].concat(pheapArray, nheapArray);
+      this.$q.all([connPromise, respPromise]).finally(()=> {
+        res.alertList = [].concat(connArray, respArray);
       });
     }
 
@@ -236,7 +236,7 @@ module HawkularMetrics {
               distinct: true}, (data) => {
               res.inUseCount = data[0];
             }).$promise);
-            this.getAlerts(res.id, this.startTimeStamp, this.endTimeStamp);
+            this.getAlerts(res.id, this.startTimeStamp, this.endTimeStamp, res);
           }
         }, this);
         this.$q.all(promises).then((result) => {
