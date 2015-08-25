@@ -25,7 +25,7 @@ module HawkularMetrics {
 
     /// for minification only
     public static  $inject = ['$scope','$rootScope','$routeParams','$interval','$q','HawkularInventory',
-      'HawkularMetric'];
+      'HawkularMetric', 'HawkularAlertsManager', '$log', '$modal'];
 
     public static AVAILABLE_COLOR = '#1884c7'; /// blue
     public static IN_USE_COLOR = '#49a547'; /// green
@@ -33,20 +33,28 @@ module HawkularMetrics {
     public static WAIT_COLOR = '#d5d026'; /// yellow
     public static CREATION_COLOR = '#95489c'; /// purple
 
+    public static DEFAULT_CONN_THRESHOLD = 200; // < 200 # connections available
+    public static DEFAULT_WAIT_THRESHOLD = 200; // > 200 ms average wait time
+    public static DEFAULT_CREA_THRESHOLD = 200; // > 200 ms average creatiion time
+
     private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
     private expandedList;
     public alertList;
     public chartAvailData;
     public chartRespData;
+    public defaultEmail: string;
 
     constructor(private $scope: any,
-                private $rootScope: IHawkularRootScope,
+                private $rootScope: any,
                 private $routeParams: any,
                 private $interval: ng.IIntervalService,
                 private $q: ng.IQService,
                 private HawkularInventory: any,
                 private HawkularMetric: any,
+                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
+                private $log: any,
+                private $modal: any,
                 public startTimeStamp:TimestampInMillis,
                 public endTimeStamp:TimestampInMillis) {
       $scope.vm = this;
@@ -55,6 +63,8 @@ module HawkularMetrics {
       this.endTimeStamp = +moment();
       this.chartAvailData = {};
       this.chartRespData = {};
+
+      this.defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
 
       if ($rootScope.currentPersona) {
         this.getDatasources(this.$rootScope.currentPersona.id);
@@ -67,6 +77,114 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
+    private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis, res:any):void {
+      var connArray: any, respArray: any;
+      var connPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_ds_conn', startTime, endTime)
+        .then((connData)=> {
+          _.forEach(connData.alertList, (item) => {
+            item['alertType']='DSCONN';
+            item['condition']=item['dataId'].substr(item['dataId'].lastIndexOf('~')+1);
+          });
+          connArray = connData.alertList;
+        }, (error) => {
+          //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+        });
+
+      var respPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_ds_resp', startTime, endTime)
+        .then((respData)=> {
+          _.forEach(respData.alertList, (item) => {
+            item['alertType']='DSRESP';
+            item['condition']=item['dataId'].substr(item['dataId'].lastIndexOf('~')+1);
+          });
+          respArray = respData.alertList;
+        }, (error) => {
+          //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+        });
+
+
+      this.$q.all([connPromise, respPromise]).finally(()=> {
+        res.alertList = [].concat(connArray, respArray);
+      });
+    }
+
+    public openSetup(resId):void {
+      // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
+
+      var connTriggerPromise = this.HawkularAlertsManager.getTrigger(resId + '_ds_conn').then(() => {
+        // Datasource connection trigger exists, nothing to do
+        this.$log.debug('Datasource connection trigger exists, nothing to do');
+      }, () => {
+        // Datasource connection trigger doesn't exist, need to create one
+
+        var triggerId:string = resId + '_ds_conn';
+        var dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Available Count';
+
+        return this.HawkularAlertsManager.createAlertDefinition({
+          name: triggerId,
+          id: triggerId,
+          actions: {email: [this.defaultEmail]}
+        }, {
+          triggerId: triggerId,
+          type: 'THRESHOLD',
+          dataId: dataId,
+          threshold: AppServerDatasourcesDetailsController.DEFAULT_CONN_THRESHOLD,
+          operator: 'LT'
+        });
+      });
+
+      var respTriggerPromise = this.HawkularAlertsManager.getTrigger(resId + '_ds_resp').then(() => {
+        // Datasource responsiveness trigger exists, nothing to do
+        this.$log.debug('Datasource responsiveness trigger exists, nothing to do');
+      }, () => {
+        // Datasource responsiveness trigger doesn't exist, need to create one
+        var triggerId:string = resId + '_ds_resp';
+        var dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Get Time';
+
+        return this.HawkularAlertsManager.createAlertDefinition({
+          name: triggerId,
+          id: triggerId,
+          actions: {email: [this.defaultEmail]}
+        }, {
+          triggerId: triggerId,
+          type: 'THRESHOLD',
+          dataId: dataId,
+          threshold: AppServerDatasourcesDetailsController.DEFAULT_WAIT_THRESHOLD,
+          operator: 'GT'
+        }).then(()=> {
+          var triggerId:string = resId + '_ds_resp';
+          var dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time';
+
+          return this.HawkularAlertsManager.createCondition(triggerId, {
+            triggerId: triggerId,
+            type: 'THRESHOLD',
+            dataId: dataId,
+            threshold: AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD,
+            operator: 'GT'
+          });
+        });
+      });
+
+      var log = this.$log;
+
+      this.$q.all([connTriggerPromise, respTriggerPromise]).then(() => {
+        var modalInstance = this.$modal.open({
+          templateUrl: 'plugins/metrics/html/modals/alerts-ds-setup.html',
+          controller: 'DatasourcesAlertSetupController as das',
+          resolve: {
+            resourceId: function () {
+              return resId;
+            }
+          }
+        });
+
+        modalInstance.result.then(angular.noop, function () {
+          log.debug('Datasource Alert Setup modal dismissed at: ' + new Date());
+        });
+      }, () => {
+        this.$log.error('Missing and unable to create new Datasource Alert triggers.');
+      });
+
+    }
 
     private formatBucketedChartOutput(response):IChartDataPoint[] {
       //  The schema is different for bucketed output
@@ -97,7 +215,6 @@ module HawkularMetrics {
     }
 
     public getDatasources(currentTenantId?: TenantId): any {
-      this.alertList = []; // FIXME: when we have alerts for app server
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
@@ -119,6 +236,7 @@ module HawkularMetrics {
               distinct: true}, (data) => {
               res.inUseCount = data[0];
             }).$promise);
+            this.getAlerts(res.id, this.startTimeStamp, this.endTimeStamp, res);
           }
         }, this);
         this.$q.all(promises).then((result) => {
