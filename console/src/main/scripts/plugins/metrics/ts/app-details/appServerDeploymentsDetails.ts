@@ -89,7 +89,7 @@ module HawkularMetrics {
         var promises = [];
         var tmpResourceList = [];
         angular.forEach(aResourceList, function(res: any) {
-          if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~~'))) {
+          if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
             tmpResourceList.push(res);
             res.selected = _.result(_.find(this.resourceList, {'id': res.id}), 'selected');
             promises.push(this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
