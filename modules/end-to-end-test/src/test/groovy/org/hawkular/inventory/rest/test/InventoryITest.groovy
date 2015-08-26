@@ -338,11 +338,7 @@ class InventoryITest extends AbstractTestBase {
                                                 properties: [
                                                     fear : [
                                                         type: "string",
-                                                        oneOf: [
-                                                            [format: "dentists"],
-                                                            [format: "lawyers"],
-                                                            [format: "rats"]
-                                                        ]
+                                                        enum: ["dentists", "lawyers", "rats"]
                                                     ]
                                                 ]
                                             ]
@@ -374,9 +370,10 @@ class InventoryITest extends AbstractTestBase {
         try {
             response = client.post(path: "$basePath/$environmentId/resources/$host2ResourceId/data",
                 body: invalidData)
-            assertEquals(400, response.status) // validation should fail resulting in http 400 (BAD REQUEST)
-        } catch (Exception e) {
-            println(e)
+            Assert.fail("groovyx.net.http.HttpResponseException expected")
+        } catch (groovyx.net.http.HttpResponseException e) {
+            /* validation should fail resulting in http 400 (BAD REQUEST) */
+            assertEquals("Bad Request", e.getMessage())
         }
 
         /* add a config data to a resource, no need to clean up, it'll be deleted together with the resources */
@@ -568,8 +565,9 @@ class InventoryITest extends AbstractTestBase {
 
     @Test
     void testConfigCreated() {
-        assertEntitiesExist("$environmentId/resources/$host2ResourceId/data",
-                ["/e;" + environmentId + "/r;" + host2ResourceId + "/d;configuration"])
+        print "--- testConfigCreated ---"
+        assertEntityExists("$environmentId/resources/$host2ResourceId/data",
+                "/e;" + environmentId + "/r;" + host2ResourceId + "/d;configuration")
 //        assertEntitiesExist("$environmentId/resources/$host2ResourceId%2Ftable/data?dataType=connectionConfiguration",
 //                ["/e;" + environmentId + "/r;" + host2ResourceId + "/d;connectionConfiguration"])
     }
