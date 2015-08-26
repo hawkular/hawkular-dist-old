@@ -150,7 +150,7 @@ module HawkularMetrics {
 
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId +
-          '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions',
+          '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions',
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
@@ -158,14 +158,14 @@ module HawkularMetrics {
       }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId +
-          '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time',
+          '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time',
         start: this.startTimeStamp,
         end: this.endTimeStamp}, (resource) => {
         this.requestTime = resource[0].value;
       }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId +
-          '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count',
+          '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count',
         start: this.startTimeStamp,
         end: this.endTimeStamp}, (resource) => {
         this.requestCount = resource[0].value - resource[resource.length-1].value;
@@ -179,7 +179,7 @@ module HawkularMetrics {
 
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId +
-        '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions',
+        '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
         this.chartWebSessionData[0] = { key: 'Active Sessions',
@@ -187,7 +187,7 @@ module HawkularMetrics {
       }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId +
-          '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions',
+          '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
         this.chartWebSessionData[1] = { key: 'Expired Sessions',
@@ -195,7 +195,7 @@ module HawkularMetrics {
       }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId +
-          '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions',
+          '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
         this.chartWebSessionData[2] = { key: 'Rejected Sessions',
@@ -204,7 +204,7 @@ module HawkularMetrics {
       /* FIXME: Currently this is always returning negative values, as WFLY returns -1 per webapp. is it config value?
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId +
-        '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Max Active Web Sessions',
+        '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Max Active Web Sessions',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
         this.chartWebSessionData[3] = { key: 'Max Active Sessions',
@@ -215,7 +215,7 @@ module HawkularMetrics {
       /*
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId +
-          '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time',
+          '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
         this.chartWebData[4] = { key: 'NonHeap Committed',
@@ -223,7 +223,7 @@ module HawkularMetrics {
       }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId +
-          '~/]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count',
+          '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count',
         start: this.startTimeStamp,
         end: this.endTimeStamp, buckets:60}, (data) => {
         this.chartWebData[5] = { key: 'NonHeap Used',

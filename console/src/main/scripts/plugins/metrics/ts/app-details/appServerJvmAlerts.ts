@@ -77,7 +77,7 @@ module HawkularMetrics {
 
         var triggerId: string = this.resourceId + '_jvm_pheap';
         var resourceId: string = triggerId.slice(0,-10);
-        var dataId: string = 'MI~R~[' + resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used';
+        var dataId: string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
 
         return this.HawkularAlertsManager.createAlertDefinition({
           name: triggerId,
@@ -104,7 +104,7 @@ module HawkularMetrics {
 
         var triggerId: string = this.resourceId + '_jvm_nheap';
         var resourceId: string = triggerId.slice(0,-10);
-        var dataId: string = 'MI~R~[' + resourceId + '~/]~MT~WildFly Memory Metrics~Heap Used';
+        var dataId: string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
 
         return this.HawkularAlertsManager.createAlertDefinition({
           name: triggerId,
@@ -128,7 +128,7 @@ module HawkularMetrics {
         // Jvm trigger doesn't exist, need to create one
         var triggerId: string = this.resourceId + '_jvm_garba';
         var resourceId: string = triggerId.slice(0,-10);
-        var dataId: string = 'MI~R~[' + resourceId + '~/]~MT~WildFly Memory Metrics~Accumulated GC Duration';
+        var dataId: string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration';
 
         return this.HawkularAlertsManager.createAlertDefinition({
           name: triggerId,

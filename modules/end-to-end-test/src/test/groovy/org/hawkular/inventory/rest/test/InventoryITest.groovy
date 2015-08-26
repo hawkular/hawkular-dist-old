@@ -154,7 +154,7 @@ class InventoryITest extends AbstractTestBase {
 
 
         /* Create a metric type */
-        response = postDeletable(path: "metricTypes", body: [id : responseTimeMTypeId, unit : "MILLI_SECOND",
+        response = postDeletable(path: "metricTypes", body: [id : responseTimeMTypeId, unit : "MILLISECONDS",
                 type: "COUNTER"])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/metricTypes/$responseTimeMTypeId", response.headers.Location)
@@ -225,12 +225,47 @@ class InventoryITest extends AbstractTestBase {
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$copyMachine2ResourceId", response.headers.Location)
 
-        /* add a child resource */
+        /* add child resources */
         response = postDeletable(path: "$environmentId/resources/$room1ResourceId",
                 body: [id: "table", resourceTypePath: "/" + roomRTypeId])
         assertEquals(201, response.status)
         assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table",
                 response.headers.Location)
+        response = postDeletable(path: "$environmentId/resources/$room1ResourceId/table",
+                body: [id: "leg/1", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table/leg%2F1",
+                response.headers.Location)
+        response = postDeletable(path: "$environmentId/resources/$room1ResourceId/table",
+                body: [id: "leg 2", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table/leg%202",
+                response.headers.Location)
+        response = postDeletable(path: "$environmentId/resources/$room1ResourceId/table",
+                body: [id: "leg;3", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table/leg;3",
+                response.headers.Location)
+        response = postDeletable(path: "$environmentId/resources/$room1ResourceId/table",
+                body: [id: "leg-4", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/$room1ResourceId/table/leg-4",
+                response.headers.Location)
+
+        //alternative child hierarchies
+        response = postDeletable(path: "$environmentId/resources",
+                body: [id: "weapons", resourceTypePath: "/" + roomRTypeId])
+        assertEquals(201, response.status)
+        assertEquals(baseURI + "$basePath/$environmentId/resources/weapons",
+                response.headers.Location)
+
+        path = "$basePath/$environmentId/resources/weapons/children"
+        response = client.post(path: path,
+                body: ["/e;" + environmentId + "/r;" + room1ResourceId + "/r;table/r;leg%2F1", "../" + room1ResourceId
+                        + "/table/leg-4"])
+        assertEquals(204, response.status)
+        pathsToDelete.put("$path/../table/leg%2F1", "$path/../table/leg%2F1")
+        pathsToDelete.put("$path/../table/leg-4", "$path/../table/leg-4")
 
         /* link the metric to resource */
         path = "$basePath/$environmentId/resources/$host1ResourceId/metrics"
@@ -247,16 +282,145 @@ class InventoryITest extends AbstractTestBase {
 
         /* add a custom relationship, no need to clean up, it'll be deleted together with the resources */
         def relation = [id        : 42, // it's ignored anyway
-                        source: "/t;" + tenantId + "/e;" + environmentId + "/r;" + host2ResourceId,
+                        source    : "/t;" + tenantId + "/e;" + environmentId + "/r;" + host2ResourceId,
                         name      : "inTheSameRoom",
-                        target: "/t;" + tenantId + "/e;" + environmentId + "/r;" + host1ResourceId,
+                        target    : "/t;" + tenantId + "/e;" + environmentId + "/r;" + host1ResourceId,
                         properties: [
-                                from      : "2000-01-01",
-                                confidence: "90%"
+                            from      : "2000-01-01",
+                            confidence: "90%"
                         ]]
         response = client.post(path: "$basePath/$environmentId/resources/$host2ResourceId/relationships",
                 body: relation)
         assertEquals(201, response.status)
+
+        /* add a resource type json schema */
+        def schema = [
+            value: [
+                title     : "Character",
+                type      : "object",
+                properties: [
+                    firstName : [type: "string"],
+                    secondName: [type: "string"],
+                    age       : [
+                        type            : "integer",
+                        minimum         : 0,
+                        exclusiveMinimum: false
+                    ],
+                    male      : [
+                        description: "true if the character is a male",
+                        type       : "boolean"
+                    ],
+                    foo       : [
+                        type      : "object",
+                        properties: [
+                            something: [type: "string"],
+                            someArray: [
+                                type       : "array",
+                                minItems   : 3,
+                                items      : [type: "integer"],
+                                uniqueItems: false
+                            ],
+                            foo      : [
+                                type      : "object",
+                                properties: [
+                                    question: [
+                                        type   : "string",
+                                        pattern: "^.*\\?\$"
+                                    ],
+                                    answer  : [
+                                        description: "the answer (example of any type)"
+                                    ],
+                                    foo     : [
+                                        type      : "object",
+                                        properties: [
+                                            foo: [
+                                                type      : "object",
+                                                properties: [
+                                                    fear : [
+                                                        type: "string",
+                                                        enum: ["dentists", "lawyers", "rats"]
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                required  : ["firstName", "secondName", "male", "age", "foo"]
+            ],
+            role : "configurationSchema"
+        ]
+        response = client.post(path: "$basePath/resourceTypes/$pingableHostRTypeId/data",
+                body: schema)
+        assertEquals(201, response.status)
+
+        /* add an invalid config data to a resource (invalid ~ not valid against the json schema) */
+        def invalidData = [
+            value: [
+                firstName : "John",
+                secondName: "Smith"
+            ]
+            ,
+            role : "configuration"
+        ]
+
+        try {
+            response = client.post(path: "$basePath/$environmentId/resources/$host2ResourceId/data",
+                body: invalidData)
+            Assert.fail("groovyx.net.http.HttpResponseException expected")
+        } catch (groovyx.net.http.HttpResponseException e) {
+            /* validation should fail resulting in http 400 (BAD REQUEST) */
+            assertEquals("Bad Request", e.getMessage())
+        }
+
+        /* add a config data to a resource, no need to clean up, it'll be deleted together with the resources */
+        def data = [
+            value     : [
+                firstName : "Winston",
+                secondName: "Smith",
+                sdf       : "sdf",
+                male      : true,
+                age       : 42,
+                foo       : [
+                    something: "whatever",
+                    someArray: [1, 1, 2, 3, 5, 8],
+                    foo      : [
+                        answer  : 5,
+                        question: "2+2=?",
+                        foo     : [
+                            foo: [
+                                fear: "rats"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            role      : "configuration",
+            properties: [
+                war      : "peace",
+                freedom  : "slavery",
+                ignorance: "strength"
+            ]
+        ]
+        response = client.post(path: "$basePath/$environmentId/resources/$host2ResourceId/data",
+                body: data)
+        assertEquals(201, response.status)
+
+        /* add a config data to a child resource, no need to clean up, it'll be deleted together with the resources */
+//        def simpleData = [
+//            value: [
+//                a: 1,
+//                b: "abc",
+//                c: true
+//            ],
+//            role : "connectionConfiguration"
+//        ]
+//        response = client.post(path: "$basePath/$environmentId/resources/$room1ResourceId%2Ftable/data",
+//            body: simpleData)
+//        assertEquals(201, response.status)
 
     }
 
@@ -378,7 +542,7 @@ class InventoryITest extends AbstractTestBase {
 
         response = client.get(path: "$basePath/$environmentId/resources",
             query: ["type.id": roomRTypeId, "type.version": typeVersion])
-        assertEquals(1, response.data.size())
+        assertEquals(2, response.data.size())
 
     }
 
@@ -397,6 +561,15 @@ class InventoryITest extends AbstractTestBase {
         assertEntitiesExist("$environmentId/resources/$host1ResourceId/metrics",
                 ["/e;" + environmentId + "/m;" + responseTimeMetricId, "/e;" + environmentId + "/m;" +
                responseStatusCodeMetricId])
+    }
+
+    @Test
+    void testConfigCreated() {
+        print "--- testConfigCreated ---"
+        assertEntityExists("$environmentId/resources/$host2ResourceId/data",
+                "/e;" + environmentId + "/r;" + host2ResourceId + "/d;configuration")
+//        assertEntitiesExist("$environmentId/resources/$host2ResourceId%2Ftable/data?dataType=connectionConfiguration",
+//                ["/e;" + environmentId + "/r;" + host2ResourceId + "/d;connectionConfiguration"])
     }
 
     @Test
@@ -609,6 +782,20 @@ class InventoryITest extends AbstractTestBase {
                 "/t;$tenantId/e;$environmentId/r;$host1ResourceId", [named: "inTheSameRoom"])
     }
 
+    @Test
+    void testResourceHierarchyQuerying() {
+        assertEntitiesExist("$environmentId/resources/$room1ResourceId/children",
+                ["/e;$environmentId/r;$room1ResourceId/r;table".toString()])
+
+        def base = "/e;$environmentId/r;$room1ResourceId/r;table".toString()
+        assertEntitiesExist("$environmentId/resources/$room1ResourceId/table/children",
+                [base + "/r;leg%2F1", base + "/r;leg%202", base + "/r;leg;3", base + "/r;leg-4"])
+
+        assertEntitiesExist("$environmentId/resources/weapons/children",
+                ["/e;$environmentId/r;$room1ResourceId/r;table/r;leg%2F1".toString(),
+                 "/e;$environmentId/r;$room1ResourceId/r;table/r;leg-4".toString()])
+    }
+
     private static void assertEntityExists(path, cp) {
         def response = client.get(path: "$basePath/$path")
         assertEquals(200, response.status)
@@ -620,6 +807,7 @@ class InventoryITest extends AbstractTestBase {
 
         //noinspection GroovyAssignabilityCheck
         def expectedPaths = new ArrayList<>(cps)
+        println response.data
         def entityPaths = response.data.collect { it.path }
         cps.forEach { entityPaths.remove(it); expectedPaths.remove(it) }
 
