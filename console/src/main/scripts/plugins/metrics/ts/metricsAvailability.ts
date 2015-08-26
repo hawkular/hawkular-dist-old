@@ -105,7 +105,13 @@ module HawkularMetrics {
 
       var modalInstance = this.$modal.open({
         templateUrl: 'plugins/metrics/html/modals/alerts-url-availability-setup.html',
-        controller: 'AlertUrlAvailabilitySetupController as mas'
+        controller: 'AlertUrlAvailabilitySetupController as mas',
+        resolve: {
+          resourceId: function () {
+            return this.resourceId;
+          }
+        }
+
       });
 
       var logger = this.$log;

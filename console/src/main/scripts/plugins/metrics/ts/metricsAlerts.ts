@@ -154,7 +154,12 @@ module HawkularMetrics {
     public openResponseSetup() {
       var modalInstance = this.$modal.open({
         templateUrl: 'plugins/metrics/html/modals/alerts-url-response-setup.html',
-        controller: 'AlertUrlResponseSetupController as mas'
+        controller: 'AlertUrlResponseSetupController as mas',
+        resolve: {
+          resourceId: function () {
+            return this.resourceId;
+          }
+        }
       });
 
       var logger = this.$log;
