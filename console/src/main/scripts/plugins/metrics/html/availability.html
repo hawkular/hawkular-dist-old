@@ -25,8 +25,8 @@
     <div class="panel panel-default hk-summary">
       <div class="row">
         <div class="col-sm-3 hk-summary-item">
-          <span class="hk-data" ng-show="vm.uptimeRatio < 1">{{vm.uptimeRatio * 100 | number:3}} %</span>
-          <span class="hk-data" ng-show="vm.uptimeRatio === 1">{{vm.uptimeRatio * 100}} %</span>
+          <span class="hk-data" ng-show="vm.uptimeRatio !== 1">{{vm.uptimeRatio * 100 | number:3}} %</span>
+          <span class="hk-data" ng-show="vm.uptimeRatio === 1">100 %</span>
           <span class="hk-item">Availability</span>
         </div>
         <div class="col-sm-3 hk-summary-item">
