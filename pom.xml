@@ -56,6 +56,7 @@
     <module>console</module>
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
+    <module>modules/redhat-access-integration-backend</module>
     <module>dist</module>
     <module>modules/end-to-end-test</module>
   </modules>
