@@ -207,7 +207,7 @@ module HawkularMetrics {
           end: endTime,
           distinct: true
         }).$promise
-          .then((response) => {
+          .then((response: any[]) => {
 
             this.availabilityDataPoints = response;
 
@@ -228,7 +228,11 @@ module HawkularMetrics {
 
             this.downtimeDuration = downtimeDuration;
             this.downtimeDurationJson = this.getDowntimeDurationAsJson();
-            this.uptimeRatio = 1 - downtimeDuration / (+this.$moment() - response[0].timestamp);
+            // FIXME: HAWKULAR-347 - Uptime ratio on metrics side is being calculated base on whole date range, even
+            //                       if there's no data for most of it. so it's inaccurate/incorrect. Only taking the
+            //                       value if it's 0.
+            this.uptimeRatio = (response.length === 1 && _.last(response).value === 'down') ? 0 :
+              (1 - downtimeDuration / (+this.$moment() - response[0].timestamp));
             this.downtimeCount = downtimeCount;
           }, (error) => {
             this.NotificationsService.error('Error Loading Avail Data: ' + error);
