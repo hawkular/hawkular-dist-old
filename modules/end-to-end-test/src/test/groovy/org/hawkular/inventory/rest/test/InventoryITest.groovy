@@ -17,6 +17,7 @@
 package org.hawkular.inventory.rest.test
 
 import org.hawkular.integration.test.AbstractTestBase
+import org.hawkular.inventory.api.model.CanonicalPath
 import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.BeforeClass
@@ -799,17 +800,19 @@ class InventoryITest extends AbstractTestBase {
     private static void assertEntityExists(path, cp) {
         def response = client.get(path: "$basePath/$path")
         assertEquals(200, response.status)
-        assertEquals(cp, response.data.path)
+        assertEquals(fullCanonicalPath(cp), response.data.path)
     }
 
     private static void assertEntitiesExist(path, cps) {
         def response = client.get(path: "$basePath/$path")
 
+        def fullCps = cps.collect { fullCanonicalPath(it) }
+
         //noinspection GroovyAssignabilityCheck
-        def expectedPaths = new ArrayList<>(cps)
+        def expectedPaths = new ArrayList<>(fullCps)
         println response.data
         def entityPaths = response.data.collect { it.path }
-        cps.forEach { entityPaths.remove(it); expectedPaths.remove(it) }
+        fullCps.forEach { entityPaths.remove(it); expectedPaths.remove(it) }
 
         Assert.assertTrue("Unexpected entities with paths: " + entityPaths, entityPaths.empty)
         Assert.assertTrue("Following entities not found: " + expectedPaths, expectedPaths.empty)
@@ -845,5 +848,10 @@ class InventoryITest extends AbstractTestBase {
         pathsToDelete.put(path, basePath + "/" + getVerificationPath)
         println "posting $args"
         return client.post(args)
+    }
+
+    private static String fullCanonicalPath(cp) {
+        return CanonicalPath.fromPartiallyUntypedString(cp, CanonicalPath.of().tenant(tenantId).get(), (Class<?>) null)
+                .toString()
     }
 }
