@@ -37,7 +37,7 @@
   },
   "resolutions": {
     "patternfly": "1.3.0",
-    "angular": "1.4.4",
+    "angular": "~1.4.4",
     "keycloak": "1.3.1"
   }
 }
