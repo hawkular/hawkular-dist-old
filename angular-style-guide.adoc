@@ -1,7 +1,8 @@
 = Hawkular UI - Angular Style Guide
 
-Based on: _Opinionated AngularJS style guide for teams by link://twitter.com/toddmotto[@toddmotto]_ and modified for use
-with Hawkular and typescript instead of javascript.
+TIP:  For language level ES6/Typescript style guide please use: https://github.com/airbnb/javascript/blob/master/README.md[Air Javascript Style Guide (ES6)]
+
+This Angular Style Guide is based on: _Opinionated AngularJS style guide for teams by link://twitter.com/toddmotto[@toddmotto]_ and modified for usewith Hawkular and typescript instead of javascript.
 
 TIP:  This is by no means an Angular or Typescript tutorial. For tutorial resources please see: https://github.com/mtho11/java2angular[Angular/Typescript Resources]
 
