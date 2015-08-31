@@ -248,6 +248,15 @@ module HawkularMetrics {
       this.resCurPage = page;
       this.getResourceList();
     }
+
+    public addMoreItems() {
+      if (this.resourceList.length > 0) {
+        this.resPerPage += 5;
+        console.log(this.resPerPage);
+        this.getResourceList();
+      }
+    }
+
   }
 
   class DeleteResourceModalController {

@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <div ng-class="{'hk-fade-in': vm.resourceList}">
+  <div ng-class="{'hk-fade-in': vm.resourceList}" infinite-scroll="vm.addMoreItems()">
     <div class="hk-url-item" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">
       <div class="panel panel-default hk-url-heading">
         <a href="/hawkular-ui/url/availability/{{res.id}}">{{res.properties.url}}</a>
