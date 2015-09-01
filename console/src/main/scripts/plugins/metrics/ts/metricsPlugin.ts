@@ -21,7 +21,8 @@
 module HawkularMetrics {
 
   export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkular.charts',
-    'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr']);
+    'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr',
+    'infinite-scroll']);
 
   _module.config(['$httpProvider', '$locationProvider', '$routeProvider',
     ($httpProvider, $locationProvider) => {
@@ -141,6 +142,9 @@ module HawkularMetrics {
       }).
       otherwise({redirectTo: '/hawkular-ui/url/url-list'});
   }]);
+
+  // so the same scroll doesn't trigger multiple times
+  angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 250);
 
   hawtioPluginLoader.addModule(HawkularMetrics.pluginName);
 }
