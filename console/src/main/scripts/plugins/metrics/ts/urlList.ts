@@ -37,8 +37,11 @@ module HawkularMetrics {
     public resCurPage = 0;
     public alertList;
     public lastUpdateTimestamp:Date = new Date();
-    public headerLinks = {};
-    public addProgress:boolean = false;
+    public headerLinks: any = {};
+
+    private updatingList: boolean = false;
+    public loadingMoreItems: boolean = false;
+    public addProgress: boolean = false;
 
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
@@ -174,19 +177,13 @@ module HawkularMetrics {
     }
 
     public getResourceList(currentTenantId?:TenantId):any {
+      this.updatingList = true;
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.ResourceOfType.query(
         {resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage},
         (aResourceList, getResponseHeaders) => {
           // FIXME: hack.. make expanded out of list
           this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
-
-          var pages = getResponseHeaders().link ? getResponseHeaders().link.split(', ') : [];
-          for (var p = 0; p < pages.length; p++) {
-            if (pages[p].indexOf('')) {
-              // get things
-            }
-          }
 
           aResourceList.expanded = this.resourceList ? this.resourceList.expanded : [];
           this.HawkularAlert.Alert.query({statuses: 'OPEN'}, (anAlertList) => {
@@ -229,6 +226,8 @@ module HawkularMetrics {
           }, this);
           this.$q.all(promises).then(() => {
             this.resourceList = aResourceList;
+            this.updatingList = this.loadingMoreItems = false;
+            this.$scope.$emit('list:updated');
           });
 
         });
@@ -249,10 +248,11 @@ module HawkularMetrics {
       this.getResourceList();
     }
 
-    public addMoreItems() {
-      if (this.resourceList.length > 0) {
+    public loadMoreItems() {
+      if (!this.updatingList && this.resourceList && this.resourceList.length > 0 &&
+        this.resourceList.length < parseInt(this.headerLinks.total, 10)) {
+        this.loadingMoreItems = true;
         this.resPerPage += 5;
-        console.log(this.resPerPage);
         this.getResourceList();
       }
     }

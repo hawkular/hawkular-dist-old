@@ -42,8 +42,10 @@
     </div>
   </div>
 
-  <div ng-class="{'hk-fade-in': vm.resourceList}" infinite-scroll="vm.addMoreItems()">
-    <div class="hk-url-item" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">
+  <div ng-class="{'hk-fade-in': vm.resourceList}" infinite-scroll="vm.loadMoreItems()"
+       infinite-scroll-listen-for-event="list:updated">
+    <!--<div class="hk-url-item" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">-->
+    <div class="hk-url-item" ng-repeat="res in vm.resourceList">
       <div class="panel panel-default hk-url-heading">
         <a href="/hawkular-ui/url/availability/{{res.id}}">{{res.properties.url}}</a>
         <span ng-show="res.properties['trait-collected-on']" class="pull-right">{{res.traits}}</span>
@@ -83,9 +85,10 @@
         <button class="btn btn-link hk-delete" tooltip="Delete" tooltip-trigger tooltip-placement="top" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
       </div>
     </div>
+    <div class="spinner" ng-show="vm.loadingMoreItems"></div>
   </div>
 
-  <hk-pagination resource-list="vm.resourceList" current-page="vm.resCurPage" page-setter="vm.setPage(pageNumber)"
-      per-page="vm.resPerPage" headers="vm.headerLinks"></hk-pagination>
+  <!--<hk-pagination resource-list="vm.resourceList" current-page="vm.resCurPage" page-setter="vm.setPage(pageNumber)"
+      per-page="vm.resPerPage" headers="vm.headerLinks"></hk-pagination>-->
 
 </div>

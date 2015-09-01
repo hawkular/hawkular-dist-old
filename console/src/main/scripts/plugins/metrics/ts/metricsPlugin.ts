@@ -143,5 +143,8 @@ module HawkularMetrics {
       otherwise({redirectTo: '/hawkular-ui/url/url-list'});
   }]);
 
+  // so the same scroll doesn't trigger multiple times
+  angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 250);
+
   hawtioPluginLoader.addModule(HawkularMetrics.pluginName);
 }
