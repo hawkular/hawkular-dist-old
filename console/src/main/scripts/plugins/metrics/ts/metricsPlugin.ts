@@ -45,7 +45,7 @@ module HawkularMetrics {
             }).$promise;
             resPromise.then(function (hkResourceList) {
               $location.path('/metrics/response-time/' + hkResourceList[0].id);
-            }, function () {
+            }, () => {
               $location.url('/error');
             });
 
@@ -120,13 +120,13 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
-            var redirectMissingAppServer = function() {
+          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
+            var redirectMissingAppServer = () => {
               NotificationsService.info('You were redirected to this page because you requested an invalid ' +
-                  'Application Server.');
+                'Application Server.');
               $location.path('/hawkular-ui/app/app-list');
             };
-            var checkAppServerExists = function() {
+            var checkAppServerExists = () => {
               var idParts = $route.current.params.resourceId.split('~');
               if (idParts.length !== 2) {
                 redirectMissingAppServer();

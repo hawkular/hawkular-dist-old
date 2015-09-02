@@ -28,14 +28,9 @@ module HawkularMetrics {
       },
       link: (scope, element )  => {
         element.bind('change', (changeEvent) => {
-          var theFile = changeEvent.target.files[0];
-          var reader = new FileReader();
+          let theFile = changeEvent.target.files[0];
+          let reader = new FileReader();
 
-          //reader.onload = (loadEvent:any) => {
-          //  scope.$apply(() => {
-          //    scope.fileread = loadEvent.target.result;
-          //  });
-          //};
           reader.onload = (readEvent:any) => {
             if (readEvent.target.readyState === FileReader.DONE) {
               scope.$apply(() => {

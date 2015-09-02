@@ -108,24 +108,26 @@ module HawkularMetrics {
     }
 
 
-    public getResourceList(currentTenantId?:TenantId):void {
-      ///this.alertList = [];  FIXME: when we have alerts for app server
+    public getResourceList(currentTenantId?: TenantId): any {
+      this.alertList = []; // FIXME: when we have alerts for app server
       let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-
-      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'Deployment'},
-        (aResourceList, getResponseHeaders) => {
+      let idParts = this.$routeParams.resourceId.split('~');
+      let feedId = idParts[0];
+      this.HawkularInventory.ResourceOfTypeUnderFeed.query({
+          environmentId: globalEnvironmentId,
+          feedId: feedId,
+          resourceTypeId: 'Deployment'}, (aResourceList, getResponseHeaders) => {
           let promises = [];
           let tmpResourceList = [];
-          angular.forEach(aResourceList, (res:any) => {
+          angular.forEach(aResourceList, function(res: any) {
             if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
               tmpResourceList.push(res);
               res.selected = _.result(_.find(this.resourceList, {'id': res.id}), 'selected');
               promises.push(this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
                 tenantId: tenantId,
                 availabilityId: 'AI~R~[' + res.id + ']~AT~Deployment Status~Deployment Status',
-                distinct: true
-              }, (resource) => {
-                let latestData = _.last(resource);
+                distinct: true}, (resource) => {
+                let latestData = resource[resource.length-1];
                 if (latestData) {
                   res['state'] = latestData['value'];
                   res['updateTimestamp'] = latestData['timestamp'];
