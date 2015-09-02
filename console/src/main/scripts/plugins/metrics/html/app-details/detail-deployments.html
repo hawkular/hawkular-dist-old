@@ -43,7 +43,6 @@
       <div class="hk-event"><strong>Alert Summary</strong>: alert details.</div>
     </div>
   </div>
-
   <!-- Deployments Table -->
   <div ng-show="vm.resourceList.$resolved && vm.resourceList.length <= 0">
     <div class="hk-info-top clearfix">
@@ -53,7 +52,9 @@
           <i class="fa fa-cubes"></i>
         </div>
         <h1>No deployments.</h1>
-        <div style="padding-top: 20px;"><button class="btn btn-primary btn-lg">Add Deployment</button></div>
+        <div style="padding-top: 20px;">
+          <button class="btn btn-primary btn-lg"
+                  ng-click="vm.showDeploymentAddDialog()">Add Deployment</button></div>
       </div>
     </div>
   </div>
@@ -62,7 +63,8 @@
     <div class="hk-info-top clearfix">
       <h3>Deployments</h3>
       <div class="actions-table">
-        <button class="btn btn-default add" type="button" disabled>Add Deployment</button>
+        <button class="btn btn-primary add" type="button"
+                ng-click="vm.showDeploymentAddDialog()">Add Deployment</button>
         <div class="dropdown">
           <button class="btn btn-default" type="button" id="dropdownMenu1" dropdown-toggle ng-disabled="vm.selectCount === 0">
             Actions
@@ -95,7 +97,6 @@
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Deployments 10: activate to sort column ascending">Deployments <span class="label label-default label-alert pull-right" tooltip-trigger tooltip-placement="top" tooltip="Total alerts" ng-show="vm.alertList.length">{{vm.alertList.length}}</span></th>
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Enabled/Disabled: activate to sort column ascending">Enabled/Disabled</th>
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Computed Health: activate to sort column ascending">Computed Health</th>
-              <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Actions: activate to sort column ascending">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -112,20 +113,6 @@
               <td class="success" ng-show="true">Good</td>
               <td class="warning" ng-show="false">Fair</td>
               <td class="danger" ng-show="false">Poor</td>
-              <td class="actions">
-                <div class="dropdown">
-                  <button class="btn btn-default" type="button" id="dropdownMenu2" ng-click="vm.selectItem(res)" dropdown-toggle>
-                    Actions
-                    <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperation('Deploy', res.id)">Enable</a></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperation('Redeploy', res.id)">Redeploy</a></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperation('Undeploy', res.id)">Disable</a></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperation('Remove', res.id)">Remove</a></li>
-                  </ul>
-                </div>
-              </td>
             </tr>
           </tbody>
         </table>

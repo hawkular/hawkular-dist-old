@@ -1,0 +1,142 @@
+<div class="modal-header">
+  <button type="button" class="close" aria-hidden="true" ng-click="dac.onClose()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Add Deployment</h4>
+</div>
+
+
+<div class="modal-body">
+
+  <wizard name="deployAdd" on-finish="dac.finishedDeployWizard()">
+
+    <wz-step title="Select a Deployment File">
+
+      <p><strong>Step 1 of 3: Select a Deployment File</strong></p>
+
+      <p class="required-info">* All fields are required.</p>
+
+      <form class="form-horizontal" name="deployFileForm" novalidate>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Deployment File</label>
+
+          <div class="col-sm-9">
+            <input fileread="dac.deploymentData.binaryFile" type="file" accept="application/zip"
+                   ng-model="dac.deploymentData.filePath" hk-valid-file required
+                   name="deployFile" />
+            <i ng-show="deployFileForm.deployFile.$error.required">* required</i><br>
+          </div>
+        </div>
+      </form>
+      <div class="pull-right">
+        <button type="button" class="btn btn-default" ng-click="dac.onClose()">Cancel</button>
+        <button type="button" wz-next class="btn btn-primary"
+                ng-disabled="deployFileForm.$invalid"
+                ng-click="dac.exitStep1()" >Next &#62;</button>
+      </div>
+
+
+    </wz-step>
+
+
+    <!-- Verify File Step  -->
+    <wz-step title="Verify File">
+
+      <p><strong>Step 2 of 3: Verify File</strong></p>
+
+      <div class="hk-form-verify hk-form-read-only">
+        <div class="hk-form-buttons pull-right">
+          <div class="hk-rename-button">
+            <button class="btn btn-default" data-toggle="tooltip" data-placement="top"
+                    ng-click="dac.deploymentData.editDeploymentFiles = !dac.deploymentData.editDeploymentFiles"
+                    data-original-title="Rename">
+              <i class="fa fa-pencil"></i>
+            </button>
+          </div>
+          <div class="hk-discard-confirm-buttons">
+            <button class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Discard">
+              <i class="fa fa-close"></i>
+            </button>
+            <button class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Confirm"
+                    ng-click="dac.deploymentData.editDeploymentFiles = !dac.deploymentData.editDeploymentFiles">
+              <i class="fa fa-check"></i>
+            </button>
+          </div>
+        </div>
+
+        <form class="form-horizontal">
+          <div class="editable-container">
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="hk-deploy-name">Name</label>
+
+              <div class="col-sm-7">
+                <span class="hk-input-text" ng-show="!dac.deploymentData.editDeploymentFiles">
+                  {{dac.deploymentData.filePath}}</span>
+                <input type="text" class="form-control"
+                       ng-show="dac.deploymentData.editDeploymentFiles"
+                       id="hk-deploy-name"
+                       value="{{dac.deploymentData.filePath}}">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="hk-runtime-name">Runtime Name</label>
+
+              <div class="col-sm-7">
+                <span class="hk-input-text" ng-show="!dac.deploymentData.editDeploymentFiles">
+                  {{dac.deploymentData.runtimeFileName}}</span>
+                <input type="text" class="form-control text"
+                       ng-show="dac.deploymentData.editDeploymentFiles"
+                       id="hk-runtime-name"
+                       value="{{dac.deploymentData.runtimeFileName}}">
+              </div>
+            </div>
+          </div>
+          <!--<div class="checkbox">-->
+          <!--<label>-->
+          <!--<input type="checkbox" ng-model="dac.deploymentData.enableDuringDeployment"-->
+          <!--name="checkBoxDisable"> Do not enable, during deployment.-->
+          <!--<i class="fa fa-info-circle"-->
+          <!--data-toggle="tooltip"-->
+          <!--data-placement="top"-->
+          <!--data-original-title="Enabling activates the deployment.">-->
+          <!--</i>-->
+          <!--</label>-->
+          <!--</div>-->
+        </form>
+      </div>
+      <div class="pull-right">
+        <button type="button" wz-previous class="btn btn-default">&#60; Back</button>
+        <button type="button" wz-next class="btn btn-primary" ng-click="dac.exitStep2()">Next &#62;</button>
+      </div>
+    </wz-step>
+
+
+    <wz-step title="Upload and Deploy">
+
+      <div class="">
+        <p><strong>Step 3 of 3: Upload and Deploy</strong></p>
+
+        <div class="text-center hk-spinner-container" ng-show="dac.deploymentData.uploading">
+          <div class="spinner spinner-lg"></div>
+        </div>
+
+        <div class="alert alert-success" ng-show="!dac.deploymentData.uploading">
+          <span class="pficon pficon-ok"></span>
+          <strong>Success!</strong> The file was successfully uploaded and deployed.
+        </div>
+
+        <div class="alert alert-error" ng-show="!dac.deploymentData.uploading">
+          <span class="pficon pficon-error-circle-o-"></span>
+          <strong>Error!</strong> An error has occurred with the deployment.
+        </div>
+      </div>
+
+      <div class="pull-right">
+        <button type="button" class="btn btn-primary"  wz-finish>OK</button>
+      </div>
+
+    </wz-step>
+  </wizard>
+
+</div>
