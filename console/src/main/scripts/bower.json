@@ -19,6 +19,7 @@
     "angular-scroll": "0.6.5",
     "angular-ui-select": "0.11.2",
     "angular-toastr": "1.4.1",
+    "ngInfiniteScroll": "1.2.1",
     "bootstrap-select": "1.6",
     "hawkular-charts": "~0.4.15",
     "hawkular-ui-services": "~0.6.3",
