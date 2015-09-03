@@ -261,10 +261,10 @@ gulp.task('watch-server', ['build-live', 'copy-kettle-js', 'copy-kettle-css'], f
 gulp.task('copy-sources', function(done) {
   var src = [config.srcPrefix + 'plugins/**/*'];
 
-  gulp.src(src)
+  del(['./plugins/**/*.ts', './plugins/**/*.less', './plugins/**/*.html'], gulp.src(src)
     .pipe(gulp.dest('./plugins')).on('end', function(){
       done();
-    });
+    }));
 });
 
 gulp.task('copy-kettle-js', ['build-live','set-server-path'] , function() {

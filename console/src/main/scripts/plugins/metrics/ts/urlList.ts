@@ -139,9 +139,9 @@ module HawkularMetrics {
             }, metric).$promise;
 
           var associateResourceWithMetrics = () =>
-            this.HawkularInventory.ResourceMetric.save({
+            this.HawkularInventory.MetricOfResource.save({
               environmentId: globalEnvironmentId,
-              resourceId: resourceId
+              resourcePath: resourceId
             }, ['../' + metricsIds[0], '../' + metricsIds[1]]).$promise;
 
           /// For right now we will just Register a couple of metrics automatically
@@ -200,7 +200,7 @@ module HawkularMetrics {
             }
             res['traits'] = traitsArray.join(' | ');
             promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-              resourceId: res.id, gaugeId: (res.id + '.status.duration'),
+              resourcePath: res.id, gaugeId: (res.id + '.status.duration'),
               start: moment().subtract(1, 'hours').valueOf(), end: moment().valueOf()
             }, (resource) => {
               res['responseTime'] = resource;
@@ -287,7 +287,7 @@ module HawkularMetrics {
       var removeResource = () =>
         this.HawkularInventory.Resource.delete({
           environmentId: globalEnvironmentId,
-          resourceId: this.resource.id
+          resourcePath: this.resource.id
         }).$promise;
 
       this.$q.all([deleteMetric(metricsIds[0]),

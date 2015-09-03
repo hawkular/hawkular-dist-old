@@ -996,6 +996,16 @@
             <xsl:value-of select="$uuid.hawkular.accounts.backend"/>
           </credential>
         </secure-deployment>
+        <secure-deployment name="hawkular-redhat-access-integration-backend.war">
+          <realm>hawkular</realm>
+          <resource>hawkular-accounts-backend</resource>
+          <use-resource-role-mappings>true</use-resource-role-mappings>
+          <enable-cors>true</enable-cors>
+          <enable-basic-auth>true</enable-basic-auth>
+          <credential name="secret">
+            <xsl:value-of select="$uuid.hawkular.accounts.backend"/>
+          </credential>
+        </secure-deployment>
         <secure-deployment name="hawkular-feed-comm-war.war">
           <realm>hawkular</realm>
           <resource>hawkular-accounts-backend</resource>
