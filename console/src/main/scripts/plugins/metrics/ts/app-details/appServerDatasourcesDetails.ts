@@ -219,8 +219,12 @@ module HawkularMetrics {
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'Datasource'},
-          (aResourceList, getResponseHeaders) => {
+      var idParts = this.$routeParams.resourceId.split('~');
+      var feedId = idParts[0];
+      this.HawkularInventory.ResourceOfTypeUnderFeed.query({
+        environmentId: globalEnvironmentId,
+        feedId: feedId,
+        resourceTypeId: 'Datasource'}, (aResourceList, getResponseHeaders) => {
         var promises = [];
         var tmpResourceList = [];
         angular.forEach(aResourceList, function(res, idx) {
