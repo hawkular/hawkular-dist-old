@@ -107,6 +107,7 @@
         <include>org.hawkular.bus:hawkular-feed-comm-war</include>
         <include>org.hawkular:hawkular-pinger</include>
         <include>org.hawkular:hawkular-avail-creator</include>
+        <include>org.hawkular:hawkular-redhat-access-integration-backend</include>
         <include>org.hawkular.accounts:hawkular-accounts:war</include>
         <include>org.hawkular.alerts:hawkular-alerts-rest:war</include>
         <include>org.hawkular.alerts:hawkular-alerts-actions-email:war</include>
