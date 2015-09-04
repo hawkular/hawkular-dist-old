@@ -30,6 +30,7 @@ module HawkularMetrics {
     private autoRefreshPromise:ng.IPromise<number>;
     private resourceList;
     public modalInstance;
+    public alertList;
     public selectCount:number = 0;
     public lastUpdateTimestamp:Date;
     public startTimeStamp:TimestampInMillis;
