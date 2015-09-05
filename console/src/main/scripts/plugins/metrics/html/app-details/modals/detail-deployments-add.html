@@ -5,43 +5,34 @@
   <h4 class="modal-title">Add Deployment</h4>
 </div>
 
+<wizard name="deployAdd" on-finish="dac.finishedDeployWizard()">
 
-<div class="modal-body">
-
-  <wizard name="deployAdd" on-finish="dac.finishedDeployWizard()">
-
-    <wz-step title="Select a Deployment File">
-
+  <wz-step title="Select a Deployment File">
+    <div class="modal-body">
       <p><strong>Step 1 of 3: Select a Deployment File</strong></p>
-
-      <p class="required-info">* All fields are required.</p>
-
+      <p class="hk-required-info"><span class="hk-required">*</span> All fields are required.</p>
       <form class="form-horizontal" name="deployFileForm" novalidate>
         <div class="form-group">
           <label class="col-sm-3 control-label">Deployment File</label>
-
           <div class="col-sm-9">
             <input fileread="dac.deploymentData.binaryFile" type="file" accept="application/zip"
                    ng-model="dac.deploymentData.filePath" hk-valid-file required
                    name="deployFile" />
-            <i ng-show="deployFileForm.deployFile.$error.required">* required</i><br>
+            <!-- <i ng-show="deployFileForm.deployFile.$error.required">* required</i><br> -->
           </div>
         </div>
       </form>
-      <div class="pull-right">
+    </div>
+    <div class="modal-footer">
         <button type="button" class="btn btn-default" ng-click="dac.onClose()">Cancel</button>
         <button type="button" wz-next class="btn btn-primary"
                 ng-disabled="deployFileForm.$invalid"
                 ng-click="dac.exitStep1()" >Next &#62;</button>
-      </div>
+    </div>
+  </wz-step>
 
-
-    </wz-step>
-
-
-    <!-- Verify File Step  -->
-    <wz-step title="Verify File">
-
+  <wz-step title="Verify File">
+    <div class="modal-body">
       <p><strong>Step 2 of 3: Verify File</strong></p>
 
       <div class="hk-form-verify hk-form-read-only">
@@ -105,38 +96,38 @@
           <!--</div>-->
         </form>
       </div>
-      <div class="pull-right">
-        <button type="button" wz-previous class="btn btn-default">&#60; Back</button>
-        <button type="button" wz-next class="btn btn-primary" ng-click="dac.exitStep2()">Next &#62;</button>
-      </div>
-    </wz-step>
+    </div>
+    <div class="modal-footer">
+      <button type="button" wz-previous class="btn btn-default">&#60; Back</button>
+      <button type="button" wz-next class="btn btn-primary" ng-click="dac.exitStep2()">Next &#62;</button>
+    </div>
+  </wz-step>
 
 
-    <wz-step title="Upload and Deploy">
+  <wz-step title="Upload and Deploy">
 
-      <div class="">
-        <p><strong>Step 3 of 3: Upload and Deploy</strong></p>
+    <div class="modal-body">
+      <p><strong>Step 3 of 3: Upload and Deploy</strong></p>
 
-        <div class="text-center hk-spinner-container" ng-show="dac.deploymentData.uploading">
-          <div class="spinner spinner-lg"></div>
-        </div>
-
-        <div class="alert alert-success" ng-show="!dac.deploymentData.uploading">
-          <span class="pficon pficon-ok"></span>
-          <strong>Success!</strong> The file was successfully uploaded and deployed.
-        </div>
-
-        <div class="alert alert-error" ng-show="!dac.deploymentData.uploading">
-          <span class="pficon pficon-error-circle-o-"></span>
-          <strong>Error!</strong> An error has occurred with the deployment.
-        </div>
+      <div class="text-center hk-spinner-container" ng-show="dac.deploymentData.uploading">
+        <div class="spinner spinner-lg"></div>
       </div>
 
-      <div class="pull-right">
-        <button type="button" class="btn btn-primary"  wz-finish>OK</button>
+      <div class="alert alert-success" ng-show="!dac.deploymentData.uploading">
+        <span class="pficon pficon-ok"></span>
+        <strong>Success!</strong> The file was successfully uploaded and deployed.
       </div>
 
-    </wz-step>
-  </wizard>
+      <div class="alert alert-error" ng-show="!dac.deploymentData.uploading">
+        <span class="pficon pficon-error-circle-o-"></span>
+        <strong>Error!</strong> An error has occurred with the deployment.
+      </div>
+    </div>
 
-</div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary"  wz-finish>OK</button>
+    </div>
+
+  </wz-step>
+
+</wizard>
