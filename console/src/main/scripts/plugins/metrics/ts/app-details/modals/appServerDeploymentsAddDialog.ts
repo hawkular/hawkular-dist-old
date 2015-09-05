@@ -83,11 +83,10 @@ module HawkularMetrics {
       /// make sure our WS socket is open
       HawkularAddDeploymentOps.init(this.NotificationsService);
 
-      HawkularInventory.FeedResource.get({
+      HawkularInventory.ResourceUnderFeed.get({
         environmentId: globalEnvironmentId,
-        tenantId: this.$rootScope.currentPersona.id,
         feedId: this.$routeParams.resourceId.split('~')[0],
-        resourceId: this.$routeParams.resourceId + '~~'
+        resourcePath: this.$routeParams.resourceId + '~~'
       }, (resource:IResourcePath) => {
         this._resourcePath = resource;
         this.deploymentData.resourcePath = resource.path;
