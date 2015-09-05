@@ -164,10 +164,10 @@
 
 </div>
 <div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="jas.cancel()">Cancel</button>
   <button type="button" class="btn btn-primary" ng-click="jas.save()"
           ng-disabled="jas.saveProgress || !jas.isSettingChange">
     <div ng-show="jas.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>
     Save
   </button>
-  <button type="button" class="btn btn-default" ng-click="jas.cancel()">Cancel</button>
 </div>

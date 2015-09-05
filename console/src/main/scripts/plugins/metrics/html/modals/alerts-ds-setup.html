@@ -85,10 +85,10 @@
   </tabset>
 </div>
 <div class="modal-footer alert-settings">
+  <button type="button" class="btn btn-default" ng-click="das.cancel()">Cancel</button>
   <button type="button" class="btn btn-primary" ng-click="das.save()"
           ng-disabled="das.saveProgress || !das.isSettingChange">
     <div ng-show="das.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>
     Save
   </button>
-  <button type="button" class="btn btn-default" ng-click="das.cancel()">Cancel</button>
 </div>
