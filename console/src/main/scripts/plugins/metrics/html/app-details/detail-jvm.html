@@ -68,7 +68,7 @@
     <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
-          multi-data="{{vm.chartHeapData}}"
+          multi-data="vm.chartHeapData"
           chart-type="multiline"
           y-axis-units="Usage (MB)"
           chart-height="250">
@@ -86,7 +86,7 @@
     <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
-          multi-data="{{vm.chartNonHeapData}}"
+          multi-data="vm.chartNonHeapData"
           chart-type="multiline"
           y-axis-units="Usage (MB)"
           chart-height="250">
@@ -103,7 +103,7 @@
     <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
-        data="{{vm.chartGCDurationData}}"
+        data="vm.chartGCDurationData"
         chart-type="histogram"
         alert-value="{{vm.threshold}}"
         use-zero-min-value="true"

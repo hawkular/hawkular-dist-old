@@ -89,7 +89,7 @@
         <h2>Availability</h2>
         <div class="hk-graph-container hk-graph-metrics">
           <hawkular-chart
-              multi-data="{{vm.chartAvailData[ds.id]}}"
+              multi-data="vm.chartAvailData[ds.id]"
               chart-type="multiline"
               y-axis-units="Availability (#)"
               chart-height="250">
@@ -118,7 +118,7 @@
         <h2>Responsiveness</h2>
         <div class="hk-graph-container hk-graph-metrics">
           <hawkular-chart
-              multi-data="{{vm.chartRespData[ds.id]}}"
+              multi-data="vm.chartRespData[ds.id]"
               chart-type="multiline"
               y-axis-units="Responsiveness (ms)"
               chart-height="250">
