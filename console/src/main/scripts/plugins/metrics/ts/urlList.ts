@@ -23,6 +23,27 @@
 
 module HawkularMetrics {
 
+  // work around https://github.com/Microsoft/TypeScript/issues/2583
+  // re-declare the URL from lib.d.ts to conform to what's actually available from javascript runtime
+  interface URLConstructor {
+    hash: string;
+    search: string;
+    pathname: string;
+    port: string;
+    hostname: string;
+    host: string;
+    password: string;
+    username: string;
+    protocol: string;
+    origin: string;
+    href: string;
+  }
+  interface URL {
+    revokeObjectURL(url:string): void;
+    createObjectURL(object:any, options?:ObjectURLOptions): string;
+    new(url:string, base?:string): URLConstructor
+  }
+  declare var URL:URL;
 
   export class UrlListController {
     /// this is for minification purposes
@@ -93,12 +114,36 @@ module HawkularMetrics {
 
       this.addProgress = true;
 
+      // prepare data for custom sorting of URLs.
+      // We sort first by second and first levels and then by the rest of the levels in the order as they
+      // lexicographically appear in the URL.
+      // E.g. a.b.c.com will become c.com.a.b and we use this to sort the URLs instead of the URL strings
+      // themselves.
+      // Also, www is translated to a single space, so that it sorts before any other subdomain.
+
+      var parsedUrl = new URL(url);
+      var hostname = parsedUrl.hostname;
+      var levels = hostname.split('.');
+      if (levels.length > 1) {
+        //doing this twice on a.b.redhat.com will produce redhat.com.a.b
+        levels.unshift(levels.pop());
+        levels.unshift(levels.pop());
+
+        //replace all the www's with a space so that they sort before any other name
+        levels = levels.map(function (s) {
+          return s === 'www' ? ' ' : s;
+        });
+      }
+
+      var domainSort = levels.join('.');
+
       var resourceId = this.md5.createHash(url || '');
       var resource = {
         resourceTypePath: '/URL',
         id: resourceId,
         properties: {
-          url: url
+          url: url,
+          'hwk-gui-domainSort': domainSort
         }
       };
 
@@ -179,8 +224,10 @@ module HawkularMetrics {
     public getResourceList(currentTenantId?:TenantId):any {
       this.updatingList = true;
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      var sort = 'hwk-gui-domainSort';
+      var order = 'asc';
       this.HawkularInventory.ResourceOfType.query(
-        {resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage},
+        {resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage, sort: sort, order: order},
         (aResourceList, getResponseHeaders) => {
           // FIXME: hack.. make expanded out of list
           this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
