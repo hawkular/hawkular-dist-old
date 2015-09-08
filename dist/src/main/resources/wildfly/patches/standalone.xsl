@@ -1006,7 +1006,7 @@
             <xsl:value-of select="$uuid.hawkular.accounts.backend"/>
           </credential>
         </secure-deployment>
-        <secure-deployment name="hawkular-feed-comm-war.war">
+        <secure-deployment name="hawkular-command-gateway-war.war">
           <realm>hawkular</realm>
           <resource>hawkular-accounts-backend</resource>
           <use-resource-role-mappings>true</use-resource-role-mappings>
