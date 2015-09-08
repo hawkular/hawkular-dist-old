@@ -104,7 +104,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.inventory:hawkular-inventory-dist</include>
-        <include>org.hawkular.bus:hawkular-feed-comm-war</include>
+        <include>org.hawkular.cmdgw:hawkular-command-gateway-war</include>
         <include>org.hawkular:hawkular-pinger</include>
         <include>org.hawkular:hawkular-avail-creator</include>
         <include>org.hawkular:hawkular-redhat-access-integration-backend</include>
