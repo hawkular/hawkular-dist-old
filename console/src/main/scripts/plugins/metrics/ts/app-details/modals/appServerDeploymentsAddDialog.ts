@@ -28,6 +28,8 @@ module HawkularMetrics {
     binaryFile: any,
     enableDuringDeployment: boolean;
     uploading: boolean;
+    hasDeploymentError:boolean;
+    hasDeployedSuccessfully:boolean;
     editDeploymentFiles: boolean;
     deploymentStatus: DeploymentStatusType;
   }
@@ -43,13 +45,7 @@ module HawkularMetrics {
   export class AppServerDeploymentsAddDialogController {
     /// this is for minification purposes
     public static $inject = ['$rootScope', '$scope', '$q', '$timeout', '$log', 'HawkularOps',
-      '$modalInstance', 'NotificationsService', '$routeParams', 'HawkularInventory',
-      'HawkularAddDeploymentOps'];
-
-    public DEPLOYMENT_NOT_STARTED = 0;
-    public DEPLOYMENT_ERROR = -1;
-    public DEPLOYMENT_SUCCESS = 1;
-
+      '$modalInstance', 'NotificationsService', '$routeParams', 'HawkularInventory'];
 
     private _resourcePath:IResourcePath;
 
@@ -62,6 +58,8 @@ module HawkularMetrics {
       binaryFile: undefined,
       enableDuringDeployment: false,
       uploading: false,
+      hasDeploymentError: false,
+      hasDeployedSuccessfully: false,
       editDeploymentFiles: false,
       /// Not sure why it wont let me use the const DEPLOYMENT_NOT_STARTED here :/
       deploymentStatus: 0
@@ -76,12 +74,11 @@ module HawkularMetrics {
                 private $modalInstance:any,
                 private NotificationsService:INotificationsService,
                 private $routeParams:any,
-                private HawkularInventory:any,
-                private HawkularAddDeploymentOps:any) {
+                private HawkularInventory:any) {
 
 
       /// make sure our WS socket is open
-      HawkularAddDeploymentOps.init(this.NotificationsService);
+      HawkularOps.init(this.NotificationsService);
 
       HawkularInventory.ResourceUnderFeed.get({
         environmentId: globalEnvironmentId,
@@ -92,10 +89,27 @@ module HawkularMetrics {
         this.deploymentData.resourcePath = resource.path;
       });
 
+      $scope.$on('DeploymentAddSuccess', (event, data) => {
+        this.$log.info('Deployment Add Succeeded!');
+        console.dir(data);
+        this.deploymentData.uploading = false;
+        this.deploymentData.hasDeployedSuccessfully = true;
+        this.deploymentData.hasDeploymentError = false;
+
+        console.dir(data);
+      });
+      $scope.$on('DeploymentAddError', (event, data) => {
+        this.$log.info('Deployment Add Failed!');
+        console.dir(data);
+        this.deploymentData.uploading = false;
+        this.deploymentData.hasDeploymentError = true;
+        this.deploymentData.hasDeployedSuccessfully = false;
+      });
+
     }
 
-    private cleanFilePath(filePath:string) :string {
-      return filePath.substr(12, filePath.length -1);
+    private cleanFilePath(filePath:string):string {
+      return filePath.substr(12, filePath.length - 1);
     }
 
     public onClose():void {
@@ -112,21 +126,21 @@ module HawkularMetrics {
     public exitStep2():void {
       this.deploymentData.uploading = true;
       this.$log.log('Deploying file: ' + this.deploymentData.runtimeFileName);
-      this.HawkularAddDeploymentOps.performOperation(this.deploymentData.resourcePath,
+      this.HawkularOps.performAddDeployOperation(this.deploymentData.resourcePath,
         this.deploymentData.runtimeFileName, this.deploymentData.binaryFile);
-
-      /// @TODO check status
-
-      /// @TODO here is a 2 sec time to simiulate work
-      //this.$timeout(() => {
-      //  this.$log.debug('Done uploading in step 2');
-      //  this.deploymentData.uploading = false;
-      //}, 2000);
 
     }
 
     public finishedDeployWizard():void {
       this.$modalInstance.close('ok');
+    }
+
+    public testErrorEvent() {
+      this.$rootScope.$broadcast('DeploymentAddError', 'Hi there is an err');
+    }
+
+    public testSuccessEvent() {
+      this.$rootScope.$broadcast('DeploymentAddSuccess', 'Hi Success');
     }
 
 

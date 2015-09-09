@@ -10,24 +10,26 @@
   <wz-step title="Select a Deployment File">
     <div class="modal-body">
       <p><strong>Step 1 of 3: Select a Deployment File</strong></p>
+
       <p class="hk-required-info"><span class="hk-required">*</span> All fields are required.</p>
+
       <form class="form-horizontal" name="deployFileForm" novalidate>
         <div class="form-group">
           <label class="col-sm-3 control-label">Deployment File</label>
+
           <div class="col-sm-9">
             <input fileread="dac.deploymentData.binaryFile" type="file" accept="application/zip"
                    ng-model="dac.deploymentData.filePath" hk-valid-file required
-                   name="deployFile" />
-            <!-- <i ng-show="deployFileForm.deployFile.$error.required">* required</i><br> -->
+                   name="deployFile"/>
           </div>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" ng-click="dac.onClose()">Cancel</button>
-        <button type="button" wz-next class="btn btn-primary"
-                ng-disabled="deployFileForm.$invalid"
-                ng-click="dac.exitStep1()" >Next &#62;</button>
+      <button type="button" class="btn btn-default" ng-click="dac.onClose()">Cancel</button>
+      <button type="button" wz-next class="btn btn-primary"
+              ng-disabled="deployFileForm.$invalid"
+              ng-click="dac.exitStep1()">Next &#62;</button>
     </div>
   </wz-step>
 
@@ -36,6 +38,7 @@
       <p><strong>Step 2 of 3: Verify File</strong></p>
 
       <div class="hk-form-verify hk-form-read-only">
+        <!--
         <div class="hk-form-buttons pull-right">
           <div class="hk-rename-button">
             <button class="btn btn-default" data-toggle="tooltip" data-placement="top"
@@ -54,6 +57,7 @@
             </button>
           </div>
         </div>
+        -->
 
         <form class="form-horizontal">
           <div class="editable-container">
@@ -83,17 +87,18 @@
               </div>
             </div>
           </div>
-          <!--<div class="checkbox">-->
-          <!--<label>-->
-          <!--<input type="checkbox" ng-model="dac.deploymentData.enableDuringDeployment"-->
-          <!--name="checkBoxDisable"> Do not enable, during deployment.-->
-          <!--<i class="fa fa-info-circle"-->
-          <!--data-toggle="tooltip"-->
-          <!--data-placement="top"-->
-          <!--data-original-title="Enabling activates the deployment.">-->
-          <!--</i>-->
-          <!--</label>-->
-          <!--</div>-->
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="dac.deploymentData.enableDuringDeployment"
+                     ng-disabled="true"
+                     name="checkBoxDisable"> Do not enable, during deployment.
+              <i class="fa fa-info-circle"
+                 data-toggle="tooltip"
+                 data-placement="top"
+                 data-original-title="Enabling activates the deployment.">
+              </i>
+            </label>
+          </div>
         </form>
       </div>
     </div>
@@ -113,19 +118,19 @@
         <div class="spinner spinner-lg"></div>
       </div>
 
-      <div class="alert alert-success" ng-show="!dac.deploymentData.uploading">
+      <div class="alert alert-success" ng-show="dac.deploymentData.hasDeployedSuccessfully">
         <span class="pficon pficon-ok"></span>
         <strong>Success!</strong> The file was successfully uploaded and deployed.
       </div>
 
-      <div class="alert alert-error" ng-show="!dac.deploymentData.uploading">
+      <div class="alert alert-error" ng-show="dac.deploymentData.hasDeploymentError">
         <span class="pficon pficon-error-circle-o-"></span>
         <strong>Error!</strong> An error has occurred with the deployment.
       </div>
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary"  wz-finish>OK</button>
+      <button type="button" class="btn btn-primary" wz-finish>OK</button>
     </div>
 
   </wz-step>

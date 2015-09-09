@@ -102,13 +102,6 @@ module HawkularMetrics {
     }
 
 
-    public addDeployment(operationName:string, resourceId:string):void {
-      this.$log.info(`Deployment Add ${operationName} for ${resourceId}`);
-      let operation = {operationName: operationName, resourceId: resourceId};
-      this.HawkularOps.performOperation(operation);
-    }
-
-
     public getResourceList(currentTenantId?: TenantId): any {
       this.alertList = []; // FIXME: when we have alerts for app server
       let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
