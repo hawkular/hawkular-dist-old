@@ -126,7 +126,7 @@ module HawkularMetrics {
                 'Application Server.');
               $location.path('/hawkular-ui/app/app-list');
             };
-            var checkAppServerExists = () => {
+            var checkAppServerExists = function() {
               var idParts = $route.current.params.resourceId.split('~');
               if (idParts.length !== 2) {
                 redirectMissingAppServer();
