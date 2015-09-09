@@ -29,7 +29,11 @@ module HawkularMetrics {
 
 /// ID types
   export type TenantId = string;
+  export type FeedId = string;
+  export type Environment = string;
   export type ResourceId = string;
+  export type ResourceType = string;
+  export type PathId = string;
   export type MetricId = string;
   export type TriggerId = string;
   export type ConditionId = string;

@@ -77,7 +77,7 @@ module HawkularMetrics {
     /**
      * formatBucketedChartOutput
      * @param response
-     * @returns {any}
+     * @returns IChartDataPoint[]
      */
     public static formatBucketedChartOutput(response):IChartDataPoint[] {
       //  The schema is different for bucketed output
