@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>21</version>
+    <version>23</version>
   </parent>
 
   <groupId>org.hawkular</groupId>
@@ -85,10 +85,11 @@
     <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.hawkular.accounts>1.0.11.Final</version.org.hawkular.accounts>
-    <version.org.hawkular.agent>0.5.0.Final</version.org.hawkular.agent>
+    <version.org.hawkular.agent>0.5.1.Final-SRC-revision-2cfcb106a44f6f7c295ca2ef4bce9727f288ad2a</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.3.3.Final</version.org.hawkular.alerts>
     <version.org.hawkular.bus>0.5.0.Final</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.2.1.Final</version.org.hawkular.commons>
+    <version.org.hawkular.cmdgw>0.5.1.Final-SRC-revision-9578a6588b55237228c44341758c27b8d5da9d22</version.org.hawkular.cmdgw>
     <version.org.hawkular.metrics>0.5.0.Final</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.3.3.Final</version.org.hawkular.inventory>
     <version.org.hawkular.nest>${version.org.hawkular.bus}</version.org.hawkular.nest>
@@ -221,9 +222,9 @@
       </dependency>
 
       <dependency>
-        <groupId>org.hawkular.bus</groupId>
-        <artifactId>hawkular-feed-comm-war</artifactId>
-        <version>${version.org.hawkular.bus}</version>
+        <groupId>org.hawkular.cmdgw</groupId>
+        <artifactId>hawkular-command-gateway-war</artifactId>
+        <version>${version.org.hawkular.cmdgw}</version>
         <type>war</type>
       </dependency>
 

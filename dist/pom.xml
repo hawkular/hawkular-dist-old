@@ -73,8 +73,8 @@
       <type>war</type>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-feed-comm-war</artifactId>
+      <groupId>org.hawkular.cmdgw</groupId>
+      <artifactId>hawkular-command-gateway-war</artifactId>
       <type>war</type>
     </dependency>
     <dependency>
