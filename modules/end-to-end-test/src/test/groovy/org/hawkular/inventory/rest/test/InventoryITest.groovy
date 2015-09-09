@@ -76,7 +76,7 @@ class InventoryITest extends AbstractTestBase {
         def response = null
         int attemptCount = 5;
         int delay = 500;
-        String path = "/hawkular-accounts/personas/current"
+        String path = "/hawkular/accounts/personas/current"
         for (int i = 0; i < attemptCount; i++) {
             try {
                 response = client.get(path: path)
