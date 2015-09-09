@@ -60,10 +60,9 @@ module HawkularMetrics {
         reloadOnSearch: false,
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
-            var idParts = $route.current.params.resourceId.split('~');
-            var feedId = idParts[0];
-            var p = HawkularInventory.ResourceUnderFeed.get({environmentId: globalEnvironmentId,
-              feedId: feedId, resourceId: $route.current.params.resourceId}).$promise;
+            var p = HawkularInventory.Resource.get({
+              environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
+            }).$promise;
             p.then((response:any) => {
                 return response.properties.url;
               },
@@ -80,10 +79,9 @@ module HawkularMetrics {
         reloadOnSearch: false,
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
-            var idParts = $route.current.params.resourceId.split('~');
-            var feedId = idParts[0];
-            var p = HawkularInventory.ResourceUnderFeed.get({environmentId: globalEnvironmentId,
-              feedId: feedId, resourceId: $route.current.params.resourceId}).$promise;
+            var p = HawkularInventory.Resource.get({
+              environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
+            }).$promise;
             p.then((response:any) => {
                 return response.properties.url;
               },
@@ -100,10 +98,9 @@ module HawkularMetrics {
         reloadOnSearch: false,
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
-            var idParts = $route.current.params.resourceId.split('~');
-            var feedId = idParts[0];
-            var p = HawkularInventory.ResourceUnderFeed.get({environmentId: globalEnvironmentId,
-              feedId: feedId, resourceId: $route.current.params.resourceId}).$promise;
+            var p = HawkularInventory.Resource.get({
+              environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
+            }).$promise;
             p.then((response:any) => {
                 return response.properties.url;
               },
