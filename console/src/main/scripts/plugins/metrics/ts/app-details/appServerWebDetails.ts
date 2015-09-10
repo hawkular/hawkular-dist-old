@@ -235,5 +235,5 @@ module HawkularMetrics {
   }
 
 
-  _module.controller('HawkularMetrics.AppServerWebDetailsController', AppServerWebDetailsController);
+  _module.controller('AppServerWebDetailsController', AppServerWebDetailsController);
 }

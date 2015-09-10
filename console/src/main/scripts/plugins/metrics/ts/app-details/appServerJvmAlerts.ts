@@ -149,13 +149,13 @@ module HawkularMetrics {
           templateUrl: 'plugins/metrics/html/modals/alerts-jvm-setup.html',
           controller: 'JvmAlertSetupController as jas',
           resolve: {
-            resourceId: function () {
+            resourceId: () =>  {
               return this.resourceId;
             }
           }
         });
 
-        modalInstance.result.then(angular.noop, function () {
+        modalInstance.result.then(angular.noop, () => {
           log.debug('Jvm Alert Setup modal dismissed at: ' + new Date());
         });
       }, () => {

@@ -39,7 +39,7 @@ module HawkularMetrics {
 
     private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
-    private expandedList;
+    ///private expandedList;
     public alertList;
     public chartAvailData;
     public chartRespData;
@@ -69,7 +69,7 @@ module HawkularMetrics {
       if ($rootScope.currentPersona) {
         this.getDatasources(this.$rootScope.currentPersona.id);
       } else {
-        // currentPersona hasn't been injected to the rootScope yet, wait for it..
+        /// currentPersona hasn't been injected to the rootScope yet, wait for it..
         $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
         this.getDatasources(currentPersona.id));
       }
@@ -114,7 +114,7 @@ module HawkularMetrics {
         // Datasource connection trigger exists, nothing to do
         this.$log.debug('Datasource connection trigger exists, nothing to do');
       }, () => {
-        // Datasource connection trigger doesn't exist, need to create one
+        /// Datasource connection trigger doesn't exist, need to create one
 
         var triggerId:string = resId + '_ds_conn';
         var dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Available Count';
@@ -133,10 +133,10 @@ module HawkularMetrics {
       });
 
       var respTriggerPromise = this.HawkularAlertsManager.getTrigger(resId + '_ds_resp').then(() => {
-        // Datasource responsiveness trigger exists, nothing to do
+        /// Datasource responsiveness trigger exists, nothing to do
         this.$log.debug('Datasource responsiveness trigger exists, nothing to do');
       }, () => {
-        // Datasource responsiveness trigger doesn't exist, need to create one
+        /// Datasource responsiveness trigger doesn't exist, need to create one
         var triggerId:string = resId + '_ds_resp';
         var dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Get Time';
 
@@ -171,13 +171,13 @@ module HawkularMetrics {
           templateUrl: 'plugins/metrics/html/modals/alerts-ds-setup.html',
           controller: 'DatasourcesAlertSetupController as das',
           resolve: {
-            resourceId: function () {
+            resourceId: () => {
               return resId;
             }
           }
         });
 
-        modalInstance.result.then(angular.noop, function () {
+        modalInstance.result.then(angular.noop, () => {
           log.debug('Datasource Alert Setup modal dismissed at: ' + new Date());
         });
       }, () => {
@@ -221,21 +221,22 @@ module HawkularMetrics {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       var idParts = this.$routeParams.resourceId.split('~');
       var feedId = idParts[0];
+
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         environmentId: globalEnvironmentId,
         feedId: feedId,
         resourceTypeId: 'Datasource'}, (aResourceList, getResponseHeaders) => {
         var promises = [];
         var tmpResourceList = [];
-        angular.forEach(aResourceList, function(res, idx) {
+        angular.forEach(aResourceList, (res:any) => {
           if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
             tmpResourceList.push(res);
-            promises.push(this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+            promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
               gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
               distinct: true}, (data) => {
               res.availableCount = data[0];
             }).$promise);
-            promises.push(this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+            promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
               gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
               distinct: true}, (data) => {
               res.inUseCount = data[0];
@@ -243,7 +244,7 @@ module HawkularMetrics {
             this.getAlerts(res.id, this.startTimeStamp, this.endTimeStamp, res);
           }
         }, this);
-        this.$q.all(promises).then((result) => {
+        this.$q.all(promises).then(() => {
           this.resourceList = tmpResourceList;
           this.resourceList.$resolved = true;
           this.getDatasourceChartData();
@@ -264,7 +265,7 @@ module HawkularMetrics {
 
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       angular.forEach(this.resourceList, function(res, idx) {
-        this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
           gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
@@ -273,7 +274,7 @@ module HawkularMetrics {
               color: AppServerDatasourcesDetailsController.AVAILABLE_COLOR,
               values: this.formatBucketedChartOutput(data) };
           }, this);
-        this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
           gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
@@ -282,7 +283,7 @@ module HawkularMetrics {
               color: AppServerDatasourcesDetailsController.IN_USE_COLOR,
               values: this.formatBucketedChartOutput(data) };
           }, this);
-        this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
           gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Timed Out',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
@@ -292,7 +293,7 @@ module HawkularMetrics {
               values: this.formatBucketedChartOutput(data) };
           }, this);
 
-        this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
           gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Get Time',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
@@ -301,7 +302,7 @@ module HawkularMetrics {
               color: AppServerDatasourcesDetailsController.WAIT_COLOR,
               values: this.formatBucketedChartOutput(data) };
           }, this);
-        this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+        this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
           gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Creation Time',
           start: this.startTimeStamp,
           end: this.endTimeStamp, buckets:60}, (data) => {
@@ -315,10 +316,7 @@ module HawkularMetrics {
     }
 
 
-
-
-
   }
 
-  _module.controller('HawkularMetrics.AppServerDatasourcesDetailsController', AppServerDatasourcesDetailsController);
+  _module.controller('AppServerDatasourcesDetailsController', AppServerDatasourcesDetailsController);
 }

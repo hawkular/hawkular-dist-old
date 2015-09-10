@@ -354,6 +354,6 @@ module HawkularMetrics {
     }
 
   }
-  _module.controller('HawkularMetrics.UrlListController', UrlListController);
+  _module.controller('UrlListController', UrlListController);
 
 }

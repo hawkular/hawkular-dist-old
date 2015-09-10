@@ -144,7 +144,7 @@ module HawkularMetrics {
         var step = this.$window.Math.floor(response.length / buckets);
         result = [];
         var accValue = 0;
-        _.forEach(response, function(point:any, idx) {
+        _.forEach(response, (point:any, idx) => {
           if (parseInt(idx, 10) % step === (step-1)) {
             result.push({timestamp: point.timestamp, value: accValue });
             accValue = 0;
@@ -194,7 +194,6 @@ module HawkularMetrics {
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
-        console.log('!!! heap used', resource);
         if (resource.length) {
           this['heapUsage'] = resource[0];
         }
@@ -204,7 +203,6 @@ module HawkularMetrics {
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
-        console.log('!!! heap max', resource);
         if (resource.length) {
           this['heapMax'] = resource[0];
           AppServerJvmDetailsController.MAX_HEAP = resource[0].max;
@@ -215,7 +213,6 @@ module HawkularMetrics {
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1}, (resource) => {
-        console.log('!!! GC', resource);
         if (resource.length) {
           this['accGCDuration'] = resource[0].value - resource[resource.length-1].value;
           this.chartGCDurationData = this.formatCounterChartOutput(resource);
@@ -268,6 +265,6 @@ module HawkularMetrics {
     }
   }
 
-  _module.controller('HawkularMetrics.AppServerJvmDetailsController', AppServerJvmDetailsController);
+  _module.controller('AppServerJvmDetailsController', AppServerJvmDetailsController);
 
 }

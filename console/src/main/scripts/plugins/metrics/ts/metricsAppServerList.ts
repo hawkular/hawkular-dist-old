@@ -127,6 +127,6 @@ module HawkularMetrics {
 
   }
 
-  _module.controller('HawkularMetrics.AppServerListController', AppServerListController);
+  _module.controller('AppServerListController', AppServerListController);
 
 }
