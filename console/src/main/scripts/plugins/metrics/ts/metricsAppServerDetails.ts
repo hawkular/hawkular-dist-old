@@ -62,6 +62,6 @@ module HawkularMetrics {
 
   }
 
-  _module.controller('HawkularMetrics.AppServerDetailsController', AppServerDetailsController);
+  _module.controller('AppServerDetailsController', AppServerDetailsController);
 
 }

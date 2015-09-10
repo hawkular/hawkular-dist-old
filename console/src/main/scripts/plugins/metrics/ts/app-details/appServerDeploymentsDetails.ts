@@ -113,7 +113,7 @@ module HawkularMetrics {
           resourceTypeId: 'Deployment'}, (aResourceList, getResponseHeaders) => {
           let promises = [];
           let tmpResourceList = [];
-          angular.forEach(aResourceList, function(res: any) {
+          angular.forEach(aResourceList, (res: any) => {
             if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
               tmpResourceList.push(res);
               res.selected = _.result(_.find(this.resourceList, {'id': res.id}), 'selected');
