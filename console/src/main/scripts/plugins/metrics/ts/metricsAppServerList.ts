@@ -102,7 +102,7 @@ module HawkularMetrics {
           this.lastUpdateTimestamp = new Date();
         }, this);
         this.$q.all(promises).then((result) => {
-          this.resourceList = _.union(this.resourceList, aResourceList);
+          this.resourceList = aResourceList;
         });
       },
       () => { // error
