@@ -81,7 +81,7 @@ module HawkularMetrics {
       });
     }
 
-    public getResourceListForOneFeed(feedId: string, currentTenantId?: TenantId):any {
+    public getResourceListForOneFeed(feedId: FeedId, currentTenantId?: TenantId):any {
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         environmentId: globalEnvironmentId, feedId: feedId,

@@ -45,15 +45,32 @@ module HawkularMetrics {
 /// Value types
   export type TimestampInMillis = number;
   export type IntervalInSeconds = number;
+  export type AuthenticationToken = string;
 
 
 /// Interface Definitions
   export interface IPersona {
     id:  PersonaId;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+  }
+
+  export interface IUserDetails {
+    email:string;
+    emailVerified: boolean;
+    enabled:boolean;
+    firstName:string;
+    id:string;
+    lastName:string;
+    token:string;
+    totp: boolean;
+    username:string;
   }
 
   export interface IHawkularRootScope extends ng.IRootScopeService {
     currentPersona:IPersona;
+    userDetails:IUserDetails;
   }
 
 }

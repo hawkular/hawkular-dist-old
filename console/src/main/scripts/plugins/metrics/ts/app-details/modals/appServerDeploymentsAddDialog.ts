@@ -47,8 +47,6 @@ module HawkularMetrics {
     public static $inject = ['$rootScope', '$scope', '$q', '$timeout', '$log', 'HawkularOps',
       '$modalInstance', 'NotificationsService', '$routeParams', 'HawkularInventory'];
 
-    private _resourcePath:IResourcePath;
-
 
     public deploymentData:IDeploymentData =
     {
@@ -61,11 +59,10 @@ module HawkularMetrics {
       hasDeploymentError: false,
       hasDeployedSuccessfully: false,
       editDeploymentFiles: false,
-      /// Not sure why it wont let me use the const DEPLOYMENT_NOT_STARTED here :/
       deploymentStatus: 0
     };
 
-    constructor(private $rootScope:IHawkularRootScope,
+    constructor(private $rootScope:any,
                 private $scope:ng.IScope,
                 private $q:ng.IQService,
                 private $timeout:ng.ITimeoutService,
@@ -85,22 +82,18 @@ module HawkularMetrics {
         feedId: this.$routeParams.resourceId.split('~')[0],
         resourcePath: this.$routeParams.resourceId + '~~'
       }, (resource:IResourcePath) => {
-        this._resourcePath = resource;
         this.deploymentData.resourcePath = resource.path;
       });
 
       $scope.$on('DeploymentAddSuccess', (event, data) => {
         this.$log.info('Deployment Add Succeeded!');
-        console.dir(data);
         this.deploymentData.uploading = false;
         this.deploymentData.hasDeployedSuccessfully = true;
         this.deploymentData.hasDeploymentError = false;
 
-        console.dir(data);
       });
       $scope.$on('DeploymentAddError', (event, data) => {
         this.$log.info('Deployment Add Failed!');
-        console.dir(data);
         this.deploymentData.uploading = false;
         this.deploymentData.hasDeploymentError = true;
         this.deploymentData.hasDeployedSuccessfully = false;
@@ -127,22 +120,10 @@ module HawkularMetrics {
       this.deploymentData.uploading = true;
       this.$log.log('Deploying file: ' + this.deploymentData.runtimeFileName);
       this.HawkularOps.performAddDeployOperation(this.deploymentData.resourcePath,
-        this.deploymentData.runtimeFileName, this.deploymentData.binaryFile);
+        this.deploymentData.runtimeFileName, this.deploymentData.binaryFile, this.$rootScope.userDetails.token,
+        this.$rootScope.currentPersona.id);
 
     }
-
-    public finishedDeployWizard():void {
-      this.$modalInstance.close('ok');
-    }
-
-    public testErrorEvent() {
-      this.$rootScope.$broadcast('DeploymentAddError', 'Hi there is an err');
-    }
-
-    public testSuccessEvent() {
-      this.$rootScope.$broadcast('DeploymentAddSuccess', 'Hi Success');
-    }
-
 
   }
 
