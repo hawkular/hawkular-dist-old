@@ -31,7 +31,6 @@ module HawkularMetrics {
     hasDeploymentError:boolean;
     hasDeployedSuccessfully:boolean;
     editDeploymentFiles: boolean;
-    deploymentStatus: DeploymentStatusType;
   }
 
   export interface IResourcePath {
@@ -58,9 +57,11 @@ module HawkularMetrics {
       uploading: false,
       hasDeploymentError: false,
       hasDeployedSuccessfully: false,
-      editDeploymentFiles: false,
-      deploymentStatus: 0
+      editDeploymentFiles: false
     };
+
+    public editableDeploymentData:IDeploymentData;
+    public originalDeploymentData:IDeploymentData;
 
     constructor(private $rootScope:IHawkularRootScope,
                 private $scope:ng.IScope,
@@ -126,9 +127,24 @@ module HawkularMetrics {
 
     }
 
-    public finishDeployWizard():void {
-      this.$modalInstance.close('ok');
+    public editVerifyFile():void {
+      this.deploymentData.editDeploymentFiles = true;
+      this.editableDeploymentData = angular.copy(this.deploymentData);
+      this.originalDeploymentData = angular.copy(this.deploymentData);
+    }
 
+    public saveVerifyFile():void {
+      this.deploymentData =  angular.copy(this.editableDeploymentData);
+      this.deploymentData.editDeploymentFiles = false;
+    }
+
+    public resetVerifyFile():void {
+      this.editableDeploymentData = angular.copy(this.originalDeploymentData);
+    }
+
+    public finishDeployWizard():void {
+      this.$log.log('Finished deploy add wizard');
+      this.$modalInstance.close('ok');
     }
 
   }
