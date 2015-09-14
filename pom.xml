@@ -85,11 +85,11 @@
     <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.hawkular.accounts>1.0.13.Final</version.org.hawkular.accounts>
-    <version.org.hawkular.agent>0.6.1.Final</version.org.hawkular.agent>
+    <version.org.hawkular.agent>0.6.2.Final</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.3.3.Final</version.org.hawkular.alerts>
     <version.org.hawkular.bus>0.6.0.Final</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.2.1.Final</version.org.hawkular.commons>
-    <version.org.hawkular.cmdgw>0.6.0.Final</version.org.hawkular.cmdgw>
+    <version.org.hawkular.cmdgw>0.6.1.Final</version.org.hawkular.cmdgw>
     <version.org.hawkular.metrics>0.5.0.Final</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.3.3.Final</version.org.hawkular.inventory>
     <version.org.hawkular.nest>${version.org.hawkular.bus}</version.org.hawkular.nest>
