@@ -62,7 +62,7 @@ module HawkularMetrics {
       deploymentStatus: 0
     };
 
-    constructor(private $rootScope:any,
+    constructor(private $rootScope:IHawkularRootScope,
                 private $scope:ng.IScope,
                 private $q:ng.IQService,
                 private $timeout:ng.ITimeoutService,
@@ -93,7 +93,8 @@ module HawkularMetrics {
 
       });
       $scope.$on('DeploymentAddError', (event, data) => {
-        this.$log.info('Deployment Add Failed!');
+        this.$log.warn('Deployment Add Failed!');
+        this.$log.warn(data);
         this.deploymentData.uploading = false;
         this.deploymentData.hasDeploymentError = true;
         this.deploymentData.hasDeployedSuccessfully = false;
@@ -122,6 +123,11 @@ module HawkularMetrics {
       this.HawkularOps.performAddDeployOperation(this.deploymentData.resourcePath,
         this.deploymentData.runtimeFileName, this.deploymentData.binaryFile, this.$rootScope.userDetails.token,
         this.$rootScope.currentPersona.id);
+
+    }
+
+    public finishDeployWizard():void {
+      this.$modalInstance.close('ok');
 
     }
 

@@ -130,7 +130,9 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" wz-finish>OK</button>
+      <button type="button" class="btn btn-primary" wz-finish
+              ng-click="dac.onClose()"
+              ng-disabled="dac.deploymentData.uploading">OK</button>
     </div>
 
   </wz-step>
