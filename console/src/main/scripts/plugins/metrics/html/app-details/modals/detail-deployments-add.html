@@ -38,28 +38,29 @@
       <p><strong>Step 2 of 3: Verify File</strong></p>
 
       <div class="hk-form-verify hk-form-read-only">
-        <!--
         <div class="hk-form-buttons pull-right">
-          <div class="hk-rename-button">
+          <div class="hk-rename-button" ng-show="!dac.deploymentData.editDeploymentFiles">
             <button class="btn btn-default" data-toggle="tooltip" data-placement="top"
-                    ng-click="dac.deploymentData.editDeploymentFiles = !dac.deploymentData.editDeploymentFiles"
+                    ng-click="dac.editVerifyFile()"
                     data-original-title="Rename">
               <i class="fa fa-pencil"></i>
             </button>
           </div>
-          <div class="hk-discard-confirm-buttons">
-            <button class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Discard">
+          <div class="hk-discard-confirm-buttons" ng-show="dac.deploymentData.editDeploymentFiles">
+            <button class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Discard"
+                    ng-disabled="!dac.deploymentData.editDeploymentFiles"
+                    ng-click="dac.resetVerifyFile()">
               <i class="fa fa-close"></i>
             </button>
             <button class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Confirm"
-                    ng-click="dac.deploymentData.editDeploymentFiles = !dac.deploymentData.editDeploymentFiles">
+                    ng-disabled="!dac.deploymentData.editDeploymentFiles"
+                    ng-click="dac.saveVerifyFile()">
               <i class="fa fa-check"></i>
             </button>
           </div>
         </div>
-        -->
 
-        <form class="form-horizontal">
+        <form name="deploymentDataForm" class="form-horizontal">
           <div class="editable-container">
             <div class="form-group">
               <label class="col-sm-3 control-label" for="hk-deploy-name">Name</label>
@@ -70,7 +71,7 @@
                 <input type="text" class="form-control"
                        ng-show="dac.deploymentData.editDeploymentFiles"
                        id="hk-deploy-name"
-                       value="{{dac.deploymentData.filePath}}">
+                       ng-model="dac.editableDeploymentData.filePath">
               </div>
             </div>
 
@@ -83,7 +84,7 @@
                 <input type="text" class="form-control text"
                        ng-show="dac.deploymentData.editDeploymentFiles"
                        id="hk-runtime-name"
-                       value="{{dac.deploymentData.runtimeFileName}}">
+                       ng-model="dac.editableDeploymentData.runtimeFileName">
               </div>
             </div>
           </div>
@@ -103,8 +104,10 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" wz-previous class="btn btn-default">&#60; Back</button>
-      <button type="button" wz-next class="btn btn-primary" ng-click="dac.exitStep2()">Next &#62;</button>
+      <button type="button" wz-previous class="btn btn-default"
+        ng-disabled="dac.deploymentData.editDeploymentFiles">&#60; Back</button>
+      <button type="button" wz-next class="btn btn-primary" ng-click="dac.exitStep2()"
+              ng-disabled="dac.deploymentData.editDeploymentFiles">Next &#62;</button>
     </div>
   </wz-step>
 
@@ -130,7 +133,9 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" wz-finish>OK</button>
+      <button type="button" class="btn btn-primary" wz-finish
+              ng-click="dac.onClose()"
+              ng-disabled="dac.deploymentData.uploading">OK</button>
     </div>
 
   </wz-step>

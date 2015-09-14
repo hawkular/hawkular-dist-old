@@ -31,7 +31,6 @@ module HawkularMetrics {
     hasDeploymentError:boolean;
     hasDeployedSuccessfully:boolean;
     editDeploymentFiles: boolean;
-    deploymentStatus: DeploymentStatusType;
   }
 
   export interface IResourcePath {
@@ -58,11 +57,13 @@ module HawkularMetrics {
       uploading: false,
       hasDeploymentError: false,
       hasDeployedSuccessfully: false,
-      editDeploymentFiles: false,
-      deploymentStatus: 0
+      editDeploymentFiles: false
     };
 
-    constructor(private $rootScope:any,
+    public editableDeploymentData:IDeploymentData;
+    public originalDeploymentData:IDeploymentData;
+
+    constructor(private $rootScope:IHawkularRootScope,
                 private $scope:ng.IScope,
                 private $q:ng.IQService,
                 private $timeout:ng.ITimeoutService,
@@ -93,7 +94,8 @@ module HawkularMetrics {
 
       });
       $scope.$on('DeploymentAddError', (event, data) => {
-        this.$log.info('Deployment Add Failed!');
+        this.$log.warn('Deployment Add Failed!');
+        this.$log.warn(data);
         this.deploymentData.uploading = false;
         this.deploymentData.hasDeploymentError = true;
         this.deploymentData.hasDeployedSuccessfully = false;
@@ -123,6 +125,26 @@ module HawkularMetrics {
         this.deploymentData.runtimeFileName, this.deploymentData.binaryFile, this.$rootScope.userDetails.token,
         this.$rootScope.currentPersona.id);
 
+    }
+
+    public editVerifyFile():void {
+      this.deploymentData.editDeploymentFiles = true;
+      this.editableDeploymentData = angular.copy(this.deploymentData);
+      this.originalDeploymentData = angular.copy(this.deploymentData);
+    }
+
+    public saveVerifyFile():void {
+      this.deploymentData =  angular.copy(this.editableDeploymentData);
+      this.deploymentData.editDeploymentFiles = false;
+    }
+
+    public resetVerifyFile():void {
+      this.editableDeploymentData = angular.copy(this.originalDeploymentData);
+    }
+
+    public finishDeployWizard():void {
+      this.$log.log('Finished deploy add wizard');
+      this.$modalInstance.close('ok');
     }
 
   }
