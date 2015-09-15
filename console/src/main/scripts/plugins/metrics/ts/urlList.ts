@@ -200,14 +200,99 @@ module HawkularMetrics {
         (e) => err(e, 'Error during saving metrics.'))
 
         // Create threshold trigger for newly created metrics
-        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', url, true, 'THRESHOLD',
-          defaultEmail),
-        (e) => err(e, 'Error saving email action.'))
+        .then(() => {
+          var triggerId = metricId + '_trigger_thres';
+          var dataId: string = triggerId.slice(0,-14) + '.status.duration';
+          var fullTrigger = {
+            trigger: {
+              id: triggerId,
+              name: url,
+              actions: {email: [defaultEmail]}
+            },
+            dampenings: [
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 7 * 60000,
+                triggerMode: 'FIRING',
+                type: 'STRICT_TIME'
+              },
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 5 * 60000,
+                triggerMode: 'AUTORESOLVE',
+                type: 'STRICT_TIME'
+              }
+            ],
+            conditions: [
+              {
+                triggerId: triggerId,
+                triggerMode: 'FIRING',
+                type: 'THRESHOLD',
+                dataId: dataId,
+                operator: 'GT',
+                threshold: 1000
+              },
+              {
+                triggerId: triggerId,
+                triggerMode: 'AUTORESOLVE',
+                type: 'THRESHOLD',
+                dataId: dataId,
+                operator: 'LTE',
+                threshold: 1000
+              }
+            ]
+          };
+          return this.HawkularAlertsManager.createTrigger(fullTrigger,
+            (e) => err(e, 'Error saving threshold trigger.')
+          );
+        })
 
         // Create availability trigger for newly created metrics
-        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', url, false,
-          'AVAILABILITY', defaultEmail),
-        (e) => err(e, 'Error saving threshold trigger.'))
+        .then(() => {
+          var triggerId = metricId + '_trigger_avail';
+          var dataId:string = triggerId.slice(0, -14);
+          var fullTrigger = {
+            trigger: {
+              id: triggerId,
+              name: url,
+              actions: {email: [defaultEmail]}
+            },
+            dampenings: [
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 7 * 60000,
+                triggerMode: 'FIRING',
+                type: 'STRICT_TIME'
+              },
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 5 * 60000,
+                triggerMode: 'AUTORESOLVE',
+                type: 'STRICT_TIME'
+              }
+            ],
+            conditions: [
+              {
+                triggerId: triggerId,
+                triggerMode: 'FIRING',
+                type: 'AVAILABILITY',
+                dataId: dataId,
+                operator: 'DOWN'
+              },
+              {
+                triggerId: triggerId,
+                triggerMode: 'AUTORESOLVE',
+                type: 'AVAILABILITY',
+                dataId: dataId,
+                operator: 'UP'
+              }
+            ]
+          };
+
+          return this.HawkularAlertsManager.createTrigger(fullTrigger,
+            (e) => err(e, 'Error saving availability trigger.')
+          );
+        })
 
         //this.$location.url('/hawkular/' + metricId);
         .then(() => this.NotificationsService.info('Your data is being collected. Please be patient (should be about ' +

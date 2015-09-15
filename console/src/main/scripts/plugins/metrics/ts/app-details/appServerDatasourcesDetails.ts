@@ -110,7 +110,7 @@ module HawkularMetrics {
     public openSetup(resId):void {
       // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
 
-      let connTriggerPromise = this.HawkularAlertsManager.getTrigger(resId + '_ds_conn').then(() => {
+      let connTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_conn').then(() => {
         // Datasource connection trigger exists, nothing to do
         this.$log.debug('Datasource connection trigger exists, nothing to do');
       }, () => {
@@ -118,50 +118,85 @@ module HawkularMetrics {
 
         let triggerId:string = resId + '_ds_conn';
         let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Available Count';
+        let fullTrigger = {
+          trigger: {
+            name: triggerId,
+            id: triggerId,
+            actions: {email: [this.defaultEmail]}
+          },
+          dampenings: [
+            {
+              triggerId: triggerId,
+              evalTimeSetting: 7 * 60000,
+              triggerMode: 'FIRING',
+              type: 'STRICT_TIME'
+            }
+          ],
+          conditions: [
+            {
+              triggerId: triggerId,
+              type: 'THRESHOLD',
+              dataId: dataId,
+              threshold: AppServerDatasourcesDetailsController.DEFAULT_CONN_THRESHOLD,
+              operator: 'LT'
+            }
+          ]
+        };
 
-        return this.HawkularAlertsManager.createAlertDefinition({
-          name: triggerId,
-          id: triggerId,
-          actions: {email: [this.defaultEmail]}
-        }, {
-          triggerId: triggerId,
-          type: 'THRESHOLD',
-          dataId: dataId,
-          threshold: AppServerDatasourcesDetailsController.DEFAULT_CONN_THRESHOLD,
-          operator: 'LT'
+        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+          this.$log.error('Error on Trigger creation for ' + triggerId);
         });
       });
 
-      let respTriggerPromise = this.HawkularAlertsManager.getTrigger(resId + '_ds_resp').then(() => {
+      let respTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_resp').then(() => {
         /// Datasource responsiveness trigger exists, nothing to do
         this.$log.debug('Datasource responsiveness trigger exists, nothing to do');
       }, () => {
         /// Datasource responsiveness trigger doesn't exist, need to create one
         let triggerId:string = resId + '_ds_resp';
-        let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Get Time';
+        let dataId1:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Get Time';
+        let dataId2:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time';
+        let fullTrigger = {
+          trigger: {
+            name: triggerId,
+            id: triggerId,
+            firingMatch: 'ANY',
+            actions: {email: [this.defaultEmail]}
+          },
+          dampenings: [
+            {
+              triggerId: triggerId,
+              evalTimeSetting: 7 * 60000,
+              triggerMode: 'FIRING',
+              type: 'STRICT_TIME'
+            }
+          ],
+          conditions: [
+            {
+              triggerId: triggerId,
+              conditionSetSize: 2,
+              conditionSetIndex: 1,
+              type: 'THRESHOLD',
+              dataId: dataId1,
+              threshold: AppServerDatasourcesDetailsController.DEFAULT_WAIT_THRESHOLD,
+              operator: 'GT'
+            },
+            {
+              triggerId: triggerId,
+              conditionSetSize: 2,
+              conditionSetIndex: 2,
+              type: 'THRESHOLD',
+              dataId: dataId2,
+              threshold: AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD,
+              operator: 'GT'
+            }
+          ]
+        };
 
-        return this.HawkularAlertsManager.createAlertDefinition({
-          name: triggerId,
-          id: triggerId,
-          actions: {email: [this.defaultEmail]}
-        }, {
-          triggerId: triggerId,
-          type: 'THRESHOLD',
-          dataId: dataId,
-          threshold: AppServerDatasourcesDetailsController.DEFAULT_WAIT_THRESHOLD,
-          operator: 'GT'
-        }).then(()=> {
-          let triggerId:string = resId + '_ds_resp';
-          let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time';
-
-          return this.HawkularAlertsManager.createCondition(triggerId, {
-            triggerId: triggerId,
-            type: 'THRESHOLD',
-            dataId: dataId,
-            threshold: AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD,
-            operator: 'GT'
-          });
+        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+          this.$log.error('Error on Trigger creation for ' + triggerId);
         });
+
       });
 
       let log = this.$log;
