@@ -268,7 +268,7 @@ module HawkularMetrics {
     // TODO - Get the actual data from backend
     public maxUsage: number = AppServerJvmDetailsController.MAX_HEAP;
 
-    loadDefinitions():Array<ng.IPromise<any>> {
+    loadTriggers():Array<ng.IPromise<any>> {
       function floor2Dec(doubleValue) {
         return Math.floor(doubleValue * 100)/100;
       }
@@ -277,94 +277,94 @@ module HawkularMetrics {
 
       var heapTriggerId: string = this.$routeParams.resourceId + '_jvm_pheap';
 
-      var heapDefinitionPromise = this.HawkularAlertsManager.getTrigger(heapTriggerId).then(
-        (alertDefinitionData) => {
-          this.triggerDefinition['heap'] = alertDefinitionData;
+      var heapTriggerPromise = this.HawkularAlertsManager.getTrigger(heapTriggerId).then(
+        (triggerData) => {
+          this.triggerDefinition['heap'] = triggerData;
 
           this.adm.heap = {};
-          this.adm.heap['email'] = alertDefinitionData.trigger.actions.email[0];
-          this.adm.heap['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
-          this.adm.heap['conditionGtEnabled'] = alertDefinitionData.conditions[0].thresholdHigh < this.maxUsage;
-          this.adm.heap['conditionGtPercent'] = alertDefinitionData.conditions[0].thresholdHigh > 0 ?
-            floor2Dec(alertDefinitionData.conditions[0].thresholdHigh * 100 / this.maxUsage) : 0;
-          this.adm.heap['conditionLtEnabled'] = alertDefinitionData.conditions[0].thresholdLow > 0;
-          this.adm.heap['conditionLtPercent'] = alertDefinitionData.conditions[0].thresholdLow > 0 ?
-            floor2Dec(alertDefinitionData.conditions[0].thresholdLow * 100 / this.maxUsage ): 0;
+          this.adm.heap['email'] = triggerData.trigger.actions.email[0];
+          this.adm.heap['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.heap['conditionGtEnabled'] = triggerData.conditions[0].thresholdHigh < this.maxUsage;
+          this.adm.heap['conditionGtPercent'] = triggerData.conditions[0].thresholdHigh > 0 ?
+            floor2Dec(triggerData.conditions[0].thresholdHigh * 100 / this.maxUsage) : 0;
+          this.adm.heap['conditionLtEnabled'] = triggerData.conditions[0].thresholdLow > 0;
+          this.adm.heap['conditionLtPercent'] = triggerData.conditions[0].thresholdLow > 0 ?
+            floor2Dec(triggerData.conditions[0].thresholdLow * 100 / this.maxUsage ): 0;
         });
 
       // Non-Heap Usage trigger definition
       var nheapTriggerId: string = this.$routeParams.resourceId + '_jvm_nheap';
 
-      var nheapDefinitionPromise = this.HawkularAlertsManager.getTrigger(nheapTriggerId).then(
-        (alertDefinitionData) => {
-          this.triggerDefinition['nheap'] = alertDefinitionData;
+      var nheapTriggerPromise = this.HawkularAlertsManager.getTrigger(nheapTriggerId).then(
+        (triggerData) => {
+          this.triggerDefinition['nheap'] = triggerData;
 
           this.adm.nheap = {};
-          this.adm.nheap['email'] = alertDefinitionData.trigger.actions.email[0];
-          this.adm.nheap['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
-          this.adm.nheap['conditionGtEnabled'] = alertDefinitionData.conditions[0].thresholdHigh < this.maxUsage;
-          this.adm.nheap['conditionGtPercent'] = alertDefinitionData.conditions[0].thresholdHigh > 0 ?
-            floor2Dec(alertDefinitionData.conditions[0].thresholdHigh * 100 / this.maxUsage) : 0;
-          this.adm.nheap['conditionLtEnabled'] = alertDefinitionData.conditions[0].thresholdLow > 0;
-          this.adm.nheap['conditionLtPercent'] = alertDefinitionData.conditions[0].thresholdLow > 0 ?
-            floor2Dec(alertDefinitionData.conditions[0].thresholdLow * 100 / this.maxUsage) : 0;
+          this.adm.nheap['email'] = triggerData.trigger.actions.email[0];
+          this.adm.nheap['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.nheap['conditionGtEnabled'] = triggerData.conditions[0].thresholdHigh < this.maxUsage;
+          this.adm.nheap['conditionGtPercent'] = triggerData.conditions[0].thresholdHigh > 0 ?
+            floor2Dec(triggerData.conditions[0].thresholdHigh * 100 / this.maxUsage) : 0;
+          this.adm.nheap['conditionLtEnabled'] = triggerData.conditions[0].thresholdLow > 0;
+          this.adm.nheap['conditionLtPercent'] = triggerData.conditions[0].thresholdLow > 0 ?
+            floor2Dec(triggerData.conditions[0].thresholdLow * 100 / this.maxUsage) : 0;
         });
 
       // Garbage Collection trigger definition
       var garbaTriggerId: string = this.$routeParams.resourceId + '_jvm_garba';
 
-      var garbaDefinitionPromise = this.HawkularAlertsManager.getTrigger(garbaTriggerId).then(
-        (alertDefinitionData) => {
-          this.triggerDefinition['garba'] = alertDefinitionData;
+      var garbaTriggerPromise = this.HawkularAlertsManager.getTrigger(garbaTriggerId).then(
+        (triggerData) => {
+          this.triggerDefinition['garba'] = triggerData;
 
           this.adm.garba = {};
-          this.adm.garba['email'] = alertDefinitionData.trigger.actions.email[0];
-          this.adm.garba['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
-          this.adm.garba['conditionEnabled'] = alertDefinitionData.trigger.enabled;
-          this.adm.garba['conditionThreshold'] = alertDefinitionData.conditions[0].threshold;
+          this.adm.garba['email'] = triggerData.trigger.actions.email[0];
+          this.adm.garba['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.garba['conditionEnabled'] = triggerData.trigger.enabled;
+          this.adm.garba['conditionThreshold'] = triggerData.conditions[0].threshold;
         });
 
-      return [heapDefinitionPromise, nheapDefinitionPromise, garbaDefinitionPromise];
+      return [heapTriggerPromise, nheapTriggerPromise, garbaTriggerPromise];
     }
 
-    saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
+    saveTriggers(errorCallback):Array<ng.IPromise<any>> {
 
       // Heap
-      var heapAlertDefinition = angular.copy(this.triggerDefinition.heap);
-      heapAlertDefinition.trigger.actions.email[0] = this.adm.heap.email;
-      heapAlertDefinition.dampenings[0].evalTimeSetting = this.adm.heap.responseDuration;
-      heapAlertDefinition.conditions[0].thresholdHigh = this.adm.heap.conditionGtEnabled ?
+      var heapTrigger = angular.copy(this.triggerDefinition.heap);
+      heapTrigger.trigger.actions.email[0] = this.adm.heap.email;
+      heapTrigger.dampenings[0].evalTimeSetting = this.adm.heap.responseDuration;
+      heapTrigger.conditions[0].thresholdHigh = this.adm.heap.conditionGtEnabled ?
       this.maxUsage * this.adm.heap.conditionGtPercent / 100 : this.maxUsage;
-      heapAlertDefinition.conditions[0].thresholdLow = this.adm.heap.conditionLtEnabled ?
+      heapTrigger.conditions[0].thresholdLow = this.adm.heap.conditionLtEnabled ?
       this.maxUsage * this.adm.heap.conditionLtPercent / 100 : 0;
 
-      var heapSavePromise = this.HawkularAlertsManager.updateTrigger(heapAlertDefinition, errorCallback,
+      var heapSavePromise = this.HawkularAlertsManager.updateTrigger(heapTrigger, errorCallback,
         this.triggerDefinition.heap);
 
       // Non Heap
-      var nheapAlertDefinition = angular.copy(this.triggerDefinition.nheap);
-      nheapAlertDefinition.trigger.actions.email[0] = this.adm.nheap.email;
-      nheapAlertDefinition.dampenings[0].evalTimeSetting = this.adm.nheap.responseDuration;
-      nheapAlertDefinition.conditions[0].thresholdHigh = this.adm.nheap.conditionGtEnabled ?
+      var nheapTrigger = angular.copy(this.triggerDefinition.nheap);
+      nheapTrigger.trigger.actions.email[0] = this.adm.nheap.email;
+      nheapTrigger.dampenings[0].evalTimeSetting = this.adm.nheap.responseDuration;
+      nheapTrigger.conditions[0].thresholdHigh = this.adm.nheap.conditionGtEnabled ?
       this.maxUsage * this.adm.nheap.conditionGtPercent / 100 : this.maxUsage;
-      nheapAlertDefinition.conditions[0].thresholdLow = this.adm.nheap.conditionLtEnabled ?
+      nheapTrigger.conditions[0].thresholdLow = this.adm.nheap.conditionLtEnabled ?
       this.maxUsage * this.adm.nheap.conditionLtPercent / 100 : 0;
 
-      var nheapSavePromise = this.HawkularAlertsManager.updateTrigger(nheapAlertDefinition, errorCallback,
+      var nheapSavePromise = this.HawkularAlertsManager.updateTrigger(nheapTrigger, errorCallback,
         this.triggerDefinition.nheap);
 
       // Garbage Collection
-      var garbaAlertDefinition = angular.copy(this.triggerDefinition.garba);
-      garbaAlertDefinition.trigger.enabled = this.adm.garba.conditionEnabled;
+      var garbaTrigger = angular.copy(this.triggerDefinition.garba);
+      garbaTrigger.trigger.enabled = this.adm.garba.conditionEnabled;
 
       if (this.adm.garba.conditionEnabled) {
-        garbaAlertDefinition.trigger.actions.email[0] = this.adm.garba.email;
-        garbaAlertDefinition.dampenings[0].evalTimeSetting = this.adm.garba.responseDuration;
-        garbaAlertDefinition.conditions[0].threshold = this.adm.garba.conditionEnabled ?
+        garbaTrigger.trigger.actions.email[0] = this.adm.garba.email;
+        garbaTrigger.dampenings[0].evalTimeSetting = this.adm.garba.responseDuration;
+        garbaTrigger.conditions[0].threshold = this.adm.garba.conditionEnabled ?
           this.adm.garba.conditionThreshold : 0;
       }
 
-      var garbaSavePromise = this.HawkularAlertsManager.updateTrigger(garbaAlertDefinition, errorCallback,
+      var garbaSavePromise = this.HawkularAlertsManager.updateTrigger(garbaTrigger, errorCallback,
         this.triggerDefinition.garba);
 
       return [heapSavePromise, nheapSavePromise, garbaSavePromise];

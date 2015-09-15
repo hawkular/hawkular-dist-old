@@ -46,9 +46,9 @@ module HawkularMetrics {
       // TODO - update the pfly notification service to support more and category based notifications containers.
       this.$rootScope.hkNotifications = {alerts: []};
 
-      let definitionPromises = this.loadDefinitions();
+      let triggersPromises = this.loadTriggers();
 
-      this.$q.all(definitionPromises).then(() => {
+      this.$q.all(triggersPromises).then(() => {
         this.admBak = angular.copy(this.adm);
         this.isSettingChange = false;
       });
@@ -78,9 +78,9 @@ module HawkularMetrics {
       let isError = false;
       // Check if email action exists
 
-      let saveDefinitionPromises = this.saveDefinitions(errorCallback);
+      let saveTriggersPromises = this.saveTriggers(errorCallback);
 
-      this.$q.all(saveDefinitionPromises).finally(()=> {
+      this.$q.all(saveTriggersPromises).finally(()=> {
         this.saveProgress = false;
 
         if (!isError) {
@@ -99,11 +99,11 @@ module HawkularMetrics {
       this.$modalInstance.dismiss('cancel');
     }
 
-    loadDefinitions():Array<ng.IPromise<any>> {
+    loadTriggers():Array<ng.IPromise<any>> {
       throw new Error('This method is abstract');
     }
 
-    saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
+    saveTriggers(errorCallback):Array<ng.IPromise<any>> {
       throw new Error('This method is abstract');
     }
   }
@@ -226,32 +226,32 @@ module HawkularMetrics {
 
   export class AlertUrlAvailabilitySetupController extends AlertSetupController {
 
-    loadDefinitions():Array<ng.IPromise<any>> {
+    loadTriggers():Array<ng.IPromise<any>> {
       let availabilityTriggerId = this.$routeParams.resourceId + '_trigger_avail';
 
-      let availabilityDefinitionPromise = this.HawkularAlertsManager.getTrigger(availabilityTriggerId)
-        .then((alertDefinitionData) => {
-          this.$log.debug('alertDefinitionData', alertDefinitionData);
-          this.triggerDefinition['avail'] = alertDefinitionData;
+      let availabilityTriggerPromise = this.HawkularAlertsManager.getTrigger(availabilityTriggerId)
+        .then((triggerData) => {
+          this.$log.debug('triggerData', triggerData);
+          this.triggerDefinition['avail'] = triggerData;
 
           this.adm['avail'] = {};
-          this.adm.avail['email'] = alertDefinitionData.trigger.actions.email[0];
-          this.adm.avail['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
-          this.adm.avail['conditionEnabled'] = alertDefinitionData.trigger.enabled;
+          this.adm.avail['email'] = triggerData.trigger.actions.email[0];
+          this.adm.avail['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.avail['conditionEnabled'] = triggerData.trigger.enabled;
         });
 
-      return [availabilityDefinitionPromise];
+      return [availabilityTriggerPromise];
     }
 
-    saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
+    saveTriggers(errorCallback):Array<ng.IPromise<any>> {
       // Set the actual object to save
-      let availabilityAlertDefinition = angular.copy(this.triggerDefinition.avail);
-      availabilityAlertDefinition.trigger.actions.email[0] = this.adm.avail.email;
-      availabilityAlertDefinition.trigger.enabled = this.adm.avail.conditionEnabled;
-      availabilityAlertDefinition.dampenings[0].evalTimeSetting = this.adm.avail.responseDuration;
-      availabilityAlertDefinition.dampenings[1].evalTimeSetting = this.adm.avail.responseDuration;
+      let availabilityTrigger = angular.copy(this.triggerDefinition.avail);
+      availabilityTrigger.trigger.actions.email[0] = this.adm.avail.email;
+      availabilityTrigger.trigger.enabled = this.adm.avail.conditionEnabled;
+      availabilityTrigger.dampenings[0].evalTimeSetting = this.adm.avail.responseDuration;
+      availabilityTrigger.dampenings[1].evalTimeSetting = this.adm.avail.responseDuration;
 
-      let availabilitySavePromise = this.HawkularAlertsManager.updateTrigger(availabilityAlertDefinition,
+      let availabilitySavePromise = this.HawkularAlertsManager.updateTrigger(availabilityTrigger,
         errorCallback, this.triggerDefinition.avail);
 
       return [availabilitySavePromise];
@@ -264,35 +264,35 @@ module HawkularMetrics {
     loadDefinitions():Array<ng.IPromise<any>> {
       let responseTriggerId = this.$routeParams.resourceId + '_trigger_thres';
 
-      let responseDefinitionPromise = this.HawkularAlertsManager.getTrigger(responseTriggerId).then(
-        (alertDefinitionData) => {
-          this.$log.debug('alertDefinitionData', alertDefinitionData);
-          this.triggerDefinition['thres'] = alertDefinitionData;
+      let responseTriggerPromise = this.HawkularAlertsManager.getTrigger(responseTriggerId).then(
+        (triggerData) => {
+          this.$log.debug('triggerData', triggerData);
+          this.triggerDefinition['thres'] = triggerData;
 
           this.adm['thres'] = {};
-          this.adm.thres['email'] = alertDefinitionData.trigger.actions.email[0];
-          this.adm.thres['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
-          this.adm.thres['conditionEnabled'] = alertDefinitionData.trigger.enabled;
-          this.adm.thres['conditionThreshold'] = alertDefinitionData.conditions[0].threshold;
+          this.adm.thres['email'] = triggerData.trigger.actions.email[0];
+          this.adm.thres['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.thres['conditionEnabled'] = triggerData.trigger.enabled;
+          this.adm.thres['conditionThreshold'] = triggerData.conditions[0].threshold;
         });
 
-      return [responseDefinitionPromise];
+      return [responseTriggerPromise];
     }
 
-    saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
+    saveTriggers(errorCallback):Array<ng.IPromise<any>> {
       // Set the actual object to save
-      let responseAlertDefinition = angular.copy(this.triggerDefinition.thres);
-      responseAlertDefinition.trigger.enabled = this.adm.thres.conditionEnabled;
+      let responseTrigger = angular.copy(this.triggerDefinition.thres);
+      responseTrigger.trigger.enabled = this.adm.thres.conditionEnabled;
 
       if (this.adm.thres.conditionEnabled) {
-        responseAlertDefinition.trigger.actions.email[0] = this.adm.thres.email;
-        responseAlertDefinition.dampenings[0].evalTimeSetting = this.adm.thres.responseDuration;
-        responseAlertDefinition.dampenings[1].evalTimeSetting = this.adm.thres.responseDuration;
-        responseAlertDefinition.conditions[0].threshold = this.adm.thres.conditionThreshold;
-        responseAlertDefinition.conditions[1].threshold = this.adm.thres.conditionThreshold;
+        responseTrigger.trigger.actions.email[0] = this.adm.thres.email;
+        responseTrigger.dampenings[0].evalTimeSetting = this.adm.thres.responseDuration;
+        responseTrigger.dampenings[1].evalTimeSetting = this.adm.thres.responseDuration;
+        responseTrigger.conditions[0].threshold = this.adm.thres.conditionThreshold;
+        responseTrigger.conditions[1].threshold = this.adm.thres.conditionThreshold;
       }
 
-      let responseSavePromise = this.HawkularAlertsManager.updateTrigger(responseAlertDefinition,
+      let responseSavePromise = this.HawkularAlertsManager.updateTrigger(responseTrigger,
         errorCallback, this.triggerDefinition.thres);
 
       return [responseSavePromise];

@@ -125,8 +125,8 @@ module HawkularMetrics {
     }
 
     public getTrigger(triggerId: TriggerId): any {
-      var deffered = this.$q.defer();
-      var trigger = {};
+      let deffered = this.$q.defer();
+      let trigger = {};
 
       this.HawkularAlert.Trigger.get({triggerId: triggerId}).$promise.then((triggerData) => {
         trigger['trigger'] = triggerData;
@@ -144,7 +144,7 @@ module HawkularMetrics {
 
     public createTrigger(fullTrigger: any, errorCallback: any): ng.IPromise<void> {
 
-      var triggerDefaults = {
+      let triggerDefaults = {
         description: 'Created on ' + Date(),
         firingMatch: 'ALL',
         autoResolveMatch: 'ALL',
@@ -153,14 +153,14 @@ module HawkularMetrics {
         actions: {}
       };
 
-      var trigger = angular.extend(triggerDefaults, fullTrigger.trigger);
+      let trigger = angular.extend(triggerDefaults, fullTrigger.trigger);
 
       return this.HawkularAlert.Trigger.save(trigger).$promise.then((savedTrigger) => {
 
-        var dampeningPromises = [];
-        for (var i = 0; fullTrigger.dampenings && i < fullTrigger.dampenings.length; i++) {
+        let dampeningPromises = [];
+        for (let i = 0; fullTrigger.dampenings && i < fullTrigger.dampenings.length; i++) {
           if (fullTrigger.dampenings[i]) {
-            var dampeningPromise = this.HawkularAlert.Dampening.save({triggerId: savedTrigger.id},
+            let dampeningPromise = this.HawkularAlert.Dampening.save({triggerId: savedTrigger.id},
               fullTrigger.dampenings[i]).$promise.then(null, (error) => {
                 return this.ErrorsManager.errorHandler(error, 'Error creating dampening.', errorCallback);
               });
@@ -168,14 +168,14 @@ module HawkularMetrics {
           }
         }
 
-        var conditionDefaults: any = {
+        let conditionDefaults: any = {
           triggerId: savedTrigger.id
         };
 
-        var conditionPromises = [];
-        for (var j = 0; fullTrigger.conditions && j < fullTrigger.conditions.length; j++) {
+        let conditionPromises = [];
+        for (let j = 0; fullTrigger.conditions && j < fullTrigger.conditions.length; j++) {
           if (fullTrigger.conditions[j]) {
-            var conditionPromise = this.HawkularAlert.Condition.save({triggerId: savedTrigger.id},
+            let conditionPromise = this.HawkularAlert.Condition.save({triggerId: savedTrigger.id},
               fullTrigger.conditions[j]).$promise.then(null, (error) => {
                 return this.ErrorsManager.errorHandler(error, 'Error creating condition.', errorCallback);
               });
@@ -194,7 +194,7 @@ module HawkularMetrics {
 
     public updateTrigger(fullTrigger: any, errorCallback: any, backupTrigger?: any): ng.IPromise<any> {
 
-      var emailPromise = this.addEmailAction(fullTrigger.trigger.actions.email[0]).then(()=> {
+      let emailPromise = this.addEmailAction(fullTrigger.trigger.actions.email[0]).then(()=> {
         if (angular.equals(fullTrigger.trigger, backupTrigger.trigger) || !fullTrigger.trigger) {
           return;
         }
@@ -203,12 +203,12 @@ module HawkularMetrics {
         return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
       });
 
-      var dampeningPromises = [];
-      for (var i = 0; fullTrigger.dampenings && i < fullTrigger.dampenings.length; i++) {
+      let dampeningPromises = [];
+      for (let i = 0; fullTrigger.dampenings && i < fullTrigger.dampenings.length; i++) {
         if (fullTrigger.dampenings[i] && !angular.equals(fullTrigger.dampenings[i], backupTrigger.dampenings[i])) {
-          var triggerId = fullTrigger.trigger.id;
-          var dampeningId = fullTrigger.dampenings[i].dampeningId;
-          var dampeningPromise = this.HawkularAlert.Dampening.put({triggerId: triggerId, dampeningId: dampeningId },
+          let triggerId = fullTrigger.trigger.id;
+          let dampeningId = fullTrigger.dampenings[i].dampeningId;
+          let dampeningPromise = this.HawkularAlert.Dampening.put({triggerId: triggerId, dampeningId: dampeningId },
             fullTrigger.dampenings[i]).$promise.then(null, (error)=> {
               return this.ErrorsManager.errorHandler(error, 'Error saving dampening.', errorCallback);
             });
@@ -217,12 +217,12 @@ module HawkularMetrics {
         }
       }
 
-      var conditionPromises = [];
-      for (var j = 0; fullTrigger.conditions && j < fullTrigger.conditions.length; j++) {
+      let conditionPromises = [];
+      for (let j = 0; fullTrigger.conditions && j < fullTrigger.conditions.length; j++) {
         if (fullTrigger.conditions[j] && !angular.equals(fullTrigger.conditions[j], backupTrigger.conditions[j])) {
-          triggerId = fullTrigger.trigger.id;
-          var conditionId = fullTrigger.conditions[j].conditionId;
-          var conditionPromise =  this.HawkularAlert.Condition.put({triggerId: triggerId,
+          let triggerId = fullTrigger.trigger.id;
+          let conditionId = fullTrigger.conditions[j].conditionId;
+          let conditionPromise =  this.HawkularAlert.Condition.put({triggerId: triggerId,
             conditionId: conditionId}, fullTrigger.conditions[j]).$promise.then(null, (error)=> {
               return this.ErrorsManager.errorHandler(error, 'Error saving condition.', errorCallback);
             });
@@ -276,7 +276,7 @@ module HawkularMetrics {
     }
 
     public setEmail(triggerId:TriggerId, email:EmailType):ng.IPromise<void> {
-      var actions = this.getActions(triggerId);
+      let actions = this.getActions(triggerId);
       return actions.then((actions)=> {
 
         if (!actions) {
@@ -300,8 +300,8 @@ module HawkularMetrics {
     public queryConsoleAlerts(metricId: MetricId, startTime?:TimestampInMillis,
                               endTime?:TimestampInMillis, alertType?:AlertType,
                        currentPage?:number, perPage?:number): any {
-      var alertList = [];
-      var headers;
+      let alertList = [];
+      let headers;
 
       /* Format of Alerts:
 
@@ -315,7 +315,7 @@ module HawkularMetrics {
 
        */
 
-      var queryParams = {
+      let queryParams = {
         statuses:'OPEN'
       };
 
@@ -346,20 +346,20 @@ module HawkularMetrics {
       return this.HawkularAlert.Alert.query(queryParams, (serverAlerts: any, getHeaders: any) => {
 
         headers = getHeaders();
-        var momentNow = this.$moment();
+        let momentNow = this.$moment();
 
-        for (var i = 0; i < serverAlerts.length; i++) {
-          var consoleAlert: any = {};
-          var serverAlert = serverAlerts[i];
+        for (let i = 0; i < serverAlerts.length; i++) {
+          let consoleAlert: any = {};
+          let serverAlert = serverAlerts[i];
 
           consoleAlert.id = serverAlert.alertId;
           consoleAlert.end = serverAlert.ctime;
 
-          var sum: number = 0.0;
-          var count: number = 0.0;
+          let sum: number = 0.0;
+          let count: number = 0.0;
 
-          for (var j = 0; j < serverAlert.evalSets.length; j++) {
-            var evalItem = serverAlert.evalSets[j][0];
+          for (let j = 0; j < serverAlert.evalSets.length; j++) {
+            let evalItem = serverAlert.evalSets[j][0];
 
             if (!consoleAlert.start && evalItem.dataTimestamp) {
               consoleAlert.start = evalItem.dataTimestamp;
@@ -373,7 +373,7 @@ module HawkularMetrics {
               consoleAlert.type = evalItem.condition.type;
             }
 
-            var momentAlert = this.$moment(consoleAlert.end);
+            let momentAlert = this.$moment(consoleAlert.end);
 
             if (momentAlert.year() === momentNow.year()) {
               consoleAlert.isThisYear = true;
@@ -405,8 +405,8 @@ module HawkularMetrics {
 
     public queryAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis,
                        currentPage?:number, perPage?:number): any {
-      var alertList = [];
-      var headers;
+      let alertList = [];
+      let headers;
 
       /* Format of Alerts:
 
@@ -420,7 +420,7 @@ module HawkularMetrics {
 
        */
 
-      var queryParams = {
+      let queryParams = {
         statuses:'OPEN'
       };
 
@@ -445,11 +445,11 @@ module HawkularMetrics {
       return this.HawkularAlert.Alert.query(queryParams, (serverAlerts: any, getHeaders: any) => {
 
         headers = getHeaders();
-        var momentNow = this.$moment();
+        let momentNow = this.$moment();
 
-        for (var i = 0; i < serverAlerts.length; i++) {
-          var consoleAlert: any = {};
-          var serverAlert = serverAlerts[i];
+        for (let i = 0; i < serverAlerts.length; i++) {
+          let consoleAlert: any = {};
+          let serverAlert = serverAlerts[i];
 
           consoleAlert.id = serverAlert.alertId;
 
@@ -457,11 +457,11 @@ module HawkularMetrics {
 
           consoleAlert.end = serverAlert.ctime;
 
-          var sum: number = 0.0;
-          var count: number = 0.0;
+          let sum: number = 0.0;
+          let count: number = 0.0;
 
-          for (var j = 0; j < serverAlert.evalSets.length; j++) {
-            var evalItem = serverAlert.evalSets[j][0];
+          for (let j = 0; j < serverAlert.evalSets.length; j++) {
+            let evalItem = serverAlert.evalSets[j][0];
 
             if (!consoleAlert.start && evalItem.dataTimestamp) {
               consoleAlert.start = evalItem.dataTimestamp;
@@ -475,7 +475,7 @@ module HawkularMetrics {
               consoleAlert.type = evalItem.condition.type;
             }
 
-            var momentAlert = this.$moment(consoleAlert.end);
+            let momentAlert = this.$moment(consoleAlert.end);
 
             if (momentAlert.year() === momentNow.year()) {
               consoleAlert.isThisYear = true;
