@@ -31,19 +31,19 @@ module HawkularMetrics {
     private total = 0;
 
     private parseLinkHeader(value):any {
-      var relationLinks = {};
+      let relationLinks = {};
 
       if (!value) {
         return relationLinks;
       }
 
-      var links = value.split(', ');
+      let links = value.split(', ');
 
-      for (var i = 0; i < links.length; i++) {
-        var linkParts = links[i].split('>');
-        var linkHref = linkParts[0].substring(1);
-        var linkRelationParameterString = linkParts[1];
-        var linkRelationParameterParts = this.PARAMETER_EXPRESSION.exec(linkRelationParameterString);
+      for (let i = 0; i < links.length; i++) {
+        let linkParts = links[i].split('>');
+        let linkHref = linkParts[0].substring(1);
+        let linkRelationParameterString = linkParts[1];
+        let linkRelationParameterParts = this.PARAMETER_EXPRESSION.exec(linkRelationParameterString);
 
         // Get the relation name for current Link
         if (linkRelationParameterParts && linkRelationParameterParts[1] === 'rel' && linkRelationParameterParts[2]) {
@@ -55,12 +55,12 @@ module HawkularMetrics {
           // Get the parameters (page, per_page, ...) of current link
           relationLinks[linkRelationParameterParts[2]]['params'] = {};
 
-          var linkHrefParts = linkHref.split('?');
-          var linkHrefParametersString = linkHrefParts[1];
-          var hrefParamsPairStringParts = linkHrefParametersString.split('&');
-          for (var j = 0; j < hrefParamsPairStringParts.length; j++) {
-            var parameterPair = hrefParamsPairStringParts[j];
-            var parameterPairParts = parameterPair.split('=');
+          let linkHrefParts = linkHref.split('?');
+          let linkHrefParametersString = linkHrefParts[1];
+          let hrefParamsPairStringParts = linkHrefParametersString.split('&');
+          for (let j = 0; j < hrefParamsPairStringParts.length; j++) {
+            let parameterPair = hrefParamsPairStringParts[j];
+            let parameterPairParts = parameterPair.split('=');
 
             if (parameterPairParts[0] && parameterPairParts[1]) {
               relationLinks[linkRelationParameterParts[2]]['params'][parameterPairParts[0]] = parameterPairParts[1];
