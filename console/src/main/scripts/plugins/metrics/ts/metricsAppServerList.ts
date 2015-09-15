@@ -99,6 +99,12 @@ module HawkularMetrics {
                 res['updateTimestamp'] = latestData['timestamp'];
               }
           }).$promise);
+          promises.push(this.HawkularInventory.ResourceUnderFeed.getData({
+            environmentId: globalEnvironmentId,
+            feedId: feedId,
+            resourcePath: res.id}, (resource) => {
+              res['properties']['resourceConfiguration'] = resource;
+          }).$promise);
           this.lastUpdateTimestamp = new Date();
         }, this);
         this.$q.all(promises).then((result) => {
