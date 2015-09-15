@@ -26,9 +26,9 @@ module HawkularMetrics {
     loadDefinitions():Array<ng.IPromise<any>> {
       console.log('this.resourceId', this.resourceId);
 
-      var connTriggerId = this.resourceId + '_ds_conn';
+      let connTriggerId = this.resourceId + '_ds_conn';
 
-      var connDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(connTriggerId)
+      let connDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(connTriggerId)
         .then((alertDefinitionData) => {
           this.$log.debug('alertDefinitionData', 'conn', alertDefinitionData);
           this.triggerDefinition['conn'] = alertDefinitionData;
@@ -41,9 +41,9 @@ module HawkularMetrics {
         });
 
 
-      var respTriggerId = this.resourceId + '_ds_resp';
+      let respTriggerId = this.resourceId + '_ds_resp';
 
-      var respDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(respTriggerId)
+      let respDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(respTriggerId)
         .then((alertDefinitionData) => {
 
           this.$log.debug('alertDefinitionData', 'resp', alertDefinitionData);
@@ -54,7 +54,7 @@ module HawkularMetrics {
           this.adm.resp['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
 
           if (alertDefinitionData.conditions.length > 0) {
-            var idCreation = 0,
+            let idCreation = 0,
               idWait = 1;
 
             if (alertDefinitionData.conditions[0].dataId.indexOf('Creation') === -1) {
@@ -84,7 +84,7 @@ module HawkularMetrics {
 
     saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
       // Connections part
-      var connAlertDefinition = angular.copy(this.triggerDefinition.conn);
+      let connAlertDefinition = angular.copy(this.triggerDefinition.conn);
       connAlertDefinition.trigger.enabled = this.adm.conn.conditionEnabled;
 
       if (this.adm.conn.conditionEnabled) {
@@ -93,13 +93,13 @@ module HawkularMetrics {
         connAlertDefinition.conditions[0].threshold = this.adm.conn.conditionThreshold;
       }
 
-      var connSavePromise = this.HawkularAlertsManager.saveAlertDefinition(connAlertDefinition,
+      let connSavePromise = this.HawkularAlertsManager.saveAlertDefinition(connAlertDefinition,
         errorCallback, this.triggerDefinition.conn);
 
       // Responsiveness part
-      var respAlertDefinition = angular.copy(this.triggerDefinition.resp);
+      let respAlertDefinition = angular.copy(this.triggerDefinition.resp);
 
-      var idCreation = 0,
+      let idCreation = 0,
         idWait = 1;
       if (respAlertDefinition.conditions[0] && respAlertDefinition.conditions[0].dataId.indexOf('Creation') === -1) {
         idCreation = 1;
@@ -109,12 +109,12 @@ module HawkularMetrics {
       respAlertDefinition.trigger.actions.email[0] = this.adm.resp.email;
       respAlertDefinition.dampenings[0].evalTimeSetting = this.adm.resp.responseDuration;
 
-      var respTriggerId = respAlertDefinition.trigger.id;
+      let respTriggerId = respAlertDefinition.trigger.id;
 
       // Handle changes in conditions
 
-      var condWaitDefer = this.$q.defer();
-      var condWaitPromise = condWaitDefer.promise;
+      let condWaitDefer = this.$q.defer();
+      let condWaitPromise = condWaitDefer.promise;
 
       if (!this.adm.resp.waitTimeEnabled && this.admBak.resp.waitTimeEnabled) {
         // delete
@@ -124,7 +124,7 @@ module HawkularMetrics {
         delete respAlertDefinition.conditions[idWait];
       } else if (this.adm.resp.waitTimeEnabled && !this.admBak.resp.waitTimeEnabled) {
         // create
-        var resId = respTriggerId.slice(0,-8);
+        let resId = respTriggerId.slice(0,-8);
 
         condWaitPromise = this.HawkularAlertsManager.createCondition(respTriggerId, {
           triggerId: respTriggerId,
@@ -137,9 +137,9 @@ module HawkularMetrics {
         condWaitDefer.resolve();
       }
 
-      var condCreaDefer = this.$q.defer();
-      var condCreaPromise = condCreaDefer.promise;
-      var self = this;
+      let condCreaDefer = this.$q.defer();
+      let condCreaPromise = condCreaDefer.promise;
+      let self = this;
 
       // FIXME: The condition id changes if previous was added/deleted ..
       if (!self.adm.resp.creationTimeEnabled && self.admBak.resp.creationTimeEnabled) {
@@ -150,7 +150,7 @@ module HawkularMetrics {
         delete respAlertDefinition.conditions[idCreation];
       } else if (self.adm.resp.creationTimeEnabled && !self.admBak.resp.creationTimeEnabled) {
         // create
-        resId = respTriggerId.slice(0,-8);
+        let resId = respTriggerId.slice(0,-8);
 
         condCreaPromise = self.HawkularAlertsManager.createCondition(respTriggerId, {
           triggerId: respTriggerId,
@@ -170,7 +170,7 @@ module HawkularMetrics {
         respAlertDefinition.conditions[idCreation].threshold = this.adm.resp.creationTimeThreshold;
       }
 
-      var respSavePromise = this.HawkularAlertsManager.saveAlertDefinition(respAlertDefinition,
+      let respSavePromise = this.HawkularAlertsManager.saveAlertDefinition(respAlertDefinition,
         errorCallback, this.triggerDefinition.resp);
 
       console.log('@PROMISES', connSavePromise, respSavePromise, condWaitPromise, condCreaPromise);

@@ -42,8 +42,8 @@ module HawkularMetrics {
 
     constructor(private $scope:any,
                 private HawkularAlert:any,
-                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private ErrorsManager: HawkularMetrics.IErrorsManager,
+                private HawkularAlertsManager: IHawkularAlertsManager,
+                private ErrorsManager: IErrorsManager,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: any,

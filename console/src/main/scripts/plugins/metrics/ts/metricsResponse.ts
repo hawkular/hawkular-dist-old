@@ -63,7 +63,7 @@ module HawkularMetrics {
         this.refreshChartDataNow(this.getMetricId());
       });
 
-      var waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
+      let waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
           this.resourceId = resourceId;
@@ -113,7 +113,7 @@ module HawkularMetrics {
 
     private refreshChartDataNow(metricId:MetricId, startTime?:TimestampInMillis):void {
       this.$scope.hkEndTimestamp = +moment();
-      var adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+      let adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.refreshSummaryData(metricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       this.refreshHistoricalChartDataForTimestamp(metricId,
@@ -134,7 +134,7 @@ module HawkularMetrics {
     public refreshSummaryData(metricId:MetricId,
                               startTime?:TimestampInMillis,
                               endTime?:TimestampInMillis):void {
-      var dataPoints:IChartDataPoint[];
+      let dataPoints:IChartDataPoint[];
 
       // calling refreshChartData without params use the model values
       if (!endTime) {

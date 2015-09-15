@@ -92,7 +92,7 @@ module HawkularMetrics {
       });
 
 
-      var logger = this.$log;
+      let logger = this.$log;
       deployAddDialog.result.then((modalValue) => {
         logger.debug('Modal Closed: ' + modalValue);
 
