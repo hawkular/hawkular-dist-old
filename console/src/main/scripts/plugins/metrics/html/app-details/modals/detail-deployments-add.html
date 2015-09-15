@@ -90,8 +90,7 @@
           </div>
           <div class="checkbox">
             <label>
-              <input type="checkbox" ng-model="dac.deploymentData.enableDuringDeployment"
-                     ng-disabled="true"
+              <input type="checkbox" ng-model="dac.deploymentData.dontEnableDuringDeployment"
                      name="checkBoxDisable"> Do not enable, during deployment.
               <i class="fa fa-info-circle"
                  data-toggle="tooltip"
@@ -105,7 +104,8 @@
     </div>
     <div class="modal-footer">
       <button type="button" wz-previous class="btn btn-default"
-        ng-disabled="dac.deploymentData.editDeploymentFiles">&#60; Back</button>
+              ng-disabled="dac.deploymentData.editDeploymentFiles">&#60; Back
+      </button>
       <button type="button" wz-next class="btn btn-primary" ng-click="dac.exitStep2()"
               ng-disabled="dac.deploymentData.editDeploymentFiles">Next &#62;</button>
     </div>
@@ -135,7 +135,8 @@
     <div class="modal-footer">
       <button type="button" class="btn btn-primary" wz-finish
               ng-click="dac.onClose()"
-              ng-disabled="dac.deploymentData.uploading">OK</button>
+              ng-disabled="dac.deploymentData.uploading">OK
+      </button>
     </div>
 
   </wz-step>

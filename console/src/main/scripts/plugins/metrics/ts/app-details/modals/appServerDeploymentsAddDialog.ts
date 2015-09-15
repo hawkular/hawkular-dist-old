@@ -19,14 +19,13 @@
 
 module HawkularMetrics {
 
-  export type DeploymentStatusType = number;
 
   export interface IDeploymentData {
     resourcePath: string;
     filePath: string;
     runtimeFileName: string;
     binaryFile: any,
-    enableDuringDeployment: boolean;
+    dontEnableDuringDeployment: boolean;
     uploading: boolean;
     hasDeploymentError:boolean;
     hasDeployedSuccessfully:boolean;
@@ -53,7 +52,7 @@ module HawkularMetrics {
       runtimeFileName: '',
       filePath: '',
       binaryFile: undefined,
-      enableDuringDeployment: false,
+      dontEnableDuringDeployment: false,
       uploading: false,
       hasDeploymentError: false,
       hasDeployedSuccessfully: false,
@@ -122,8 +121,11 @@ module HawkularMetrics {
       this.deploymentData.uploading = true;
       this.$log.log('Deploying file: ' + this.deploymentData.runtimeFileName);
       this.HawkularOps.performAddDeployOperation(this.deploymentData.resourcePath,
-        this.deploymentData.runtimeFileName, this.deploymentData.binaryFile, this.$rootScope.userDetails.token,
-        this.$rootScope.currentPersona.id);
+        this.deploymentData.runtimeFileName,
+        this.deploymentData.binaryFile,
+        this.$rootScope.userDetails.token,
+        this.$rootScope.currentPersona.id,
+        !this.deploymentData.dontEnableDuringDeployment);
 
     }
 
@@ -134,7 +136,7 @@ module HawkularMetrics {
     }
 
     public saveVerifyFile():void {
-      this.deploymentData =  angular.copy(this.editableDeploymentData);
+      this.deploymentData = angular.copy(this.editableDeploymentData);
       this.deploymentData.editDeploymentFiles = false;
     }
 
