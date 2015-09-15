@@ -856,7 +856,7 @@
                                  path="/core-service=server-environment"
                                  attribute="qualified-host-name" />
             <resource-config-dmr name="Version"
-                                 attribute="release-version" />
+                                 attribute="product-version" />
             <resource-config-dmr name="Bound Address"
                                  path="/socket-binding-group=standard-sockets/socket-binding=http"
                                  attribute="bound-address" />
