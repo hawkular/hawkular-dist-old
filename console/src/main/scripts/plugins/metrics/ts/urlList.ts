@@ -96,7 +96,7 @@ module HawkularMetrics {
     }
 
 
-    public autoRefresh(intervalInSeconds:number):void {
+    private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(()  => {
         this.getResourceList();
       }, intervalInSeconds * 1000);
@@ -237,7 +237,7 @@ module HawkularMetrics {
             this.alertList = anAlertList;
           }, this);
           var promises = [];
-          angular.forEach(aResourceList, function (res, idx) {
+          angular.forEach(aResourceList, function (res) {
             var traitsArray:string[] = [];
             if (res.properties['trait-remote-address']) {
               traitsArray.push('IP: ' + res.properties['trait-remote-address']);

@@ -76,7 +76,7 @@ module HawkularMetrics {
 
       this.resourceId = $scope.hkParams.resourceId;
 
-      var waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
+      let waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
           this.resourceId = resourceId;
@@ -103,7 +103,7 @@ module HawkularMetrics {
     public openAvailabilitySetup(): void {
       console.log('openAvailabilitySetup');
 
-      var modalInstance = this.$modal.open({
+      let modalInstance = this.$modal.open({
         templateUrl: 'plugins/metrics/html/modals/alerts-url-availability-setup.html',
         controller: 'AlertUrlAvailabilitySetupController as mas',
         resolve: {
@@ -114,7 +114,7 @@ module HawkularMetrics {
 
       });
 
-      var logger = this.$log;
+      let logger = this.$log;
       modalInstance.result.then(null, function () {
         logger.debug('Modal dismissed at: ' + new Date());
       });
@@ -136,7 +136,7 @@ module HawkularMetrics {
 
     public refreshAvailPageNow(resourceId:ResourceId, startTime?:number):void {
       this.$scope.hkEndTimestamp = +this.$moment();
-      var adjStartTimeStamp:number = +this.$moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+      let adjStartTimeStamp:number = +this.$moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       if (resourceId) {
         this.$log.debug('Updating Availability Page');
@@ -212,11 +212,11 @@ module HawkularMetrics {
             this.availabilityDataPoints = response;
 
             // FIXME: HAWKULAR-347
-            var downtimeDuration = 0;
-            var lastUptime = +this.$moment();
-            var lastDowntime = -1;
-            var downtimeCount = 0;
-            _.each(response.slice(0).reverse(), function (status:any/*, idx*/) {
+            let downtimeDuration = 0;
+            let lastUptime = +this.$moment();
+            let lastDowntime = -1;
+            let downtimeCount = 0;
+            _.each(response.slice(0).reverse(), function (status:any) {
               if (status.value === 'down') {
                 lastDowntime = status.timestamp;
                 downtimeDuration += (lastUptime - lastDowntime);
@@ -248,8 +248,8 @@ module HawkularMetrics {
     };
 
     private getDurationAux(duration: number, pattern: string): any {
-      var result = [];
-      var durations = this.$filter('duration')(duration, pattern).split(' ');
+      let result = [];
+      let durations = this.$filter('duration')(duration, pattern).split(' ');
       _.each(pattern.split(' '), function (unit: any, idx) {
         result.push({value: durations[idx], unit: this.durationUnits[unit].unit});
       }, this);

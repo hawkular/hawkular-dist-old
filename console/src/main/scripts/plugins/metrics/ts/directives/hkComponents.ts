@@ -44,7 +44,7 @@ module HawkularMetrics {
         scope.hkOffText = attrs.offText || 'OFF';
 
         element.bind('keydown', function (e) {
-          var code = e.keyCode || e.which;
+          let code = e.keyCode || e.which;
           if (code === 32 || code === 13) {
             e.stopImmediatePropagation();
             e.preventDefault();
@@ -55,7 +55,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      var directive = () => {
+      let directive = () => {
         return new HkSwitch();
       };
 
@@ -85,7 +85,7 @@ module HawkularMetrics {
       this.link = (scope:any, element:any, attrs:any) => {
         element.removeAttr('id');
 
-        var localChange = false;
+        let localChange = false;
 
         scope.timeUnits = hkTimeUnit.timeUnits;
         scope.timeUnitsDict = hkTimeUnit.timeUnitDictionary;
@@ -112,7 +112,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      var directive = (hkTimeUnit:any) => {
+      let directive = (hkTimeUnit:any) => {
         return new HkTimeInput(hkTimeUnit);
       };
 

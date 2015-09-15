@@ -42,7 +42,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      var directive = (HawkularAlert:any) => {
+      let directive = (HawkularAlert:any) => {
         return new HkAlertPanel(HawkularAlert);
       };
 
@@ -65,7 +65,7 @@ module HawkularMetrics {
     constructor() {
       this.link = (scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
         scope.alertResolve = (alert):void => {
-          for (var i = 0; i < scope.alertList.length; i++) {
+          for (let i = 0; i < scope.alertList.length; i++) {
             if (scope.alertList[i].id === alert.id) {
               scope.alertList.splice(i, 1);
               break;
@@ -76,7 +76,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      var directive = () => {
+      let directive = () => {
         return new HkAlertPanelList();
       };
 
@@ -91,12 +91,12 @@ module HawkularMetrics {
     public static $inject = [];
 
     public humanizeTime(timeMillis:number):any {
-      var result:any = {};
+      let result:any = {};
 
-      var sec_num:number = Math.floor(timeMillis / 1000);
-      var hours:number = Math.floor(sec_num / 3600);
-      var minutes:number = Math.floor((sec_num - (hours * 3600)) / 60);
-      var seconds:number = sec_num - (hours * 3600) - (minutes * 60);
+      let sec_num:number = Math.floor(timeMillis / 1000);
+      let hours:number = Math.floor(sec_num / 3600);
+      let minutes:number = Math.floor((sec_num - (hours * 3600)) / 60);
+      let seconds:number = sec_num - (hours * 3600) - (minutes * 60);
 
       if (hours !== 0) {
         result.hours = hours;
@@ -128,7 +128,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      var directive = (HkTime:any) => {
+      let directive = (HkTime:any) => {
         return new HkTimeInterval(HkTime);
       };
 
@@ -154,7 +154,7 @@ module HawkularMetrics {
     public templateUrl = 'plugins/metrics/html/directives/fieldset-notification.html';
 
     public static Factory() {
-      var directive = () => {
+      let directive = () => {
         return new HkFieldsetNotification();
       };
 
@@ -191,7 +191,7 @@ module HawkularMetrics {
         return 1;
       }
 
-      var timeUnit = 1;
+      let timeUnit = 1;
 
       _.forEach(this.timeUnits, function (unit:any) {
         if (timeValue % unit.value === 0 && unit.value > timeUnit) {
@@ -203,7 +203,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      var directive = () => {
+      let directive = () => {
         return new HkTimeUnit();
       };
 
@@ -229,8 +229,8 @@ module HawkularMetrics {
 
     constructor(private hkTimeUnit:any) {
       this.link = (scope:any) => {
-        var localChange = false;
-        var durationBackup = scope.hkDuration || 0;
+        let localChange = false;
+        let durationBackup = scope.hkDuration || 0;
 
         scope.durationChange = ():void => {
           localChange = true;
@@ -262,7 +262,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      var directive = (hkTimeUnit:any) => {
+      let directive = (hkTimeUnit:any) => {
         return new HkFieldsetDampening(hkTimeUnit);
       };
 

@@ -82,18 +82,18 @@ module HawkularMetrics {
     }
 
     public getResourceListForOneFeed(feedId: FeedId, currentTenantId?: TenantId):any {
-      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         environmentId: globalEnvironmentId, feedId: feedId,
         resourceTypeId: 'WildFly Server', per_page: this.resPerPage,
         page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
         this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
-        var promises = [];
-        angular.forEach(aResourceList, function(res, idx) {
+        let promises = [];
+        angular.forEach(aResourceList, function(res) {
           promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
             availabilityId: 'AI~R~[' + res.id + ']~AT~Server Availability~App Server',
             distinct: true}, (resource) => {
-              var latestData = resource[resource.length-1];
+              let latestData = resource[resource.length-1];
               if (latestData) {
                 res['state'] = latestData['value'];
                 res['updateTimestamp'] = latestData['timestamp'];
@@ -122,7 +122,7 @@ module HawkularMetrics {
 
     public getResourceList(currentTenantId?: TenantId):any {
       // for each feed get all WF resources
-      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId},
         (aFeedList) => {
           angular.forEach(aFeedList, (feed) => {

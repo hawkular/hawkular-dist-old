@@ -20,7 +20,7 @@
 
 module HawkularMetrics {
 
-  declare var FileReader:any;
+  declare let FileReader:any;
   _module.directive('fileread', [function () {
     return {
       scope: {

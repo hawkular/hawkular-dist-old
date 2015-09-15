@@ -20,7 +20,7 @@
 
 module HawkularMetrics {
 /// TODO: use ControllerAs syntax
-  var paginationController = ($scope:any) => {
+  let paginationController = ($scope:any) => {
 
     $scope.currentPageView = $scope.currentPage + 1;
     $scope.pagesNumber = getPagesNumber();
@@ -88,7 +88,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      var directive = () => {
+      let directive = () => {
         return new HkPagination();
       };
 
@@ -118,7 +118,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      var directive = () => {
+      let directive = () => {
         return new HkDataPagination();
       };
 

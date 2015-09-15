@@ -78,7 +78,7 @@ module HawkularMetrics {
             (currentPersona) => currentPersona && this.getJvmData());
         }
 
-        //var metricId = 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
+        //let metricId = 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
 
         this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
 
@@ -86,8 +86,8 @@ module HawkularMetrics {
     }
 
     private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      var pheapArray: any, nheapArray: any, garbaArray:any;
-      var pheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_pheap', startTime, endTime)
+      let pheapArray: any, nheapArray: any, garbaArray:any;
+      let pheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_pheap', startTime, endTime)
         .then((pheapData)=> {
           _.forEach(pheapData.alertList, (item) => {item['alertType']='PHEAP';});
           pheapArray = pheapData.alertList;
@@ -95,7 +95,7 @@ module HawkularMetrics {
           return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
 
-      var nheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_nheap', startTime, endTime)
+      let nheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_nheap', startTime, endTime)
         .then((nheapData)=> {
           _.forEach(nheapData.alertList, (item) => {item['alertType']='NHEAP';});
           nheapArray = nheapData.alertList;
@@ -103,7 +103,7 @@ module HawkularMetrics {
           return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
 
-      var garbaPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_garba', startTime, endTime)
+      let garbaPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_garba', startTime, endTime)
         .then((garbaData)=> {
           _.forEach(garbaData.alertList, (item) => {item['alertType']='GARBA';});
           garbaArray = garbaData.alertList;
@@ -138,12 +138,12 @@ module HawkularMetrics {
     }
 
     private formatCounterChartOutput(response, buckets = 60):IChartDataPoint[] {
-      var result = response;
+      let result = response;
       /// FIXME: Simulating buckets.. this should come from metrics.
       if (response.length > buckets) {
-        var step = this.$window.Math.floor(response.length / buckets);
+        let step = this.$window.Math.floor(response.length / buckets);
         result = [];
-        var accValue = 0;
+        let accValue = 0;
         _.forEach(response, (point:any, idx) => {
           if (parseInt(idx, 10) % step === (step-1)) {
             result.push({timestamp: point.timestamp, value: accValue });
@@ -157,7 +157,7 @@ module HawkularMetrics {
 
       //  The schema is different for bucketed output
       return _.map(result, (point:IChartDataPoint, idx) => {
-        var theValue = idx === 0 ? 0 : (result[idx-1].value - point.value);
+        let theValue = idx === 0 ? 0 : (result[idx-1].value - point.value);
         return {
           timestamp: point.timestamp,
           date: new Date(point.timestamp),

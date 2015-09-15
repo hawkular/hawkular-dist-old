@@ -64,7 +64,7 @@ module HawkularMetrics {
     }
 
     private errorToastr(error: any, errorMsg: string):void {
-      var errorMsgComplete: string;
+      let errorMsgComplete: string;
 
       if (error.data && error.data.errorMsg) {
         errorMsgComplete = error.data.errorMsg;
@@ -89,7 +89,7 @@ module HawkularMetrics {
     public saveQuickAlert():void {
       //if (globalMetricId !== '.status.duration' && globalMetricId !== '.status.code') {
       if (this.metricId !== '.status.duration' && this.metricId !== '.status.code') {
-        var newTrigger:any = {};
+        let newTrigger:any = {};
         newTrigger.name = this.metricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' +
             this.$scope.quickTrigger.threshold;
         newTrigger.description = 'Created on ' + new Date();
@@ -99,7 +99,7 @@ module HawkularMetrics {
         newTrigger.safetyEnabled = false;
         newTrigger.actions = this.$scope.quickTrigger.actions;
 
-        var newDampening:any = {
+        let newDampening:any = {
           triggerId: '',
           type: 'RELAXED_COUNT',
           evalTrueSetting: 1,
@@ -124,7 +124,7 @@ module HawkularMetrics {
           // Success Dampening save
           (dampening) => {
             this.$log.debug('Success Dampening save', dampening);
-            var newThresholdCondition = {
+            let newThresholdCondition = {
               triggerId: dampening.triggerId,
               type: 'THRESHOLD',
               dataId: this.metricId,

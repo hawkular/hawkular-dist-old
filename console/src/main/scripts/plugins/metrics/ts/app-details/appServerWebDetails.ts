@@ -52,8 +52,8 @@ module HawkularMetrics {
                 private HawkularInventory: any,
                 private HawkularMetric: any,
                 private HawkularAlert: any,
-                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private ErrorsManager: HawkularMetrics.IErrorsManager,
+                private HawkularAlertsManager: IHawkularAlertsManager,
+                private ErrorsManager: IErrorsManager,
                 private $q: ng.IQService,
                 private $window: any,
                 private md5: any,
@@ -109,12 +109,12 @@ module HawkularMetrics {
     }
 
     private formatCounterChartOutput(response, buckets = 60):IChartDataPoint[] {
-      var result = response;
+      let result = response;
       /// FIXME: Simulating buckets.. this should come from metrics.
       if (response.length > buckets) {
-        var step = this.$window.Math.floor(response.length / buckets);
+        let step = this.$window.Math.floor(response.length / buckets);
         result = [];
-        var accValue = 0;
+        let accValue = 0;
         _.forEach(response, function(point:any, idx) {
           if (parseInt(idx, 10) % step === (step-1)) {
             result.push({timestamp: point.timestamp, value: accValue });
@@ -128,7 +128,7 @@ module HawkularMetrics {
 
       //  The schema is different for bucketed output
       return _.map(result, (point:IChartDataPoint, idx) => {
-        var theValue = idx === 0 ? 0 : (result[idx-1].value - point.value);
+        let theValue = idx === 0 ? 0 : (result[idx-1].value - point.value);
         return {
           timestamp: point.timestamp,
           date: new Date(point.timestamp),
