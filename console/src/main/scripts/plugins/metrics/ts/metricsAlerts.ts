@@ -229,7 +229,7 @@ module HawkularMetrics {
     loadDefinitions():Array<ng.IPromise<any>> {
       let availabilityTriggerId = this.$routeParams.resourceId + '_trigger_avail';
 
-      let availabilityDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(availabilityTriggerId)
+      let availabilityDefinitionPromise = this.HawkularAlertsManager.getTrigger(availabilityTriggerId)
         .then((alertDefinitionData) => {
           this.$log.debug('alertDefinitionData', alertDefinitionData);
           this.triggerDefinition['avail'] = alertDefinitionData;
@@ -251,7 +251,7 @@ module HawkularMetrics {
       availabilityAlertDefinition.dampenings[0].evalTimeSetting = this.adm.avail.responseDuration;
       availabilityAlertDefinition.dampenings[1].evalTimeSetting = this.adm.avail.responseDuration;
 
-      let availabilitySavePromise = this.HawkularAlertsManager.saveAlertDefinition(availabilityAlertDefinition,
+      let availabilitySavePromise = this.HawkularAlertsManager.updateTrigger(availabilityAlertDefinition,
         errorCallback, this.triggerDefinition.avail);
 
       return [availabilitySavePromise];
@@ -264,7 +264,7 @@ module HawkularMetrics {
     loadDefinitions():Array<ng.IPromise<any>> {
       let responseTriggerId = this.$routeParams.resourceId + '_trigger_thres';
 
-      let responseDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(responseTriggerId).then(
+      let responseDefinitionPromise = this.HawkularAlertsManager.getTrigger(responseTriggerId).then(
         (alertDefinitionData) => {
           this.$log.debug('alertDefinitionData', alertDefinitionData);
           this.triggerDefinition['thres'] = alertDefinitionData;
@@ -292,7 +292,7 @@ module HawkularMetrics {
         responseAlertDefinition.conditions[1].threshold = this.adm.thres.conditionThreshold;
       }
 
-      let responseSavePromise = this.HawkularAlertsManager.saveAlertDefinition(responseAlertDefinition,
+      let responseSavePromise = this.HawkularAlertsManager.updateTrigger(responseAlertDefinition,
         errorCallback, this.triggerDefinition.thres);
 
       return [responseSavePromise];

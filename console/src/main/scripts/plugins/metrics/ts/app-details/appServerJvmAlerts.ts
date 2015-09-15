@@ -67,7 +67,7 @@ module HawkularMetrics {
     public openSetup():void {
       // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
 
-      var heapTriggerPromise = this.HawkularAlertsManager.getTrigger(this.resourceId + '_jvm_pheap').then(() => {
+      var heapTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_pheap').then(() => {
         // Jvm trigger exists, nothing to do
           this.$log.debug('Jvm trigger exists, nothing to do');
       }, () => {
@@ -79,22 +79,40 @@ module HawkularMetrics {
         var resourceId: string = triggerId.slice(0,-10);
         var dataId: string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
 
-        return this.HawkularAlertsManager.createAlertDefinition({
-          name: triggerId,
-          id: triggerId,
-          actions: {email: [this.defaultEmail]}
-        }, {
-          type: 'RANGE',
-          dataId: dataId,
-          operatorLow: 'INCLUSIVE',
-          operatorHigh: 'INCLUSIVE',
-          thresholdLow: low || 20.0,
-          thresholdHigh: high || 80.0,
-          inRange: false
+        var fullTrigger = {
+          trigger: {
+            name: triggerId,
+            id: triggerId,
+            actions: {email: [this.defaultEmail]}
+          },
+          dampenings: [
+            {
+              triggerId: triggerId,
+              evalTimeSetting: 7 * 60000,
+              triggerMode: 'FIRING',
+              type: 'STRICT_TIME'
+            }
+          ],
+          conditions: [
+            {
+              triggerId: triggerId,
+              type: 'RANGE',
+              dataId: dataId,
+              operatorLow: 'INCLUSIVE',
+              operatorHigh: 'INCLUSIVE',
+              thresholdLow: low || 20.0,
+              thresholdHigh: high || 80.0,
+              inRange: false
+            }
+          ]
+        };
+
+        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+          this.$log.error('Error on Trigger creation for ' + triggerId);
         });
       });
 
-      var nonHeapTriggerPromise = this.HawkularAlertsManager.getTrigger(this.resourceId + '_jvm_nheap').then(() => {
+      var nonHeapTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_nheap').then(() => {
         // Jvm trigger exists, nothing to do
         this.$log.debug('Jvm trigger exists, nothing to do');
       }, () => {
@@ -105,23 +123,40 @@ module HawkularMetrics {
         var triggerId: string = this.resourceId + '_jvm_nheap';
         var resourceId: string = triggerId.slice(0,-10);
         var dataId: string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
+        var fullTrigger = {
+          trigger: {
+            name: triggerId,
+            id: triggerId,
+            actions: {email: [this.defaultEmail]}
+          },
+          dampenings: [
+            {
+              triggerId: triggerId,
+              evalTimeSetting: 7 * 60000,
+              triggerMode: 'FIRING',
+              type: 'STRICT_TIME'
+            }
+          ],
+          conditions: [
+            {
+              triggerId: triggerId,
+              type: 'RANGE',
+              dataId: dataId,
+              operatorLow: 'INCLUSIVE',
+              operatorHigh: 'INCLUSIVE',
+              thresholdLow: low || 20.0,
+              thresholdHigh: high || 80.0,
+              inRange: false
+            }
+          ]
+        };
 
-        return this.HawkularAlertsManager.createAlertDefinition({
-          name: triggerId,
-          id: triggerId,
-          actions: {email: [this.defaultEmail]}
-        }, {
-          type: 'RANGE',
-          dataId: dataId,
-          operatorLow: 'INCLUSIVE',
-          operatorHigh: 'INCLUSIVE',
-          thresholdLow: low || 20.0,
-          thresholdHigh: high || 80.0,
-          inRange: false
+        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+          this.$log.error('Error on Trigger creation for ' + triggerId);
         });
       });
 
-      var garbageTriggerPromise = this.HawkularAlertsManager.getTrigger(this.resourceId + '_jvm_garba').then(() => {
+      var garbageTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_garba').then(() => {
         // Jvm trigger exists, nothing to do
         this.$log.debug('Jvm trigger exists, nothing to do');
       }, () => {
@@ -129,16 +164,33 @@ module HawkularMetrics {
         var triggerId: string = this.resourceId + '_jvm_garba';
         var resourceId: string = triggerId.slice(0,-10);
         var dataId: string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration';
+        var fullTrigger = {
+          trigger: {
+            name: triggerId,
+            id: triggerId,
+            actions: {email: [this.defaultEmail]}
+          },
+          dampenings: [
+            {
+              triggerId: triggerId,
+              evalTimeSetting: 7 * 60000,
+              triggerMode: 'FIRING',
+              type: 'STRICT_TIME'
+            }
+          ],
+          conditions: [
+            {
+              triggerId: triggerId,
+              type: 'THRESHOLD',
+              dataId: dataId,
+              threshold: 200,
+              operator: 'GT'
+            }
+          ]
+        };
 
-        return this.HawkularAlertsManager.createAlertDefinition({
-          name: triggerId,
-          id: triggerId,
-          actions: {email: [this.defaultEmail]}
-        },  {
-          type: 'THRESHOLD',
-          threshold: 200,
-          dataId: dataId,
-          operator: 'GT'
+        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+          this.$log.error('Error on Trigger creation for ' + triggerId);
         });
       });
 
@@ -225,7 +277,7 @@ module HawkularMetrics {
 
       var heapTriggerId: string = this.$routeParams.resourceId + '_jvm_pheap';
 
-      var heapDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(heapTriggerId).then(
+      var heapDefinitionPromise = this.HawkularAlertsManager.getTrigger(heapTriggerId).then(
         (alertDefinitionData) => {
           this.triggerDefinition['heap'] = alertDefinitionData;
 
@@ -243,7 +295,7 @@ module HawkularMetrics {
       // Non-Heap Usage trigger definition
       var nheapTriggerId: string = this.$routeParams.resourceId + '_jvm_nheap';
 
-      var nheapDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(nheapTriggerId).then(
+      var nheapDefinitionPromise = this.HawkularAlertsManager.getTrigger(nheapTriggerId).then(
         (alertDefinitionData) => {
           this.triggerDefinition['nheap'] = alertDefinitionData;
 
@@ -261,7 +313,7 @@ module HawkularMetrics {
       // Garbage Collection trigger definition
       var garbaTriggerId: string = this.$routeParams.resourceId + '_jvm_garba';
 
-      var garbaDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(garbaTriggerId).then(
+      var garbaDefinitionPromise = this.HawkularAlertsManager.getTrigger(garbaTriggerId).then(
         (alertDefinitionData) => {
           this.triggerDefinition['garba'] = alertDefinitionData;
 
@@ -286,7 +338,7 @@ module HawkularMetrics {
       heapAlertDefinition.conditions[0].thresholdLow = this.adm.heap.conditionLtEnabled ?
       this.maxUsage * this.adm.heap.conditionLtPercent / 100 : 0;
 
-      var heapSavePromise = this.HawkularAlertsManager.saveAlertDefinition(heapAlertDefinition, errorCallback,
+      var heapSavePromise = this.HawkularAlertsManager.updateTrigger(heapAlertDefinition, errorCallback,
         this.triggerDefinition.heap);
 
       // Non Heap
@@ -298,7 +350,7 @@ module HawkularMetrics {
       nheapAlertDefinition.conditions[0].thresholdLow = this.adm.nheap.conditionLtEnabled ?
       this.maxUsage * this.adm.nheap.conditionLtPercent / 100 : 0;
 
-      var nheapSavePromise = this.HawkularAlertsManager.saveAlertDefinition(nheapAlertDefinition, errorCallback,
+      var nheapSavePromise = this.HawkularAlertsManager.updateTrigger(nheapAlertDefinition, errorCallback,
         this.triggerDefinition.nheap);
 
       // Garbage Collection
@@ -312,7 +364,7 @@ module HawkularMetrics {
           this.adm.garba.conditionThreshold : 0;
       }
 
-      var garbaSavePromise = this.HawkularAlertsManager.saveAlertDefinition(garbaAlertDefinition, errorCallback,
+      var garbaSavePromise = this.HawkularAlertsManager.updateTrigger(garbaAlertDefinition, errorCallback,
         this.triggerDefinition.garba);
 
       return [heapSavePromise, nheapSavePromise, garbaSavePromise];
