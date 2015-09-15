@@ -18,10 +18,7 @@ package org.hawkular.inventory.rest.test
 
 import org.hawkular.integration.test.AbstractTestBase
 import org.hawkular.inventory.api.model.CanonicalPath
-import org.junit.AfterClass
-import org.junit.Assert
-import org.junit.BeforeClass
-import org.junit.Test
+import org.junit.*
 
 import static org.hawkular.inventory.api.Relationships.WellKnown.*
 import static org.junit.Assert.assertEquals
@@ -60,6 +57,7 @@ class InventoryITest extends AbstractTestBase {
     private static final String responseTimeMetricId = "itest-response-time-" + host1ResourceId;
     private static final String responseStatusCodeMetricId = "itest-response-status-code-" + host1ResourceId;
     private static final String feedId = "itest-feed-" + UUID.randomUUID().toString();
+    private static final String bulkResourcePrefix = "bulk-resource-" + UUID.randomUUID().toString();
 
     /* key is the path to delete while value is the path to GET to verify the deletion */
     private static Map<String, String> pathsToDelete = new LinkedHashMap();
@@ -422,7 +420,6 @@ class InventoryITest extends AbstractTestBase {
 //        response = client.post(path: "$basePath/$environmentId/resources/$room1ResourceId%2Ftable/data",
 //            body: simpleData)
 //        assertEquals(201, response.status)
-
     }
 
     @AfterClass
@@ -795,6 +792,52 @@ class InventoryITest extends AbstractTestBase {
         assertEntitiesExist("$environmentId/resources/weapons/children",
                 ["/e;$environmentId/r;$room1ResourceId/r;table/r;leg%2F1".toString(),
                  "/e;$environmentId/r;$room1ResourceId/r;table/r;leg-4".toString()])
+    }
+
+    @Test
+    @Ignore
+    void testResourceBulkCreate() {
+        def payload = "{\"/e;test\": ["
+        def rs = new ArrayList<String>()
+        100.times {
+            rs.add("{ \"id\": \"" + bulkResourcePrefix + "-" + it + "\", \"resourceTypePath\": \"/rt;" + roomRTypeId +
+                    "\"}")
+        }
+        payload += String.join(",", rs) + "]}"
+        def response = client.post(path: "$basePath/bulk/resources", body: payload)
+
+        assertEquals(201, response.status)
+        def codes = response.data as Map<String, Integer>
+        assertEquals(100, codes.size())
+
+        codes.keySet().forEach({
+            def p = CanonicalPath.fromString(it);
+            def env = p.ids().getEnvironmentId()
+            def rid = p.ids().getResourcePath().getSegment().getElementId()
+            client.delete(path: "$basePath/$env/resources/$rid")
+        })
+    }
+
+    @Test
+    void testResourceBulkCreateWithErrors() {
+        def payload = "{\"/e;" + environmentId + "\": ["
+        def rs = new ArrayList<String>()
+        //this should fail
+        rs.add("{\"id\": \"" + room1ResourceId + "\", \"resourceTypePath\": \"/rt;" + roomRTypeId + "\"}")
+        //this should succeed
+        rs.add("{\"id\": \"" + bulkResourcePrefix + "+1\", \"resourceTypePath\": \"/rt;" + roomRTypeId + "\"}")
+
+        payload += String.join(",", rs) + "]}"
+        def response = client.post(path: "$basePath/bulk/resources", body: payload)
+
+        assertEquals(201, response.status)
+        def codes = response.data as Map<String, Integer>
+        assertEquals(2, codes.size())
+
+        assertEquals(409, codes.get("/t;" + tenantId + "/e;" + environmentId + "/r;" + room1ResourceId))
+        assertEquals(201, codes.get("/t;" + tenantId + "/e;" + environmentId + "/r;" + bulkResourcePrefix + "+1"))
+
+        client.delete(path: "$basePath/$environmentId/resources/$bulkResourcePrefix+1")
     }
 
     private static void assertEntityExists(path, cp) {
