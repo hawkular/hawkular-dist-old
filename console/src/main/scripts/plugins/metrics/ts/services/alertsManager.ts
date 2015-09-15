@@ -49,12 +49,12 @@ module HawkularMetrics {
     queryConsoleAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType,
                        currentPage?:number, perPage?:number): any;
     queryAlerts(metricId: MetricId, startTime?:TimestampInMillis,
-                endTime?:TimestampInMillis, currentPage?:number, perPage?:number): any
+                endTime?:TimestampInMillis, currentPage?:number, perPage?:number): any;
 
     // Alert definitions part
 
-    getAlertDefinition(triggerId): any
-    saveAlertDefinition(alertDefinition:any, errorCallback: any, backup?: any): any
+    getAlertDefinition(triggerId): any;
+    saveAlertDefinition(alertDefinition:any, errorCallback: any, backup?: any): any;
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{

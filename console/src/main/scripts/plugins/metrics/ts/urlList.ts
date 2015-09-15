@@ -41,7 +41,7 @@ module HawkularMetrics {
   interface URL {
     revokeObjectURL(url:string): void;
     createObjectURL(object:any, options?:ObjectURLOptions): string;
-    new(url:string, base?:string): URLConstructor
+    new(url:string, base?:string): URLConstructor;
   }
   declare var URL:URL;
 

@@ -24,7 +24,7 @@ module HawkularMetrics {
     resourcePath: string;
     filePath: string;
     runtimeFileName: string;
-    binaryFile: any,
+    binaryFile: any;
     dontEnableDuringDeployment: boolean;
     uploading: boolean;
     hasDeploymentError:boolean;
