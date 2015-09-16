@@ -24,7 +24,7 @@ module HawkularMetrics {
   export class AppServerListController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
-        'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$q',
+        'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager', '$q',
         'md5', 'HkHeaderParser'];
 
     private resourceList;
@@ -43,7 +43,6 @@ module HawkularMetrics {
                 private $modal: any,
                 private HawkularInventory: any,
                 private HawkularMetric: any,
-                private HawkularAlert: any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 private ErrorsManager: HawkularMetrics.IErrorsManager,
                 private $q: ng.IQService,

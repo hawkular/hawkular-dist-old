@@ -37,7 +37,7 @@ module HawkularMetrics {
   export class MetricsAvailabilityController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric',
-      'HawkularAlert', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
+      '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
       'ErrorsManager', 'NotificationsService', '$modal'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
@@ -61,7 +61,6 @@ module HawkularMetrics {
                 private $window:any,
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
-                private HawkularAlert:any,
                 private $routeParams:any,
                 private $filter:ng.IFilterService,
                 private $moment:any,

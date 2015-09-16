@@ -31,10 +31,15 @@ module HawkularMetrics {
     public templateUrl = 'plugins/metrics/html/directives/alert.html';
 
 
-    constructor(private HawkularAlert) {
+    constructor(private HawkularAlertsManager) {
       this.link = (scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
         scope.alertResolve = ():void => {
-          this.HawkularAlert.Alert.resolve({alertIds: scope.alert.id}, {}, () => {
+          let resolvedAlerts = {
+            alertIds: scope.alert.id,
+            resolvedBy: 'user', // FIXME update with current user
+            resolvedNotes: 'Manually resolved'
+          };
+          this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then( () => {
             scope.refresh({hkAlert: scope.alert});
           });
         };
@@ -42,11 +47,11 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      let directive = (HawkularAlert:any) => {
-        return new HkAlertPanel(HawkularAlert);
+      let directive = (HawkularAlertsManager:any) => {
+        return new HkAlertPanel(HawkularAlertsManager);
       };
 
-      directive['$inject'] = ['HawkularAlert'];
+      directive['$inject'] = ['HawkularAlertsManager'];
 
       return directive;
     }

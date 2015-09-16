@@ -25,7 +25,7 @@ module HawkularMetrics {
 
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager',
+      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager',
       '$q', '$window', 'md5'];
 
     public static MAX_ACTIVE_COLOR = '#1884c7'; /// blue
@@ -51,7 +51,6 @@ module HawkularMetrics {
                 private $modal: any,
                 private HawkularInventory: any,
                 private HawkularMetric: any,
-                private HawkularAlert: any,
                 private HawkularAlertsManager: IHawkularAlertsManager,
                 private ErrorsManager: IErrorsManager,
                 private $q: ng.IQService,
