@@ -254,7 +254,7 @@ module HawkularMetrics {
 
       let resolvedAlerts = {
         alertIds: alertIdList,
-        resolvedBy: 'user', // FIXME update with current user
+        resolvedBy: this.$rootScope.currentPersona.name,
         resolvedNotes: 'Manually resolved'
       };
 
