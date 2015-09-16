@@ -70,7 +70,7 @@ module HawkularMetrics {
     }
 
 
-    public autoRefresh(intervalInSeconds: number): void {
+    private autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getResourceList();
       }, intervalInSeconds * 1000);

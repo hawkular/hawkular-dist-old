@@ -100,7 +100,7 @@ module HawkularMetrics {
     }
 
     public openAvailabilitySetup(): void {
-      console.log('openAvailabilitySetup');
+      this.$log.log('openAvailabilitySetup');
 
       let modalInstance = this.$modal.open({
         templateUrl: 'plugins/metrics/html/modals/alerts-url-availability-setup.html',
@@ -146,7 +146,7 @@ module HawkularMetrics {
     }
 
 
-    public autoRefreshAvailability(intervalInSeconds:TimestampInMillis):void {
+    private  autoRefreshAvailability(intervalInSeconds:TimestampInMillis):void {
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.startTimeStamp = this.$scope.hkStartTimestamp;
       this.autoRefreshPromise = this.$interval(()  => {
@@ -239,7 +239,7 @@ module HawkularMetrics {
       }
     }
 
-    private durationUnits = {
+    private static durationUnits = {
       's': {unit: 'seconds', limit: 60000}, // seconds, up to 60 (1 minute)
       'm': {unit: 'minutes', limit: 7200000}, // minutes, up to 120 (2 hours)
       'h': {unit: 'hours',   limit: 172800000}, // hours, up to 48 (2 days)
@@ -250,20 +250,20 @@ module HawkularMetrics {
       let result = [];
       let durations = this.$filter('duration')(duration, pattern).split(' ');
       _.each(pattern.split(' '), function (unit: any, idx) {
-        result.push({value: durations[idx], unit: this.durationUnits[unit].unit});
+        result.push({value: durations[idx], unit: MetricsAvailabilityController.durationUnits[unit].unit});
       }, this);
       return this.$window.angular.fromJson(result);
     }
 
     private getDowntimeDurationAsJson(): any {
       if(this.downtimeDuration) {
-        if (this.downtimeDuration < this.durationUnits.s.limit) {
+        if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.s.limit) {
           return this.getDurationAux(this.downtimeDuration, 's');
         }
-        else if (this.downtimeDuration < this.durationUnits.m.limit) {
+        else if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.m.limit) {
           return this.getDurationAux(this.downtimeDuration, 'm s');
         }
-        else if (this.downtimeDuration < this.durationUnits.h.limit) {
+        else if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.h.limit) {
           return this.getDurationAux(this.downtimeDuration, 'h m');
         }
         else /*if (downtimeDuration >= this.durationLimits.h)*/ {
