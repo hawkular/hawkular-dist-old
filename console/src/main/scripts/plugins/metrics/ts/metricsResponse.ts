@@ -83,8 +83,8 @@ module HawkularMetrics {
     }
 
     private getAlerts(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
-        HawkularMetrics.AlertType.THRESHOLD).then((responseAlertData)=> {
+      let triggerIds = metricId + '_trigger_thres';
+      this.HawkularAlertsManager.queryAlerts(triggerIds, startTime, endTime).then((responseAlertData)=> {
           _.forEach(responseAlertData.alertList, (item) => { item['alertType']='PINGRESPONSE';});
           this.alertList = responseAlertData.alertList;
         }, (error) => {

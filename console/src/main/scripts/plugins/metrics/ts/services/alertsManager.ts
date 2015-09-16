@@ -33,10 +33,6 @@ module HawkularMetrics {
     getAction(email: EmailType): ng.IPromise<void>;
     getActions(triggerId: TriggerId): ng.IPromise<void>;
     setEmail(triggerId: TriggerId, email: EmailType): ng.IPromise<void>;
-    queryConsoleAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis, type?:AlertType,
-                       currentPage?:number, perPage?:number): any;
-    queryAlerts(metricId: MetricId, startTime?:TimestampInMillis,
-                endTime?:TimestampInMillis, currentPage?:number, perPage?:number): any;
 
     // Alerts
 
@@ -46,6 +42,20 @@ module HawkularMetrics {
      * @returns {ng.IPromise} with a list of Alerts
      */
     queryAllAlerts(): ng.IPromise<any>;
+
+    /**
+     * @name queryAlerts
+     * @desc Fetch Alerts with different criterias
+     * @param triggerdIds - A string with a comma separated list with triggersId to query
+     * @param startTime - Start time of Alerts interval to fetch
+     * @param endTime - End time of Alerts interval to fetch
+     * @param currentPage - Page to fetch
+     * @param perPage - Number of Alerts per page to fetch
+     * @returns {ng.IPromise} with a list of Alerts
+     */
+    queryAlerts(triggerIds: TriggerIds, startTime?:TimestampInMillis,
+                endTime?:TimestampInMillis, currentPage?:number, perPage?:number): ng.IPromise<any>;
+
 
     /**
      * @name resolveAlerts
@@ -154,8 +164,110 @@ module HawkularMetrics {
                 private ErrorsManager: HawkularMetrics.IErrorsManager) {
     }
 
-    queryAllAlerts(): ng.IPromise<any> {
+    public queryAllAlerts(): ng.IPromise<any> {
       return this.HawkularAlert.Alert.query({statuses: 'OPEN'}).$promise;
+    }
+
+
+    public queryAlerts(triggerIds: TriggerIds, startTime?:TimestampInMillis, endTime?:TimestampInMillis,
+                       currentPage?:number, perPage?:number): ng.IPromise<any> {
+      let alertList = [];
+      let headers;
+
+      /* Format of Alerts:
+
+         alert: {
+            type: 'THRESHOLD' or 'AVAILABILITY',
+            avg: Average value based on the evalSets 'values',
+            start: The time of the first data ('dataTimestamp') in evalSets,
+            threshold: The threshold taken from condition.threshold,
+            end: The time when the alert was sent ('ctime')
+         }
+
+       */
+
+      let queryParams = {
+        statuses:'OPEN'
+      };
+
+      if (currentPage || currentPage === 0) {
+        queryParams['page'] = currentPage;
+      }
+
+      if (perPage) {
+        queryParams['per_page'] = perPage;
+      }
+
+      queryParams['triggerIds'] = triggerIds;
+
+      if (startTime) {
+        queryParams['startTime'] = startTime;
+      }
+
+      if (endTime) {
+        queryParams['endTime'] = endTime;
+      }
+
+      return this.HawkularAlert.Alert.query(queryParams, (serverAlerts: any, getHeaders: any) => {
+
+        headers = getHeaders();
+        let momentNow = this.$moment();
+
+        for (let i = 0; i < serverAlerts.length; i++) {
+          let consoleAlert: any = {};
+          let serverAlert = serverAlerts[i];
+
+          consoleAlert.id = serverAlert.alertId;
+
+          consoleAlert.dataId = serverAlert.evalSets[0][0].condition.dataId;
+
+          consoleAlert.end = serverAlert.ctime;
+
+          let sum: number = 0.0;
+          let count: number = 0.0;
+
+          for (let j = 0; j < serverAlert.evalSets.length; j++) {
+            let evalItem = serverAlert.evalSets[j][0];
+
+            if (!consoleAlert.start && evalItem.dataTimestamp) {
+              consoleAlert.start = evalItem.dataTimestamp;
+            }
+
+            if (!consoleAlert.threshold && evalItem.condition.threshold) {
+              consoleAlert.threshold = evalItem.condition.threshold;
+            }
+
+            if (!consoleAlert.type && evalItem.condition.type) {
+              consoleAlert.type = evalItem.condition.type;
+            }
+
+            let momentAlert = this.$moment(consoleAlert.end);
+
+            if (momentAlert.year() === momentNow.year()) {
+              consoleAlert.isThisYear = true;
+              if (momentAlert.dayOfYear() === momentNow.dayOfYear()) {
+                consoleAlert.isToday = true;
+              }
+            }
+
+            sum += evalItem.value;
+            count++;
+          }
+
+          consoleAlert.avg = sum/count;
+
+          consoleAlert.durationTime = consoleAlert.end - consoleAlert.start;
+
+          alertList.push(consoleAlert);
+        }
+      }, (error) => {
+        this.$log.debug('querying data error', error);
+      }).$promise.then(()=> {
+          return {
+            alertList: alertList,
+            headers: headers
+          };
+        });
     }
 
     public resolveAlerts(resolvedAlerts: any): ng.IPromise<any> {
@@ -343,212 +455,6 @@ module HawkularMetrics {
       });
     }
 
-    public queryConsoleAlerts(metricId: MetricId, startTime?:TimestampInMillis,
-                              endTime?:TimestampInMillis, alertType?:AlertType,
-                       currentPage?:number, perPage?:number): any {
-      let alertList = [];
-      let headers;
-
-      /* Format of Alerts:
-
-       alert: {
-       type: 'THRESHOLD' or 'AVAILABILITY'
-       avg: Average value based on the evalSets 'values'
-       start: The time of the first data ('dataTimestamp') in evalSets
-       threshold: The threshold taken from condition.threshold
-       end: The time when the alert was sent ('ctime')
-       }
-
-       */
-
-      let queryParams = {
-        statuses:'OPEN'
-      };
-
-      if (currentPage || currentPage === 0) {
-        queryParams['page'] = currentPage;
-      }
-
-      if (perPage) {
-        queryParams['per_page'] = perPage;
-      }
-
-      if (alertType === AlertType.AVAILABILITY) {
-        queryParams['triggerIds'] = metricId+'_trigger_avail';
-      } else if (alertType === AlertType.THRESHOLD) {
-        queryParams['triggerIds'] = metricId+'_trigger_thres';
-      } else {
-        queryParams['triggerIds'] = metricId+'_trigger_avail,' + metricId+'_trigger_thres';
-      }
-
-      if (startTime) {
-        queryParams['startTime'] = startTime;
-      }
-
-      if (endTime) {
-        queryParams['endTime'] = endTime;
-      }
-
-      return this.HawkularAlert.Alert.query(queryParams, (serverAlerts: any, getHeaders: any) => {
-
-        headers = getHeaders();
-        let momentNow = this.$moment();
-
-        for (let i = 0; i < serverAlerts.length; i++) {
-          let consoleAlert: any = {};
-          let serverAlert = serverAlerts[i];
-
-          consoleAlert.id = serverAlert.alertId;
-          consoleAlert.end = serverAlert.ctime;
-
-          let sum: number = 0.0;
-          let count: number = 0.0;
-
-          for (let j = 0; j < serverAlert.evalSets.length; j++) {
-            let evalItem = serverAlert.evalSets[j][0];
-
-            if (!consoleAlert.start && evalItem.dataTimestamp) {
-              consoleAlert.start = evalItem.dataTimestamp;
-            }
-
-            if (!consoleAlert.threshold && evalItem.condition.threshold) {
-              consoleAlert.threshold = evalItem.condition.threshold;
-            }
-
-            if (!consoleAlert.type && evalItem.condition.type) {
-              consoleAlert.type = evalItem.condition.type;
-            }
-
-            let momentAlert = this.$moment(consoleAlert.end);
-
-            if (momentAlert.year() === momentNow.year()) {
-              consoleAlert.isThisYear = true;
-              if (momentAlert.dayOfYear() === momentNow.dayOfYear()) {
-                consoleAlert.isToday = true;
-              }
-            }
-
-            sum += evalItem.value;
-            count++;
-          }
-
-          consoleAlert.avg = sum/count;
-
-          consoleAlert.durationTime = consoleAlert.end - consoleAlert.start;
-
-          alertList.push(consoleAlert);
-        }
-      }, (error) => {
-        this.$log.debug('querying data error', error);
-      }).$promise.then(()=> {
-        return {
-          alertList: alertList,
-          headers: headers
-        };
-      });
-    }
-
-
-    public queryAlerts(metricId: MetricId, startTime?:TimestampInMillis, endTime?:TimestampInMillis,
-                       currentPage?:number, perPage?:number): any {
-      let alertList = [];
-      let headers;
-
-      /* Format of Alerts:
-
-       alert: {
-       type: 'THRESHOLD' or 'AVAILABILITY'
-       avg: Average value based on the evalSets 'values'
-       start: The time of the first data ('dataTimestamp') in evalSets
-       threshold: The threshold taken from condition.threshold
-       end: The time when the alert was sent ('ctime')
-       }
-
-       */
-
-      let queryParams = {
-        statuses:'OPEN'
-      };
-
-      if (currentPage || currentPage === 0) {
-        queryParams['page'] = currentPage;
-      }
-
-      if (perPage) {
-        queryParams['per_page'] = perPage;
-      }
-
-      queryParams['triggerIds'] = metricId;
-
-      if (startTime) {
-        queryParams['startTime'] = startTime;
-      }
-
-      if (endTime) {
-        queryParams['endTime'] = endTime;
-      }
-
-      return this.HawkularAlert.Alert.query(queryParams, (serverAlerts: any, getHeaders: any) => {
-
-        headers = getHeaders();
-        let momentNow = this.$moment();
-
-        for (let i = 0; i < serverAlerts.length; i++) {
-          let consoleAlert: any = {};
-          let serverAlert = serverAlerts[i];
-
-          consoleAlert.id = serverAlert.alertId;
-
-          consoleAlert.dataId = serverAlert.evalSets[0][0].condition.dataId;
-
-          consoleAlert.end = serverAlert.ctime;
-
-          let sum: number = 0.0;
-          let count: number = 0.0;
-
-          for (let j = 0; j < serverAlert.evalSets.length; j++) {
-            let evalItem = serverAlert.evalSets[j][0];
-
-            if (!consoleAlert.start && evalItem.dataTimestamp) {
-              consoleAlert.start = evalItem.dataTimestamp;
-            }
-
-            if (!consoleAlert.threshold && evalItem.condition.threshold) {
-              consoleAlert.threshold = evalItem.condition.threshold;
-            }
-
-            if (!consoleAlert.type && evalItem.condition.type) {
-              consoleAlert.type = evalItem.condition.type;
-            }
-
-            let momentAlert = this.$moment(consoleAlert.end);
-
-            if (momentAlert.year() === momentNow.year()) {
-              consoleAlert.isThisYear = true;
-              if (momentAlert.dayOfYear() === momentNow.dayOfYear()) {
-                consoleAlert.isToday = true;
-              }
-            }
-
-            sum += evalItem.value;
-            count++;
-          }
-
-          consoleAlert.avg = sum/count;
-
-          consoleAlert.durationTime = consoleAlert.end - consoleAlert.start;
-
-          alertList.push(consoleAlert);
-        }
-      }, (error) => {
-        this.$log.debug('querying data error', error);
-      }).$promise.then(()=> {
-          return {
-            alertList: alertList,
-            headers: headers
-          };
-        });
-    }
 
 
   }
