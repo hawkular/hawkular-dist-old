@@ -80,6 +80,11 @@
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.bus:INFO}</xsl:text></xsl:attribute>
       </level>
     </logger>
+    <logger category="org.hawkular.cmdgw">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.cmdgw:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
     <logger category="org.hawkular.component.availcreator">
       <level>
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.availcreator:INFO}</xsl:text></xsl:attribute>
@@ -933,6 +938,13 @@
                              metricSets="Datasource Pool Metrics,Datasource JDBC Metrics" />
         </resource-type-set-dmr>
 
+        <resource-type-set-dmr name="JDBC Driver" enabled="true">
+          <resource-type-dmr name="JDBC Driver"
+                             resourceNameTemplate="JDBC Driver [%-]"
+                             path="/subsystem=datasources/jdbc-driver=*"
+                             parents="WildFly Server" />
+        </resource-type-set-dmr>
+
         <resource-type-set-dmr name="Transaction Manager" enabled="true">
           <resource-type-dmr name="Transaction Manager"
                              resourceNameTemplate="Transaction Manager"
@@ -948,11 +960,11 @@
                       port="9990"
                       username="adminUser"
                       password="adminPass"
-                      resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,Transaction Manager" />
+                      resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,JDBC Driver,Transaction Manager" />
 
           <local-dmr name="Local"
                      enabled="true"
-                     resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,Transaction Manager,Hawkular" />
+                     resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,JDBC Driver,Transaction Manager,Hawkular" />
 
         </managed-servers>
 
