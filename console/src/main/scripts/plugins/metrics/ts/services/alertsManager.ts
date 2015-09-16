@@ -27,14 +27,15 @@ module HawkularMetrics {
   }
 
   export interface IHawkularAlertsManager {
-    addEmailAction(email: EmailType): ng.IPromise<void>;
-    createAction(email: EmailType): ng.IPromise<void>;
-
-    getAction(email: EmailType): ng.IPromise<void>;
-    getActions(triggerId: TriggerId): ng.IPromise<void>;
-    setEmail(triggerId: TriggerId, email: EmailType): ng.IPromise<void>;
 
     // Alerts
+
+    /**
+     * @name addEmailAction
+     * @desc Check if a previous email action exists, or it creates a new one
+     * @param email - recipient of the email action
+     */
+    addEmailAction(email: EmailType): ng.IPromise<void>;
 
     /**
      * @name queryAllAlerts
@@ -392,14 +393,14 @@ module HawkularMetrics {
       return this.$q.all(Array.prototype.concat(emailPromise, dampeningPromises, conditionPromises));
     }
 
-    public getAction(email: EmailType): ng.IPromise<void> {
+    private getEmailAction(email: EmailType): ng.IPromise<void> {
       return this.HawkularAlert.Action.get({
         pluginId: 'email',
         actionId: email
       }).$promise;
     }
 
-    public createAction(email: EmailType): ng.IPromise<void> {
+    private createEmailAction(email: EmailType): ng.IPromise<void> {
       return this.HawkularAlert.Action.save({
         actionPlugin: 'email',
         actionId: email,
@@ -409,13 +410,13 @@ module HawkularMetrics {
     }
 
     public addEmailAction(email: EmailType): ng.IPromise<void> {
-      return this.getAction(email).then((promiseValue: any) => {
+      return this.getEmailAction(email).then((promiseValue: any) => {
         return promiseValue;
       }, (reason: any) => {
         // Create a default email action
         if (reason.status === 404) {
           this.$log.debug('Action does not exist, creating one');
-          return this.createAction(email);
+          return this.createEmailAction(email);
         }
       });
     }
@@ -428,33 +429,6 @@ module HawkularMetrics {
         to: email
       }).$promise;
     }
-
-    public getActions(triggerId:TriggerId): ng.IPromise<void> {
-      return undefined;
-    }
-
-    public setEmail(triggerId:TriggerId, email:EmailType):ng.IPromise<void> {
-      let actions = this.getActions(triggerId);
-      return actions.then((actions)=> {
-
-        if (!actions) {
-          // If action for this email does not exist, create one
-          return this.HawkularAlert.Action.save({
-
-          }).$promise;
-
-        } else {
-          // If it exists, just use it
-          return this.HawkularAlert.Action.put({
-            actionId: ''
-          }, {
-
-          }).$promise;
-        }
-
-      });
-    }
-
 
 
   }
