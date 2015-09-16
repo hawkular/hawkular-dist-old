@@ -24,7 +24,7 @@ module HawkularMetrics {
 
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularAlert',
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log',
       '$routeParams', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService', 'MetricsService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
@@ -45,7 +45,6 @@ module HawkularMetrics {
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
-                private HawkularAlert:any,
                 private $routeParams:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
@@ -164,13 +163,12 @@ module HawkularMetrics {
     }
 
     private retrieveThreshold() {
-      this.HawkularAlert.Condition.query({triggerId: this.$routeParams.resourceId + '_trigger_thres'}).$promise
-        .then((response) => {
-
-          if (response[0]) {
-            this.threshold = response[0].threshold;
+      let triggerId = this.$routeParams.resourceId + '_trigger_thres';
+      this.HawkularAlertsManager.getTriggerConditions(triggerId)
+        .then((conditions) => {
+          if (conditions[0]) {
+            this.threshold = conditions[0].threshold;
           }
-
         }, (error) => {
           this.$log.error('Error Loading Threshold data');
           toastr.error('Error Loading Threshold Data: ' + error);

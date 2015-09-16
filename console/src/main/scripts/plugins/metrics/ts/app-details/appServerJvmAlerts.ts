@@ -23,7 +23,7 @@
 module HawkularMetrics {
 
   export class JvmAlertController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
       '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
 
     private resourceId: string;
@@ -41,7 +41,6 @@ module HawkularMetrics {
     public headerLinks: any;
 
     constructor(private $scope:any,
-                private HawkularAlert:any,
                 private HawkularAlertsManager: IHawkularAlertsManager,
                 private ErrorsManager: IErrorsManager,
                 private $log: ng.ILogService,
@@ -253,7 +252,13 @@ module HawkularMetrics {
       }
       alertIdList = alertIdList.slice(0, - 1);
 
-      this.HawkularAlert.Alert.resolve({alertIds: alertIdList}, {}).$promise.then( () => {
+      let resolvedAlerts = {
+        alertIds: alertIdList,
+        resolvedBy: 'user', // FIXME update with current user
+        resolvedNotes: 'Manually resolved'
+      };
+
+      this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then( () => {
         this.alertList.length = 0;
         this.isResolvingAll = false;
       });

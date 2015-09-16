@@ -48,7 +48,7 @@ module HawkularMetrics {
   export class UrlListController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
-      'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$q',
+      'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager', '$q',
       'md5', 'HkHeaderParser', 'NotificationsService'];
 
     private autoRefreshPromise:ng.IPromise<number>;
@@ -73,7 +73,6 @@ module HawkularMetrics {
                 private $modal:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
-                private HawkularAlert:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
@@ -318,9 +317,9 @@ module HawkularMetrics {
           this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
 
           aResourceList.expanded = this.resourceList ? this.resourceList.expanded : [];
-          this.HawkularAlert.Alert.query({statuses: 'OPEN'}, (anAlertList) => {
+          this.HawkularAlertsManager.queryAllAlerts().then((anAlertList) => {
             this.alertList = anAlertList;
-          }, this);
+          });
           var promises = [];
           angular.forEach(aResourceList, function (res) {
             var traitsArray:string[] = [];

@@ -24,7 +24,7 @@ module HawkularMetrics {
   export class AppServerDeploymentsDetailsController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularOps', 'HawkularAlertsManager',
+      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularOps', 'HawkularAlertsManager',
       'ErrorsManager', '$q', 'NotificationsService'];
 
     private autoRefreshPromise:ng.IPromise<number>;
@@ -46,7 +46,6 @@ module HawkularMetrics {
                 private $modal:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
-                private HawkularAlert:any,
                 private HawkularOps:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,

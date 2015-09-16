@@ -38,6 +38,30 @@ module HawkularMetrics {
     queryAlerts(metricId: MetricId, startTime?:TimestampInMillis,
                 endTime?:TimestampInMillis, currentPage?:number, perPage?:number): any;
 
+    // Alerts
+
+    /**
+     * @name queryAllAlerts
+     * @desc Fetch all Alerts with status OPEN
+     * @returns {ng.IPromise} with a list of Alerts
+     */
+    queryAllAlerts(): ng.IPromise<any>;
+
+    /**
+     * @name resolveAlerts
+     * @desc Mark as resolved a list of alerts*
+     * @param resolvedAlerts - An object with the description of the resolution of the alerts, in the form
+     *
+     *    resolvedAlerts = {
+     *      alertIds: A string with a comma separated list of Alert ids,
+     *      resolvedBy: The user responsible of the resolution of the alerts,
+     *      resolvedNotes: Additional notes to add in the resolved state
+     *    }
+     *
+     * @returns {ng.IPromise}
+     */
+    resolveAlerts(resolvedAlerts: any): ng.IPromise<any>;
+
     // Triggers
 
     /**
@@ -61,6 +85,14 @@ module HawkularMetrics {
      *    }
      */
     getTrigger(triggerId: TriggerId): any;
+
+    /**
+     * @name getTriggerConditions
+     * @desc Fetch only Conditions for a specified trigger
+     * @param {TriggerId} triggerId - The id of the trigger to fetch Conditions
+     * @returns {ng.IPromise} with a list of conditions as a value
+     */
+    getTriggerConditions(triggerId: TriggerId): ng.IPromise<any>;
 
     /**
      * @name createTrigger
@@ -106,6 +138,8 @@ module HawkularMetrics {
      *    }
      */
     updateTrigger(fullTrigger: any, errorCallback: any, backupTrigger?: any): ng.IPromise<any>;
+
+
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
@@ -118,6 +152,14 @@ module HawkularMetrics {
                 private $moment: any,
                 private NotificationsService:INotificationsService,
                 private ErrorsManager: HawkularMetrics.IErrorsManager) {
+    }
+
+    queryAllAlerts(): ng.IPromise<any> {
+      return this.HawkularAlert.Alert.query({statuses: 'OPEN'}).$promise;
+    }
+
+    public resolveAlerts(resolvedAlerts: any): ng.IPromise<any> {
+      return this.HawkularAlert.Alert.resolve(resolvedAlerts, {}).$promise;
     }
 
     public existTrigger(triggerId: TriggerId): any {
@@ -140,6 +182,10 @@ module HawkularMetrics {
       });
 
       return deffered.promise;
+    }
+
+    public getTriggerConditions(triggerId: TriggerId): ng.IPromise<any> {
+      return this.HawkularAlert.Condition.query({triggerId: triggerId}).$promise;
     }
 
     public createTrigger(fullTrigger: any, errorCallback: any): ng.IPromise<void> {

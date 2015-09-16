@@ -30,7 +30,7 @@ module HawkularMetrics {
   export class AppServerJvmDetailsController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager',
+      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager',
       'ErrorsManager', '$q', 'md5'];
 
     public static USED_COLOR = '#1884c7'; /// blue
@@ -58,7 +58,6 @@ module HawkularMetrics {
       private $window: any,
       private HawkularInventory: any,
       private HawkularMetric: any,
-      private HawkularAlert: any,
       private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
       private ErrorsManager: HawkularMetrics.IErrorsManager,
       private $q: ng.IQService,
