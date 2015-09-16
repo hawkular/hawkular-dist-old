@@ -36,6 +36,7 @@ module HawkularMetrics {
   export type PathId = string;
   export type MetricId = string;
   export type TriggerId = string;
+  export type TriggerIds = string;
   export type ConditionId = string;
   export type DampeningId = string;
   export type EmailType = string;

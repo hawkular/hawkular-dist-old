@@ -184,7 +184,9 @@ module HawkularMetrics {
       this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : (new Date()).getTime();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
 
-      this.HawkularAlertsManager.queryConsoleAlerts(this.metricId, this.alertsTimeStart, this.alertsTimeEnd, undefined,
+      let triggerIds = this.metricId + '_trigger_avail,' + this.metricId + '_trigger_thres';
+
+      this.HawkularAlertsManager.queryAlerts(triggerIds, this.alertsTimeStart, this.alertsTimeEnd,
         this.resCurPage, this.resPerPage).then((queriedAlerts)=> {
           this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
           _.forEach(queriedAlerts.alertList, (item) => {
@@ -215,7 +217,7 @@ module HawkularMetrics {
 
       let resolvedAlerts = {
         alertIds: alertIdList,
-        resolvedBy: 'user', // FIXME update with current user
+        resolvedBy: this.$rootScope.currentPersona.name,
         resolvedNotes: 'Manually resolved'
       };
 

@@ -1,4 +1,5 @@
 <div>
   <hk-alert-panel ng-repeat="alert in alertList | orderBy: '-start' | limitTo: (limit ? limit : 1000) track by $index"
-                  hk-alert="alert" hk-refresh="alertResolve(hkAlert)"></hk-alert-panel>
+                  hk-alert="alert" hk-refresh="alertResolve(hkAlert)"
+                  hk-persona="$root.currentPersona"></hk-alert-panel>
 </div>

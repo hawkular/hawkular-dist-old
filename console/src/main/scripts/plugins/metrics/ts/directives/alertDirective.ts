@@ -26,7 +26,8 @@ module HawkularMetrics {
     public replace = 'true';
     public scope = {
       alert: '=hkAlert',
-      refresh: '&hkRefresh'
+      refresh: '&hkRefresh',
+      persona: '=hkPersona'
     };
     public templateUrl = 'plugins/metrics/html/directives/alert.html';
 
@@ -36,7 +37,7 @@ module HawkularMetrics {
         scope.alertResolve = ():void => {
           let resolvedAlerts = {
             alertIds: scope.alert.id,
-            resolvedBy: 'user', // FIXME update with current user
+            resolvedBy: scope.persona.name,
             resolvedNotes: 'Manually resolved'
           };
           this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then( () => {
