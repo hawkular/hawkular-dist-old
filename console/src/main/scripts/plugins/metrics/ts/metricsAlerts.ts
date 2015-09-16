@@ -261,7 +261,7 @@ module HawkularMetrics {
   _module.controller('AlertUrlAvailabilitySetupController', AlertUrlAvailabilitySetupController);
 
   export class AlertUrlResponseSetupController extends AlertSetupController {
-    loadDefinitions():Array<ng.IPromise<any>> {
+    loadTriggers():Array<ng.IPromise<any>> {
       let responseTriggerId = this.$routeParams.resourceId + '_trigger_thres';
 
       let responseTriggerPromise = this.HawkularAlertsManager.getTrigger(responseTriggerId).then(
