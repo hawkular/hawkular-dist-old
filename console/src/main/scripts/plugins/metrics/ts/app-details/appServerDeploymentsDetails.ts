@@ -23,7 +23,7 @@ module HawkularMetrics {
 
   export class AppServerDeploymentsDetailsController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
+    public static $inject = ['$scope', '$rootScope', '$interval', '$log', '$routeParams',
       '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularOps', 'HawkularAlertsManager',
       'ErrorsManager', '$q', 'NotificationsService'];
 
@@ -36,12 +36,10 @@ module HawkularMetrics {
     public startTimeStamp:TimestampInMillis;
     public endTimeStamp:TimestampInMillis;
 
-    constructor(private $location:ng.ILocationService,
-                private $scope:any,
+    constructor(private $scope:any,
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
-                private $filter:ng.IFilterService,
                 private $routeParams:any,
                 private $modal:any,
                 private HawkularInventory:any,

@@ -17,7 +17,7 @@
       <div class="col-sm-3 hk-summary-item">
         <span class="hk-data" ng-show="vm.accGCDuration">{{ vm.accGCDuration }} ms</span>
         <span class="hk-data" ng-hide="vm.accGCDuration">n/a</span>
-        <span class="hk-item">Accumulated GC Duration</span>
+        <span class="hk-item">GC Duration</span>
       </div>
       <div class="col-sm-3 hk-summary-item">
         <span class="hk-data" ng-show="vm.heapMax">{{ vm.heapMax.max / 1024 / 1024 | number : 0 }} MB</span>
@@ -99,7 +99,7 @@
   </div>
 
   <div class="panel panel-default hk-graph" ng-if="vm.chartNonHeapData[0]">
-    <h2>Accumulated GC Duration</h2>
+    <h2>GC Duration</h2>
     <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
