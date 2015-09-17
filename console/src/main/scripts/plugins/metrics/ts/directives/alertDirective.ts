@@ -236,7 +236,7 @@ module HawkularMetrics {
     constructor(private hkTimeUnit:any) {
       this.link = (scope:any) => {
         let localChange = false;
-        let durationBackup = scope.hkDuration || 0;
+        let durationBackup = scope.hkDuration || 1;
 
         scope.durationChange = ():void => {
           localChange = true;
@@ -245,18 +245,18 @@ module HawkularMetrics {
         scope.durationToggle = ():void => {
           if (scope.durationEnabled) {
             scope.hkDuration = durationBackup;
-            if (scope.hkDuration === 0) {
+            if (scope.hkDuration === 1) {
               scope.responseUnit = hkTimeUnit.getFittestTimeUnit(scope.hkDuration);
             }
           } else {
             durationBackup = scope.hkDuration;
-            scope.hkDuration = 0;
+            scope.hkDuration = 1;
           }
         };
 
         scope.$watch('hkDuration', () => {
           if (!localChange) {
-            scope.durationEnabled = scope.hkDuration !== 0;
+            scope.durationEnabled = scope.hkDuration !== 1;
           }
           localChange = false;
         });

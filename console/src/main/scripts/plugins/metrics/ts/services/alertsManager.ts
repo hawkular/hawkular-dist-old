@@ -272,7 +272,7 @@ module HawkularMetrics {
     }
 
     public resolveAlerts(resolvedAlerts: any): ng.IPromise<any> {
-      return this.HawkularAlert.Alert.resolve(resolvedAlerts, {}).$promise;
+      return this.HawkularAlert.Alert.resolvemany(resolvedAlerts, {}).$promise;
     }
 
     public existTrigger(triggerId: TriggerId): any {
@@ -288,7 +288,7 @@ module HawkularMetrics {
         return this.HawkularAlert.Dampening.query({triggerId: triggerId}).$promise;
       }).then((dampeningData) => {
         trigger['dampenings'] = dampeningData;
-        return this.HawkularAlert.Condition.query({triggerId: triggerId}).$promise;
+        return this.HawkularAlert.Conditions.query({triggerId: triggerId}).$promise;
       }).then((conditionData)=> {
         trigger['conditions'] = conditionData;
         deffered.resolve(trigger);
@@ -298,7 +298,7 @@ module HawkularMetrics {
     }
 
     public getTriggerConditions(triggerId: TriggerId): ng.IPromise<any> {
-      return this.HawkularAlert.Condition.query({triggerId: triggerId}).$promise;
+      return this.HawkularAlert.Conditions.query({triggerId: triggerId}).$promise;
     }
 
     public createTrigger(fullTrigger: any, errorCallback: any): ng.IPromise<void> {
@@ -327,19 +327,35 @@ module HawkularMetrics {
           }
         }
 
-        let conditionDefaults: any = {
-          triggerId: savedTrigger.id
-        };
-
-        let conditionPromises = [];
+        let firingConditions = [];
+        let autoResolveConditions = [];
         for (let j = 0; fullTrigger.conditions && j < fullTrigger.conditions.length; j++) {
           if (fullTrigger.conditions[j]) {
-            let conditionPromise = this.HawkularAlert.Condition.save({triggerId: savedTrigger.id},
-              fullTrigger.conditions[j]).$promise.then(null, (error) => {
-                return this.ErrorsManager.errorHandler(error, 'Error creating condition.', errorCallback);
-              });
-            conditionPromises.push(conditionPromise);
+            if (fullTrigger.conditions[j].triggerMode && fullTrigger.conditions[j].triggerMode === 'AUTORESOLVE') {
+              autoResolveConditions.push(fullTrigger.conditions[j]);
+            } else {
+              // A condition without triggerMode is treated as FIRING
+              firingConditions.push(fullTrigger.conditions[j]);
+            }
           }
+        }
+
+        let conditionPromises = [];
+        if (firingConditions.length > 0) {
+          let conditionPromise = this.HawkularAlert.Conditions.save({triggerId: savedTrigger.id,
+            triggerMode: 'FIRING'},
+            firingConditions).$promise.then(null, (error) => {
+              return this.ErrorsManager.errorHandler(error, 'Error creating firing conditions.', errorCallback);
+            });
+          conditionPromises.push(conditionPromise);
+        }
+        if (autoResolveConditions.length > 0) {
+          let conditionPromise = this.HawkularAlert.Conditions.save({triggerId: savedTrigger.id,
+            triggerMode: 'AUTORESOLVE'},
+            autoResolveConditions).$promise.then(null, (error) => {
+              return this.ErrorsManager.errorHandler(error, 'Error creating autoresolve conditions.', errorCallback);
+            });
+          conditionPromises.push(conditionPromise);
         }
 
         return this.$q.all(Array.prototype.concat(dampeningPromises, conditionPromises));
@@ -362,10 +378,11 @@ module HawkularMetrics {
         return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
       });
 
+      let triggerId = fullTrigger.trigger.id;
+
       let dampeningPromises = [];
       for (let i = 0; fullTrigger.dampenings && i < fullTrigger.dampenings.length; i++) {
         if (fullTrigger.dampenings[i] && !angular.equals(fullTrigger.dampenings[i], backupTrigger.dampenings[i])) {
-          let triggerId = fullTrigger.trigger.id;
           let dampeningId = fullTrigger.dampenings[i].dampeningId;
           let dampeningPromise = this.HawkularAlert.Dampening.put({triggerId: triggerId, dampeningId: dampeningId },
             fullTrigger.dampenings[i]).$promise.then(null, (error)=> {
@@ -376,18 +393,35 @@ module HawkularMetrics {
         }
       }
 
-      let conditionPromises = [];
+      let firingConditions = [];
+      let autoResolveConditions = [];
       for (let j = 0; fullTrigger.conditions && j < fullTrigger.conditions.length; j++) {
-        if (fullTrigger.conditions[j] && !angular.equals(fullTrigger.conditions[j], backupTrigger.conditions[j])) {
-          let triggerId = fullTrigger.trigger.id;
-          let conditionId = fullTrigger.conditions[j].conditionId;
-          let conditionPromise =  this.HawkularAlert.Condition.put({triggerId: triggerId,
-            conditionId: conditionId}, fullTrigger.conditions[j]).$promise.then(null, (error)=> {
-              return this.ErrorsManager.errorHandler(error, 'Error saving condition.', errorCallback);
-            });
-
-          conditionPromises.push(conditionPromise);
+        if (fullTrigger.conditions[j]) {
+          if (fullTrigger.conditions[j].triggerMode && fullTrigger.conditions[j].triggerMode === 'AUTORESOLVE') {
+            autoResolveConditions.push(fullTrigger.conditions[j]);
+          } else {
+            // A condition without triggerMode is treated as FIRING
+            firingConditions.push(fullTrigger.conditions[j]);
+          }
         }
+      }
+
+      let conditionPromises = [];
+      if (firingConditions.length > 0) {
+        let conditionPromise = this.HawkularAlert.Conditions.save({triggerId: triggerId,
+            triggerMode: 'FIRING'},
+          firingConditions).$promise.then(null, (error) => {
+            return this.ErrorsManager.errorHandler(error, 'Error creating firing conditions.', errorCallback);
+          });
+        conditionPromises.push(conditionPromise);
+      }
+      if (autoResolveConditions.length > 0) {
+        let conditionPromise = this.HawkularAlert.Conditions.save({triggerId: triggerId,
+            triggerMode: 'AUTORESOLVE'},
+          autoResolveConditions).$promise.then(null, (error) => {
+            return this.ErrorsManager.errorHandler(error, 'Error creating autoresolve conditions.', errorCallback);
+          });
+        conditionPromises.push(conditionPromise);
       }
 
       return this.$q.all(Array.prototype.concat(emailPromise, dampeningPromises, conditionPromises));
