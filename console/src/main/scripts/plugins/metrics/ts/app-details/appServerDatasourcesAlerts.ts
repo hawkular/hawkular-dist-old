@@ -99,103 +99,86 @@ module HawkularMetrics {
       // Responsiveness part
       let respTrigger = angular.copy(this.triggerDefinition.resp);
 
-      let idCreation = 0,
-        idWait = 1;
-      if (respTrigger.conditions[0] && respTrigger.conditions[0].dataId.indexOf('Creation') === -1) {
-        idCreation = 1;
-        idWait = 0;
-      }
-
       respTrigger.trigger.actions.email[0] = this.adm.resp.email;
       respTrigger.dampenings[0].evalTimeSetting = this.adm.resp.responseDuration;
 
       let respTriggerId = respTrigger.trigger.id;
 
       // Handle changes in conditions
+      let resId = respTriggerId.slice(0,-8);
+      let dataId1:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Get Time';
+      let dataId2:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time';
 
-      let condWaitDefer = this.$q.defer();
-      let condWaitPromise = condWaitDefer.promise;
+      let respUpdateConditions = [];
 
-      if (!this.adm.resp.waitTimeEnabled && this.admBak.resp.waitTimeEnabled) {
-        /*
-          FIXME: To update the trigger without this condition
-          NOTE: This is commented here, as in alerts 0.4.x conditions are managed as a block in one call
-
-         */
-        // delete
-        /*
-        condWaitPromise = this.HawkularAlertsManager.deleteCondition(respTriggerId,
-          respAlertDefinition.conditions[idWait].conditionId);
-        */
-        delete respTrigger.conditions[idWait];
-      } else if (this.adm.resp.waitTimeEnabled && !this.admBak.resp.waitTimeEnabled) {
-        /*
-          FIXME: To update the trigger with a new condition
-          NOTE: This si commented here, as in alerts 0.4.x conditions are managed as a block in one call
-         */
-        // create
-        let resId = respTriggerId.slice(0,-8);
-        /*
-        condWaitPromise = this.HawkularAlertsManager.createCondition(respTriggerId, {
-          triggerId: respTriggerId,
-          type: 'THRESHOLD',
-          dataId: 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Get Time',
-          threshold: this.adm.resp.waitTimeThreshold,
-          operator: 'GT'
-        });
-        */
-      } else {
-        condWaitDefer.resolve();
-      }
-
-      let condCreaDefer = this.$q.defer();
-      let condCreaPromise = condCreaDefer.promise;
-      let self = this;
-
-      // FIXME: The condition id changes if previous was added/deleted ..
-      if (!self.adm.resp.creationTimeEnabled && self.admBak.resp.creationTimeEnabled) {
-        /*
-         FIXME: To update the trigger without this condition
-         NOTE: This is commented here, as in alerts 0.4.x conditions are managed as a block in one call
-         */
-        // delete
-        /*
-        condCreaPromise = self.HawkularAlertsManager.deleteCondition(respTriggerId,
-          respAlertDefinition.conditions[idCreation].conditionId);
-        */
-        delete respTrigger.conditions[idCreation];
-      } else if (self.adm.resp.creationTimeEnabled && !self.admBak.resp.creationTimeEnabled) {
-        /*
-         FIXME: To update the trigger with a new condition
-         NOTE: This si commented here, as in alerts 0.4.x conditions are managed as a block in one call
-         */
-        // create
-        let resId = respTriggerId.slice(0,-8);
-        /*
-        condCreaPromise = self.HawkularAlertsManager.createCondition(respTriggerId, {
-          triggerId: respTriggerId,
-          type: 'THRESHOLD',
-          dataId: 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time',
-          threshold: self.adm.resp.creationTimeThreshold,
-          operator: 'GT'
-        });
-        */
-      } else {
-        condCreaDefer.resolve();
-      }
-
-      if (respTrigger.conditions[idWait]) {
-        respTrigger.conditions[idWait].threshold = this.adm.resp.waitTimeThreshold;
-      }
-      if (respTrigger.conditions[idCreation]) {
-        respTrigger.conditions[idCreation].threshold = this.adm.resp.creationTimeThreshold;
+      if (this.adm.resp.waitTimeEnabled && !this.adm.resp.creationTimeEnabled) {
+        respUpdateConditions = [
+          {
+            triggerId: respTriggerId,
+            conditionSetSize: 1,
+            conditionSetIndex: 1,
+            type: 'THRESHOLD',
+            dataId: dataId1,
+            threshold: this.adm.resp.waitTimeThreshold,
+            operator: 'GT',
+            context: {
+              description: 'Average Get Time',
+              unit: 'ms'
+            }
+          }
+        ];
+      } else if (!this.adm.resp.waitTimeEnabled && this.adm.resp.creationTimeEnabled) {
+        respUpdateConditions = [
+          {
+            triggerId: respTriggerId,
+            conditionSetSize: 1,
+            conditionSetIndex: 1,
+            type: 'THRESHOLD',
+            dataId: dataId2,
+            threshold: this.adm.resp.creationTimeThreshold,
+            operator: 'GT',
+            context: {
+              description: 'Average Creation Time',
+              unit: 'ms'
+            }
+          }
+        ];
+      } else if (this.adm.resp.waitTimeEnabled && this.adm.resp.creationTimeEnabled) {
+        respUpdateConditions = [
+          {
+            triggerId: respTriggerId,
+            conditionSetSize: 2,
+            conditionSetIndex: 1,
+            type: 'THRESHOLD',
+            dataId: dataId1,
+            threshold: this.adm.resp.waitTimeThreshold,
+            operator: 'GT',
+            context: {
+              description: 'Average Get Time',
+              unit: 'ms'
+            }
+          },
+          {
+            triggerId: respTriggerId,
+            conditionSetSize: 2,
+            conditionSetIndex: 2,
+            type: 'THRESHOLD',
+            dataId: dataId2,
+            threshold: this.adm.resp.creationTimeThreshold,
+            operator: 'GT',
+            context: {
+              description: 'Average Creation Time',
+              unit: 'ms'
+            }
+          }
+        ];
       }
 
       let respSavePromise = this.HawkularAlertsManager.updateTrigger(respTrigger,
         errorCallback, this.triggerDefinition.resp);
 
-      console.log('@PROMISES', connSavePromise, respSavePromise, condWaitPromise, condCreaPromise);
-      return [connSavePromise, respSavePromise, condWaitPromise, condCreaPromise];
+      console.log('@PROMISES', connSavePromise, respSavePromise);
+      return [connSavePromise, respSavePromise];
     }
   }
 

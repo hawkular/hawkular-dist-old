@@ -80,9 +80,14 @@ module HawkularMetrics {
 
         let fullTrigger = {
           trigger: {
-            name: triggerId,
+            name: resourceId,
             id: triggerId,
-            actions: {email: [this.defaultEmail]}
+            description: 'JVM Heap Used for ' + resourceId,
+            actions: {email: [this.defaultEmail]},
+            context: {
+              resourceType: 'App Server',
+              resourceName: resourceId
+            }
           },
           dampenings: [
             {
@@ -101,7 +106,11 @@ module HawkularMetrics {
               operatorHigh: 'INCLUSIVE',
               thresholdLow: low || 20.0,
               thresholdHigh: high || 80.0,
-              inRange: false
+              inRange: false,
+              context: {
+                description: 'Heap Used',
+                unit: 'B'
+              }
             }
           ]
         };
@@ -121,12 +130,17 @@ module HawkularMetrics {
 
         let triggerId:string = this.resourceId + '_jvm_nheap';
         let resourceId:string = triggerId.slice(0, -10);
-        let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
+        let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used';
         let fullTrigger = {
           trigger: {
-            name: triggerId,
+            name: resourceId,
             id: triggerId,
-            actions: {email: [this.defaultEmail]}
+            description: 'JVM Non Heap Used for ' + resourceId,
+            actions: {email: [this.defaultEmail]},
+            context: {
+              resourceType: 'App Server',
+              resourceName: resourceId
+            }
           },
           dampenings: [
             {
@@ -145,7 +159,11 @@ module HawkularMetrics {
               operatorHigh: 'INCLUSIVE',
               thresholdLow: low || 20.0,
               thresholdHigh: high || 80.0,
-              inRange: false
+              inRange: false,
+              context: {
+                description: 'Non Heap Used',
+                unit: 'B'
+              }
             }
           ]
         };
@@ -165,9 +183,14 @@ module HawkularMetrics {
         let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration';
         let fullTrigger = {
           trigger: {
-            name: triggerId,
+            name: resourceId,
             id: triggerId,
-            actions: {email: [this.defaultEmail]}
+            description: 'Accumulated GC Duration for ' + resourceId,
+            actions: {email: [this.defaultEmail]},
+            context: {
+              resourceType: 'App Server',
+              resourceName: resourceId
+            }
           },
           dampenings: [
             {
@@ -183,7 +206,11 @@ module HawkularMetrics {
               type: 'THRESHOLD',
               dataId: dataId,
               threshold: 200,
-              operator: 'GT'
+              operator: 'GT',
+              context: {
+                description: 'GC Duration',
+                unit: 'ms'
+              }
             }
           ]
         };
