@@ -122,14 +122,23 @@ module HawkularMetrics {
           trigger: {
             name: triggerId,
             id: triggerId,
-            actions: {email: [this.defaultEmail]}
+            description: 'Available Count for Datasource ' + resId,
+            actions: {email: [this.defaultEmail]},
+            context: {
+              resourceType: 'DataSource',
+              resourceName: resId
+            }
           },
           dampenings: [
             {
               triggerId: triggerId,
               evalTimeSetting: 7 * 60000,
               triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
+              type: 'STRICT_TIME',
+              context: {
+                description: 'Available Count',
+                unit: 'connections'
+              }
             }
           ],
           conditions: [
@@ -138,7 +147,11 @@ module HawkularMetrics {
               type: 'THRESHOLD',
               dataId: dataId,
               threshold: AppServerDatasourcesDetailsController.DEFAULT_CONN_THRESHOLD,
-              operator: 'LT'
+              operator: 'LT',
+              context: {
+                description: 'Available Count',
+                unit: 'connections'
+              }
             }
           ]
         };
@@ -161,7 +174,11 @@ module HawkularMetrics {
             name: triggerId,
             id: triggerId,
             firingMatch: 'ANY',
-            actions: {email: [this.defaultEmail]}
+            actions: {email: [this.defaultEmail]},
+            context: {
+              resourceType: 'DataSource',
+              resourceName: resId
+            }
           },
           dampenings: [
             {
@@ -179,7 +196,11 @@ module HawkularMetrics {
               type: 'THRESHOLD',
               dataId: dataId1,
               threshold: AppServerDatasourcesDetailsController.DEFAULT_WAIT_THRESHOLD,
-              operator: 'GT'
+              operator: 'GT',
+              context: {
+                description: 'Average Get Time',
+                unit: 'ms'
+              }
             },
             {
               triggerId: triggerId,
@@ -188,7 +209,11 @@ module HawkularMetrics {
               type: 'THRESHOLD',
               dataId: dataId2,
               threshold: AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD,
-              operator: 'GT'
+              operator: 'GT',
+              context: {
+                description: 'Average Creation Time',
+                unit: 'ms'
+              }
             }
           ]
         };

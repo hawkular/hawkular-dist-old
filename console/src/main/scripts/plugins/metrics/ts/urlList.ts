@@ -206,7 +206,12 @@ module HawkularMetrics {
             trigger: {
               id: triggerId,
               name: url,
-              actions: {email: [defaultEmail]}
+              description: 'Response Time for URL ' + url,
+              actions: {email: [defaultEmail]},
+              context: {
+                resourceType: 'URL',
+                resourceName: url
+              }
             },
             dampenings: [
               {
@@ -229,7 +234,11 @@ module HawkularMetrics {
                 type: 'THRESHOLD',
                 dataId: dataId,
                 operator: 'GT',
-                threshold: 1000
+                threshold: 1000,
+                context: {
+                  description: 'Response Time',
+                  unit: 'ms'
+                }
               },
               {
                 triggerId: triggerId,
@@ -237,7 +246,11 @@ module HawkularMetrics {
                 type: 'THRESHOLD',
                 dataId: dataId,
                 operator: 'LTE',
-                threshold: 1000
+                threshold: 1000,
+                context: {
+                  description: 'Response Time',
+                  unit: 'ms'
+                }
               }
             ]
           };
@@ -254,7 +267,12 @@ module HawkularMetrics {
             trigger: {
               id: triggerId,
               name: url,
-              actions: {email: [defaultEmail]}
+              description: 'Availability for URL ' + url,
+              actions: {email: [defaultEmail]},
+              context: {
+                resourceType: 'URL',
+                resourceName: url
+              }
             },
             dampenings: [
               {
@@ -276,14 +294,20 @@ module HawkularMetrics {
                 triggerMode: 'FIRING',
                 type: 'AVAILABILITY',
                 dataId: dataId,
-                operator: 'DOWN'
+                operator: 'DOWN',
+                context: {
+                  description: 'Availability'
+                }
               },
               {
                 triggerId: triggerId,
                 triggerMode: 'AUTORESOLVE',
                 type: 'AVAILABILITY',
                 dataId: dataId,
-                operator: 'UP'
+                operator: 'UP',
+                context: {
+                  description: 'Availability'
+                }
               }
             ]
           };
