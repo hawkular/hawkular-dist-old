@@ -1,10 +1,38 @@
 <section id="hk-datasources" class="hk-tab-content">
 
-  <div class="hk-resource-container" ng-repeat="ds in vm.resourceList">
+  <div class="clearfix">
 
-    <h3 class="pull-left">{{ds.properties.name}}</h3>
+    <div class="hk-control-actions-bar pull-left">
+      <div class="hk-container-separator">
+        <input type="text" class="form-control separator" ng-model="vm.filter.properties.name" placeholder="Filter by Name...">
+      </div>
+
+      <div class="hk-container-separator">
+        <div class="btn-group" dropdown auto-close="always">
+          <button id="simple-btn-keyboard-nav" type="button" class="btn btn-primary" dropdown-toggle>
+            Sort {{vm.sortInv ? 'Z - A' : 'A - Z'}}  <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="simple-btn-keyboard-nav">
+            <li ng-class="{'active': !vm.sortInv}"><a href="" ng-click="vm.sortInv = false" dropdown-toggle>Sort A - Z</a></li>
+            <li ng-class="{'active': vm.sortInv}"><a href="" ng-click="vm.sortInv = true" dropdown-toggle>Sort Z - A</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <button class="btn btn-default" type="button" ng-click="vm.showDriverAddDialog()">Add Driver</button>
+      <button class="btn btn-default" type="button" ng-click="vm.showDatasourceAddDialog()" disabled>Add Datasource</button>
+    </div>
+
     <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+  </div>
+
+  <div class="hk-resource-container"
+       ng-repeat="ds in vm.resourceList | filter:vm.filter | orderBy:'properties.name':vm.sortInv">
+
     <div class="panel panel-default hk-summary">
+      <div class="panel-heading">
+        <span class="hk-heading">{{ds.properties.name}}</span>
+      </div>
       <div class="row">
         <div class="col-sm-4 hk-summary-item">
           <span class="hk-data">{{ds.alertList.length}} <i class="fa fa-flag" ng-show="ds.alertList.length > 0"></i></span>
@@ -80,6 +108,7 @@
 
       <div class="hk-info-top clearfix">
         <h3 class="pull-left">Metrics</h3>
+
         <div class="hk-update pull-right">
           <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart"><i class="fa fa-refresh"></i></button>
         </div>
@@ -99,16 +128,16 @@
           <div class="col-md-12">
             <h4>Connection Availability</h4>
             <div class="hk-graphselector hk-blue">
-              <input type="checkbox" checked="checked" disabled>
-              <label for="available1"><span>Available Connections</span></label>
+              <input id="connavail" type="checkbox" checked="checked" disabled>
+              <label for="connavail"><span>Available Connections</span></label>
             </div>
             <div class="hk-graphselector hk-green">
-              <input type="checkbox" checked="checked" disabled>
-              <label for="connections1"><span>Connections in Use</span></label>
+              <input id="conninuse" type="checkbox" checked="checked" disabled>
+              <label for="conninuse"><span>Connections in Use</span></label>
             </div>
             <div class="hk-graphselector hk-gray">
-              <input type="checkbox" checked="checked" disabled>
-              <label for="timed1"><span>Timed-out Connections</span></label>
+              <input id="conntimed" type="checkbox" checked="checked" disabled>
+              <label for="conntimed"><span>Timed-out Connections</span></label>
             </div>
           </div>
         </div>
@@ -128,12 +157,12 @@
           <div class="col-md-12">
             <h4>Responsiveness</h4>
             <div class="hk-graphselector hk-yellow">
-              <input type="checkbox" checked="checked" disabled>
-              <label for="wait1"><span>Wait Time (Avg.)</span></label>
+              <input id="waittime" type="checkbox" checked="checked" disabled>
+              <label for="waittime"><span>Wait Time (Avg.)</span></label>
             </div>
             <div class="hk-graphselector hk-purple">
-              <input type="checkbox" checked="checked" disabled>
-              <label for="creation1"><span>Creation Time (Avg.)</span></label>
+              <input id="creationtime" type="checkbox" checked="checked" disabled>
+              <label for="creationtime"><span>Creation Time (Avg.)</span></label>
             </div>
           </div>
         </div>
