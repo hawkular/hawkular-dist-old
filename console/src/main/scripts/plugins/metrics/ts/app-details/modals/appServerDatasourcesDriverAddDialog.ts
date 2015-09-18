@@ -122,8 +122,8 @@ module HawkularMetrics {
         this.driverData.driverName,
         this.driverData.moduleName,
         this.driverData.driverClass,
-        // TODO: this.driverData.driver.driverMajorVersion,
-        // TODO: this.driverData.driver.driverMinorVersion,
+        this.driverData.driverMajorVersion,
+        this.driverData.driverMinorVersion,
         this.driverData.binaryFile,
         this.$rootScope.userDetails.token,
         this.$rootScope.currentPersona.id);

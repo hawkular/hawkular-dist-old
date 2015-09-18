@@ -81,14 +81,14 @@
             <label class="col-sm-4 control-label" for="dmv">Driver Major Version</label>
             <div class="col-sm-6">
               <input type="number" min="0" value="1" class="form-control hk-input-small" id="dmv"
-                     ng-model="dac.driver.driverMajorVersion">
+                     ng-model="dac.driverData.driverMajorVersion">
             </div>
           </div>
           <div class="form-group">
             <label class="col-sm-4 control-label" for="dmiv">Driver Minor Version</label>
             <div class="col-sm-6">
               <input type="number" min="0" value="1" class="form-control hk-input-small" id="dmiv"
-                     ng-model="dac.driver.driverMinorVersion">
+                     ng-model="dac.driverData.driverMinorVersion">
             </div>
           </div>
         </fieldset>
@@ -162,13 +162,13 @@
           <div class="form-group">
             <label class="col-sm-4 control-label" for="dmv">Driver Major Version</label>
             <div class="col-sm-6">
-              <span class="hk-input-text">{{dac.driver.driverMajorVersion || '-'}}</span>
+              <span class="hk-input-text">{{dac.driverData.driverMajorVersion || '-'}}</span>
             </div>
           </div>
           <div class="form-group">
             <label class="col-sm-4 control-label" for="dmiv">Driver Minor Version</label>
             <div class="col-sm-6">
-              <span class="hk-input-text">{{dac.driver.driverMinorVersion || '-'}}</span>
+              <span class="hk-input-text">{{dac.driverData.driverMinorVersion || '-'}}</span>
             </div>
           </div>
         </fieldset>
