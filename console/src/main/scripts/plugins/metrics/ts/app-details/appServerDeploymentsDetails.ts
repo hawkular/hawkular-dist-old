@@ -23,7 +23,7 @@ module HawkularMetrics {
 
   export class AppServerDeploymentsDetailsController {
     /// this is for minification purposes
-    public static $inject = ['$scope', '$rootScope', '$interval', '$log', '$routeParams',
+    public static $inject = ['$scope', '$rootScope', '$interval', '$log', '$routeParams', '$filter',
       '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularOps', 'HawkularAlertsManager',
       'ErrorsManager', '$q', 'NotificationsService'];
 
@@ -36,11 +36,15 @@ module HawkularMetrics {
     public startTimeStamp:TimestampInMillis;
     public endTimeStamp:TimestampInMillis;
 
+    /// for list filtering
+    public search:string;
+
     constructor(private $scope:any,
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private $routeParams:any,
+                private $filter:any,
                 private $modal:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
@@ -163,11 +167,12 @@ module HawkularMetrics {
     }
 
     public selectAll():void {
-      let toggleTo = this.selectCount !== this.resourceList.length;
-      _.forEach(this.resourceList, (item:any) => {
+      let filteredList = this.$filter('filter')(this.resourceList, this.search);
+      let toggleTo = this.selectCount !== filteredList.length;
+      _.forEach(filteredList, (item:any) => {
         item.selected = toggleTo;
       });
-      this.selectCount = toggleTo ? this.resourceList.length : 0;
+      this.selectCount = toggleTo ? filteredList.length : 0;
     }
   }
 
