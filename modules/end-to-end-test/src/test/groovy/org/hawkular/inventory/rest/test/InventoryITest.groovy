@@ -866,6 +866,138 @@ class InventoryITest extends AbstractTestBase {
         client.delete(path: "$basePath/$environmentId/resources/$bulkResourcePrefix+1")
     }
 
+    @Test
+    void testComplexBulkCreate() {
+        def env1 = "bulk-env-" + UUID.randomUUID().toString()
+        def env2 = "bulk-env-" + UUID.randomUUID().toString()
+        def rt1 = "bulk-URL" + UUID.randomUUID().toString()
+        def mt1 = "bulk-ResponseTime" + UUID.randomUUID().toString()
+
+        def payload = """
+        {
+          "/t;$tenantId": {
+            "environment": [
+               {
+                 "id": "$env1",
+                 "properties": {"key": "value"},
+                 "outgoing": {
+                   "customRel": ["/t;$tenantId"]
+                 }
+               },
+               {
+                 "id": "$env2",
+                 "properties": {"key": "value2"}
+               }
+            ],
+            "resourceType": [
+               {
+                 "id": "$rt1"
+               }
+            ],
+            "metricType": [
+              {
+                "id": "$mt1",
+                "type": "GAUGE",
+                "unit": "MILLISECONDS"
+              }
+            ]
+          },
+          "/t;$tenantId/rt;$rt1": {
+            "data": [
+              {
+                "role": "configurationSchema",
+                "value": {
+                  "title": "URL config schema",
+                  "description": "A json schema describing configuration of an URL",
+                  "type": "string"
+                }
+              }
+            ],
+            "operationType": [
+              {
+                "id": "ping"
+              }
+            ]
+          },
+          "/t;$tenantId/e;$env1": {
+            "resource": [
+              {
+                "id": "url1",
+                "resourceTypePath": "/t;$tenantId/rt;$rt1"
+              }
+            ],
+            "metric": [
+              {
+                "id": "url1_responseTime",
+                "metricTypePath": "/t;$tenantId/mt;$mt1"
+              }
+            ]
+          },
+          "/t;$tenantId/e;$env1/r;url1": {
+            "data": [
+              {
+                "role": "configuration",
+                "value": "http://redhat.com"
+              }
+            ],
+            "relationship": [
+              {
+                "name": "incorporates",
+                "otherEnd": "/t;$tenantId/e;$env1/m;url1_responseTime",
+                "direction": "outgoing"
+              }
+            ]
+          }
+        }
+        """
+
+        def response = client.post(path: "$basePath/bulk", body: payload)
+
+        assertEquals(201, response.status)
+        def environmentCodes = response.data.environment as Map<String, Integer>
+        def resourceTypeCodes = response.data.resourceType as Map<String, Integer>
+        def metricTypeCodes = response.data.metricType as Map<String, Integer>
+        def dataCodes = response.data.data as Map<String, Integer>
+        def operationTypeCodes = response.data.operationType as Map<String, Integer>
+        def resourceCodes = response.data.resource as Map<String, Integer>
+        def metricCodes = response.data.metric as Map<String, Integer>
+        def relationshipCodes = response.data.relationship as Map<String, Integer>
+
+        assertEquals(2, environmentCodes.size())
+        assertEquals(201, environmentCodes.get("/t;$tenantId/e;$env1".toString()))
+        assertEquals(201, environmentCodes.get("/t;$tenantId/e;$env2".toString()))
+
+        assertEquals(1, resourceTypeCodes.size())
+        assertEquals(201, resourceTypeCodes.get("/t;$tenantId/rt;$rt1".toString()))
+
+        assertEquals(1, metricTypeCodes.size())
+        assertEquals(201, metricTypeCodes.get("/t;$tenantId/mt;$mt1".toString()))
+
+        assertEquals(2, dataCodes.size())
+        assertEquals(201, dataCodes.get("/t;$tenantId/rt;$rt1/d;configurationSchema".toString()))
+        assertEquals(201, dataCodes.get("/t;$tenantId/e;$env1/r;url1/d;configuration".toString()))
+
+        assertEquals(1, operationTypeCodes.size())
+        assertEquals(201, operationTypeCodes.get("/t;$tenantId/rt;$rt1/ot;ping".toString()))
+
+        assertEquals(1, resourceCodes.size())
+        assertEquals(201, resourceCodes.get("/t;$tenantId/e;$env1/r;url1".toString()))
+
+        assertEquals(1, metricCodes.size())
+        assertEquals(201, metricCodes.get("/t;$tenantId/e;$env1/m;url1_responseTime".toString()))
+
+        assertEquals(1, relationshipCodes.size())
+        assertEquals(201, relationshipCodes.entrySet().getAt(0).getValue())
+
+        response = client.get(path: "$basePath/$env1/resources/url1/metrics")
+        assertEquals("/t;$tenantId/e;$env1/m;url1_responseTime".toString(), response.data.get(0).path)
+
+        client.delete(path: "$basePath/environments/$env1")
+        client.delete(path: "$basePath/environments/$env2")
+        client.delete(path: "$basePath/resourceTypes/$rt1")
+        client.delete(path: "$basePath/metricTypes/$mt1")
+    }
+
     private static void assertEntityExists(path, cp) {
         def response = client.get(path: "$basePath/$path")
         assertEquals(200, response.status)
