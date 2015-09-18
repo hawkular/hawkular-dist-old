@@ -39,7 +39,16 @@
         <strong>Available Connections</strong>: The number of available connections was {{alert.avg}}.
       </div>
       <div ng-switch-when="DSRESP">
-        <strong>Responsiveness</strong>: The connection {{alert.condition}} was {{alert.avg}}ms.
+        <strong>Responsiveness</strong>: The connection {{alert.condition}} was {{alert.avg}} ms.
+      </div>
+      <div ng-switch-when="ACTIVE_SESSIONS">
+        <strong>Active Web Sessions</strong>: The number of active web sessions was {{alert.avg}}.
+      </div>
+      <div ng-switch-when="EXPIRED_SESSIONS">
+        <strong>Expired Web Sessions</strong>: The number of expired web sessions was {{alert.avg}}.
+      </div>
+      <div ng-switch-when="REJECTED_SESSIONS">
+        <strong>Rejected Web Sessions</strong>: The number of rejected web sessions was {{alert.avg}}.
       </div>
       <div ng-switch-default>
         <strong>Alert</strong>: <code>{{alert}}</code>

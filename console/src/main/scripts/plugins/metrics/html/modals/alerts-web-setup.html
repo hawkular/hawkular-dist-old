@@ -1,0 +1,114 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="was.cancel()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Web Alert Settings</h4>
+</div>
+<div class="modal-body hk-alert-settings">
+  <tabset>
+    <tab heading="Sessions">
+
+      <div id="hk-heap" class="hk-tab-content">
+        <p>Configure conditions settings for Web Sessions alerts and notifications.</p>
+
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>Active Sessions Thresholds</legend>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="active-min">Minimun</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="10000" ng-model="was.adm.active.activeMinThreshold" class="form-control"
+                         id="active-min" ng-disabled="!was.adm.active.activeMinEnabled">
+
+                </div>
+              </div>
+              <div class="col-sm-4">
+                  <hk-switch hk-model="was.adm.active.activeMinEnabled"
+                             id="active-min-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="active-max">Maximun</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="10000" ng-model="was.adm.active.activeMaxThreshold"
+                         class="form-control" id="active-max" ng-disabled="!was.adm.active.activeMaxEnabled">
+
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <hk-switch hk-model="was.adm.active.activeMaxEnabled"
+                           id="active-max-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Expired Sessions</legend>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="expired-threshold">Sessions Exceeding</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="10000" ng-model="was.adm.expired.expiredThreshold"
+                         class="form-control" id="expired-threshold" ng-disabled="!was.adm.expired.expiredEnabled">
+
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <hk-switch hk-model="was.adm.expired.expiredEnabled"
+                           id="expired-threshold-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Rejected Sessions</legend>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="rejected-threshold">Sessions Exceeding</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="10000" ng-model="was.adm.rejected.rejectedThreshold"
+                         class="form-control" id="rejected-threshold" ng-disabled="!was.adm.rejected.rejectedEnabled">
+
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <hk-switch hk-model="was.adm.rejected.rejectedEnabled"
+                           id="rejected-threshold-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+          </fieldset>
+
+          <hk-fieldset-dampening hk-duration="was.adm.active.responseDuration"
+                                 hk-disabled="!was.adm.active.activeMinEnabled &&
+                                      !was.adm.active.activeMaxEnabled &&
+                                      !was.adm.expired.expiredEnabled &&
+                                      !was.adm.rejected.rejectedEnabled">
+          </hk-fieldset-dampening>
+
+          <hk-fieldset-notification hk-alert-email="was.adm.active.email"
+                                    hk-disabled="!was.adm.active.activeMinEnabled &&
+                                      !was.adm.active.activeMaxEnabled &&
+                                      !was.adm.expired.expiredEnabled &&
+                                      !was.adm.rejected.rejectedEnabled">
+          </hk-fieldset-notification>
+        </form>
+      </div>
+    </tab>
+  </tabset>
+
+
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="was.cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" ng-click="was.save()"
+          ng-disabled="was.saveProgress || !was.isSettingChange">
+    <div ng-show="was.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>
+    Save
+  </button>
+</div>
