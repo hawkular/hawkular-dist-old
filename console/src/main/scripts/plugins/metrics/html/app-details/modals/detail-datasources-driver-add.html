@@ -1,0 +1,194 @@
+<div class="modal-header">
+  <button type="button" class="close" aria-hidden="true" ng-click="dac.onClose()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Add JDBC Driver</h4>
+</div>
+
+<wizard name="driverAdd" on-finish="dac.finishedAddDriverWizard()">
+
+  <wz-step title="Select a JDBC Driver File">
+    <div class="modal-body">
+      <p><strong>Step 1 of 3: Select JDBC Driver File</strong></p>
+
+      <form class="hk-form-horizontal" name="addJdbcDriverForm" novalidate>
+        <fieldset>
+          <div class="form-group">
+            <label for="driver-file">Download the JDBC driver from your database vendor</label>
+            <div class="row">
+              <div class="col-md-6">
+                <input class="form-control" fileread="dac.driverData.binaryFile" type="file" accept="application/zip"
+                       ng-model="dac.driverData.filePath" hk-valid-file required
+                       name="driverFile" id="driver-file"/>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default hk-btn-distant" ng-click="dac.onClose()">Cancel</button>
+      <button type="button" class="btn btn-default" disabled >&#60; Back</button>
+      <button type="button" wz-next class="btn btn-primary"
+              ng-disabled="addJdbcDriverForm.$invalid"
+              ng-click="dac.exitStepFileSelect()">Next &#62;</button>
+    </div>
+  </wz-step>
+
+  <wz-step title="Define Parameters">
+    <div class="modal-body">
+      <p><strong>Step 2 of 3: Define Parameters</strong></p>
+
+      <form class="form-horizontal">
+        <fieldset>
+          <p class="hk-required-info pull-right"><span class="hk-required">*</span> Required field</p>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Driver File Name</label>
+            <div class="col-sm-6">
+              <span class="hk-input-text">{{dac.driverData.filePath}}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="dn"><span class="hk-required">*</span> Driver  Name
+              <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
+                 popover-placement="top" popover-trigger="click" popover="The symbolic name of the driver to be
+                 referenced by the Datsource(s)"><i class="fa fa-info-circle"></i></a>
+            </label>
+            <div class="col-sm-6">
+              <input type="text" id="dn" class="form-control" placeholder="e.g.: mysql" required
+                     ng-model="dac.driverData.driverName">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="dmn"><span class="hk-required">*</span> Driver Module Name
+              <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
+                 popover-placement="top" popover-trigger="click" popover="The name of the module that will be created in
+                 the EAP server"><i class="fa fa-info-circle"></i></a>
+            </label>
+            <div class="col-sm-6">
+              <input type="text" id="dmn" class="form-control" placeholder="e.g.: com.mysql" required
+                     ng-model="dac.driverData.moduleName">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="dc"><span class="hk-required">*</span> Driver  Class</label>
+            <div class="col-sm-6">
+              <input type="text" id="dc" class="form-control" placeholder="e.g.: com.mysql.jdbc.Driver" required
+                     ng-model="dac.driverData.driverClass">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="dmv">Driver Major Version</label>
+            <div class="col-sm-6">
+              <input type="number" min="0" value="1" class="form-control hk-input-small" id="dmv"
+                     ng-model="dac.driver.driverMajorVersion">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="dmiv">Driver Minor Version</label>
+            <div class="col-sm-6">
+              <input type="number" min="0" value="1" class="form-control hk-input-small" id="dmiv"
+                     ng-model="dac.driver.driverMinorVersion">
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default hk-btn-distant" ng-click="dac.onClose()">Cancel</button>
+      <button type="button" wz-previous class="btn btn-default">&#60; Back
+      </button>
+      <button type="button" wz-next class="btn btn-primary" ng-click="dac.exitStepDefineParameters()"
+              ng-disabled="!dac.driverData.driverName || !dac.driverData.moduleName || !dac.driverData.driverClass">
+        Next &#62;</button>
+    </div>
+  </wz-step>
+
+
+  <wz-step title="Review and Add Driver">
+
+    <div class="modal-body">
+      <p><strong>Step 3 of 3: Review and Add Driver</strong></p>
+
+      <div class="text-center hk-spinner-container" ng-show="dac.driverData.uploading">
+        <div class="spinner spinner-lg"></div>
+      </div>
+
+      <div class="alert alert-success" ng-show="dac.driverData.hasDeployedSuccessfully">
+        <span class="pficon pficon-ok"></span>
+        <strong>Success!</strong> The driver "{{dac.driverData.driverName}}" was installed.
+      </div>
+
+      <div class="alert alert-danger" ng-show="dac.driverData.hasDeploymentError">
+        <span class="pficon pficon-error-circle-o"></span>
+        <strong>Error!</strong> Driver file installation failed.
+      </div>
+
+      <form class="form-horizontal">
+        <fieldset>
+          <p class="hk-required-info pull-right"><span class="hk-required">*</span> Required field</p>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Driver File Name</label>
+            <div class="col-sm-6">
+              <span class="hk-input-text">{{dac.driverData.filePath}}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="dn"><span class="hk-required">*</span> Driver  Name
+              <a class="hk-btn-icon" tabindex="0" role="button" popover-append-to-body="true"
+                 popover-placement="top" popover-trigger="click" popover="The symbolic name of the driver to be
+                 referenced by the Datsource(s)"><i class="fa fa-info-circle"></i></a>
+            </label>
+            <div class="col-sm-6">
+              <span class="hk-input-text">{{dac.driverData.driverName}}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="dmn"><span class="hk-required">*</span> Driver Module Name
+              <a class="hk-btn-icon" tabindex="0" role="button" popover-append-to-body="true"
+                 popover-placement="top" popover-trigger="click" popover="The name of the module that will be created in
+                 the EAP server"><i class="fa fa-info-circle"></i></a>
+            </label>
+            <div class="col-sm-6">
+              <span class="hk-input-text">{{dac.driverData.moduleName}}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="dc"><span class="hk-required">*</span> Driver  Class</label>
+            <div class="col-sm-6">
+              <span class="hk-input-text">{{dac.driverData.driverClass}}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="dmv">Driver Major Version</label>
+            <div class="col-sm-6">
+              <span class="hk-input-text">{{dac.driver.driverMajorVersion || '-'}}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="dmiv">Driver Minor Version</label>
+            <div class="col-sm-6">
+              <span class="hk-input-text">{{dac.driver.driverMinorVersion || '-'}}</span>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default hk-btn-distant" ng-click="dac.onClose()"
+              ng-hide="dac.driverData.hasDeploymentError || dac.driverData.hasDeployedSuccessfully"
+              ng-disabled="dac.driverData.uploading">Cancel</button>
+      <button type="button" wz-previous class="btn btn-default" ng-disabled="dac.driverData.uploading"
+              ng-hide="dac.driverData.hasDeployedSuccessfully"> &#60; Back</button>
+      <button type="button" class="btn btn-primary" ng-click="dac.addDriver()"
+              ng-hide="dac.driverData.hasDeploymentError || dac.driverData.hasDeployedSuccessfully"
+              ng-disabled="dac.driverData.uploading">Add</button>
+      <button type="button" class="btn btn-primary" wz-finish ng-disabled="dac.driverData.uploading"
+              ng-show="dac.driverData.hasDeploymentError || dac.driverData.hasDeployedSuccessfully">Exit</button>
+    </div>
+
+  </wz-step>
+
+</wizard>

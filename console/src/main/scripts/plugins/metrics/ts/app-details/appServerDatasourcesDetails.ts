@@ -246,6 +246,22 @@ module HawkularMetrics {
 
     }
 
+    public showDriverAddDialog():void {
+
+      /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
+      let driverAddDialog = this.$modal.open({
+        templateUrl: 'plugins/metrics/html/app-details/modals/detail-datasources-driver-add.html',
+        controller: 'AppServerDatasourcesDriverAddDialogController as dac',
+        scope: this.$scope.$new()
+      });
+
+      driverAddDialog.result.then((modalValue) => {
+        // handle any returned modalValue if required
+      }, (reason) => {
+        // handle any returned cancel reason if required
+      });
+    }
+
     private formatBucketedChartOutput(response):IChartDataPoint[] {
       //  The schema is different for bucketed output
       return _.map(response, (point:IChartDataPoint) => {
