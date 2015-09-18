@@ -25,15 +25,19 @@ module HawkularMetrics {
 
     /// this is for minification purposes
     public static $inject = ['$scope', '$rootScope', '$interval', '$log', '$routeParams',
-      'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager' ];
+      'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager', '$q'];
 
     public static MAX_ACTIVE_COLOR = '#1884c7'; /// blue
     public static EXPIRED_COLOR = '#f57f20'; /// orange
     public static ACTIVE_COLOR = '#49a547'; /// green
     public static REJECTED_COLOR = '#e12226'; /// red
+    public static DEFAULT_MIN_SESSIONS = 20;
+    public static DEFAULT_MAX_SESSIONS = 5000;
+    public static MAX_SESSIONS = 9999;
+    public static DEFAULT_EXPIRED_SESSIONS_THRESHOLD = 15;
+    public static DEFAULT_REJECTED_SESSIONS_THRESHOLD = 15;
 
-    ///public alertList;
-
+    public alertList;
     public activeWebSessions:number = 0;
     public requestTime:number = 0;
     public requestCount:number = 0;
@@ -50,7 +54,8 @@ module HawkularMetrics {
                 private HawkularInventory:any,
                 private HawkularMetric:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
-                private ErrorsManager:IErrorsManager) {
+                private ErrorsManager:IErrorsManager,
+                private $q:ng.IQService) {
       $scope.vm = this;
 
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
@@ -66,7 +71,39 @@ module HawkularMetrics {
         this.getWebChartData();
       }
 
+      this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
+
       this.autoRefresh(20);
+    }
+
+    private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+
+      let activeSessionsTriggerId = metricIdPrefix + '_web_active_sessions';
+      let expiredSessionsTriggerId = metricIdPrefix + '_web_expired_sessions';
+      let rejectedSessionsTriggerId = metricIdPrefix + '_web_rejected_sessions';
+
+      let triggersId = activeSessionsTriggerId + ',' + expiredSessionsTriggerId + ',' + rejectedSessionsTriggerId;
+
+      let sessionsArray:any;
+      let sessionsPromise = this.HawkularAlertsManager.queryAlerts(triggersId, startTime, endTime)
+        .then((sessionsData)=> {
+          _.forEach(sessionsData.alertList, (item) => {
+            if (item['triggerId'] === activeSessionsTriggerId) {
+              item['alertType'] = 'ACTIVE_SESSIONS';
+            } else if (item['triggerId'] === expiredSessionsTriggerId) {
+              item['alertType'] = 'EXPIRED_SESSIONS';
+            } else if (item['triggerId'] === rejectedSessionsTriggerId) {
+              item['alertType'] = 'REJECTED_SESSIONS';
+            }
+          });
+          sessionsArray = sessionsData.alertList;
+        }, (error) => {
+          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+        });
+
+      this.$q.all([sessionsPromise]).finally(()=> {
+        this.alertList = [].concat(sessionsArray);
+      });
     }
 
     private autoRefreshPromise:ng.IPromise<number>;

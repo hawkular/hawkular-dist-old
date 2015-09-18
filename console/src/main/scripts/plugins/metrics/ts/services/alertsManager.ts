@@ -220,6 +220,8 @@ module HawkularMetrics {
 
           consoleAlert.id = serverAlert.alertId;
 
+          consoleAlert.triggerId = serverAlert.triggerId;
+
           consoleAlert.dataId = serverAlert.evalSets[0][0].condition.dataId;
 
           consoleAlert.end = serverAlert.ctime;
