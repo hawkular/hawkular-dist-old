@@ -797,14 +797,14 @@ class InventoryITest extends AbstractTestBase {
     @Test
     @Ignore
     void testResourceBulkCreate() {
-        def payload = "{\"/e;test\": ["
+        def payload = "{\"/e;test\": {\"resource\": ["
         def rs = new ArrayList<String>()
         100.times {
             rs.add("{ \"id\": \"" + bulkResourcePrefix + "-" + it + "\", \"resourceTypePath\": \"/rt;" + roomRTypeId +
                     "\"}")
         }
-        payload += String.join(",", rs) + "]}"
-        def response = client.post(path: "$basePath/bulk/resources", body: payload)
+        payload += String.join(",", rs) + "]}}"
+        def response = client.post(path: "$basePath/bulk", body: payload)
 
         assertEquals(201, response.status)
         def codes = response.data as Map<String, Integer>
@@ -820,23 +820,49 @@ class InventoryITest extends AbstractTestBase {
 
     @Test
     void testResourceBulkCreateWithErrors() {
-        def payload = "{\"/e;" + environmentId + "\": ["
+        def payload = "{\"/e;" + environmentId + "\": {\"resource\": ["
         def rs = new ArrayList<String>()
         //this should fail
         rs.add("{\"id\": \"" + room1ResourceId + "\", \"resourceTypePath\": \"/rt;" + roomRTypeId + "\"}")
         //this should succeed
         rs.add("{\"id\": \"" + bulkResourcePrefix + "+1\", \"resourceTypePath\": \"/rt;" + roomRTypeId + "\"}")
 
-        payload += String.join(",", rs) + "]}"
-        def response = client.post(path: "$basePath/bulk/resources", body: payload)
+        payload += String.join(",", rs) + "]}}"
+        def response = client.post(path: "$basePath/bulk", body: payload)
 
         assertEquals(201, response.status)
-        def codes = response.data as Map<String, Integer>
+        def codes = response.data.resource as Map<String, Integer>
         assertEquals(2, codes.size())
 
         assertEquals(409, codes.get("/t;" + tenantId + "/e;" + environmentId + "/r;" + room1ResourceId))
         assertEquals(201, codes.get("/t;" + tenantId + "/e;" + environmentId + "/r;" + bulkResourcePrefix + "+1"))
 
+        client.delete(path: "$basePath/$environmentId/resources/$bulkResourcePrefix+1")
+    }
+
+    @Test
+    void testBulkCreateAndRelate() {
+        def epath = "/t;$tenantId/e;$environmentId"
+        def rpath = "$epath/r;$bulkResourcePrefix" + "+1"
+        def mpath = "$epath/m;$responseTimeMetricId"
+        def payload = '{"' + epath + '": {"resource": [' +
+                '{"id": "' + bulkResourcePrefix + '+1", "resourceTypePath": "/rt;' + roomRTypeId + '"}]},' +
+                '"' + rpath + '": {"relationship" : [' +
+                '{"name": "incorporates", "otherEnd": "' + mpath + '", "direction": "outgoing"}]}}'
+
+        def response = client.post(path: "$basePath/bulk", body: payload)
+
+        assertEquals(201, response.status)
+        def resourceCodes = response.data.resource as Map<String, Integer>
+        def relationshipCodes = response.data.relationship as Map<String, Integer>
+
+        assertEquals(1, resourceCodes.size())
+        assertEquals(201, resourceCodes.get(rpath))
+
+        assertEquals(1, relationshipCodes.size())
+        assertEquals(201, relationshipCodes.entrySet().getAt(0).getValue())
+
+        client.delete(path: "$basePath/$environmentId/resources/$bulkResourcePrefix+1/metrics/../$responseTimeMetricId")
         client.delete(path: "$basePath/$environmentId/resources/$bulkResourcePrefix+1")
     }
 
