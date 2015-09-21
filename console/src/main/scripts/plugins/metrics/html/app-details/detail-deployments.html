@@ -83,7 +83,7 @@
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
       <div class="dataTables_header">
         <div id="DataTables_Table_0_filter" class="dataTables_filter">
-          <label><input type="search" ng-model="vm.search" aria-controls="DataTables_Table_0"></label>
+          <label><input type="search" ng-model="vm.search.properties.name" aria-controls="DataTables_Table_0"></label>
         </div>
         <div class="dataTables_info" role="status" aria-live="polite" ng-hide="vm.selectCount > 0">Showing <b>1</b> to <b>{{vm.resourceList.length}}</b> of <b>{{vm.resourceList.length}}</b> Items</div>
         <div class="dataTables_info" role="status" aria-live="polite" ng-show="vm.selectCount > 0"><b>{{vm.selectCount}}</b> item<span ng-show="vm.selectCount > 1">s</span> selected</div>
@@ -92,7 +92,7 @@
         <table class="datatable table table-striped table-bordered table-checkbox dataTable no-footer" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" role="grid">
           <thead>
             <tr role="row">
-              <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Select All" ng-click="vm.selectAll()"><input type="checkbox" ng-checked="vm.selectCount === vm.resourceList.length"></th>
+              <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Select All" ng-click="vm.selectAll()"><input type="checkbox" ng-checked="vm.selectCount && vm.selectCount === filteredResList.length"></th>
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Current State: activate to sort column ascending">Current State</th>
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Deployments 10: activate to sort column ascending">Deployments <span class="label label-default label-alert pull-right" tooltip-trigger tooltip-placement="top" tooltip="Total alerts" ng-show="vm.alertList.length">{{vm.alertList.length}}</span></th>
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Enabled/Disabled: activate to sort column ascending">Enabled/Disabled</th>
@@ -100,14 +100,14 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="odd"><td valign="top" colspan="6" class="dataTables_empty" ng-show="vm.search && (vm.resourceList | filter:vm.search).length === 0"><p>Suggestions</p><ul><li>Check the syntax of the search term.</li><li>Check that the correct menu option is chosen (token ID vs. user ID).</li><li>Use wildcards (* to match zero or more characters or ? to match a single character).</li><li>Clear the search field, then click Search to return to the 20 most recent records.</li></ul></td></tr>
-            <tr role="row" ng-repeat="res in vm.resourceList | filter:vm.search" ng-class="{'selected': res.selected}" ng-click="vm.selectItem(res)">
+            <tr class="odd"><td valign="top" colspan="6" class="dataTables_empty" ng-show="vm.search && filteredResList.length === 0"><p>Suggestions</p><ul><li>Check the syntax of the search term.</li><li>Check that the correct menu option is chosen (token ID vs. user ID).</li><li>Use wildcards (* to match zero or more characters or ? to match a single character).</li><li>Clear the search field, then click Search to return to the 20 most recent records.</li></ul></td></tr>
+            <tr role="row" ng-repeat="res in filteredResList = (vm.resourceList | filter:vm.search)" ng-class="{'selected': res.selected}" ng-click="vm.selectItem(res)">
               <td><input type="checkbox" ng-checked="res.selected"></td>
               <td class="state" ng-show="res.state === 'up'"><i class="fa fa-check-circle-o"></i> OK</td>
               <td class="state" ng-show="res.state === 'down'"><i class="fa fa-square"></i> Stopped</td>
               <td class="state" ng-show="res.state === 'unknown'"><i class="fa fa-times-circle-o"></i> Failed</td>
               <td class="state" ng-hide="res.state"><i class="fa fa-chain-broken"></i> Unknown</td>
-              <td><strong>{{res.properties.name | limitTo : res.properties.name.length-13 : 12}}</strong> <span ng-show="false">({{res.properties.name | limitTo : res.properties.name.length-13 : 12}})</span> <span class="label label-danger label-alert pull-right" tooltip-trigger tooltip-placement="top" tooltip="Deployment alerts">{{res.alerts}}</span></td>
+              <td><strong>{{res.properties.name | limitTo : (res.properties.name.length-13) : 12}}</strong> <span ng-show="false">({{res.properties.name | limitTo : (res.properties.name.length-13) : 12}})</span> <span class="label label-danger label-alert pull-right" tooltip-trigger tooltip-placement="top" tooltip="Deployment alerts">{{res.alerts}}</span></td>
               <td ng-show="true">Enabled</td>
               <td ng-show="false">Disabled</td>
               <td class="success" ng-show="true">Good</td>

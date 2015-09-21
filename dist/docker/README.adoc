@@ -76,12 +76,12 @@ docker run -dP  -e HAWKULAR_BACKEND=cassandra -e CASSANDRA_NODES=10.1.2.3 hawkul
 It is possible to use a linked Cassandra Docker container. For this to work you need to
 first start Cassandra and then Hawkular.
 
-.NOTE Hawkular needs Cassandra 2.1.x - so best use an image with the 2.1 tag.
+.NOTE Hawkular from Alpha5 on needs Cassandra 2.2.x - so best use an image with the _2.2_ tag.
 
 .Start the Cassandra container
 [source,shell]
 --
-docker run --name my_cassandra -d cassandra:2.1  # <1>
+docker run --name my_cassandra -d cassandra:2.2  # <1>
 --
 <1> We have provided an explicit container name of _my_cassandra_ to distinguish it from other potentially available
 Cassandra containers. If you don't provide a name _cassandra_ is taken.
@@ -106,7 +106,7 @@ you can mount an explicit host directory to be used.
 .Run Cassandra with external data directory
 [source,shell]
 --
-docker run -v /Users/hrupp/tmp/cassandra:/var/lib/cassandra/data --name my_cassandra -d  cassandra:2.1
+docker run -v /Users/hrupp/tmp/cassandra:/var/lib/cassandra/data --name my_cassandra -d  cassandra:2.2
 --
 
 === Using docker-compose
@@ -114,7 +114,8 @@ docker run -v /Users/hrupp/tmp/cassandra:/var/lib/cassandra/data --name my_cassa
 Docker has a tool http://docs.docker.com/compose/[`docker-compose`], that can be used to instrument a full application
  including linking of containers.
 
-You need to separately http://docs.docker.com/compose/install/[download compose] and can then start
+You need to separately http://docs.docker.com/compose/install/[download compose] footnote:[This is now embedded in
+the Docker Toolbox for OS/X] and can then start
 Hawkular with a linked Cassandra container:
 
 [source,shell]

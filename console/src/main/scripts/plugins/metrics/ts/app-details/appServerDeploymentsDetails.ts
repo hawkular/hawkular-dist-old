@@ -21,10 +21,11 @@
 
 module HawkularMetrics {
 
+
   export class AppServerDeploymentsDetailsController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularOps', 'HawkularAlertsManager',
+    public static $inject = ['$scope', '$rootScope', '$interval', '$log', '$routeParams', '$filter',
+      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularOps', 'HawkularAlertsManager',
       'ErrorsManager', '$q', 'NotificationsService'];
 
     private autoRefreshPromise:ng.IPromise<number>;
@@ -36,17 +37,18 @@ module HawkularMetrics {
     public startTimeStamp:TimestampInMillis;
     public endTimeStamp:TimestampInMillis;
 
-    constructor(private $location:ng.ILocationService,
-                private $scope:any,
+    /// for list filtering
+    public search:string;
+
+    constructor(private $scope:any,
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
-                private $filter:ng.IFilterService,
                 private $routeParams:any,
+                private $filter:any,
                 private $modal:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
-                private HawkularAlert:any,
                 private HawkularOps:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
@@ -92,7 +94,7 @@ module HawkularMetrics {
       });
 
 
-      var logger = this.$log;
+      let logger = this.$log;
       deployAddDialog.result.then((modalValue) => {
         logger.debug('Modal Closed: ' + modalValue);
 
@@ -102,7 +104,7 @@ module HawkularMetrics {
     }
 
 
-    public getResourceList(currentTenantId?: TenantId): any {
+    public getResourceList(currentTenantId?:TenantId):any {
       this.alertList = []; // FIXME: when we have alerts for app server
       let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       let idParts = this.$routeParams.resourceId.split('~');
@@ -110,21 +112,23 @@ module HawkularMetrics {
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
           environmentId: globalEnvironmentId,
           feedId: feedId,
-          resourceTypeId: 'Deployment'}, (aResourceList, getResponseHeaders) => {
+          resourceTypeId: 'Deployment'
+        }, (aResourceList:IResource[], getResponseHeaders) => {
           let promises = [];
           let tmpResourceList = [];
-          angular.forEach(aResourceList, (res: any) => {
+          _.forEach(aResourceList, (res:IResource) => {
             if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
               tmpResourceList.push(res);
               res.selected = _.result(_.find(this.resourceList, {'id': res.id}), 'selected');
               promises.push(this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
                 tenantId: tenantId,
                 availabilityId: 'AI~R~[' + res.id + ']~AT~Deployment Status~Deployment Status',
-                distinct: true}, (resource) => {
-                let latestData = resource[resource.length-1];
+                distinct: true
+              }, (availResource:IAvailResource[]) => {
+                let latestData = _.last(availResource);
                 if (latestData) {
-                  res['state'] = latestData['value'];
-                  res['updateTimestamp'] = latestData['timestamp'];
+                  res.state = latestData.value;
+                  res.updateTimestamp = latestData.timestamp;
                 }
               }).$promise);
             }
@@ -145,17 +149,18 @@ module HawkularMetrics {
     }
 
 
-    public performOperation(operationName:string, resourceId:ResourceId):void {
-      this.$log.info(`performOperation: ${operationName} for resourceId: ${resourceId} `);
-      let operation = {operationName: operationName, resourceId: resourceId};
-      this.HawkularOps.performOperation(operation);
-    }
-
-    public performOperationMulti(operationName:string, resourceList:any):void {
+    public performOperationMulti(operationName:string):void {
       let selectedList = _.filter(this.resourceList, 'selected');
-      this.$log.info(`performOperationMulti for operation: ${operationName}`);
+      this.$log.log(`performOperationMulti for operation: ${operationName}`);
       _.forEach(selectedList, (item:any) => {
-        let operation = {operationName: operationName, resourceId: item.id};
+        let operation = {
+          operationName: operationName,
+          resourcePath: item.path,
+          authentication: {
+            token: this.$rootScope.userDetails.token,
+            persona: this.$rootScope.currentPersona.id
+          }
+        };
         this.HawkularOps.performOperation(operation);
       });
     }
@@ -166,11 +171,12 @@ module HawkularMetrics {
     }
 
     public selectAll():void {
-      let toggleTo = this.selectCount !== this.resourceList.length;
-      _.forEach(this.resourceList, (item:any) => {
+      let filteredList = this.$filter('filter')(this.resourceList, this.search);
+      let toggleTo = this.selectCount !== filteredList.length;
+      _.forEach(filteredList, (item:any) => {
         item.selected = toggleTo;
       });
-      this.selectCount = toggleTo ? this.resourceList.length : 0;
+      this.selectCount = toggleTo ? filteredList.length : 0;
     }
   }
 

@@ -34,7 +34,7 @@ module HawkularMetrics {
     }
 
     private errorToastr(error: any, errorMsg: string): void {
-      var errorMsgComplete: string;
+      let errorMsgComplete: string;
 
       if (error.data && error.data.errorMsg) {
         errorMsgComplete = error.data.errorMsg;
