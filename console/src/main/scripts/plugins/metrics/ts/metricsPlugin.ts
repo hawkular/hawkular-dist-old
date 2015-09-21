@@ -34,7 +34,7 @@ module HawkularMetrics {
       // this was for single page.. remove ?
       when('/hawkular/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/single-page.html'}).
       when('/metrics/response-time', {
-        templateUrl: 'plugins/metrics/html/response-time.html',
+        templateUrl: 'plugins/metrics/html/url-response-time.html',
         resolve: {
           hkResourceList: function ($route, $filter, $location, $rootScope, $q, HawkularInventory) {
             var idParts = $route.current.params.resourceId.split('~');
@@ -56,7 +56,7 @@ module HawkularMetrics {
         }
       }).when('/hawkular-ui/url/url-list', {templateUrl: 'plugins/metrics/html/url-list.html'}).
       when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {
-        templateUrl: 'plugins/metrics/html/response-time.html',
+        templateUrl: 'plugins/metrics/html/url-response-time.html',
         reloadOnSearch: false,
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
@@ -75,7 +75,7 @@ module HawkularMetrics {
         }
       }).
       when('/hawkular-ui/url/availability/:resourceId/:timeOffset?/:endTime?', {
-        templateUrl: 'plugins/metrics/html/availability.html',
+        templateUrl: 'plugins/metrics/html/url-availability.html',
         reloadOnSearch: false,
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
@@ -94,7 +94,7 @@ module HawkularMetrics {
         }
       }).
       when('/hawkular-ui/url/alerts/:resourceId/:timeOffset?/:endTime?', {
-        templateUrl: 'plugins/metrics/html/alerts.html',
+        templateUrl: 'plugins/metrics/html/url-alerts.html',
         reloadOnSearch: false,
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
