@@ -865,6 +865,7 @@
             <resource-config-dmr name="Bound Address"
                                  path="/socket-binding-group=standard-sockets/socket-binding=http"
                                  attribute="bound-address" />
+            <operation-dmr name="JDR" operationName="generate-jdr-report" path="/subsystem=jdr" />
           </resource-type-dmr>
         </resource-type-set-dmr>
 
