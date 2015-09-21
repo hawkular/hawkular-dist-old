@@ -71,10 +71,10 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu disabled" role="menu" aria-labelledby="dropdownMenu1">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Deploy', vm.resourceList)">Enable</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Redeploy', vm.resourceList)">Redeploy</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Undeploy', vm.resourceList)">Disable</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Remove', vm.resourceList)">Remove</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Deploy', vm.resourceList)" dropdown-toggle>Enable</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Redeploy', vm.resourceList)" dropdown-toggle>Redeploy</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Undeploy', vm.resourceList)" dropdown-toggle>Disable</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Remove', vm.resourceList)" dropdown-toggle>Remove</a></li>
           </ul>
         </div>
       </div>
@@ -89,7 +89,7 @@
         <div class="dataTables_info" role="status" aria-live="polite" ng-show="vm.selectCount > 0"><b>{{vm.selectCount}}</b> item<span ng-show="vm.selectCount > 1">s</span> selected</div>
       </div>
       <div class="table-responsive">
-        <table class="datatable table table-striped table-bordered table-checkbox dataTable no-footer" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" role="grid">
+        <table class="datatable table table-striped table-bordered table-checkbox dataTable no-footer hk-table-select" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" role="grid">
           <thead>
             <tr role="row">
               <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Select All" ng-click="vm.selectAll()"><input type="checkbox" ng-checked="vm.selectCount && vm.selectCount === filteredResList.length"></th>
@@ -101,7 +101,7 @@
           </thead>
           <tbody>
             <tr class="odd"><td valign="top" colspan="6" class="dataTables_empty" ng-show="vm.search && filteredResList.length === 0"><p>Suggestions</p><ul><li>Check the syntax of the search term.</li><li>Check that the correct menu option is chosen (token ID vs. user ID).</li><li>Use wildcards (* to match zero or more characters or ? to match a single character).</li><li>Clear the search field, then click Search to return to the 20 most recent records.</li></ul></td></tr>
-            <tr role="row" ng-repeat="res in filteredResList = (vm.resourceList | filter:vm.search)" ng-class="{'selected': res.selected}" ng-click="vm.selectItem(res)">
+            <tr role="row" ng-repeat="res in filteredResList = (vm.resourceList | filter:vm.search)" ng-class="{'hk-selected': res.selected}" ng-click="vm.selectItem(res)">
               <td><input type="checkbox" ng-checked="res.selected"></td>
               <td class="state" ng-show="res.state === 'up'"><i class="fa fa-check-circle-o"></i> OK</td>
               <td class="state" ng-show="res.state === 'down'"><i class="fa fa-square"></i> Stopped</td>
