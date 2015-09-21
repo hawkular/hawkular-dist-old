@@ -31,8 +31,6 @@ module HawkularMetrics {
 
   _module.config(['$routeProvider', ($routeProvider) => {
     $routeProvider.
-      // this was for single page.. remove ?
-      when('/hawkular/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/single-page.html'}).
       when('/metrics/response-time', {
         templateUrl: 'plugins/metrics/html/url-response-time.html',
         resolve: {
