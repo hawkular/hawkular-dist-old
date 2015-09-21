@@ -73,8 +73,8 @@
       <type>war</type>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-feed-comm-war</artifactId>
+      <groupId>org.hawkular.cmdgw</groupId>
+      <artifactId>hawkular-command-gateway-war</artifactId>
       <type>war</type>
     </dependency>
     <dependency>
@@ -123,6 +123,12 @@
     <dependency>
       <groupId>org.hawkular.accounts</groupId>
       <artifactId>hawkular-accounts-events-backend</artifactId>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-redhat-access-integration-backend</artifactId>
+      <version>1.0.0.Alpha5-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>

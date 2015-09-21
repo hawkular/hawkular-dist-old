@@ -22,27 +22,28 @@ module HawkularMetrics {
 
   export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkular.charts',
     'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr',
-    'infinite-scroll']);
+    'infinite-scroll','mgo-angular-wizard']);
 
   _module.config(['$httpProvider', '$locationProvider', '$routeProvider',
     ($httpProvider, $locationProvider) => {
-    $locationProvider.html5Mode(true);
-  }]);
+      $locationProvider.html5Mode(true);
+    }]);
 
   _module.config(['$routeProvider', ($routeProvider) => {
     $routeProvider.
-      // this was for single page.. remove ?
-      when('/hawkular/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/single-page.html'}).
       when('/metrics/response-time', {
-        templateUrl: 'plugins/metrics/html/response-time.html',
+        templateUrl: 'plugins/metrics/html/url-response-time.html',
         resolve: {
-          hkResourceList: function ($filter, $location, $rootScope, $q, HawkularInventory) {
-            var resPromise = HawkularInventory.Resource.query({
-              environmentId: globalEnvironmentId
+          hkResourceList: function ($route, $filter, $location, $rootScope, $q, HawkularInventory) {
+            var idParts = $route.current.params.resourceId.split('~');
+            var feedId = idParts[0];
+            var resPromise = HawkularInventory.ResourceUnderFeed.query({
+              environmentId: globalEnvironmentId,
+              feedId: feedId
             }).$promise;
             resPromise.then(function (hkResourceList) {
               $location.path('/metrics/response-time/' + hkResourceList[0].id);
-            }, function () {
+            }, () => {
               $location.url('/error');
             });
 
@@ -51,15 +52,15 @@ module HawkularMetrics {
             return $q.defer().promise;
           }
         }
-      }).
-      when('/hawkular-ui/url/url-list', {templateUrl: 'plugins/metrics/html/url-list.html'}).
+      }).when('/hawkular-ui/url/url-list', {templateUrl: 'plugins/metrics/html/url-list.html'}).
       when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {
-        templateUrl: 'plugins/metrics/html/response-time.html',
+        templateUrl: 'plugins/metrics/html/url-response-time.html',
         reloadOnSearch: false,
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
-            var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
-              resourceId: $route.current.params.resourceId}).$promise;
+            var p = HawkularInventory.Resource.get({
+              environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
+            }).$promise;
             p.then((response:any) => {
                 return response.properties.url;
               },
@@ -72,12 +73,13 @@ module HawkularMetrics {
         }
       }).
       when('/hawkular-ui/url/availability/:resourceId/:timeOffset?/:endTime?', {
-        templateUrl: 'plugins/metrics/html/availability.html',
+        templateUrl: 'plugins/metrics/html/url-availability.html',
         reloadOnSearch: false,
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
-            var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
-              resourceId: $route.current.params.resourceId}).$promise;
+            var p = HawkularInventory.Resource.get({
+              environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
+            }).$promise;
             p.then((response:any) => {
                 return response.properties.url;
               },
@@ -90,12 +92,13 @@ module HawkularMetrics {
         }
       }).
       when('/hawkular-ui/url/alerts/:resourceId/:timeOffset?/:endTime?', {
-        templateUrl: 'plugins/metrics/html/alerts.html',
+        templateUrl: 'plugins/metrics/html/url-alerts.html',
         reloadOnSearch: false,
         resolve: {
           resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
-            var p = HawkularInventory.Resource.get({environmentId: globalEnvironmentId,
-              resourceId: $route.current.params.resourceId}).$promise;
+            var p = HawkularInventory.Resource.get({
+              environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
+            }).$promise;
             p.then((response:any) => {
                 return response.properties.url;
               },
@@ -112,10 +115,10 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
         reloadOnSearch: false,
         resolve: {
-          resource: function ($route, $location, HawkularInventory, NotificationsService:INotificationsService) {
-            var redirectMissingAppServer = function() {
+          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
+            var redirectMissingAppServer = () => {
               NotificationsService.info('You were redirected to this page because you requested an invalid ' +
-                  'Application Server.');
+                'Application Server.');
               $location.path('/hawkular-ui/app/app-list');
             };
             var checkAppServerExists = function() {
@@ -124,10 +127,10 @@ module HawkularMetrics {
                 redirectMissingAppServer();
                 return;
               }
-              var p = HawkularInventory.FeedResource.get({
+              var p = HawkularInventory.ResourceUnderFeed.get({
                 environmentId: globalEnvironmentId,
                 feedId: idParts[0],
-                resourceId: $route.current.params.resourceId + '~~'
+                resourcePath: $route.current.params.resourceId + '~~'
               }).$promise;
               p.then((response) => {
                   return response;

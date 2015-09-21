@@ -29,9 +29,15 @@ module HawkularMetrics {
 
 /// ID types
   export type TenantId = string;
+  export type FeedId = string;
+  export type Environment = string;
   export type ResourceId = string;
+  export type ResourcePath = string;
+  export type ResourceType = string;
+  export type PathId = string;
   export type MetricId = string;
   export type TriggerId = string;
+  export type TriggerIds = string;
   export type ConditionId = string;
   export type DampeningId = string;
   export type EmailType = string;
@@ -41,15 +47,73 @@ module HawkularMetrics {
 /// Value types
   export type TimestampInMillis = number;
   export type IntervalInSeconds = number;
+  export type AuthenticationToken = string;
 
 
 /// Interface Definitions
   export interface IPersona {
     id:  PersonaId;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+  }
+
+  export interface IUserDetails {
+    email:string;
+    emailVerified: boolean;
+    enabled:boolean;
+    firstName:string;
+    id:string;
+    lastName:string;
+    token:string;
+    totp: boolean;
+    username:string;
   }
 
   export interface IHawkularRootScope extends ng.IRootScopeService {
     currentPersona:IPersona;
+    userDetails:IUserDetails;
+  }
+
+  export interface IResourceProperties {
+    name: string;
+  }
+
+  export interface IOperations {
+    name: string;
+    operationName: string;
+  }
+
+  export interface IResourceTypeProperties {
+    name: string;
+    operations: IOperations[];
+  }
+
+  export interface IResourceType {
+    id: ResourceType;
+    path: ResourcePath;
+    feedId: FeedId;
+    environmentId: Environment;
+    tenantId: TenantId;
+    properties: IResourceTypeProperties;
+  }
+
+  export interface IResource {
+    id: ResourceId;
+    path: ResourcePath;
+    feedId: FeedId;
+    environmentId: Environment;
+    state: string;
+    selected: boolean;
+    tenantId: TenantId;
+    updateTimestamp: TimestampInMillis;
+    properties: IResourceProperties;
+    type: IResourceType;
+  }
+
+  export interface IAvailResource {
+    timestamp: TimestampInMillis;
+    value: string;
   }
 
 }

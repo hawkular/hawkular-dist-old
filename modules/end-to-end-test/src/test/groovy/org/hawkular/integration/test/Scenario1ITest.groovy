@@ -41,7 +41,7 @@ class Scenario1ITest extends AbstractTestBase {
     @Test
     public void testScenario() throws Exception {
         //def response = client.get(path: "/hawkular-accounts/organizations")
-        def response = client.get(path: "/hawkular-accounts/personas/current")
+        def response = client.get(path: "/hawkular/accounts/personas/current")
         assertEquals(200, response.status)
         String tenantId = response.data.id
         // println "tenantId = $tenantId"

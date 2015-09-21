@@ -1,6 +1,6 @@
 /*! redhat_access_angular_ui - v0.9.85 - 2015-08-03
  * Copyright (c) 2015 ;
- * Licensed 
+ * Licensed
  */
 angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 /* jshint -W100 */
@@ -2263,7 +2263,7 @@ angular.module('RedhatAccess.cases').controller('AddCommentSection', [
                         AlertService.addStrataErrorMessage(error);
                     });
                 }
-                
+
             };
             var onError = function (error) {
                 AlertService.addStrataErrorMessage(error);
@@ -2971,7 +2971,7 @@ angular.module('RedhatAccess.cases').controller('DefaultGroup', [
         $scope.usersLoaded = false;
         $scope.usersAndGroupsFinishedLoading = false;
         $scope.userCanManageDefaultGroups = true;
-        
+
         $scope.init = function() {
             if(securityService.userAllowedToManageDefaultGroups()){
                 $scope.groupsLoading = true;
@@ -3031,7 +3031,7 @@ angular.module('RedhatAccess.cases').controller('DefaultGroup', [
         };
 
         $scope.setDefaultGroup = function () {
-            //Remove old group is_default            
+            //Remove old group is_default
             var tmpGroup = {
                 name: $scope.selectedGroup.name,
                 number: $scope.selectedGroup.number,
@@ -3522,7 +3522,7 @@ angular.module('RedhatAccess.cases').controller('EditGroup', [
         $scope.accountNumber = null;
         $scope.isUsersPrestine = true;
         $scope.isGroupPrestine = true;
-        
+
         var reloadTable = false;
         var tableBuilt = false;
         var buildTable = function () {
@@ -3607,7 +3607,7 @@ angular.module('RedhatAccess.cases').controller('EditGroup', [
             }
             $scope.isUsersPrestine = false;
         };
-        
+
         $scope.onMasterWriteCheckboxClicked = function (masterWriteSelected) {
             for(var i = 0; i < $scope.usersOnAccount.length; i++){
                 if (!$scope.usersOnAccount[i].org_admin) {
@@ -4073,7 +4073,7 @@ angular.module('RedhatAccess.cases').controller('List', [
             CaseService.clearCase();
             SearchCaseService.clear();
         });
-        
+
         $scope.$on('$destroy', function () {
             $scope.doSearchDeregister();
             $scope.listAuthEventDeregister();
@@ -5160,7 +5160,7 @@ angular.module('RedhatAccess.cases').directive('rhaCasecomments', ['$location','
                     text = '\n' + text;
                 }
                 $('#case-comment-box').val($('#case-comment-box').val()+text).keyup();
-                
+
                 //Copying the code from the link to comment method
                 var old = $location.hash();
                 $location.hash('case-comment-box');
@@ -5581,7 +5581,7 @@ angular.module('RedhatAccess.cases').service('AttachmentsService', [
                             caseNum: caseId
                         };
                     var deferred = $q.defer();
-                    $http.post('attachments', jsonData).success(function (data, status, headers, config) {
+                    $http.post('hawkular-redhat-access-integration-backend/attachments', jsonData).success(function (data, status, headers, config) {
                         deferred.resolve(data);
                         AlertService.addSuccessMessage(translate('Successfully uploaded attachment') + ' ' + jsonData.attachment + ' ' + translate('to case') + ' ' + caseId);
                     }).error(function (data, status, headers, config) {
@@ -6987,7 +6987,7 @@ angular.module('RedhatAccess.cases').controller('EscalationRequest', [
         $scope.ESCALATION_TYPE = ESCALATION_TYPE;
         $scope.partnerGeoList = ['NA','EMEA','LATAM','APAC'];
         $scope.iceGeoList = ['NA','EMEA','LATAM','APAC','Combo'];
-        
+
         $scope.submitEscalationRequest = function(escalationType) {
             var recordType = '';
             var emailCheck = true;
@@ -7059,7 +7059,7 @@ angular.module('RedhatAccess.cases').service('EscalationRequestService', [
     'securityService',
     'translate',
     function (strataService, AlertService, RHAUtils, ESCALATION_TYPE, securityService, translate) {
-	    
+
 	    this.accountNumber = '';
 	    this.caseNumber = '';
 	    this.alreadyEscalated = false;

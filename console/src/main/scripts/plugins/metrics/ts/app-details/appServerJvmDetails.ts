@@ -30,82 +30,85 @@ module HawkularMetrics {
   export class AppServerJvmDetailsController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager',
+      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager',
       'ErrorsManager', '$q', 'md5'];
 
     public static USED_COLOR = '#1884c7'; /// blue
     public static MAXIMUM_COLOR = '#f57f20'; /// orange
     public static COMMITTED_COLOR = '#515252'; /// dark gray
 
-    public static MAX_HEAP = 1024*1024*1024;
+    public static MAX_HEAP = 1024 * 1024 * 1024;
     public math = this.$window.Math;
 
     public alertList;
-    public chartHeapData: IMultiDataPoint[];
-    public chartNonHeapData: IMultiDataPoint[];
+    public chartHeapData:IMultiDataPoint[];
+    public chartNonHeapData:IMultiDataPoint[];
     public startTimeStamp:TimestampInMillis;
     public endTimeStamp:TimestampInMillis;
-    public chartGCDurationData: IChartDataPoint[];
+    public chartGCDurationData:IChartDataPoint[];
 
-    constructor(private $location: ng.ILocationService,
-      private $scope: any,
-      private $rootScope: IHawkularRootScope,
-      private $interval: ng.IIntervalService,
-      private $log: ng.ILogService,
-      private $filter: ng.IFilterService,
-      private $routeParams: any,
-      private $modal: any,
-      private $window: any,
-      private HawkularInventory: any,
-      private HawkularMetric: any,
-      private HawkularAlert: any,
-      private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-      private ErrorsManager: HawkularMetrics.IErrorsManager,
-      private $q: ng.IQService,
-      private md5: any ) {
-        $scope.vm = this;
+    constructor(private $location:ng.ILocationService,
+                private $scope:any,
+                private $rootScope:IHawkularRootScope,
+                private $interval:ng.IIntervalService,
+                private $log:ng.ILogService,
+                private $filter:ng.IFilterService,
+                private $routeParams:any,
+                private $modal:any,
+                private $window:any,
+                private HawkularInventory:any,
+                private HawkularMetric:any,
+                private HawkularAlertsManager:IHawkularAlertsManager,
+                private ErrorsManager:IErrorsManager,
+                private $q:ng.IQService,
+                private md5:any) {
+      $scope.vm = this;
 
-        this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
-        this.endTimeStamp = +moment();
-        this.chartHeapData = [];
-        this.chartNonHeapData = [];
+      this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
+      this.endTimeStamp = +moment();
+      this.chartHeapData = [];
+      this.chartNonHeapData = [];
 
-        if ($rootScope.currentPersona) {
-          this.getJvmData();
-        } else {
-          // currentPersona hasn't been injected to the rootScope yet, wait for it..
-          $rootScope.$watch('currentPersona',
-            (currentPersona) => currentPersona && this.getJvmData());
-        }
+      if ($rootScope.currentPersona) {
+        this.getJvmData();
+      } else {
+        // currentPersona hasn't been injected to the rootScope yet, wait for it..
+        $rootScope.$watch('currentPersona',
+          (currentPersona) => currentPersona && this.getJvmData());
+      }
 
-        //var metricId = 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
+      this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
 
-        this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
-
-        this.autoRefresh(20);
+      this.autoRefresh(20);
     }
 
     private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      var pheapArray: any, nheapArray: any, garbaArray:any;
-      var pheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_pheap', startTime, endTime)
+      let pheapArray:any, nheapArray:any, garbaArray:any;
+      let pheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_pheap', startTime, endTime)
         .then((pheapData)=> {
-          _.forEach(pheapData.alertList, (item) => {item['alertType']='PHEAP';});
+          _.forEach(pheapData.alertList, (item) => {
+            item['alertType'] = 'PHEAP';
+          });
           pheapArray = pheapData.alertList;
         }, (error) => {
           return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
 
-      var nheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_nheap', startTime, endTime)
+      let nheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_nheap', startTime, endTime)
         .then((nheapData)=> {
-          _.forEach(nheapData.alertList, (item) => {item['alertType']='NHEAP';});
+          _.forEach(nheapData.alertList, (item) => {
+            item['alertType'] = 'NHEAP';
+          });
           nheapArray = nheapData.alertList;
         }, (error) => {
           return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
 
-      var garbaPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_garba', startTime, endTime)
+      let garbaPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_garba', startTime, endTime)
         .then((garbaData)=> {
-          _.forEach(garbaData.alertList, (item) => {item['alertType']='GARBA';});
+          _.forEach(garbaData.alertList, (item) => {
+            item['alertType'] = 'GARBA';
+          });
           garbaArray = garbaData.alertList;
         }, (error) => {
           return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
@@ -116,10 +119,12 @@ module HawkularMetrics {
       });
     }
 
-    private autoRefreshPromise: ng.IPromise<number>;
+    private autoRefreshPromise:ng.IPromise<number>;
 
     private formatBucketedChartOutput(response):IChartDataPoint[] {
-      function convertBytesToMegaBytes(bytes:number):number { return bytes / 1024 / 1024; }
+      function convertBytesToMegaBytes(bytes:number):number {
+        return bytes / 1024 / 1024;
+      }
 
       //  The schema is different for bucketed output
       return _.map(response, (point:IChartDataPoint) => {
@@ -138,15 +143,15 @@ module HawkularMetrics {
     }
 
     private formatCounterChartOutput(response, buckets = 60):IChartDataPoint[] {
-      var result = response;
+      let result = response;
       /// FIXME: Simulating buckets.. this should come from metrics.
       if (response.length > buckets) {
-        var step = this.$window.Math.floor(response.length / buckets);
+        let step = this.$window.Math.floor(response.length / buckets);
         result = [];
-        var accValue = 0;
-        _.forEach(response, function(point:any, idx) {
-          if (parseInt(idx, 10) % step === (step-1)) {
-            result.push({timestamp: point.timestamp, value: accValue });
+        let accValue = 0;
+        _.forEach(response, (point:any, idx) => {
+          if (parseInt(idx, 10) % step === (step - 1)) {
+            result.push({timestamp: point.timestamp, value: accValue});
             accValue = 0;
           }
           else {
@@ -157,7 +162,7 @@ module HawkularMetrics {
 
       //  The schema is different for bucketed output
       return _.map(result, (point:IChartDataPoint, idx) => {
-        var theValue = idx === 0 ? 0 : (result[idx-1].value - point.value);
+        let theValue = idx === 0 ? 0 : (result[idx - 1].value - point.value);
         return {
           timestamp: point.timestamp,
           date: new Date(point.timestamp),
@@ -172,7 +177,7 @@ module HawkularMetrics {
       });
     }
 
-    public autoRefresh(intervalInSeconds: number): void {
+    private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getJvmData();
         this.getJvmChartData();
@@ -184,7 +189,7 @@ module HawkularMetrics {
       });
     }
 
-    public getJvmData(): any {
+    public getJvmData():void {
       this.alertList = []; // FIXME: when we have alerts for app server
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
@@ -193,8 +198,8 @@ module HawkularMetrics {
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used',
         start: this.startTimeStamp,
         end: this.endTimeStamp,
-        buckets: 1}, (resource) => {
-        console.log('!!! heap used', resource);
+        buckets: 1
+      }, (resource) => {
         if (resource.length) {
           this['heapUsage'] = resource[0];
         }
@@ -203,8 +208,8 @@ module HawkularMetrics {
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max',
         start: this.startTimeStamp,
         end: this.endTimeStamp,
-        buckets: 1}, (resource) => {
-        console.log('!!! heap max', resource);
+        buckets: 1
+      }, (resource) => {
         if (resource.length) {
           this['heapMax'] = resource[0];
           AppServerJvmDetailsController.MAX_HEAP = resource[0].max;
@@ -214,17 +219,17 @@ module HawkularMetrics {
         counterId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration',
         start: this.startTimeStamp,
         end: this.endTimeStamp,
-        buckets: 1}, (resource) => {
-        console.log('!!! GC', resource);
+        buckets: 1
+      }, (resource) => {
         if (resource.length) {
-          this['accGCDuration'] = resource[0].value - resource[resource.length-1].value;
+          this['accGCDuration'] = resource[0].value - resource[resource.length - 1].value;
           this.chartGCDurationData = this.formatCounterChartOutput(resource);
         }
       }, this);
       this.getJvmChartData();
     }
 
-    public getJvmChartData(): any {
+    public getJvmChartData():void {
 
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
@@ -232,42 +237,62 @@ module HawkularMetrics {
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Committed',
         start: this.startTimeStamp,
-        end: this.endTimeStamp, buckets:60}, (data) => {
-          this.chartHeapData[0] = { key: 'Heap Committed',
-            color: AppServerJvmDetailsController.COMMITTED_COLOR, values: this.formatBucketedChartOutput(data) };
-        }, this);
+        end: this.endTimeStamp,
+        buckets: 60
+      }, (data) => {
+        this.chartHeapData[0] = {
+          key: 'Heap Committed',
+          color: AppServerJvmDetailsController.COMMITTED_COLOR, values: this.formatBucketedChartOutput(data)
+        };
+      }, this);
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used',
         start: this.startTimeStamp,
-        end: this.endTimeStamp, buckets:60}, (data) => {
-          this.chartHeapData[1] = { key: 'Heap Used',
-            color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data) };
-        }, this);
+        end: this.endTimeStamp,
+        buckets: 60
+      }, (data) => {
+        this.chartHeapData[1] = {
+          key: 'Heap Used',
+          color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data)
+        };
+      }, this);
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max',
         start: this.startTimeStamp,
-        end: this.endTimeStamp, buckets:60}, (data) => {
-          this.chartHeapData[2] = { key: 'Heap Max',
-            color: AppServerJvmDetailsController.MAXIMUM_COLOR, values: this.formatBucketedChartOutput(data) };
-        }, this);
+        end: this.endTimeStamp,
+        buckets: 60
+      }, (data) => {
+        this.chartHeapData[2] = {
+          key: 'Heap Max',
+          color: AppServerJvmDetailsController.MAXIMUM_COLOR, values: this.formatBucketedChartOutput(data)
+        };
+      }, this);
 
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Committed',
         start: this.startTimeStamp,
-        end: this.endTimeStamp, buckets:60}, (data) => {
-          this.chartNonHeapData[0] = { key: 'NonHeap Committed',
-            color: AppServerJvmDetailsController.COMMITTED_COLOR, values: this.formatBucketedChartOutput(data) };
-        }, this);
+        end: this.endTimeStamp,
+        buckets: 60
+      }, (data) => {
+        this.chartNonHeapData[0] = {
+          key: 'NonHeap Committed',
+          color: AppServerJvmDetailsController.COMMITTED_COLOR, values: this.formatBucketedChartOutput(data)
+        };
+      }, this);
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used',
         start: this.startTimeStamp,
-        end: this.endTimeStamp, buckets:60}, (data) => {
-          this.chartNonHeapData[1] = { key: 'NonHeap Used',
-            color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data) };
-        }, this);
+        end: this.endTimeStamp,
+        buckets: 60
+      }, (data) => {
+        this.chartNonHeapData[1] = {
+          key: 'NonHeap Used',
+          color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data)
+        };
+      }, this);
     }
   }
 
-  _module.controller('HawkularMetrics.AppServerJvmDetailsController', AppServerJvmDetailsController);
+  _module.controller('AppServerJvmDetailsController', AppServerJvmDetailsController);
 
 }

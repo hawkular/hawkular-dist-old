@@ -80,6 +80,11 @@
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.bus:INFO}</xsl:text></xsl:attribute>
       </level>
     </logger>
+    <logger category="org.hawkular.cmdgw">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.cmdgw:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
     <logger category="org.hawkular.component.availcreator">
       <level>
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.availcreator:INFO}</xsl:text></xsl:attribute>
@@ -856,10 +861,11 @@
                                  path="/core-service=server-environment"
                                  attribute="qualified-host-name" />
             <resource-config-dmr name="Version"
-                                 attribute="release-version" />
+                                 attribute="product-version" />
             <resource-config-dmr name="Bound Address"
                                  path="/socket-binding-group=standard-sockets/socket-binding=http"
                                  attribute="bound-address" />
+            <operation-dmr name="JDR" operationName="generate-jdr-report" path="/subsystem=jdr" />
           </resource-type-dmr>
         </resource-type-set-dmr>
 
@@ -933,6 +939,13 @@
                              metricSets="Datasource Pool Metrics,Datasource JDBC Metrics" />
         </resource-type-set-dmr>
 
+        <resource-type-set-dmr name="JDBC Driver" enabled="true">
+          <resource-type-dmr name="JDBC Driver"
+                             resourceNameTemplate="JDBC Driver [%-]"
+                             path="/subsystem=datasources/jdbc-driver=*"
+                             parents="WildFly Server" />
+        </resource-type-set-dmr>
+
         <resource-type-set-dmr name="Transaction Manager" enabled="true">
           <resource-type-dmr name="Transaction Manager"
                              resourceNameTemplate="Transaction Manager"
@@ -948,11 +961,11 @@
                       port="9990"
                       username="adminUser"
                       password="adminPass"
-                      resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,Transaction Manager" />
+                      resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,JDBC Driver,Transaction Manager" />
 
           <local-dmr name="Local"
                      enabled="true"
-                     resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,Transaction Manager,Hawkular" />
+                     resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,JDBC Driver,Transaction Manager,Hawkular" />
 
         </managed-servers>
 
@@ -987,6 +1000,26 @@
           </credential>
         </secure-deployment>
         <secure-deployment name="hawkular-alerts-rest.war">
+          <realm>hawkular</realm>
+          <resource>hawkular-accounts-backend</resource>
+          <use-resource-role-mappings>true</use-resource-role-mappings>
+          <enable-cors>true</enable-cors>
+          <enable-basic-auth>true</enable-basic-auth>
+          <credential name="secret">
+            <xsl:value-of select="$uuid.hawkular.accounts.backend"/>
+          </credential>
+        </secure-deployment>
+        <secure-deployment name="hawkular-redhat-access-integration-backend.war">
+          <realm>hawkular</realm>
+          <resource>hawkular-accounts-backend</resource>
+          <use-resource-role-mappings>true</use-resource-role-mappings>
+          <enable-cors>true</enable-cors>
+          <enable-basic-auth>true</enable-basic-auth>
+          <credential name="secret">
+            <xsl:value-of select="$uuid.hawkular.accounts.backend"/>
+          </credential>
+        </secure-deployment>
+        <secure-deployment name="hawkular-command-gateway-war.war">
           <realm>hawkular</realm>
           <resource>hawkular-accounts-backend</resource>
           <use-resource-role-mappings>true</use-resource-role-mappings>

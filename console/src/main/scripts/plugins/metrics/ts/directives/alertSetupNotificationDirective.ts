@@ -27,7 +27,7 @@ module HawkularMetrics {
     public replace = 'true';
 
     public static Factory() {
-      var directive = () => {
+      let directive = () => {
         return new HkAlertNotification();
       };
 

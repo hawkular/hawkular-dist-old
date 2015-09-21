@@ -24,7 +24,7 @@ module HawkularMetrics {
 
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularAlert',
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log',
       '$routeParams', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService', 'MetricsService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
@@ -45,7 +45,6 @@ module HawkularMetrics {
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
-                private HawkularAlert:any,
                 private $routeParams:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
@@ -63,7 +62,7 @@ module HawkularMetrics {
         this.refreshChartDataNow(this.getMetricId());
       });
 
-      var waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
+      let waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
           this.resourceId = resourceId;
@@ -84,8 +83,8 @@ module HawkularMetrics {
     }
 
     private getAlerts(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
-        HawkularMetrics.AlertType.THRESHOLD).then((responseAlertData)=> {
+      let triggerIds = metricId + '_trigger_thres';
+      this.HawkularAlertsManager.queryAlerts(triggerIds, startTime, endTime).then((responseAlertData)=> {
           _.forEach(responseAlertData.alertList, (item) => { item['alertType']='PINGRESPONSE';});
           this.alertList = responseAlertData.alertList;
         }, (error) => {
@@ -113,7 +112,7 @@ module HawkularMetrics {
 
     private refreshChartDataNow(metricId:MetricId, startTime?:TimestampInMillis):void {
       this.$scope.hkEndTimestamp = +moment();
-      var adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+      let adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.refreshSummaryData(metricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       this.refreshHistoricalChartDataForTimestamp(metricId,
@@ -134,7 +133,7 @@ module HawkularMetrics {
     public refreshSummaryData(metricId:MetricId,
                               startTime?:TimestampInMillis,
                               endTime?:TimestampInMillis):void {
-      var dataPoints:IChartDataPoint[];
+      let dataPoints:IChartDataPoint[];
 
       // calling refreshChartData without params use the model values
       if (!endTime) {
@@ -164,13 +163,12 @@ module HawkularMetrics {
     }
 
     private retrieveThreshold() {
-      this.HawkularAlert.Condition.query({triggerId: this.$routeParams.resourceId + '_trigger_thres'}).$promise
-        .then((response) => {
-
-          if (response[0]) {
-            this.threshold = response[0].threshold;
+      let triggerId = this.$routeParams.resourceId + '_trigger_thres';
+      this.HawkularAlertsManager.getTriggerConditions(triggerId)
+        .then((conditions) => {
+          if (conditions[0]) {
+            this.threshold = conditions[0].threshold;
           }
-
         }, (error) => {
           this.$log.error('Error Loading Threshold data');
           toastr.error('Error Loading Threshold Data: ' + error);

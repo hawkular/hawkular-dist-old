@@ -24,5 +24,5 @@ module HawkularMetrics {
   export class AppServerAlertsDetailsController {
   }
 
-  _module.controller('HawkularMetrics.AppServerAlertsDetailsController', AppServerAlertsDetailsController);
+  _module.controller('AppServerAlertsDetailsController', AppServerAlertsDetailsController);
 }

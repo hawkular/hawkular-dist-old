@@ -46,9 +46,9 @@ module HawkularMetrics {
       // TODO - update the pfly notification service to support more and category based notifications containers.
       this.$rootScope.hkNotifications = {alerts: []};
 
-      var definitionPromises = this.loadDefinitions();
+      let triggersPromises = this.loadTriggers();
 
-      this.$q.all(definitionPromises).then(() => {
+      this.$q.all(triggersPromises).then(() => {
         this.admBak = angular.copy(this.adm);
         this.isSettingChange = false;
       });
@@ -67,7 +67,7 @@ module HawkularMetrics {
       this.$rootScope.hkNotifications.alerts = [];
 
       // Error notification done with callback function on error
-      var errorCallback = (error:any, msg:string) => {
+      let errorCallback = (error:any, msg:string) => {
         this.$rootScope.hkNotifications.alerts.push({
           type: 'error',
           message: msg
@@ -75,12 +75,12 @@ module HawkularMetrics {
       };
 
       this.saveProgress = true;
-      var isError = false;
+      let isError = false;
       // Check if email action exists
 
-      var saveDefinitionPromises = this.saveDefinitions(errorCallback);
+      let saveTriggersPromises = this.saveTriggers(errorCallback);
 
-      this.$q.all(saveDefinitionPromises).finally(()=> {
+      this.$q.all(saveTriggersPromises).finally(()=> {
         this.saveProgress = false;
 
         if (!isError) {
@@ -99,18 +99,18 @@ module HawkularMetrics {
       this.$modalInstance.dismiss('cancel');
     }
 
-    loadDefinitions():Array<ng.IPromise<any>> {
+    loadTriggers():Array<ng.IPromise<any>> {
       throw new Error('This method is abstract');
     }
 
-    saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
+    saveTriggers(errorCallback):Array<ng.IPromise<any>> {
       throw new Error('This method is abstract');
     }
   }
 
 
   export class MetricsAlertController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
       '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
 
     private metricId: string; /// @todo: use MetricId
@@ -127,7 +127,6 @@ module HawkularMetrics {
     public headerLinks: any;
 
     constructor(private $scope:any,
-                private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 private ErrorsManager: HawkularMetrics.IErrorsManager,
                 private $log: ng.ILogService,
@@ -152,7 +151,7 @@ module HawkularMetrics {
     }
 
     public openResponseSetup() {
-      var modalInstance = this.$modal.open({
+      let modalInstance = this.$modal.open({
         templateUrl: 'plugins/metrics/html/modals/alerts-url-response-setup.html',
         controller: 'AlertUrlResponseSetupController as mas',
         resolve: {
@@ -162,7 +161,7 @@ module HawkularMetrics {
         }
       });
 
-      var logger = this.$log;
+      let logger = this.$log;
 
       modalInstance.result.then(function (selectedItem) {
         this.selected = selectedItem;
@@ -172,7 +171,7 @@ module HawkularMetrics {
     }
 
     private autoRefresh(intervalInSeconds:number):void {
-      var autoRefreshPromise = this.$interval(()  => {
+      let autoRefreshPromise = this.$interval(()  => {
         this.getAlerts();
       }, intervalInSeconds * 1000);
 
@@ -185,7 +184,9 @@ module HawkularMetrics {
       this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : (new Date()).getTime();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
 
-      this.HawkularAlertsManager.queryConsoleAlerts(this.metricId, this.alertsTimeStart, this.alertsTimeEnd, undefined,
+      let triggerIds = this.metricId + '_trigger_avail,' + this.metricId + '_trigger_thres';
+
+      this.HawkularAlertsManager.queryAlerts(triggerIds, this.alertsTimeStart, this.alertsTimeEnd,
         this.resCurPage, this.resPerPage).then((queriedAlerts)=> {
           this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
           _.forEach(queriedAlerts.alertList, (item) => {
@@ -208,13 +209,19 @@ module HawkularMetrics {
 
     public resolveAll(): void {
       this.isResolvingAll = true;
-      var alertIdList = '';
-      for (var i = 0; i < this.alertList.length; i++) {
+      let alertIdList = '';
+      for (let i = 0; i < this.alertList.length; i++) {
         alertIdList = alertIdList + this.alertList[i].id + ',';
       }
       alertIdList = alertIdList.slice(0, - 1);
 
-      this.HawkularAlert.Alert.resolve({alertIds: alertIdList}, {}).$promise.then( () => {
+      let resolvedAlerts = {
+        alertIds: alertIdList,
+        resolvedBy: this.$rootScope.currentPersona.name,
+        resolvedNotes: 'Manually resolved'
+      };
+
+      this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then( () => {
         this.alertList.length = 0;
         this.isResolvingAll = false;
       });
@@ -226,32 +233,32 @@ module HawkularMetrics {
 
   export class AlertUrlAvailabilitySetupController extends AlertSetupController {
 
-    loadDefinitions():Array<ng.IPromise<any>> {
-      var availabilityTriggerId = this.$routeParams.resourceId + '_trigger_avail';
+    loadTriggers():Array<ng.IPromise<any>> {
+      let availabilityTriggerId = this.$routeParams.resourceId + '_trigger_avail';
 
-      var availabilityDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(availabilityTriggerId)
-        .then((alertDefinitionData) => {
-          this.$log.debug('alertDefinitionData', alertDefinitionData);
-          this.triggerDefinition['avail'] = alertDefinitionData;
+      let availabilityTriggerPromise = this.HawkularAlertsManager.getTrigger(availabilityTriggerId)
+        .then((triggerData) => {
+          this.$log.debug('triggerData', triggerData);
+          this.triggerDefinition['avail'] = triggerData;
 
           this.adm['avail'] = {};
-          this.adm.avail['email'] = alertDefinitionData.trigger.actions.email[0];
-          this.adm.avail['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
-          this.adm.avail['conditionEnabled'] = alertDefinitionData.trigger.enabled;
+          this.adm.avail['email'] = triggerData.trigger.actions.email[0];
+          this.adm.avail['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.avail['conditionEnabled'] = triggerData.trigger.enabled;
         });
 
-      return [availabilityDefinitionPromise];
+      return [availabilityTriggerPromise];
     }
 
-    saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
+    saveTriggers(errorCallback):Array<ng.IPromise<any>> {
       // Set the actual object to save
-      var availabilityAlertDefinition = angular.copy(this.triggerDefinition.avail);
-      availabilityAlertDefinition.trigger.actions.email[0] = this.adm.avail.email;
-      availabilityAlertDefinition.trigger.enabled = this.adm.avail.conditionEnabled;
-      availabilityAlertDefinition.dampenings[0].evalTimeSetting = this.adm.avail.responseDuration;
-      availabilityAlertDefinition.dampenings[1].evalTimeSetting = this.adm.avail.responseDuration;
+      let availabilityTrigger = angular.copy(this.triggerDefinition.avail);
+      availabilityTrigger.trigger.actions.email[0] = this.adm.avail.email;
+      availabilityTrigger.trigger.enabled = this.adm.avail.conditionEnabled;
+      availabilityTrigger.dampenings[0].evalTimeSetting = this.adm.avail.responseDuration;
+      availabilityTrigger.dampenings[1].evalTimeSetting = this.adm.avail.responseDuration;
 
-      var availabilitySavePromise = this.HawkularAlertsManager.saveAlertDefinition(availabilityAlertDefinition,
+      let availabilitySavePromise = this.HawkularAlertsManager.updateTrigger(availabilityTrigger,
         errorCallback, this.triggerDefinition.avail);
 
       return [availabilitySavePromise];
@@ -261,38 +268,38 @@ module HawkularMetrics {
   _module.controller('AlertUrlAvailabilitySetupController', AlertUrlAvailabilitySetupController);
 
   export class AlertUrlResponseSetupController extends AlertSetupController {
-    loadDefinitions():Array<ng.IPromise<any>> {
-      var responseTriggerId = this.$routeParams.resourceId + '_trigger_thres';
+    loadTriggers():Array<ng.IPromise<any>> {
+      let responseTriggerId = this.$routeParams.resourceId + '_trigger_thres';
 
-      var responseDefinitionPromise = this.HawkularAlertsManager.getAlertDefinition(responseTriggerId).then(
-        (alertDefinitionData) => {
-          this.$log.debug('alertDefinitionData', alertDefinitionData);
-          this.triggerDefinition['thres'] = alertDefinitionData;
+      let responseTriggerPromise = this.HawkularAlertsManager.getTrigger(responseTriggerId).then(
+        (triggerData) => {
+          this.$log.debug('triggerData', triggerData);
+          this.triggerDefinition['thres'] = triggerData;
 
           this.adm['thres'] = {};
-          this.adm.thres['email'] = alertDefinitionData.trigger.actions.email[0];
-          this.adm.thres['responseDuration'] = alertDefinitionData.dampenings[0].evalTimeSetting;
-          this.adm.thres['conditionEnabled'] = alertDefinitionData.trigger.enabled;
-          this.adm.thres['conditionThreshold'] = alertDefinitionData.conditions[0].threshold;
+          this.adm.thres['email'] = triggerData.trigger.actions.email[0];
+          this.adm.thres['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.thres['conditionEnabled'] = triggerData.trigger.enabled;
+          this.adm.thres['conditionThreshold'] = triggerData.conditions[0].threshold;
         });
 
-      return [responseDefinitionPromise];
+      return [responseTriggerPromise];
     }
 
-    saveDefinitions(errorCallback):Array<ng.IPromise<any>> {
+    saveTriggers(errorCallback):Array<ng.IPromise<any>> {
       // Set the actual object to save
-      var responseAlertDefinition = angular.copy(this.triggerDefinition.thres);
-      responseAlertDefinition.trigger.enabled = this.adm.thres.conditionEnabled;
+      let responseTrigger = angular.copy(this.triggerDefinition.thres);
+      responseTrigger.trigger.enabled = this.adm.thres.conditionEnabled;
 
       if (this.adm.thres.conditionEnabled) {
-        responseAlertDefinition.trigger.actions.email[0] = this.adm.thres.email;
-        responseAlertDefinition.dampenings[0].evalTimeSetting = this.adm.thres.responseDuration;
-        responseAlertDefinition.dampenings[1].evalTimeSetting = this.adm.thres.responseDuration;
-        responseAlertDefinition.conditions[0].threshold = this.adm.thres.conditionThreshold;
-        responseAlertDefinition.conditions[1].threshold = this.adm.thres.conditionThreshold;
+        responseTrigger.trigger.actions.email[0] = this.adm.thres.email;
+        responseTrigger.dampenings[0].evalTimeSetting = this.adm.thres.responseDuration;
+        responseTrigger.dampenings[1].evalTimeSetting = this.adm.thres.responseDuration;
+        responseTrigger.conditions[0].threshold = this.adm.thres.conditionThreshold;
+        responseTrigger.conditions[1].threshold = this.adm.thres.conditionThreshold;
       }
 
-      var responseSavePromise = this.HawkularAlertsManager.saveAlertDefinition(responseAlertDefinition,
+      let responseSavePromise = this.HawkularAlertsManager.updateTrigger(responseTrigger,
         errorCallback, this.triggerDefinition.thres);
 
       return [responseSavePromise];
@@ -327,7 +334,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      var directive = () => {
+      let directive = () => {
         return new HkClearNotifications();
       };
 

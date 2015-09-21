@@ -37,7 +37,7 @@ module HawkularMetrics {
   export class MetricsAvailabilityController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric',
-      'HawkularAlert', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
+      '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
       'ErrorsManager', 'NotificationsService', '$modal'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
@@ -61,7 +61,6 @@ module HawkularMetrics {
                 private $window:any,
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
-                private HawkularAlert:any,
                 private $routeParams:any,
                 private $filter:ng.IFilterService,
                 private $moment:any,
@@ -76,7 +75,7 @@ module HawkularMetrics {
 
       this.resourceId = $scope.hkParams.resourceId;
 
-      var waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
+      let waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
           this.resourceId = resourceId;
@@ -101,9 +100,9 @@ module HawkularMetrics {
     }
 
     public openAvailabilitySetup(): void {
-      console.log('openAvailabilitySetup');
+      this.$log.log('openAvailabilitySetup');
 
-      var modalInstance = this.$modal.open({
+      let modalInstance = this.$modal.open({
         templateUrl: 'plugins/metrics/html/modals/alerts-url-availability-setup.html',
         controller: 'AlertUrlAvailabilitySetupController as mas',
         resolve: {
@@ -114,15 +113,15 @@ module HawkularMetrics {
 
       });
 
-      var logger = this.$log;
+      let logger = this.$log;
       modalInstance.result.then(null, function () {
         logger.debug('Modal dismissed at: ' + new Date());
       });
     }
 
     private getAlerts(metricId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      this.HawkularAlertsManager.queryConsoleAlerts(metricId, startTime, endTime,
-        HawkularMetrics.AlertType.AVAILABILITY).then((alertAvailData)=> {
+      let triggerIds = metricId + '_trigger_avail';
+      this.HawkularAlertsManager.queryAlerts(triggerIds, startTime, endTime).then((alertAvailData)=> {
           _.forEach(alertAvailData.alertList, (item) => { item['alertType']='PINGAVAIL';});
           this.alertList = alertAvailData.alertList;
         }, (error) => {
@@ -136,7 +135,7 @@ module HawkularMetrics {
 
     public refreshAvailPageNow(resourceId:ResourceId, startTime?:number):void {
       this.$scope.hkEndTimestamp = +this.$moment();
-      var adjStartTimeStamp:number = +this.$moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+      let adjStartTimeStamp:number = +this.$moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       if (resourceId) {
         this.$log.debug('Updating Availability Page');
@@ -147,7 +146,7 @@ module HawkularMetrics {
     }
 
 
-    public autoRefreshAvailability(intervalInSeconds:TimestampInMillis):void {
+    private  autoRefreshAvailability(intervalInSeconds:TimestampInMillis):void {
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.startTimeStamp = this.$scope.hkStartTimestamp;
       this.autoRefreshPromise = this.$interval(()  => {
@@ -212,11 +211,11 @@ module HawkularMetrics {
             this.availabilityDataPoints = response;
 
             // FIXME: HAWKULAR-347
-            var downtimeDuration = 0;
-            var lastUptime = +this.$moment();
-            var lastDowntime = -1;
-            var downtimeCount = 0;
-            _.each(response.slice(0).reverse(), function (status:any/*, idx*/) {
+            let downtimeDuration = 0;
+            let lastUptime = +this.$moment();
+            let lastDowntime = -1;
+            let downtimeCount = 0;
+            _.each(response.slice(0).reverse(), function (status:any) {
               if (status.value === 'down') {
                 lastDowntime = status.timestamp;
                 downtimeDuration += (lastUptime - lastDowntime);
@@ -240,7 +239,7 @@ module HawkularMetrics {
       }
     }
 
-    private durationUnits = {
+    private static durationUnits = {
       's': {unit: 'seconds', limit: 60000}, // seconds, up to 60 (1 minute)
       'm': {unit: 'minutes', limit: 7200000}, // minutes, up to 120 (2 hours)
       'h': {unit: 'hours',   limit: 172800000}, // hours, up to 48 (2 days)
@@ -248,23 +247,23 @@ module HawkularMetrics {
     };
 
     private getDurationAux(duration: number, pattern: string): any {
-      var result = [];
-      var durations = this.$filter('duration')(duration, pattern).split(' ');
+      let result = [];
+      let durations = this.$filter('duration')(duration, pattern).split(' ');
       _.each(pattern.split(' '), function (unit: any, idx) {
-        result.push({value: durations[idx], unit: this.durationUnits[unit].unit});
+        result.push({value: durations[idx], unit: MetricsAvailabilityController.durationUnits[unit].unit});
       }, this);
       return this.$window.angular.fromJson(result);
     }
 
     private getDowntimeDurationAsJson(): any {
       if(this.downtimeDuration) {
-        if (this.downtimeDuration < this.durationUnits.s.limit) {
+        if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.s.limit) {
           return this.getDurationAux(this.downtimeDuration, 's');
         }
-        else if (this.downtimeDuration < this.durationUnits.m.limit) {
+        else if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.m.limit) {
           return this.getDurationAux(this.downtimeDuration, 'm s');
         }
-        else if (this.downtimeDuration < this.durationUnits.h.limit) {
+        else if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.h.limit) {
           return this.getDurationAux(this.downtimeDuration, 'h m');
         }
         else /*if (downtimeDuration >= this.durationLimits.h)*/ {

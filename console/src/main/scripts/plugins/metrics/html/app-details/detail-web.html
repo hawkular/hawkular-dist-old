@@ -28,7 +28,11 @@
     <h3 class="pull-left">
       <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Web Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
     </h3>
-    <!--<span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>-->
+    <span class="hk-settings pull-right">
+      <a href="#" ng-controller="WebAlertController as wac" ng-click="wac.openSetup()">
+        <i class="fa fa-cog"></i>Web Alert Settings
+      </a>
+    </span>
   </div>
   <div class="clearfix">
     <!-- No Alerts -->
@@ -37,11 +41,9 @@
       <div>No alerts have been fired in this category and time range.</div>
     </div>
     <!-- Alerts exist -->
-    <div class="panel panel-default alert alert-danger" ng-repeat="alert in vm.alertList | limitTo: (showAllAlerts ? 100000 : 3) track by $index">
-      <div class="hk-alert-icon"><i class="fa fa-flag"></i></div>
-      <div class="hk-date">{{alert.evalSets[0][0].evalTimestamp | date:'medium' }}</div>
-      <div class="hk-event"><strong>Alert Summary</strong>: alert details.</div>
-    </div>
+    <!-- Alerts exist -->
+    <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList"
+                         hk-limit="(vm.showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
   </div>
 
 
@@ -57,7 +59,7 @@
     <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
-        multi-data="{{vm.chartWebSessionData}}"
+        multi-data="vm.chartWebSessionData"
         chart-type="multiline"
         y-axis-units="Count (#)"
         chart-height="250">

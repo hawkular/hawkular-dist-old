@@ -23,13 +23,35 @@ module HawkularMetrics {
 
   export class AppServerDetailsController {
     /// for minification only
-    public static  $inject = ['$scope','$route','$routeParams'];
+    public static  $inject = ['$rootScope', '$scope','$route','$routeParams', 'HawkularOps',
+      'NotificationsService', 'HawkularInventory', '$log'];
 
-    constructor(private $scope: any,
+    public resourcePath:string;
+    public jdrGenerating:boolean;
+    public hasGeneratedSuccessfully:boolean;
+    public hasGeneratedError:boolean;
+
+    constructor(private $rootScope:any,
+                private $scope: any,
                 private $route: any,
                 private $routeParams: any,
+                private HawkularOps:any,
+                private NotificationsService:INotificationsService,
+                private HawkularInventory:any,
+                private $log:ng.ILogService,
                 public availableTabs: any,
                 public activeTab: any) {
+
+      HawkularOps.init(this.NotificationsService);
+
+      HawkularInventory.ResourceUnderFeed.get({
+        environmentId: globalEnvironmentId,
+        feedId: this.$routeParams.resourceId.split('~')[0],
+        resourcePath: this.$routeParams.resourceId + '~~'
+      }, (resource:IResourcePath) => {
+        this.resourcePath = resource.path;
+      });
+
       $scope.tabs = this;
 
       this.availableTabs = [
@@ -54,14 +76,38 @@ module HawkularMetrics {
       ];
 
       this.activeTab = $routeParams.tabId || 'jvm';
+
+      $scope.$on('ExportJDRSuccess', (event, data) => {
+        this.$log.info('JDR generated!');
+        this.jdrGenerating = false;
+        this.hasGeneratedSuccessfully = true;
+        this.hasGeneratedError = false;
+      });
+
+      $scope.$on('ExportJDRError', (event, data) => {
+        this.$log.info('JDR generation failed!');
+        this.jdrGenerating = false;
+        this.hasGeneratedSuccessfully = false;
+        this.hasGeneratedError = true;
+      });
+
     }
 
     public updateTab(newTabId: string) {
       this.$route.updateParams({tabId: newTabId});
     }
 
+    public requestExportJDR() {
+      this.jdrGenerating = true;
+      this.HawkularOps.performExportJDROperation(
+        this.resourcePath,
+        this.$rootScope.userDetails.token,
+        this.$rootScope.currentPersona.id
+      );
+    }
+
   }
 
-  _module.controller('HawkularMetrics.AppServerDetailsController', AppServerDetailsController);
+  _module.controller('AppServerDetailsController', AppServerDetailsController);
 
 }

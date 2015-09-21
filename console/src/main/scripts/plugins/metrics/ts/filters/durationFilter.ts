@@ -24,8 +24,8 @@ module HawkularMetrics {
 
   _module.filter('duration', () => {
 
-    var DURATION_FORMATS_SPLIT = /((?:[^ydhms']+)|(?:'(?:[^']|'')*')|(?:y+|d+|h+|m+|s+))(.*)/;
-    var DURATION_FORMATS = {
+    let DURATION_FORMATS_SPLIT = /((?:[^ydhms']+)|(?:'(?:[^']|'')*')|(?:y+|d+|h+|m+|s+))(.*)/;
+    let DURATION_FORMATS = {
       'y': { // years
         // "longer" years are not supported
         value: 365 * 24 * 60 * 60 * 1000
@@ -74,11 +74,11 @@ module HawkularMetrics {
 
     function _parseFormat(string) {
       // @inspiration AngularJS date filter
-      var parts = [];
-      var format = string;
+      let parts = [];
+      let format = string;
 
       while (format) {
-        var match = DURATION_FORMATS_SPLIT.exec(format);
+        let match = DURATION_FORMATS_SPLIT.exec(format);
 
         if (match) {
           parts = parts.concat(match.slice(1));
@@ -96,13 +96,13 @@ module HawkularMetrics {
 
 
     function _formatDuration(timestamp, format) {
-      var text = '';
-      var values = {};
+      let text = '';
+      let values = {};
 
       format.filter((format) => { // filter only value parts of format
         return DURATION_FORMATS.hasOwnProperty(format);
       }).map((format) => { // get formats with values only
-        var config = DURATION_FORMATS[format];
+        let config = DURATION_FORMATS[format];
         if (config.hasOwnProperty('pad')) {
           return config.value;
         } else {
@@ -117,16 +117,16 @@ module HawkularMetrics {
       }).sort((a, b) => { // sort formats descending by value
         return b.value - a.value;
       }).forEach((format) => { // create values for format parts
-        var value = values[format.name] = Math.floor(timestamp / format.value);
+        let value = values[format.name] = Math.floor(timestamp / format.value);
 
         timestamp = timestamp - (value * format.value);
       });
 
       format.forEach((part) => {
-        var format = DURATION_FORMATS[part];
+        let format = DURATION_FORMATS[part];
 
         if (format) {
-          var value = values[format.value];
+          let value = values[format.value];
 
           text += (format.hasOwnProperty('pad') ?
             _padNumber(value, Math.max(format.pad, value.toString().length)) : values[part]);
@@ -149,7 +149,7 @@ module HawkularMetrics {
         return value;
       }
 
-      var timestamp = parseInt(value.valueOf(), 10);
+      let timestamp = parseInt(value.valueOf(), 10);
 
       if (isNaN(timestamp)) {
         return value;

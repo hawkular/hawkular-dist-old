@@ -23,11 +23,32 @@
 
 module HawkularMetrics {
 
+  // work around https://github.com/Microsoft/TypeScript/issues/2583
+  // re-declare the URL from lib.d.ts to conform to what's actually available from javascript runtime
+  interface URLConstructor {
+    hash: string;
+    search: string;
+    pathname: string;
+    port: string;
+    hostname: string;
+    host: string;
+    password: string;
+    username: string;
+    protocol: string;
+    origin: string;
+    href: string;
+  }
+  interface URL {
+    revokeObjectURL(url:string): void;
+    createObjectURL(object:any, options?:ObjectURLOptions): string;
+    new(url:string, base?:string): URLConstructor;
+  }
+  declare var URL:URL;
 
   export class UrlListController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
-      'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$q',
+      'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager', '$q',
       'md5', 'HkHeaderParser', 'NotificationsService'];
 
     private autoRefreshPromise:ng.IPromise<number>;
@@ -52,7 +73,6 @@ module HawkularMetrics {
                 private $modal:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
-                private HawkularAlert:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
@@ -75,7 +95,7 @@ module HawkularMetrics {
     }
 
 
-    public autoRefresh(intervalInSeconds:number):void {
+    private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(()  => {
         this.getResourceList();
       }, intervalInSeconds * 1000);
@@ -93,12 +113,36 @@ module HawkularMetrics {
 
       this.addProgress = true;
 
+      // prepare data for custom sorting of URLs.
+      // We sort first by second and first levels and then by the rest of the levels in the order as they
+      // lexicographically appear in the URL.
+      // E.g. a.b.c.com will become c.com.a.b and we use this to sort the URLs instead of the URL strings
+      // themselves.
+      // Also, www is translated to a single space, so that it sorts before any other subdomain.
+
+      var parsedUrl = new URL(url);
+      var hostname = parsedUrl.hostname;
+      var levels = hostname.split('.');
+      if (levels.length > 1) {
+        //doing this twice on a.b.redhat.com will produce redhat.com.a.b
+        levels.unshift(levels.pop());
+        levels.unshift(levels.pop());
+
+        //replace all the www's with a space so that they sort before any other name
+        levels = levels.map(function (s) {
+          return s === 'www' ? ' ' : s;
+        });
+      }
+
+      var domainSort = levels.join('.');
+
       var resourceId = this.md5.createHash(url || '');
       var resource = {
         resourceTypePath: '/URL',
         id: resourceId,
         properties: {
-          url: url
+          url: url,
+          'hwk-gui-domainSort': domainSort
         }
       };
 
@@ -139,9 +183,9 @@ module HawkularMetrics {
             }, metric).$promise;
 
           var associateResourceWithMetrics = () =>
-            this.HawkularInventory.ResourceMetric.save({
+            this.HawkularInventory.MetricOfResource.save({
               environmentId: globalEnvironmentId,
-              resourceId: resourceId
+              resourcePath: resourceId
             }, ['../' + metricsIds[0], '../' + metricsIds[1]]).$promise;
 
           /// For right now we will just Register a couple of metrics automatically
@@ -155,14 +199,123 @@ module HawkularMetrics {
         (e) => err(e, 'Error during saving metrics.'))
 
         // Create threshold trigger for newly created metrics
-        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', url, true, 'THRESHOLD',
-          defaultEmail),
-        (e) => err(e, 'Error saving email action.'))
+        .then(() => {
+          var triggerId = metricId + '_trigger_thres';
+          var dataId: string = triggerId.slice(0,-14) + '.status.duration';
+          var fullTrigger = {
+            trigger: {
+              id: triggerId,
+              name: url,
+              description: 'Response Time for URL ' + url,
+              actions: {email: [defaultEmail]},
+              context: {
+                resourceType: 'URL',
+                resourceName: url
+              }
+            },
+            dampenings: [
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 7 * 60000,
+                triggerMode: 'FIRING',
+                type: 'STRICT_TIME'
+              },
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 5 * 60000,
+                triggerMode: 'AUTORESOLVE',
+                type: 'STRICT_TIME'
+              }
+            ],
+            conditions: [
+              {
+                triggerId: triggerId,
+                triggerMode: 'FIRING',
+                type: 'THRESHOLD',
+                dataId: dataId,
+                operator: 'GT',
+                threshold: 1000,
+                context: {
+                  description: 'Response Time',
+                  unit: 'ms'
+                }
+              },
+              {
+                triggerId: triggerId,
+                triggerMode: 'AUTORESOLVE',
+                type: 'THRESHOLD',
+                dataId: dataId,
+                operator: 'LTE',
+                threshold: 1000,
+                context: {
+                  description: 'Response Time',
+                  unit: 'ms'
+                }
+              }
+            ]
+          };
+          return this.HawkularAlertsManager.createTrigger(fullTrigger,
+            (e) => err(e, 'Error saving threshold trigger.')
+          );
+        })
 
         // Create availability trigger for newly created metrics
-        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', url, false,
-          'AVAILABILITY', defaultEmail),
-        (e) => err(e, 'Error saving threshold trigger.'))
+        .then(() => {
+          var triggerId = metricId + '_trigger_avail';
+          var dataId:string = triggerId.slice(0, -14);
+          var fullTrigger = {
+            trigger: {
+              id: triggerId,
+              name: url,
+              description: 'Availability for URL ' + url,
+              actions: {email: [defaultEmail]},
+              context: {
+                resourceType: 'URL',
+                resourceName: url
+              }
+            },
+            dampenings: [
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 7 * 60000,
+                triggerMode: 'FIRING',
+                type: 'STRICT_TIME'
+              },
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 5 * 60000,
+                triggerMode: 'AUTORESOLVE',
+                type: 'STRICT_TIME'
+              }
+            ],
+            conditions: [
+              {
+                triggerId: triggerId,
+                triggerMode: 'FIRING',
+                type: 'AVAILABILITY',
+                dataId: dataId,
+                operator: 'DOWN',
+                context: {
+                  description: 'Availability'
+                }
+              },
+              {
+                triggerId: triggerId,
+                triggerMode: 'AUTORESOLVE',
+                type: 'AVAILABILITY',
+                dataId: dataId,
+                operator: 'UP',
+                context: {
+                  description: 'Availability'
+                }
+              }
+            ]
+          };
+
+          return this.HawkularAlertsManager.createTrigger(fullTrigger,
+            (e) => err(e, 'Error saving availability trigger.')
+          );
+        })
 
         //this.$location.url('/hawkular/' + metricId);
         .then(() => this.NotificationsService.info('Your data is being collected. Please be patient (should be about ' +
@@ -179,18 +332,20 @@ module HawkularMetrics {
     public getResourceList(currentTenantId?:TenantId):any {
       this.updatingList = true;
       var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      var sort = 'hwk-gui-domainSort';
+      var order = 'asc';
       this.HawkularInventory.ResourceOfType.query(
-        {resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage},
+        {resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage, sort: sort, order: order},
         (aResourceList, getResponseHeaders) => {
           // FIXME: hack.. make expanded out of list
           this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
 
           aResourceList.expanded = this.resourceList ? this.resourceList.expanded : [];
-          this.HawkularAlert.Alert.query({statuses: 'OPEN'}, (anAlertList) => {
+          this.HawkularAlertsManager.queryAllAlerts().then((anAlertList) => {
             this.alertList = anAlertList;
-          }, this);
+          });
           var promises = [];
-          angular.forEach(aResourceList, function (res, idx) {
+          angular.forEach(aResourceList, function (res) {
             var traitsArray:string[] = [];
             if (res.properties['trait-remote-address']) {
               traitsArray.push('IP: ' + res.properties['trait-remote-address']);
@@ -200,7 +355,7 @@ module HawkularMetrics {
             }
             res['traits'] = traitsArray.join(' | ');
             promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-              resourceId: res.id, gaugeId: (res.id + '.status.duration'),
+              resourcePath: res.id, gaugeId: (res.id + '.status.duration'),
               start: moment().subtract(1, 'hours').valueOf(), end: moment().valueOf()
             }, (resource) => {
               res['responseTime'] = resource;
@@ -287,7 +442,7 @@ module HawkularMetrics {
       var removeResource = () =>
         this.HawkularInventory.Resource.delete({
           environmentId: globalEnvironmentId,
-          resourceId: this.resource.id
+          resourcePath: this.resource.id
         }).$promise;
 
       this.$q.all([deleteMetric(metricsIds[0]),
@@ -307,6 +462,6 @@ module HawkularMetrics {
     }
 
   }
-  _module.controller('HawkularMetrics.UrlListController', UrlListController);
+  _module.controller('UrlListController', UrlListController);
 
 }

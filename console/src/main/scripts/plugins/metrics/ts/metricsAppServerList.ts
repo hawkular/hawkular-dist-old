@@ -24,7 +24,7 @@ module HawkularMetrics {
   export class AppServerListController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
-        'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager', 'ErrorsManager', '$q',
+        'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager', '$q',
         'md5', 'HkHeaderParser'];
 
     private resourceList;
@@ -43,7 +43,6 @@ module HawkularMetrics {
                 private $modal: any,
                 private HawkularInventory: any,
                 private HawkularMetric: any,
-                private HawkularAlert: any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 private ErrorsManager: HawkularMetrics.IErrorsManager,
                 private $q: ng.IQService,
@@ -71,7 +70,7 @@ module HawkularMetrics {
     }
 
 
-    public autoRefresh(intervalInSeconds: number): void {
+    private autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getResourceList();
       }, intervalInSeconds * 1000);
@@ -81,21 +80,29 @@ module HawkularMetrics {
       });
     }
 
-    public getResourceList(currentTenantId?: TenantId):any {
-      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      this.HawkularInventory.ResourceOfType.query({resourceTypeId: 'WildFly Server', per_page: this.resPerPage,
-              page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
+    public getResourceListForOneFeed(feedId: FeedId, currentTenantId?: TenantId):any {
+      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      this.HawkularInventory.ResourceOfTypeUnderFeed.query({
+        environmentId: globalEnvironmentId, feedId: feedId,
+        resourceTypeId: 'WildFly Server', per_page: this.resPerPage,
+        page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
         this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
-        var promises = [];
-        angular.forEach(aResourceList, function(res, idx) {
+        let promises = [];
+        angular.forEach(aResourceList, function(res) {
           promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
             availabilityId: 'AI~R~[' + res.id + ']~AT~Server Availability~App Server',
             distinct: true}, (resource) => {
-              var latestData = resource[resource.length-1];
+              let latestData = resource[resource.length-1];
               if (latestData) {
                 res['state'] = latestData['value'];
                 res['updateTimestamp'] = latestData['timestamp'];
               }
+          }).$promise);
+          promises.push(this.HawkularInventory.ResourceUnderFeed.getData({
+            environmentId: globalEnvironmentId,
+            feedId: feedId,
+            resourcePath: res.id}, (resource) => {
+              res['properties']['resourceConfiguration'] = resource;
           }).$promise);
           this.lastUpdateTimestamp = new Date();
         }, this);
@@ -112,8 +119,19 @@ module HawkularMetrics {
       });
     }
 
+    public getResourceList(currentTenantId?: TenantId):any {
+      // for each feed get all WF resources
+      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId},
+        (aFeedList) => {
+          angular.forEach(aFeedList, (feed) => {
+            this.getResourceListForOneFeed(feed.id, tenantId);
+          });
+        });
+    }
+
   }
 
-  _module.controller('HawkularMetrics.AppServerListController', AppServerListController);
+  _module.controller('AppServerListController', AppServerListController);
 
 }

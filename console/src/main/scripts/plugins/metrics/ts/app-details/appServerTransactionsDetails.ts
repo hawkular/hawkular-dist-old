@@ -24,5 +24,5 @@ module HawkularMetrics {
   export class AppServerTransactionsDetailsController {
   }
 
-  _module.controller('HawkularMetrics.AppServerTransactionsDetailsController', AppServerTransactionsDetailsController);
+  _module.controller('AppServerTransactionsDetailsController', AppServerTransactionsDetailsController);
 }
