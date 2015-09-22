@@ -50,6 +50,7 @@ module HawkularMetrics {
         resourcePath: this.$routeParams.resourceId + '~~'
       }, (resource:IResourcePath) => {
         this.resourcePath = resource.path;
+        this.$rootScope.resourcePath = this.resourcePath;
       });
 
       $scope.tabs = this;

@@ -152,6 +152,7 @@ module HawkularMetrics {
       var defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
       var err = (error:any, msg:string):void => this.ErrorsManager.errorHandler(error, msg);
       var currentTenantId:TenantId = this.$rootScope.currentPersona.id;
+      var resourcePath :string;
 
       /// Add the Resource and its metrics
       this.HawkularInventory.Resource.save({environmentId: globalEnvironmentId}, resource).$promise
@@ -200,6 +201,14 @@ module HawkularMetrics {
 
         // Create threshold trigger for newly created metrics
         .then(() => {
+
+          for (let i=0; i < this.resourceList.length; i++) {
+            if (metricId === this.resourceList[i].id) {
+              resourcePath = this.resourceList[i].path;
+              break;
+            }
+          }
+
           var triggerId = metricId + '_trigger_thres';
           var dataId: string = triggerId.slice(0,-14) + '.status.duration';
           var fullTrigger = {
@@ -210,7 +219,8 @@ module HawkularMetrics {
               actions: {email: [defaultEmail]},
               context: {
                 resourceType: 'URL',
-                resourceName: url
+                resourceName: url,
+                resourcePath: resourcePath
               }
             },
             dampenings: [
@@ -271,7 +281,8 @@ module HawkularMetrics {
               actions: {email: [defaultEmail]},
               context: {
                 resourceType: 'URL',
-                resourceName: url
+                resourceName: url,
+                resourcePath: resourcePath
               }
             },
             dampenings: [

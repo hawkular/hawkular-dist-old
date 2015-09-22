@@ -126,7 +126,8 @@ module HawkularMetrics {
             actions: {email: [this.defaultEmail]},
             context: {
               resourceType: 'DataSource',
-              resourceName: resId
+              resourceName: resId,
+              resourcePath: this.$rootScope.resourcePath
             }
           },
           dampenings: [
@@ -191,8 +192,6 @@ module HawkularMetrics {
           conditions: [
             {
               triggerId: triggerId,
-              conditionSetSize: 2,
-              conditionSetIndex: 1,
               type: 'THRESHOLD',
               dataId: dataId1,
               threshold: AppServerDatasourcesDetailsController.DEFAULT_WAIT_THRESHOLD,
@@ -204,8 +203,6 @@ module HawkularMetrics {
             },
             {
               triggerId: triggerId,
-              conditionSetSize: 2,
-              conditionSetIndex: 2,
               type: 'THRESHOLD',
               dataId: dataId2,
               threshold: AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD,

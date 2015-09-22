@@ -90,7 +90,8 @@ module HawkularMetrics {
             actions: {email: [this.defaultEmail]},
             context: {
               resourceType: 'App Server',
-              resourceName: resourceId
+              resourceName: resourceId,
+              resourcePath: this.$rootScope.resourcePath
             }
           },
           dampenings: [
@@ -144,7 +145,8 @@ module HawkularMetrics {
               actions: {email: [this.defaultEmail]},
               context: {
                 resourceType: 'App Server',
-                resourceName: resourceId
+                resourceName: resourceId,
+                resourcePath: this.$rootScope.resourcePath
               }
             },
             dampenings: [
@@ -196,7 +198,8 @@ module HawkularMetrics {
               actions: {email: [this.defaultEmail]},
               context: {
                 resourceType: 'App Server',
-                resourceName: resourceId
+                resourceName: resourceId,
+                resourcePath: this.$rootScope.resourcePath
               }
             },
             dampenings: [
