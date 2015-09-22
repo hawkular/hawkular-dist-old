@@ -128,7 +128,7 @@
     </logger>
     <logger category="org.apache.cassandra">
       <level>
-        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.cassandra:INFO}</xsl:text></xsl:attribute>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.cassandra:WARN}</xsl:text></xsl:attribute>
       </level>
     </logger>
     <logger category="org.jboss.as.ejb3">
