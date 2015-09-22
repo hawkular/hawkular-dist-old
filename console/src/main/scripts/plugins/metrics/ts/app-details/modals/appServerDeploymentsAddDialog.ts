@@ -103,7 +103,7 @@ module HawkularMetrics {
     }
 
     private cleanFilePath(filePath:string):string {
-      return filePath.substr(12, filePath.length - 1);
+      return filePath.replace('C:\\fakepath\\','');
     }
 
     public onClose():void {
