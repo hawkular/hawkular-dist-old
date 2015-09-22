@@ -115,8 +115,6 @@ module HawkularMetrics {
         respUpdateConditions = [
           {
             triggerId: respTriggerId,
-            conditionSetSize: 1,
-            conditionSetIndex: 1,
             type: 'THRESHOLD',
             dataId: dataId1,
             threshold: this.adm.resp.waitTimeThreshold,
@@ -131,8 +129,6 @@ module HawkularMetrics {
         respUpdateConditions = [
           {
             triggerId: respTriggerId,
-            conditionSetSize: 1,
-            conditionSetIndex: 1,
             type: 'THRESHOLD',
             dataId: dataId2,
             threshold: this.adm.resp.creationTimeThreshold,
@@ -147,8 +143,6 @@ module HawkularMetrics {
         respUpdateConditions = [
           {
             triggerId: respTriggerId,
-            conditionSetSize: 2,
-            conditionSetIndex: 1,
             type: 'THRESHOLD',
             dataId: dataId1,
             threshold: this.adm.resp.waitTimeThreshold,
@@ -160,8 +154,6 @@ module HawkularMetrics {
           },
           {
             triggerId: respTriggerId,
-            conditionSetSize: 2,
-            conditionSetIndex: 2,
             type: 'THRESHOLD',
             dataId: dataId2,
             threshold: this.adm.resp.creationTimeThreshold,
