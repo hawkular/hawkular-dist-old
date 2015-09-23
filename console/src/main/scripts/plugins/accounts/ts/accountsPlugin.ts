@@ -53,6 +53,12 @@ module HawkularAccounts {
             $('#idle').slideUp();
         });
 
+        $rootScope.$on('Keepalive', () => {
+            HawtioKeycloak.keycloak.updateToken(30).success(() => {
+                $rootScope.userDetails.token = HawtioKeycloak.keycloak.token;
+            });
+        });
+
         $rootScope.$on('IdleTimeout', () => {
             $log.debug('Idle timeout');
             $document.find('body').eq(0).addClass('inactivity-modal-open');
