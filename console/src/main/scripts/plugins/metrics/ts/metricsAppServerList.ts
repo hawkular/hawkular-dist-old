@@ -107,7 +107,8 @@ module HawkularMetrics {
           this.lastUpdateTimestamp = new Date();
         }, this);
         this.$q.all(promises).then((result) => {
-          this.resourceList = aResourceList;
+          // FIXME this needs to be revisited, this won't work for removed resources
+          this.resourceList = _.uniq(_.union(this.resourceList, aResourceList), 'path');
         });
       },
       () => { // error
