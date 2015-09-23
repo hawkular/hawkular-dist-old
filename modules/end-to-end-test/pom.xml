@@ -103,7 +103,6 @@
         <hawkular.log.nest>INFO</hawkular.log.nest>
         <hawkular.log.datastax.driver>INFO</hawkular.log.datastax.driver>
         <hawkular.log.liquibase>WARN</hawkular.log.liquibase>
-        <hawkular.log.cassandra>INFO</hawkular.log.cassandra>
         <hawkular.log.ejb3>WARN</hawkular.log.ejb3>
         <hawkular.log.rewrite>WARN</hawkular.log.rewrite>
         <http.log>ERROR</http.log>
@@ -178,7 +177,6 @@
                 <javaOpt>-Dhawkular.log.nest=${hawkular.log.nest}</javaOpt>
                 <javaOpt>-Dhawkular.log.datastax.driver=${hawkular.log.datastax.driver}</javaOpt>
                 <javaOpt>-Dhawkular.log.liquibase=${hawkular.log.liquibase}</javaOpt>
-                <javaOpt>-Dhawkular.log.cassandra=${hawkular.log.cassandra}</javaOpt>
                 <javaOpt>-Dhawkular.log.ejb3=${hawkular.log.ejb3}</javaOpt>
                 <javaOpt>-Dhawkular.log.rewrite=${hawkular.log.rewrite}</javaOpt>
                 <javaOpt>-Dhawkular.log.rewrite=${hawkular.log.rewrite}</javaOpt>

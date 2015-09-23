@@ -126,11 +126,6 @@
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.liquibase:WARN}</xsl:text></xsl:attribute>
       </level>
     </logger>
-    <logger category="org.apache.cassandra">
-      <level>
-        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.cassandra:WARN}</xsl:text></xsl:attribute>
-      </level>
-    </logger>
     <logger category="org.jboss.as.ejb3">
       <level>
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.ejb3:WARN}</xsl:text></xsl:attribute>
