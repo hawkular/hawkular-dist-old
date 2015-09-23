@@ -84,7 +84,7 @@
     <version.com.google.guava>16.0.1</version.com.google.guava>
     <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
-    <version.org.hawkular.accounts>1.0.13.Final</version.org.hawkular.accounts>
+    <version.org.hawkular.accounts>1.0.14.Final</version.org.hawkular.accounts>
     <version.org.hawkular.agent>0.7.1.Final-SRC-revision-f572a7948c36ddf4cc2549f3c448fc0360bafc8d</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.4.0.Final</version.org.hawkular.alerts>
     <version.org.hawkular.bus>0.6.1.Final-SRC-revision-9981e264b060dcf0b8c8b64e0f5a2f0f62a762e3</version.org.hawkular.bus>
