@@ -26,7 +26,6 @@
     <version>24</version>
   </parent>
 
-  <groupId>org.hawkular</groupId>
   <artifactId>hawkular</artifactId>
   <!-- Important a released version should always follow any of these patterns: -->
   <!-- major.minor.micro.Alpha[n] -->
@@ -88,7 +87,7 @@
     <version.org.hawkular.agent>0.9.0.Final</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.4.1.Final</version.org.hawkular.alerts>
     <version.org.hawkular.bus>0.6.1.Final</version.org.hawkular.bus>
-    <version.org.hawkular.commons>0.2.1.Final</version.org.hawkular.commons>
+    <version.org.hawkular.commons>0.2.2.Final-SRC-revision-2f649e10df3c4b25557cf9ae5c77da7f9ef77619</version.org.hawkular.commons>
     <version.org.hawkular.cmdgw>0.8.0.Final</version.org.hawkular.cmdgw>
     <version.org.hawkular.metrics>0.5.0.Final</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.3.3.Final</version.org.hawkular.inventory>
