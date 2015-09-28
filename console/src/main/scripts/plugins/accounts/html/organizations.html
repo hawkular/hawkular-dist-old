@@ -1,47 +1,60 @@
 <div class="row">
-    <div class="col-md-12" data-ng-controller="HawkularAccounts.OrganizationsController">
-        <ol class="breadcrumb">
-            <li><a data-ng-href="/">Hawkular</a></li>
-            <li><a data-ng-href="/">Accounts</a></li>
-            <li><a data-ng-href="/accounts/organizations">Organizations</a></li>
-        </ol>
-        <div class="pull-right">
-            <button class="btn btn-primary" type="button" role="button" data-ng-click="showCreateForm()">Create</button>
-        </div>
+  <div class="col-md-12" ng-controller="HawkularAccounts.OrganizationsController">
 
-        <h1>Organizations</h1>
-        <div class="progress-description" data-ng-show="loading">
-            <div class="spinner spinner-xs spinner-inline"></div> <strong>Loading:</strong> Organizations
-        </div>
-        <div class="row" data-ng-show="!organizations.length && !loading">
-            <div class="col-sm-6">
-                No organizations yet. How about creating one?
-            </div>
-        </div>
+    <div class="pull-right" ng-show="organizations.length && !loading">
+      <button class="btn btn-primary" type="button" role="button" ng-click="showCreateForm()">Create</button>
+    </div>
+    <h1>Organizations</h1>
 
-        <div data-ng-show="organizations.length && !loading">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr data-ng-repeat="organization in organizations">
-                        <td>{{organization.name}}</td>
-                        <td>{{organization.description}}</td>
-                        <td>
-                            <button type="button" class="btn btn-default" aria-label="Remove" data-ng-click="remove(organization)">
-                                <span class="pficon pficon-delete" aria-hidden="true"></span>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div><!-- /col -->
+    <div class="progress-description" ng-show="loading">
+      <div class="spinner spinner-xs spinner-inline"></div>
+      <strong>Loading:</strong> Organizations
+    </div>
+
+    <div class="row text-center" ng-show="!organizations.length && !loading && !isOrganization">
+      <i class="fa fa-users" id="empty-organizations-icon"></i>
+      <h2>No organizations created.</h2>
+      <p>
+        With organizations, multiple users can have access<br/>
+        to the same resources, with multiple roles.
+      </p>
+      <button class="btn btn-primary" type="button" role="button" ng-click="showCreateForm()">
+        Create Organization
+      </button>
+    </div>
+
+    <div class="row text-center" ng-show="isOrganization">
+      <i class="fa fa-users" id="empty-organizations-icon-for-organizations"></i>
+      <h2>You cannot create an organization.</h2>
+      <p>
+        You are currently logged in as an organization. At this moment, sub-organizations are not supported.<br/>
+        To create an organization, select your main account on the account switcher, at the top-right corner of this
+        screen.
+      </p>
+    </div>
+
+    <div ng-show="organizations.length && !loading">
+      <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="organization in organizations">
+          <td>{{organization.name}}</td>
+          <td>
+            <button type="button" class="btn btn-default" aria-label="Remove" ng-click="remove(organization)">
+              <span class="pficon pficon-delete" aria-hidden="true"></span>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- /col -->
 
 </div>
 </div>

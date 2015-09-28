@@ -18,63 +18,67 @@
 /// <reference path='accountsPlugin.ts'/>
 module HawkularAccounts {
 
-    export var PersonaController = _module.controller('HawkularAccounts.PersonaController', [
-        '$rootScope', '$scope', '$log', 'HawkularAccount',
-        ($rootScope, $scope, $log, HawkularAccount) => {
-            $scope.personas = [];
-            $scope.currentPersona = null;
+  export var PersonaController = _module.controller('HawkularAccounts.PersonaController', [
+    '$rootScope', '$scope', '$log', 'HawkularAccount', 'NotificationsService',
+    ($rootScope, $scope, $log, HawkularAccount, NotificationsService) => {
+      $scope.personas = [];
+      $scope.currentPersona = null;
 
-            $scope.load = () => {
-                $scope.loadCurrentPersona();
-            };
+      $scope.load = () => {
+        $scope.loadCurrentPersona();
+      };
 
-            $scope.loadCurrentPersona = () => {
-                $scope.currentPersona = HawkularAccount.Persona.get({id: 'current'},
-                    () => {
-                        $scope.$emit('CurrentPersonaLoaded', $scope.currentPersona);
-                    },
-                    () => {
-                        $log.warn('Failed in retrieving the current persona');
-                    }
-                );
-            };
+      $scope.loadCurrentPersona = () => {
+        $scope.currentPersona = HawkularAccount.Persona.get({id: 'current'},
+          () => {
+            $scope.$emit('CurrentPersonaLoaded', $scope.currentPersona);
+          },
+          () => {
+            NotificationsService.error('Failed in retrieving the current persona.');
+            $log.warn('Failed in retrieving the current persona');
+          }
+        );
+      };
 
-            $scope.loadPersonas = () => {
-                $scope.personas = HawkularAccount.Persona.query({},
-                    () => {
-                        $scope.personas = $scope.personas.filter((persona) => {
-                            return persona.id !== $scope.currentPersona.id;
-                        });
-                        $scope.loading = false;
-                    },
-                    () => {
-                        $log.warn('List of personas could NOT be retrieved.');
-                        $scope.loading = false;
-                    }
-                );
-            };
-
-            $scope.switchPersona = (persona) => {
-                $scope.personas.push($scope.currentPersona);
-                $scope.currentPersona = persona;
-                $scope.personas = $scope.personas.filter((persona) => {
-                    return persona.id !== $scope.currentPersona.id;
-                });
-                $scope.$emit('SwitchedPersona', persona);
-            };
-
-            $rootScope.$on('CurrentPersonaLoaded', () => {
-                $scope.loadPersonas();
+      $scope.loadPersonas = () => {
+        $scope.personas = HawkularAccount.Persona.query({},
+          () => {
+            $scope.personas = $scope.personas.filter((persona) => {
+              return persona.id !== $scope.currentPersona.id;
             });
+            $scope.loading = false;
+          },
+          () => {
+            NotificationsService.error('List of personas could NOT be retrieved.');
+            $log.warn('List of personas could NOT be retrieved.');
+            $scope.loading = false;
+          }
+        );
+      };
 
-            $rootScope.$on('OrganizationCreated', () => {
-                $scope.loadPersonas();
-            });
+      $scope.switchPersona = (persona) => {
+        $scope.personas.push($scope.currentPersona);
+        $scope.currentPersona = persona;
+        $scope.personas = $scope.personas.filter((persona) => {
+          return persona.id !== $scope.currentPersona.id;
+        });
+        $log.info('Switching persona to (emit)');
+        $log.info(persona);
+        $scope.$emit('SwitchedPersona', persona);
+      };
 
-            $rootScope.$on('OrganizationRemoved', () => {
-                $scope.loadPersonas();
-            });
+      $rootScope.$on('CurrentPersonaLoaded', () => {
+        $scope.loadPersonas();
+      });
 
-            $scope.load();
-        }]);
+      $rootScope.$on('OrganizationCreated', () => {
+        $scope.loadPersonas();
+      });
+
+      $rootScope.$on('OrganizationRemoved', () => {
+        $scope.loadPersonas();
+      });
+
+      $scope.load();
+    }]);
 }

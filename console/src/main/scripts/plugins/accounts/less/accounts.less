@@ -14,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@import "../../../libs/patternfly/components/bootstrap/less/variables.less";
+@import "../../../libs/patternfly/components/bootstrap/less/mixins.less";
+@import "../../../libs/patternfly/less/variables.less";
+
 #idle {
   background: none repeat scroll 0 0 #cc5100;
   color: #ffffff;
@@ -30,4 +35,9 @@
 
 body.inactivity-modal-open #main, body.inactivity-modal-open .navbar, body.inactivity-modal-open #idle {
   filter: blur(5px);
+}
+
+#empty-organizations-icon, #empty-organizations-icon-for-organizations {
+  color: @gray-light;
+  font-size: ceil(@font-size-base * 4);
 }
