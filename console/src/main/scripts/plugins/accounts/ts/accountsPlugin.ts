@@ -17,87 +17,90 @@
 
 /// <reference path='accountsGlobals.ts'/>
 module HawkularAccounts {
-    export var _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
-    var accountsTab:any = undefined;
-    var currentPersona:any = undefined;
+  export var _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
+  var accountsTab:any = undefined;
+  var currentPersona:any = undefined;
 
-    _module.config(['$locationProvider', '$routeProvider', '$httpProvider', 'HawtioNavBuilderProvider', (
-        $locationProvider, $routeProvider:ng.route.IRouteProvider, $httpProvider:ng.IHttpProvider,
-        builder:HawtioMainNav.BuilderFactory) => {
-        accountsTab = builder.create()
-            .id(HawkularAccounts.pluginName)
-            .title(() => 'Accounts')
-            .href(() => '/accounts')
-            .subPath('My account', 'accounts', builder.join(HawkularAccounts.templatePath, 'accounts.html'))
-            .subPath('Organizations', 'organizations', builder.join(HawkularAccounts.templatePath,
-                'organizations.html'))
-            .build();
-        builder.configureRouting($routeProvider, accountsTab);
+  _module.config(['$locationProvider', '$routeProvider', '$httpProvider', 'HawtioNavBuilderProvider',
+    ($locationProvider, $routeProvider:ng.route.IRouteProvider, $httpProvider:ng.IHttpProvider,
+     builder:HawtioMainNav.BuilderFactory) => {
 
-        $routeProvider.when('/accounts/organizations/new', {templateUrl: builder.join(HawkularAccounts.templatePath,
-            'organization_new.html')});
-        $locationProvider.html5Mode(true);
-        $httpProvider.interceptors.push(PersonaInterceptorService.Factory);
+    accountsTab = builder.create()
+      .id(HawkularAccounts.pluginName)
+      .title(() => 'Accounts')
+      .href(() => '/accounts')
+      .subPath('My account', 'accounts', builder.join(HawkularAccounts.templatePath, 'accounts.html'))
+      .subPath('Organizations', 'organizations', builder.join(HawkularAccounts.templatePath,
+        'organizations.html'))
+      .build();
+    builder.configureRouting($routeProvider, accountsTab);
+
+    $routeProvider.when('/accounts/organizations/new', {
+      templateUrl: builder.join(HawkularAccounts.templatePath,
+        'organization_new.html')
+    });
+    $locationProvider.html5Mode(true);
+    $httpProvider.interceptors.push(PersonaInterceptorService.Factory);
+  }]);
+
+  _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails', 'HawtioNav',
+    ($rootScope, $log, $modal, $document, userDetails, HawtioNav:HawtioMainNav.Registry) => {
+      HawtioNav.add(accountsTab);
+      $rootScope.userDetails = userDetails;
+
+      $rootScope.$on('IdleStart', () => {
+        $('#idle').slideDown();
+      });
+
+      $rootScope.$on('IdleEnd', () => {
+        $('#idle').slideUp();
+      });
+
+      $rootScope.$on('IdleTimeout', () => {
+        $log.debug('Idle timeout');
+        $document.find('body').eq(0).addClass('inactivity-modal-open');
+        $modal.open({
+          templateUrl: 'plugins/accounts/html/inactivityModal.html',
+          backdrop: 'static',
+          keyboard: false
+        }).opened.then(() => {
+            HawtioKeycloak.keycloak.clearToken();
+          });
+      });
+
+      $rootScope.$on('CurrentPersonaLoaded', (e, persona) => {
+        currentPersona = persona;
+        $rootScope.currentPersona = currentPersona;
+      });
+
+      $rootScope.$on('SwitchedPersona', (e, persona) => {
+        currentPersona = persona;
+        $rootScope.currentPersona = currentPersona;
+      });
     }]);
 
-    _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails', 'HawtioNav',
-        ($rootScope, $log, $modal, $document, userDetails, HawtioNav:HawtioMainNav.Registry) => {
-        HawtioNav.add(accountsTab);
-        $rootScope.userDetails = userDetails;
+  hawtioPluginLoader.registerPreBootstrapTask((next) => {
+    window['KeycloakConfig'] = '/keycloak.json';
+    next();
+  }, true);
 
-        $rootScope.$on('IdleStart', () => {
-            $('#idle').slideDown();
-        });
+  class PersonaInterceptorService {
+    public static $inject = ['$q'];
 
-        $rootScope.$on('IdleEnd', () => {
-            $('#idle').slideUp();
-        });
-
-        $rootScope.$on('IdleTimeout', () => {
-            $log.debug('Idle timeout');
-            $document.find('body').eq(0).addClass('inactivity-modal-open');
-            $modal.open({
-                templateUrl: 'plugins/accounts/html/inactivityModal.html',
-                backdrop: 'static',
-                keyboard: false
-            }).opened.then(() => {
-                HawtioKeycloak.keycloak.clearToken();
-            });
-        });
-
-        $rootScope.$on('CurrentPersonaLoaded', (e, persona) => {
-            currentPersona = persona;
-            $rootScope.currentPersona = currentPersona;
-        });
-
-        $rootScope.$on('SwitchedPersona', (e, persona) => {
-            currentPersona = persona;
-            $rootScope.currentPersona = currentPersona;
-        });
-    }]);
-
-    hawtioPluginLoader.registerPreBootstrapTask((next) => {
-        window['KeycloakConfig'] = '/keycloak.json';
-        next();
-    }, true);
-
-    class PersonaInterceptorService {
-        public static $inject = ['$q'];
-
-        public static Factory($q:ng.IQService) {
-            return new PersonaInterceptorService($q);
-        }
-
-        constructor(private $q:ng.IQService) {
-        }
-
-        request = (request) => {
-            if (currentPersona) {
-                request.headers['Hawkular-Persona'] = currentPersona.id;
-            }
-            return request;
-        };
+    public static Factory($q:ng.IQService) {
+      return new PersonaInterceptorService($q);
     }
 
-    hawtioPluginLoader.addModule(HawkularAccounts.pluginName);
+    constructor(private $q:ng.IQService) {
+    }
+
+    request = (request) => {
+      if (currentPersona) {
+        request.headers['Hawkular-Persona'] = currentPersona.id;
+      }
+      return request;
+    };
+  }
+
+  hawtioPluginLoader.addModule(HawkularAccounts.pluginName);
 }

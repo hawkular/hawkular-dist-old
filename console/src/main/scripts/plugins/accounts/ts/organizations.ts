@@ -18,66 +18,66 @@
 /// <reference path='accountsPlugin.ts'/>
 module HawkularAccounts {
 
-    export var OrganizationsController = _module.controller('HawkularAccounts.OrganizationsController', [
-        '$rootScope', '$scope', '$log', '$location', 'HawkularAccount',
-        ($rootScope, $scope, $log, $location, HawkularAccount) => {
+  export var OrganizationsController = _module.controller('HawkularAccounts.OrganizationsController', [
+    '$rootScope', '$scope', '$log', '$location', 'HawkularAccount',
+    ($rootScope, $scope, $log, $location, HawkularAccount) => {
 
-            $scope.organizations = [];
-            $scope.loading = true;
+      $scope.organizations = [];
+      $scope.loading = true;
 
-            $scope.load = () => {
-                $scope.loadOrganizations();
-            };
+      $scope.load = () => {
+        $scope.loadOrganizations();
+      };
 
-            $scope.loadOrganizations = () => {
-                $scope.organizations = [];
-                $scope.loading = true;
-                $scope.organizations = HawkularAccount.Organization.query({},
-                    ()=> {
-                        $scope.loading = false;
-                    },
-                    () => {
-                        $log.warn('List of organizations could NOT be retrieved.');
-                        $scope.loading = false;
-                    }
-                );
-            };
-            $scope.showCreateForm = () => {
-                $location.path('/accounts/organizations/new');
-            };
-            $scope.remove = (organization) => {
-                organization.$remove().then(
-                    () => {
-                        $scope.$emit('OrganizationRemoved');
-                        $scope.organizations.splice($scope.organizations.indexOf(organization), 1);
-                    }
-                );
-            };
+      $scope.loadOrganizations = () => {
+        $scope.organizations = [];
+        $scope.loading = true;
+        $scope.organizations = HawkularAccount.Organization.query({},
+          ()=> {
+            $scope.loading = false;
+          },
+          () => {
+            $log.warn('List of organizations could NOT be retrieved.');
+            $scope.loading = false;
+          }
+        );
+      };
+      $scope.showCreateForm = () => {
+        $location.path('/accounts/organizations/new');
+      };
+      $scope.remove = (organization) => {
+        organization.$remove().then(
+          () => {
+            $scope.$emit('OrganizationRemoved');
+            $scope.organizations.splice($scope.organizations.indexOf(organization), 1);
+          }
+        );
+      };
 
-            $scope.load();
+      $scope.load();
 
-            $rootScope.$on('SwitchedPersona', () => {
-                $scope.loadOrganizations();
-            });
-        }]);
+      $rootScope.$on('SwitchedPersona', () => {
+        $scope.loadOrganizations();
+      });
+    }]);
 
-    export var OrganizationNewController = _module.controller('HawkularAccounts.OrganizationNewController', [
-        '$scope', '$log', '$location', 'HawkularAccount',
-        ($scope, $log, $location, HawkularAccount) => {
+  export var OrganizationNewController = _module.controller('HawkularAccounts.OrganizationNewController', [
+    '$scope', '$log', '$location', 'HawkularAccount',
+    ($scope, $log, $location, HawkularAccount) => {
 
-            $scope.organizationNew = new HawkularAccount.Organization({});
-            $scope.persist = () => {
-                $scope.organizationNew.$save({},
-                    () => {
-                        $scope.$emit('OrganizationCreated');
-                        $location.path('/accounts/organizations');
-                    },
-                    () => {
-                        // error
-                        $log.debug('Organization could NOT be added.');
-                    }
-                );
-                $log.debug('Trying to persist the organization');
-            };
-        }]);
+      $scope.organizationNew = new HawkularAccount.Organization({});
+      $scope.persist = () => {
+        $scope.organizationNew.$save({},
+          () => {
+            $scope.$emit('OrganizationCreated');
+            $location.path('/accounts/organizations');
+          },
+          () => {
+            // error
+            $log.debug('Organization could NOT be added.');
+          }
+        );
+        $log.debug('Trying to persist the organization');
+      };
+    }]);
 }
