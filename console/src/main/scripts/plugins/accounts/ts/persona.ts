@@ -19,8 +19,8 @@
 module HawkularAccounts {
 
   export var PersonaController = _module.controller('HawkularAccounts.PersonaController', [
-    '$rootScope', '$scope', '$log', 'HawkularAccount',
-    ($rootScope, $scope, $log, HawkularAccount) => {
+    '$rootScope', '$scope', '$log', 'HawkularAccount', 'NotificationsService',
+    ($rootScope, $scope, $log, HawkularAccount, NotificationsService) => {
       $scope.personas = [];
       $scope.currentPersona = null;
 
@@ -34,6 +34,7 @@ module HawkularAccounts {
             $scope.$emit('CurrentPersonaLoaded', $scope.currentPersona);
           },
           () => {
+            NotificationsService.error('Failed in retrieving the current persona.');
             $log.warn('Failed in retrieving the current persona');
           }
         );
@@ -48,6 +49,7 @@ module HawkularAccounts {
             $scope.loading = false;
           },
           () => {
+            NotificationsService.error('List of personas could NOT be retrieved.');
             $log.warn('List of personas could NOT be retrieved.');
             $scope.loading = false;
           }
@@ -60,6 +62,8 @@ module HawkularAccounts {
         $scope.personas = $scope.personas.filter((persona) => {
           return persona.id !== $scope.currentPersona.id;
         });
+        $log.info('Switching persona to (emit)');
+        $log.info(persona);
         $scope.$emit('SwitchedPersona', persona);
       };
 

@@ -17,35 +17,14 @@
 
 /// <reference path='accountsGlobals.ts'/>
 module HawkularAccounts {
-  export var _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
-  var accountsTab:any = undefined;
-  var currentPersona:any = undefined;
+  let currentPersona:IPersona = undefined;
 
-  _module.config(['$locationProvider', '$routeProvider', '$httpProvider', 'HawtioNavBuilderProvider',
-    ($locationProvider, $routeProvider:ng.route.IRouteProvider, $httpProvider:ng.IHttpProvider,
-     builder:HawtioMainNav.BuilderFactory) => {
-
-    accountsTab = builder.create()
-      .id(HawkularAccounts.pluginName)
-      .title(() => 'Accounts')
-      .href(() => '/accounts')
-      .subPath('My account', 'accounts', builder.join(HawkularAccounts.templatePath, 'accounts.html'))
-      .subPath('Organizations', 'organizations', builder.join(HawkularAccounts.templatePath,
-        'organizations.html'))
-      .build();
-    builder.configureRouting($routeProvider, accountsTab);
-
-    $routeProvider.when('/accounts/organizations/new', {
-      templateUrl: builder.join(HawkularAccounts.templatePath,
-        'organization_new.html')
-    });
-    $locationProvider.html5Mode(true);
+  _module.config(['$httpProvider', ($httpProvider:ng.IHttpProvider) => {
     $httpProvider.interceptors.push(PersonaInterceptorService.Factory);
   }]);
 
-  _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails', 'HawtioNav',
-    ($rootScope, $log, $modal, $document, userDetails, HawtioNav:HawtioMainNav.Registry) => {
-      HawtioNav.add(accountsTab);
+  _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails',
+    ($rootScope, $log, $modal, $document, userDetails) => {
       $rootScope.userDetails = userDetails;
 
       $rootScope.$on('IdleStart', () => {
@@ -68,12 +47,12 @@ module HawkularAccounts {
           });
       });
 
-      $rootScope.$on('CurrentPersonaLoaded', (e, persona) => {
+      $rootScope.$on('CurrentPersonaLoaded', (e, persona:IPersona) => {
         currentPersona = persona;
         $rootScope.currentPersona = currentPersona;
       });
 
-      $rootScope.$on('SwitchedPersona', (e, persona) => {
+      $rootScope.$on('SwitchedPersona', (e, persona:IPersona) => {
         currentPersona = persona;
         $rootScope.currentPersona = currentPersona;
       });

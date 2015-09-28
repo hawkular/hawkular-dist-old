@@ -17,13 +17,28 @@
 
 /// <reference path='accountsPlugin.ts'/>
 module HawkularAccounts {
+  _module.config([
+    '$routeProvider', 'HawtioNavBuilderProvider',
+    ($routeProvider, builder:HawtioMainNav.BuilderFactory) => {
+
+      $routeProvider
+        .when(
+        '/hawkular-ui/organizations',
+        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organizations.html')}
+      );
+    }]);
 
   export var OrganizationsController = _module.controller('HawkularAccounts.OrganizationsController', [
-    '$rootScope', '$scope', '$log', '$location', 'HawkularAccount',
-    ($rootScope, $scope, $log, $location, HawkularAccount) => {
+    '$rootScope', '$scope', '$modal', '$log', '$location', 'HawkularAccount', 'NotificationsService',
+    ($rootScope, $scope, $modal, $log, $location, HawkularAccount, NotificationsService) => {
 
       $scope.organizations = [];
       $scope.loading = true;
+      $scope.isOrganization = false;
+
+      $rootScope.$on('SwitchedPersona', (e, persona) => {
+        $scope.isOrganization = persona.id !== $rootScope.userDetails.id;
+      });
 
       $scope.load = () => {
         $scope.loadOrganizations();
@@ -37,19 +52,42 @@ module HawkularAccounts {
             $scope.loading = false;
           },
           () => {
+            NotificationsService.info('List of organizations could NOT be retrieved.');
             $log.warn('List of organizations could NOT be retrieved.');
             $scope.loading = false;
           }
         );
       };
+
       $scope.showCreateForm = () => {
-        $location.path('/accounts/organizations/new');
+        var createFormModal = $modal.open({
+          controller: 'HawkularAccounts.OrganizationNewController',
+          templateUrl: 'plugins/accounts/html/organization-new.html'
+        });
+
+        createFormModal.result.then((organization) =>  {
+          NotificationsService.info(`Organization ${organization.name} created`);
+          $scope.organizations.unshift(organization);
+        }, (type, error) => {
+          if (type === 'error') {
+            NotificationsService.error(`Error while creating organization: ${error.data.message}`);
+            $log.info(`Modal dismissed with ERROR at: ${new Date()}`);
+          } else {
+            $log.info(`Modal dismissed at: ${new Date()}`);
+          }
+        });
       };
+
       $scope.remove = (organization) => {
         organization.$remove().then(
           () => {
+            NotificationsService.info(`Organization ${organization.name} removed`);
             $scope.$emit('OrganizationRemoved');
             $scope.organizations.splice($scope.organizations.indexOf(organization), 1);
+          }, (error) => {
+            $log.warn('Error while trying to remove organization');
+            $log.warn(error);
+            NotificationsService.info(`Failed to remove the organization ${organization.name}: ${error.data.message}`);
           }
         );
       };
@@ -62,19 +100,25 @@ module HawkularAccounts {
     }]);
 
   export var OrganizationNewController = _module.controller('HawkularAccounts.OrganizationNewController', [
-    '$scope', '$log', '$location', 'HawkularAccount',
-    ($scope, $log, $location, HawkularAccount) => {
+    '$scope', '$modalInstance', '$log', '$location', 'HawkularAccount',
+    ($scope, $modalInstance, $log, $location, HawkularAccount) => {
 
       $scope.organizationNew = new HawkularAccount.Organization({});
+
+      $scope.cancel = () => {
+        $modalInstance.dismiss('cancel');
+      };
+
       $scope.persist = () => {
         $scope.organizationNew.$save({},
           () => {
             $scope.$emit('OrganizationCreated');
-            $location.path('/accounts/organizations');
+            $modalInstance.close($scope.organizationNew);
           },
-          () => {
+          (e) => {
             // error
             $log.debug('Organization could NOT be added.');
+            $modalInstance.dismiss('error', e);
           }
         );
         $log.debug('Trying to persist the organization');

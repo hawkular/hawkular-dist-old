@@ -16,7 +16,16 @@
 ///
 
 module HawkularAccounts {
-  export var pluginName = 'hawkular-accounts';
-  export var log:Logging.Logger = Logger.get(pluginName);
-  export var templatePath = 'plugins/accounts/html';
+  export let pluginName = 'hawkular-accounts';
+  export let log:Logging.Logger = Logger.get(pluginName);
+  export let templatePath = 'plugins/accounts/html';
+  export let _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
+  export type PersonaId = string;
+
+  export interface IPersona {
+    id:  PersonaId;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+  }
 }
