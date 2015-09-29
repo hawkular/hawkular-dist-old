@@ -126,11 +126,6 @@
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.liquibase:WARN}</xsl:text></xsl:attribute>
       </level>
     </logger>
-    <logger category="org.apache.cassandra">
-      <level>
-        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.cassandra:INFO}</xsl:text></xsl:attribute>
-      </level>
-    </logger>
     <logger category="org.jboss.as.ejb3">
       <level>
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.ejb3:WARN}</xsl:text></xsl:attribute>
@@ -939,6 +934,14 @@
                              metricSets="Datasource Pool Metrics,Datasource JDBC Metrics" />
         </resource-type-set-dmr>
 
+        <resource-type-set-dmr name="XA Datasource" enabled="true">
+          <resource-type-dmr name="XA Datasource"
+                             resourceNameTemplate="XA Datasource [%-]"
+                             path="/subsystem=datasources/xa-data-source=*"
+                             parents="WildFly Server"
+                             metricSets="Datasource Pool Metrics,Datasource JDBC Metrics" />
+        </resource-type-set-dmr>
+
         <resource-type-set-dmr name="JDBC Driver" enabled="true">
           <resource-type-dmr name="JDBC Driver"
                              resourceNameTemplate="JDBC Driver [%-]"
@@ -961,11 +964,11 @@
                       port="9990"
                       username="adminUser"
                       password="adminPass"
-                      resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,JDBC Driver,Transaction Manager" />
+                      resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,XA Datasource,JDBC Driver,Transaction Manager" />
 
           <local-dmr name="Local"
                      enabled="true"
-                     resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,JDBC Driver,Transaction Manager,Hawkular" />
+                     resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,XA Datasource,JDBC Driver,Transaction Manager,Hawkular" />
 
         </managed-servers>
 

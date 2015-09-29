@@ -22,7 +22,7 @@ module Topbar {
 
   export var _module = angular.module(pluginName, ['ngResource', 'hawkular.services', 'ui.bootstrap']);
 
-  _module.directive('hawkularTopbar', function () {
+  _module.directive('hawkularTopbar', () => {
     return new Topbar.TopbarDirective();
   });
 

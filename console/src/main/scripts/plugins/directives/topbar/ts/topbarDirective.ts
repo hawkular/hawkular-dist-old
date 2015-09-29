@@ -18,7 +18,6 @@
 /// <reference path='topbarPlugin.ts'/>
 module Topbar {
 
-  var log:Logging.Logger = Logger.get('Topbar');
 
   export class TopbarDirective {
 
@@ -30,12 +29,12 @@ module Topbar {
   }
 
   export var TopbarController = _module.controller('Topbar.TopbarController',
-    ['$scope', '$rootScope', '$location', '$route', '$routeParams', 'HawkularNav',
-      ($scope, $rootScope, $location, $route, $routeParams, HawkularNav) => {
+    ['$scope', '$rootScope', '$location',
+      ($scope, $rootScope, $location) => {
 
-      $scope.getClass = function(path) {
+        $scope.getClass = function (path) {
           return $location.path().indexOf(path) === 0 ? 'active' : '';
-      };
+        };
 
-    }]);
+      }]);
 }

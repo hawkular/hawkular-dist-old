@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular</artifactId>
-    <version>1.0.0.Alpha5-SNAPSHOT</version>
+    <version>1.0.0.Alpha6-SNAPSHOT</version>
   </parent>
 
   <artifactId>hawkular-dist</artifactId>
@@ -80,13 +80,13 @@
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-pinger</artifactId>
-      <version>1.0.0.Alpha5-SNAPSHOT</version>
+      <version>1.0.0.Alpha6-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-avail-creator</artifactId>
-      <version>1.0.0.Alpha5-SNAPSHOT</version>
+      <version>1.0.0.Alpha6-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
@@ -112,7 +112,7 @@
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-console</artifactId>
-      <version>1.0.0.Alpha5-SNAPSHOT</version>
+      <version>1.0.0.Alpha6-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
@@ -128,7 +128,7 @@
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-redhat-access-integration-backend</artifactId>
-      <version>1.0.0.Alpha5-SNAPSHOT</version>
+      <version>1.0.0.Alpha6-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
