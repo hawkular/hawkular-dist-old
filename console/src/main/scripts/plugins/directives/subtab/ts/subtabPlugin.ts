@@ -15,14 +15,16 @@
 /// limitations under the License.
 ///
 
-/// <reference path='../../includes.ts'/>
-module Sidebar {
+/// <reference path="../../includes.ts"/>
+/// <reference path="subtabGlobals.ts"/>
+/// <reference path="subtabDirective.ts"/>
+module Subtab {
 
-  export var pluginName = 'sidebar';
+  export var _module = angular.module(pluginName, ['duScroll']);
 
-  export var log:Logging.Logger = Logger.get(pluginName);
+  _module.directive('hawkularSubtab', function () {
+    return new Subtab.SubtabDirective();
+  });
 
-  export var templatePath = 'plugins/directives/sidebar/html/sidebar.html';
-
-  export var globalEnvironmentId = 'test';
+  hawtioPluginLoader.addModule(pluginName);
 }

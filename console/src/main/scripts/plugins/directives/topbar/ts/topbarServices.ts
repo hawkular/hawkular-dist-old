@@ -25,18 +25,20 @@ module Topbar {
     public static $inject = ['$rootScope', '$route', '$routeParams', 'HawkularInventory'];
 
 
-    constructor(private $rootScope: any, private $route: any, private $routeParams: any,
-                private HawkularInventory: any) {
+    constructor(private $rootScope:any,
+                private $route:any,
+                private $routeParams:any,
+                private HawkularInventory:any) {
       $rootScope.hkParams = $routeParams || [];
 
       // default time period set to 24 hours
-      var defaultOffset = 1 * 60 * 60  * 1000;
+      var defaultOffset = 1 * 60 * 60 * 1000;
 
-      var init = (tenantId: TenantId) => {
+      var init = (tenantId:string) => {
         HawkularInventory.Resource.query({environmentId: globalEnvironmentId}, (resourceList) => {
           $rootScope.hkResources = resourceList;
           for (var i = 0; i < resourceList.length; i++) {
-            if(resourceList[i].id === $rootScope.hkParams.resourceId) {
+            if (resourceList[i].id === $rootScope.hkParams.resourceId) {
               $rootScope.selectedResource = resourceList[i];
             }
           }
@@ -44,27 +46,16 @@ module Topbar {
 
         $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
         $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
-        $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
+        $rootScope.hkStartTimestamp = moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
         $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
           $rootScope.hkParams = current.params;
 
           $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
           $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
-          $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
+          $rootScope.hkStartTimestamp = moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
-          /* not used anymore, was for topbar dropdown
-          HawkularInventory.Resource.query({environmentId: globalEnvironmentId}, (resourceList) => {
-            $rootScope.hkResources = resourceList;
-            for (var i = 0; i < resourceList.length; i++) {
-              if(resourceList[i].id === $rootScope.hkParams.resourceId) {
-                $rootScope.selectedResource = resourceList[i];
-              }
-            }
-            });
-          */
-
-          }, this);
+        }, this);
       };
       var tenantId = this.$rootScope.currentPersona && this.$rootScope.currentPersona.id;
       if (tenantId) {
