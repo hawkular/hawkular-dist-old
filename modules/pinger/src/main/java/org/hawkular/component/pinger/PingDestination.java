@@ -39,7 +39,7 @@ public class PingDestination {
 
     public static PingDestination from(Resource r) {
         Map<String, Object> props = r.getProperties();
-        return new PingDestination(r.getTenantId(), r.getEnvironmentId(), r.getId(),
+        return new PingDestination(r.getPath().ids().getTenantId(), r.getPath().ids().getEnvironmentId(), r.getId(),
                 (String) props.get(ResourceField.url.name()), (String) props.get(ResourceField.method.name()));
     }
 
