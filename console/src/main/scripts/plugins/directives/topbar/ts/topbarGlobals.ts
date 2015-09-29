@@ -20,8 +20,6 @@ module Topbar {
 
   export var pluginName = 'topbar';
 
-  export var log:Logging.Logger = Logger.get(pluginName);
-
   export var templatePath = 'plugins/directives/topbar/html/topbar.html';
 
   export var globalEnvironmentId = 'test';

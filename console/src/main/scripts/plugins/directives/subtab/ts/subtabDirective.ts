@@ -27,23 +27,20 @@ module Subtab {
     public templateUrl = templatePath;
   }
 
-  export var SubtabController = _module.controller('Subtab.SubtabController',
+  //@todo: Change to controller class and controllerAs style
+  export let SubtabController = _module.controller('Subtab.SubtabController',
     ['$scope', '$rootScope', '$location', 'HawkularNav', 'HawkularInventory', ($scope, $rootScope, $location,
                                                                                HawkularNav, HawkularInventory) => {
 
-      $scope.isSinglePage = function () {
-        return $location.path().indexOf('/metrics') !== 0;
-      };
-
-      $scope.isAlertsPage = function () {
+      $scope.isAlertsPage = () => {
         return $location.path().indexOf('/hawkular/ui/alert-center') !== 0;
       };
 
-      $scope.isAppServerPage = function () {
+      $scope.isAppServerPage = () => {
         return $location.path().indexOf('/hawkular-ui/app/') === 0;
       };
 
-      $scope.getClass = function (path) {
+      $scope.getClass = (path) => {
         return $location.path().indexOf(path) === 0 ? 'active' : '';
       };
 
@@ -56,18 +53,18 @@ module Subtab {
         '31536000000': 'Last Year'
       };
 
-      $scope.getFormattedDate = function () {
-        var diff = $scope.hkParams.timeOffset;
+      $scope.getFormattedDate = () => {
+        let diff = $scope.hkParams.timeOffset;
 
         // FIXME: Use moment ?
         $scope.offsetName = $scope.rangeNames[$scope.hkParams.timeOffset] || 'Custom';
 
         // TODO: Use this for custom
-        // var momStart = moment($scope.hkStartTimestamp);
-        // var momEnd = moment($scope.hkEndTimestamp);
+        // let momStart = moment($scope.hkStartTimestamp);
+        // let momEnd = moment($scope.hkEndTimestamp);
 
-        var momStart = moment().subtract($scope.hkParams.timeOffset, 'milliseconds');
-        var momEnd = moment();
+        let momStart = moment().subtract($scope.hkParams.timeOffset, 'milliseconds');
+        let momEnd = moment();
 
         if (diff < 24 * 60 * 60 * 1000) {
           return momStart.format('D MMM YYYY') + ' ' + momStart.format('HH:mm') + ' - ' +
@@ -77,14 +74,14 @@ module Subtab {
         }
       };
 
-      $scope.setRange = function (range) {
+      $scope.setRange = (range) => {
         HawkularNav.setTimestamp(moment.duration(range).valueOf());
       };
 
-      $scope.getUrlFromId = function (id) {
+      $scope.getUrlFromId = (id) => {
         if (!$scope.resource) {
           $scope.resource = HawkularInventory.Resource.get({environmentId: globalEnvironmentId, resourcePath: id},
-            function (data) {
+            (data) => {
               $scope.resourceName = data.properties.url;
             });
         }
@@ -92,7 +89,7 @@ module Subtab {
       };
 
       // FIXME: Mock data.. remove when we have real app servers
-      $scope.getAppServerFromId = function (id) {
+      $scope.getAppServerFromId = (id) => {
         $scope.resourceName = id;
       };
 
