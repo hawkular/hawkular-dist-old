@@ -269,15 +269,24 @@ class InventoryITest extends AbstractTestBase {
         /* link the metric to resource */
         path = "$basePath/$environmentId/resources/$host1ResourceId/metrics"
         response = client.post(path: path,
-                body: ["../$responseTimeMetricId".toString(), "/$environmentId/$responseStatusCodeMetricId".toString()]);
+                body: ["../$responseTimeMetricId".toString(),
+                       "/e;$environmentId/$responseStatusCodeMetricId".toString()]);
         assertEquals(204, response.status)
         pathsToDelete.put("$path/../$responseTimeMetricId", "$path/../$responseTimeMetricId")
         pathsToDelete.put("$path/../$responseStatusCodeMetricId", "$path/../$responseStatusCodeMetricId")
 
         /* add a feed */
-        response = postDeletable(path: "$environmentId/feeds", body: [id: feedId])
+        response = postDeletable(path: "feeds", body: [id: feedId])
         assertEquals(201, response.status)
-        assertEquals(baseURI + "$basePath/$environmentId/feeds/$feedId", response.headers.Location)
+        assertEquals(baseURI + "$basePath/feeds/$feedId", response.headers.Location)
+
+        /* Currently, all feeds get auto-associated with the test environment. Feeds can only be associated with at most
+         * a single environment, so we need to re-assign it to our newly created environment for this test's purposes.
+         */
+        response = client.delete(path: "$basePath/$testEnvId/feeds/../$feedId")
+        assertEquals(204, response.status)
+        response = client.post(path: "$basePath/$environmentId/feeds", body: ["/$feedId".toString()])
+        assertEquals(204, response.status)
 
         /* add a custom relationship, no need to clean up, it'll be deleted together with the resources */
         def relation = [id        : 42, // it's ignored anyway
@@ -689,15 +698,15 @@ class InventoryITest extends AbstractTestBase {
     }
 
     @Test
-    void testEnvironmentsContainFeeds() {
+    void testEnvironmentIncorporatesFeeds() {
         assertRelationshipExists("environments/$environmentId/relationships",
                 "/t;$tenantId/e;$environmentId",
-                contains.name(),
-                "/t;$tenantId/e;$environmentId/f;$feedId")
+                incorporates.name(),
+                "/t;$tenantId/f;$feedId")
 
         assertRelationshipJsonldExists("environments/$environmentId/relationships",
                 environmentId,
-                contains.name(),
+                incorporates.name(),
                 feedId)
     }
 
@@ -725,7 +734,7 @@ class InventoryITest extends AbstractTestBase {
     }
 
     @Test
-    void testResourceTypesOwnMetricTypes() {
+    void testResourceTypesIncorporateMetricTypes() {
         assertRelationshipExists("resourceTypes/$pingableHostRTypeId/relationships",
                 "/t;$tenantId/rt;$pingableHostRTypeId".toString(),
                 incorporates.name(),
@@ -743,7 +752,7 @@ class InventoryITest extends AbstractTestBase {
     }
 
     @Test
-    void testResourcesOwnMetrics() {
+    void testResourcesIncorporateMetrics() {
         assertRelationshipExists("$environmentId/resources/$host1ResourceId/relationships",
                 "/t;$tenantId/e;$environmentId/r;$host1ResourceId",
                 incorporates.name(),
