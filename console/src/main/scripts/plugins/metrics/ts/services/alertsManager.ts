@@ -153,7 +153,7 @@ module HawkularMetrics {
 
   }
 
-  export class HawkularAlertsManager implements IHawkularAlertsManager{
+  export class HawkularAlertsManager implements IHawkularAlertsManager {
 
     public static $inject = ['HawkularAlert', '$q', '$log', '$moment', 'NotificationsService', 'ErrorsManager'];
 
