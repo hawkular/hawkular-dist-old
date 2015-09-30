@@ -1,0 +1,27 @@
+<div class="modal-header">
+  <button type="button" class="close" dismiss="modal" aria-label="Close" ng-click="inviteModal.cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <h4 class="modal-title">Invite people</h4>
+</div>
+
+<div class="modal-body">
+  <form role="form" class="form-horizontal">
+    <div class="form-group">
+      <label for="emails" class="col-md-4 control-label">Invite via email</label>
+      <div class="col-md-6">
+        <input type="text" class="form-control" id="emails" placeholder="Emails, separated by comma or space">
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" dismiss="modal" ng-click="inviteModal.cancel()"
+          id="inviteToOrganizationFormCancelBtn">
+    Cancel
+  </button>
+  <button type="button" class="btn btn-primary" id="inviteToOrganizationFormBtn" ng-click="inviteModal.invite()">
+    Invite
+  </button>
+</div>

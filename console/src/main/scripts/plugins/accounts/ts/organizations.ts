@@ -17,17 +17,6 @@
 
 /// <reference path='accountsPlugin.ts'/>
 module HawkularAccounts {
-  _module.config([
-    '$routeProvider', 'HawtioNavBuilderProvider',
-    ($routeProvider, builder:HawtioMainNav.BuilderFactory) => {
-
-      $routeProvider
-        .when(
-        '/hawkular-ui/organizations',
-        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organizations.html')}
-      );
-    }]);
-
   export var OrganizationsController = _module.controller('HawkularAccounts.OrganizationsController', [
     '$rootScope', '$scope', '$modal', '$log', '$location', 'HawkularAccount', 'NotificationsService',
     ($rootScope, $scope, $modal, $log, $location, HawkularAccount, NotificationsService) => {
