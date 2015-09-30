@@ -292,6 +292,22 @@ class InventoryITest extends AbstractTestBase {
                 body: relation)
         assertEquals(201, response.status)
 
+        // add operation type to the resource type
+        response = postDeletable(path: "resourceTypes/$pingableHostRTypeId/operationTypes",
+                body: [id: "start"])
+        assertEquals(201, response.status)
+
+        // add some parameters to it
+        def startOpParamTypes = [role: "parameterTypes", value: [title     : "blah", type: "object",
+                                                                 properties: [quick: [type: "boolean"]]]]
+        response = client.post(path: "$basePath/resourceTypes/$pingableHostRTypeId/operationTypes/start/data",
+                body: startOpParamTypes)
+        assertEquals(201, response.status)
+
+        response = client.post(path: "$basePath/resourceTypes/$pingableHostRTypeId/operationTypes/start/data",
+                body: [role: "returnType", value: [title: "blah", type: "boolean"]])
+        assertEquals(201, response.status)
+
         /* add a resource type json schema */
         def schema = [
             value: [
@@ -489,6 +505,16 @@ class InventoryITest extends AbstractTestBase {
         // commented out as it interfers with WildFly Agent
         // assertEntitiesExist("metricTypes",
         //    [responseTimeMTypeId, responseStatusCodeMTypeId, statusDurationMTypeId, statusCodeMTypeId])
+    }
+
+    @Test
+    void testOperationTypesCreated() {
+        assertEntityExists("resourceTypes/$pingableHostRTypeId/operationTypes/start", "/rt;" + pingableHostRTypeId +
+                "/ot;start")
+        assertEntityExists("resourceTypes/$pingableHostRTypeId/operationTypes/start/data",
+                [dataType: "returnType"], "/rt;" + pingableHostRTypeId + "/ot;start/d;returnType")
+        assertEntityExists("resourceTypes/$pingableHostRTypeId/operationTypes/start/data",
+                [dataType: "parameterTypes"], "/rt;" + pingableHostRTypeId + "/ot;start/d;parameterTypes")
     }
 
     @Test
@@ -1001,6 +1027,12 @@ class InventoryITest extends AbstractTestBase {
 
     private static void assertEntityExists(path, cp) {
         def response = client.get(path: "$basePath/$path")
+        assertEquals(200, response.status)
+        assertEquals(fullCanonicalPath(cp), response.data.path)
+    }
+
+    private static void assertEntityExists(path, queryParams, cp) {
+        def response = client.get(path: "$basePath/$path", query: queryParams)
         assertEquals(200, response.status)
         assertEquals(fullCanonicalPath(cp), response.data.path)
     }
