@@ -31,7 +31,7 @@ module HawkularAccounts {
     updatedAt: string;
   }
 
-  export interface IOrganization extends IPersona{
+  export interface IOrganization extends IPersona {
   }
 
   export interface INotificationsService {
