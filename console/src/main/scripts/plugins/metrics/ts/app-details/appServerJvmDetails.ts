@@ -30,7 +30,7 @@ module HawkularMetrics {
   export class AppServerJvmDetailsController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager',
+      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'MetricsService',
       'ErrorsManager', '$q', 'md5'];
 
     public static USED_COLOR = '#1884c7'; /// blue
@@ -59,6 +59,7 @@ module HawkularMetrics {
                 private HawkularInventory:any,
                 private HawkularMetric:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
+                private MetricsService:IMetricsService,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
                 private md5:any) {
@@ -138,77 +139,6 @@ module HawkularMetrics {
           percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
           median: !angular.isNumber(point.median) ? 0 : point.median,
           empty: point.empty
-        };
-      });
-    }
-
-    private formatCounterChartOutput(response, buckets = 60):IChartDataPoint[] {
-      if(response.length < 2) {
-        return [];
-      }
-
-      // get the timestamp interval from the first two samples
-      let tsStep = response[1].timestamp - response[0].timestamp;
-
-      // sometimes there are gaps in data, which needs to be filled with empty values so the buckets get similar time
-      // intervals. here we figure that and fill them. when metrics support buckets for counters, this is unnecessary
-      let tmpArr = [response[0], response[1]];
-      let k = 2;
-      while(k < response.length) {
-        if(response[k].timestamp - tmpArr[tmpArr.length-1].timestamp >= (tsStep * 2)) {
-          tmpArr.push({timestamp: tmpArr[tmpArr.length-1].timestamp + tsStep, value: 0});
-        }
-        else {
-          tmpArr.push(response[k++]);
-        }
-      }
-      response = tmpArr;
-
-      // also, if the data starts after the start timestamp, the chart will not have a proper scale, and not comparable
-      // with others (eg: mem usage). so, if required, fill data with initial missing timestamps.
-      while (response[0].timestamp > this.startTimeStamp) {
-        response.unshift({timestamp: (response[0].timestamp - tsStep), value: 0});
-      }
-
-      // put things into buckets
-      response = tmpArr;
-      let result = response.reverse();
-      /// FIXME: Simulating buckets.. this should come from metrics.
-      if (response.length >= buckets) {
-        let step = this.$window.Math.floor(response.length / buckets);
-        result = [];
-        let accValue = 0;
-        var iTimeStamp = 0;
-        _.forEach(response, (point:any, idx) => {
-          if (iTimeStamp === 0) {
-            iTimeStamp = point.timestamp;
-          }
-
-          accValue += point.value;
-
-          if (parseInt(idx, 10) % step === (step - 1)) {
-            result.push({timestamp: iTimeStamp, value: accValue});
-            accValue = 0;
-            iTimeStamp = 0;
-          }
-        });
-        // just so that scale matches, sometimes there's some skew..
-        result[result.length-1].timestamp = this.startTimeStamp;
-      }
-
-      //  The schema is different for bucketed output
-      return _.map(result, (point:IChartDataPoint, idx) => {
-        let theValue = idx === 0 ? 0 : (result[idx - 1].value - point.value);
-        return {
-          timestamp: point.timestamp,
-          date: new Date(point.timestamp),
-          value: theValue,
-          avg: theValue,
-          min: theValue,
-          max: theValue,
-          percentile95th: theValue,
-          median: theValue,
-          empty: !angular.isNumber(point.value)
         };
       });
     }
@@ -332,7 +262,7 @@ module HawkularMetrics {
         buckets: 1
       }, (resource) => {
         if (resource.length) {
-          this.chartGCDurationData = this.formatCounterChartOutput(resource);
+          this.chartGCDurationData = MetricsService.formatCounterChartOutput(resource, this.startTimeStamp);
         }
       }, this);
     }
