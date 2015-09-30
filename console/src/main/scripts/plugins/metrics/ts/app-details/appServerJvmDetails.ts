@@ -30,7 +30,7 @@ module HawkularMetrics {
   export class AppServerJvmDetailsController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager',
+      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'MetricsService',
       'ErrorsManager', '$q', 'md5'];
 
     public static USED_COLOR = '#1884c7'; /// blue
@@ -59,6 +59,7 @@ module HawkularMetrics {
                 private HawkularInventory:any,
                 private HawkularMetric:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
+                private MetricsService:IMetricsService,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
                 private md5:any) {
@@ -142,41 +143,6 @@ module HawkularMetrics {
       });
     }
 
-    private formatCounterChartOutput(response, buckets = 60):IChartDataPoint[] {
-      let result = response;
-      /// FIXME: Simulating buckets.. this should come from metrics.
-      if (response.length > buckets) {
-        let step = this.$window.Math.floor(response.length / buckets);
-        result = [];
-        let accValue = 0;
-        _.forEach(response, (point:any, idx) => {
-          if (parseInt(idx, 10) % step === (step - 1)) {
-            result.push({timestamp: point.timestamp, value: accValue});
-            accValue = 0;
-          }
-          else {
-            accValue += point.value;
-          }
-        });
-      }
-
-      //  The schema is different for bucketed output
-      return _.map(result, (point:IChartDataPoint, idx) => {
-        let theValue = idx === 0 ? 0 : (result[idx - 1].value - point.value);
-        return {
-          timestamp: point.timestamp,
-          date: new Date(point.timestamp),
-          value: theValue,
-          avg: theValue,
-          min: theValue,
-          max: theValue,
-          percentile95th: theValue,
-          median: theValue,
-          empty: !angular.isNumber(point.value)
-        };
-      });
-    }
-
     private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getJvmData();
@@ -222,8 +188,7 @@ module HawkularMetrics {
         buckets: 1
       }, (resource) => {
         if (resource.length) {
-          this['accGCDuration'] = resource[0].value - resource[resource.length - 1].value;
-          this.chartGCDurationData = this.formatCounterChartOutput(resource);
+          this['accGCDuration'] = resource[resource.length - 1].value - resource[0].value;
         }
       }, this);
       this.getJvmChartData();
@@ -289,6 +254,16 @@ module HawkularMetrics {
           key: 'NonHeap Used',
           color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data)
         };
+      }, this);
+      this.HawkularMetric.CounterMetricRate(this.$rootScope.currentPersona.id).queryMetrics({
+        counterId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration',
+        start: this.startTimeStamp,
+        end: this.endTimeStamp,
+        buckets: 1
+      }, (resource) => {
+        if (resource.length) {
+          this.chartGCDurationData = MetricsService.formatCounterChartOutput(resource, this.startTimeStamp);
+        }
       }, this);
     }
   }
