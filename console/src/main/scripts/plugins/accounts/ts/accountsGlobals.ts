@@ -15,6 +15,8 @@
 /// limitations under the License.
 ///
 
+/// <reference path='../../includes.ts'/>
+
 module HawkularAccounts {
   export let pluginName = 'hawkular-accounts';
   export let log:Logging.Logger = Logger.get(pluginName);
@@ -27,5 +29,15 @@ module HawkularAccounts {
     name: string;
     createdAt: string;
     updatedAt: string;
+  }
+
+  export interface IOrganization extends IPersona{
+  }
+
+  export interface INotificationsService {
+    info(message: string): void;
+    success(message: string): void;
+    warning(message: string): void;
+    error(message: string): void;
   }
 }

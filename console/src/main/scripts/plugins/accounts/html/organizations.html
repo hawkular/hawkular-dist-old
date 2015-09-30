@@ -43,7 +43,11 @@
         </thead>
         <tbody>
         <tr ng-repeat="organization in organizations">
-          <td>{{organization.name}}</td>
+          <td>
+            <a href="/hawkular-ui/organization/{{organization.id}}/memberships">
+              {{organization.name}}
+            </a>
+          </td>
           <td>
             <button type="button" class="btn btn-default" aria-label="Remove" ng-click="remove(organization)">
               <span class="pficon pficon-delete" aria-hidden="true"></span>
@@ -56,5 +60,4 @@
   </div>
   <!-- /col -->
 
-</div>
 </div>

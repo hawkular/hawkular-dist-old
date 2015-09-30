@@ -19,8 +19,19 @@
 module HawkularAccounts {
   let currentPersona:IPersona = undefined;
 
-  _module.config(['$httpProvider', ($httpProvider:ng.IHttpProvider) => {
-    $httpProvider.interceptors.push(PersonaInterceptorService.Factory);
+  _module.config(['$httpProvider', 'HawtioNavBuilderProvider', '$routeProvider',
+    ($httpProvider:ng.IHttpProvider, builder:HawtioMainNav.BuilderFactory, $routeProvider) => {
+
+      $httpProvider.interceptors.push(PersonaInterceptorService.Factory);
+
+      $routeProvider
+        .when(
+        '/hawkular-ui/organizations',
+        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organizations.html')})
+
+        .when(
+        '/hawkular-ui/organization/:organizationId/memberships',
+        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-memberships.html')});
   }]);
 
   _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails',
