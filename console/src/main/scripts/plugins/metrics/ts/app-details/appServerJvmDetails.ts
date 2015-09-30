@@ -143,21 +143,57 @@ module HawkularMetrics {
     }
 
     private formatCounterChartOutput(response, buckets = 60):IChartDataPoint[] {
-      let result = response;
+      if(response.length < 2) {
+        return [];
+      }
+
+      // get the timestamp interval from the first two samples
+      let tsStep = response[1].timestamp - response[0].timestamp;
+
+      // sometimes there are gaps in data, which needs to be filled with empty values so the buckets get similar time
+      // intervals. here we figure that and fill them. when metrics support buckets for counters, this is unnecessary
+      let tmpArr = [response[0], response[1]];
+      let k = 2;
+      while(k < response.length) {
+        if(response[k].timestamp - tmpArr[tmpArr.length-1].timestamp >= (tsStep * 2)) {
+          tmpArr.push({timestamp: tmpArr[tmpArr.length-1].timestamp + tsStep, value: 0});
+        }
+        else {
+          tmpArr.push(response[k++]);
+        }
+      }
+      response = tmpArr;
+
+      // also, if the data starts after the start timestamp, the chart will not have a proper scale, and not comparable
+      // with others (eg: mem usage). so, if required, fill data with initial missing timestamps.
+      while (response[0].timestamp > this.startTimeStamp) {
+        response.unshift({timestamp: (response[0].timestamp - tsStep), value: 0});
+      }
+
+      // put things into buckets
+      response = tmpArr;
+      let result = response.reverse();
       /// FIXME: Simulating buckets.. this should come from metrics.
-      if (response.length > buckets) {
+      if (response.length >= buckets) {
         let step = this.$window.Math.floor(response.length / buckets);
         result = [];
         let accValue = 0;
+        var iTimeStamp = 0;
         _.forEach(response, (point:any, idx) => {
-          if (parseInt(idx, 10) % step === (step - 1)) {
-            result.push({timestamp: point.timestamp, value: accValue});
-            accValue = 0;
+          if (iTimeStamp === 0) {
+            iTimeStamp = point.timestamp;
           }
-          else {
-            accValue += point.value;
+
+          accValue += point.value;
+
+          if (parseInt(idx, 10) % step === (step - 1)) {
+            result.push({timestamp: iTimeStamp, value: accValue});
+            accValue = 0;
+            iTimeStamp = 0;
           }
         });
+        // just so that scale matches, sometimes there's some skew..
+        result[result.length-1].timestamp = this.startTimeStamp;
       }
 
       //  The schema is different for bucketed output
@@ -222,8 +258,7 @@ module HawkularMetrics {
         buckets: 1
       }, (resource) => {
         if (resource.length) {
-          this['accGCDuration'] = resource[0].value - resource[resource.length - 1].value;
-          this.chartGCDurationData = this.formatCounterChartOutput(resource);
+          this['accGCDuration'] = resource[resource.length - 1].value - resource[0].value;
         }
       }, this);
       this.getJvmChartData();
@@ -289,6 +324,16 @@ module HawkularMetrics {
           key: 'NonHeap Used',
           color: AppServerJvmDetailsController.USED_COLOR, values: this.formatBucketedChartOutput(data)
         };
+      }, this);
+      this.HawkularMetric.CounterMetricRate(this.$rootScope.currentPersona.id).queryMetrics({
+        counterId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration',
+        start: this.startTimeStamp,
+        end: this.endTimeStamp,
+        buckets: 1
+      }, (resource) => {
+        if (resource.length) {
+          this.chartGCDurationData = this.formatCounterChartOutput(resource);
+        }
       }, this);
     }
   }
