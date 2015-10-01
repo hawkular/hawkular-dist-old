@@ -11,8 +11,10 @@ jdk:
 - oraclejdk8
 install:
 - mvn -s .travis.maven.settings.xml -version -B
+- df -h
 script:
 - mvn -fae -s .travis.maven.settings.xml -Pitest clean install
+- df -h
 notifications:
   email: false
 env:
@@ -21,6 +23,10 @@ env:
   - secure: BADgz+otMMO+gUlFNduU/mgFm1dOfv2ZWAYD3nO1nEwu7Y1QVUsqimHdlqntUcinILDVeD33oT27kElERvr7KyjfDEPSDAVUg5Y/5soezg/tBu0zi3iodAP2GynOMohS/Rfm4+3ajWuEe/Y2SYjFXgldMR9qjP+/31FsVtW8Op0=
   - secure: "BiNdt5chVhT3StF2MK/z8nB/jAM/5feOMEAeY0bmhcQQUwzxrOb8G3G26rDBPL1FApCHOP1yjyCgxruboRik4ZmweXnelBV4q1K2m6hSV8GSNQvcVhlozA6KYt9CMFOIZo5WPpXBp6Kg7ftsMft2qxzyJRYjPqPhtOct8MNDMgY="
   - secure: "IGipdqGmyhPBgXLjQ5sbWVIMbDpQvFUzuGsdoAPyeJbSNma1LFuJta6OQvueJhDoBPzAYQ/54NFW0WTrd1z3dtZjxo24/ZRvIy6TRPJRcpUSQMa+C9FwCmFb3LPsYF2NNdUKkW33610puI8iSJkt+MfCV9j5SAJc37+Cd2cXUoU="
+before_cache:
+# keep the cached local repo small by removing files older than 10 days
+- find $HOME/.m2/repository -type d -ctime +10 -exec rm -rf {} \;
+- df -h
 after_success:
 - PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
 - echo ${PROJECT_VERSION} == ${TRAVIS_BRANCH}  == ${TRAVIS_PULL_REQUEST}
