@@ -55,7 +55,7 @@
 
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
-      <artifactId>clients-common</artifactId>
+      <artifactId>hawkular-metrics-clients-common</artifactId>
     </dependency>
 
     <dependency>
