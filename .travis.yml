@@ -23,9 +23,9 @@ env:
   - secure: "IGipdqGmyhPBgXLjQ5sbWVIMbDpQvFUzuGsdoAPyeJbSNma1LFuJta6OQvueJhDoBPzAYQ/54NFW0WTrd1z3dtZjxo24/ZRvIy6TRPJRcpUSQMa+C9FwCmFb3LPsYF2NNdUKkW33610puI8iSJkt+MfCV9j5SAJc37+Cd2cXUoU="
 after_success:
 - PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
-- if [[ "$PROJECT_VERSION" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
+- echo ${PROJECT_VERSION} == ${TRAVIS_BRANCH}  == ${TRAVIS_PULL_REQUEST}
+- if [[ "${PROJECT_VERSION}" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
   then
    mvn  -s .travis.maven.settings.xml deploy -DskipTests ;
-   echo "secret ${DEPLOYMENT_JENKINS}" ;
    curl -X GET http://${DEPLOYMENT_JENKINS}/job/Build-Hawkular-Image/build?token=${DEPLOYMENT_JENKINS_TOKEN} ;
   fi
