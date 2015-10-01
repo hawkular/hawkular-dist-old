@@ -18,14 +18,14 @@ package org.hawkular.component.availcreator;
 
 import java.util.List;
 
-import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.AbstractMessage;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * @author Lucas Ponce
  */
-public class AvailDataMessage extends BasicMessage {
+public class AvailDataMessage extends AbstractMessage {
 
     @JsonInclude
     private AvailData availData;
