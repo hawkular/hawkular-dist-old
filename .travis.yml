@@ -12,9 +12,11 @@ jdk:
 install:
 - mvn -s .travis.maven.settings.xml -version -B
 - df -h
+- du -sh $HOME/.m2/repository
 script:
 - mvn -fae -s .travis.maven.settings.xml -Pitest clean install
 - df -h
+- du -sh $HOME/.m2/repository
 notifications:
   email: false
 env:
@@ -27,6 +29,7 @@ before_cache:
 # keep the cached local repo small by removing files older than 10 days
 - find $HOME/.m2/repository -type d -ctime +10 -exec rm -rf {} \;
 - df -h
+- du -sh $HOME/.m2/repository
 after_success:
 - PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
 - echo ${PROJECT_VERSION} == ${TRAVIS_BRANCH}  == ${TRAVIS_PULL_REQUEST}
