@@ -188,7 +188,7 @@ module HawkularMetrics {
         buckets: 1
       }, (resource) => {
         if (resource.length) {
-          this['accGCDuration'] = resource[resource.length - 1].value - resource[0].value;
+          this['accGCDuration'] = (resource[0].max - resource[0].min);
         }
       }, this);
       this.getJvmChartData();
@@ -259,10 +259,10 @@ module HawkularMetrics {
         counterId: 'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration',
         start: this.startTimeStamp,
         end: this.endTimeStamp,
-        buckets: 1
+        buckets: 60
       }, (resource) => {
         if (resource.length) {
-          this.chartGCDurationData = MetricsService.formatCounterChartOutput(resource, this.startTimeStamp);
+          this.chartGCDurationData = MetricsService.formatBucketedChartOutput(resource);
         }
       }, this);
     }
