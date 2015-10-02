@@ -18,7 +18,7 @@
 /// <reference path='../../includes.ts'/>
 module Subtab {
 
-  export var pluginName = 'subdtab';
+  export var pluginName = 'subtab';
 
   export var log:Logging.Logger = Logger.get(pluginName);
 
