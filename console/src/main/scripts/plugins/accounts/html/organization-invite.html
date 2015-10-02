@@ -10,7 +10,12 @@
     <div class="form-group">
       <label for="emails" class="col-md-4 control-label">Invite via email</label>
       <div class="col-md-6">
-        <input type="text" class="form-control" id="emails" placeholder="Emails, separated by comma or space">
+        <input type="text"
+               class="form-control"
+               id="emails"
+               placeholder="Emails, separated by comma or space"
+               ng-model="inviteModal.invitation.emails"
+          />
       </div>
     </div>
   </form>
