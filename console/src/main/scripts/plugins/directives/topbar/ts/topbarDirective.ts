@@ -29,8 +29,8 @@ module Topbar {
   }
 
   export var TopbarController = _module.controller('Topbar.TopbarController',
-    ['$scope', '$rootScope', '$location',
-      ($scope, $rootScope, $location) => {
+    ['$scope', '$rootScope', '$location', 'HawkularNav',
+      ($scope, $rootScope, $location, HawkularNav /* keep HawkularNav! */) => {
 
         $scope.getClass = function (path) {
           return $location.path().indexOf(path) === 0 ? 'active' : '';
