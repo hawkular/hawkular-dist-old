@@ -105,6 +105,10 @@ a:hover {
   cursor: pointer;
 }
 
+.hk-spinner-container-alone {
+  margin-top: @grid-gutter-width*5.5;
+}
+
 
 // Alerts
 
@@ -1229,6 +1233,8 @@ a:hover .fa-spinner {
 }
 
 .hk-table-container {
+  background-color: white;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   position: relative;
 
   .hk-actions-table {
@@ -1245,10 +1251,8 @@ a:hover .fa-spinner {
   }
 }
 
-.hk-table-alerts {
-
-  background-color: white;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+.hk-table-alerts,
+.hk-table-clean {
 
   &.hk-alerts-contextual {
     border-left: none;
