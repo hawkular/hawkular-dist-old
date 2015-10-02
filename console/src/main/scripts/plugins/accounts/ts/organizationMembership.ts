@@ -69,12 +69,15 @@ module HawkularAccounts {
   }
 
   export class OrganizationInviteModalController {
-    public static $inject = ['$log', '$modalInstance', 'HawkularAccount', 'NotificationsService'];
+    public static $inject = ['$log', '$routeParams', '$modalInstance', 'HawkularAccount', 'NotificationsService'];
+    public invitation:IInvitationRequest;
 
     constructor(private $log:ng.ILogService,
+                private $routeParams:any,
                 private $modalInstance:any,
                 private HawkularAccount:any,
                 private NotificationsService:INotificationsService) {
+      this.invitation = new HawkularAccount.OrganizationInvitation({organizationId: $routeParams.organizationId});
     }
 
     public cancel():void {
@@ -82,8 +85,14 @@ module HawkularAccounts {
     }
 
     public invite():void {
-      this.NotificationsService.warning('Invitation is not implemented yet. Stay tuned.');
-      this.$modalInstance.close();
+      this.invitation.$save(() => {
+        this.NotificationsService.info('Your invitation was submitted.');
+        this.$modalInstance.close('success');
+      }, (error:IErrorPayload) => {
+        this.NotificationsService.warning('An error occurred while trying to send the invitations.');
+        this.$log.debug(`Error while trying to send invitations: ${error.data.message}`);
+        this.$modalInstance.close('error');
+      });
     }
   }
 

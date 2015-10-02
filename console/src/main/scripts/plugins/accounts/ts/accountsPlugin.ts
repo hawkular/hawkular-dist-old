@@ -31,7 +31,11 @@ module HawkularAccounts {
 
         .when(
         '/hawkular-ui/organization/:organizationId/memberships',
-        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-memberships.html')});
+        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-memberships.html')})
+
+        .when(
+        '/hawkular-ui/invitation/accept/:token',
+        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-accept-invitation.html')});
   }]);
 
   _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails',

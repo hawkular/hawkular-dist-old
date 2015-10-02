@@ -34,6 +34,29 @@ module HawkularAccounts {
   export interface IOrganization extends IPersona {
   }
 
+  export interface IDataPayload {
+    message: string;
+  }
+
+  export interface IErrorPayload {
+    data: IDataPayload;
+  }
+
+  export interface ISuccessPayload {
+    data: IDataPayload;
+  }
+
+  export interface IInvitation {
+    id: string;
+    token: string;
+    organization: IOrganization;
+  }
+
+  export interface IInvitationRequest {
+    emails: string;
+    $save(success?:(success:ISuccessPayload) => void, failure?:(error:IErrorPayload) => void):void;
+  }
+
   export interface INotificationsService {
     info(message: string): void;
     success(message: string): void;
