@@ -1,63 +1,65 @@
-<div class="row">
-  <div class="col-md-12" ng-controller="HawkularAccounts.OrganizationsController">
+<div class="hk-organizations" ng-controller="HawkularAccounts.OrganizationsController">
 
-    <div class="pull-right" ng-show="organizations.length && !loading">
-      <button class="btn btn-primary" type="button" role="button" ng-click="showCreateForm()">Create</button>
-    </div>
-    <h1>Organizations</h1>
+  <h1 class="text-center">Organizations</h1>
 
-    <div class="progress-description" ng-show="loading">
-      <div class="spinner spinner-xs spinner-inline"></div>
-      <strong>Loading:</strong> Organizations
-    </div>
+  <div class="text-center hk-spinner-container-alone" ng-show="loading">
+    <div class="spinner spinner-lg"></div>
+    <p class="hk-spinner-legend-below">Loading...</p>
+  </div>
 
-    <div class="row text-center" ng-show="!organizations.length && !loading && !isOrganization">
+  <div class="blank-slate-pf" ng-show="!organizations.length && !loading && !isOrganization">
+    <div class="blank-slate-pf-icon">
       <i class="fa fa-users" id="empty-organizations-icon"></i>
-      <h2>No organizations created.</h2>
-      <p>
-        With organizations, multiple users can have access<br/>
-        to the same resources, with multiple roles.
-      </p>
-      <button class="btn btn-primary" type="button" role="button" ng-click="showCreateForm()">
+    </div>
+    <h1>No organizations created.</h1>
+    <p>
+      With organizations, multiple users can have access to the same resources, with multiple roles.
+    </p>
+    <div class="blank-slate-pf-main-action">
+      <button class="btn btn-primary btn-lg" type="button" role="button" ng-click="showCreateForm()">
         Create Organization
       </button>
     </div>
+  </div>
 
-    <div class="row text-center" ng-show="isOrganization">
+  <div class="blank-slate-pf" ng-show="isOrganization">
+    <div class="blank-slate-pf-icon">
       <i class="fa fa-users" id="empty-organizations-icon-for-organizations"></i>
-      <h2>You cannot create an organization.</h2>
-      <p>
-        You are currently logged in as an organization. At this moment, sub-organizations are not supported.<br/>
-        To create an organization, select your main account on the account switcher, at the top-right corner of this
-        screen.
-      </p>
     </div>
+    <h2>You cannot create an organization.</h2>
+    <p>
+      You are currently logged in as an organization. At this moment, sub-organizations are not supported. To create an organization, switch to your user account.
+    </p>
+  </div>
 
-    <div ng-show="organizations.length && !loading">
-      <table class="table table-striped table-bordered">
-        <thead>
+  <div class="text-right" ng-show="organizations.length && !loading">
+    <button class="btn btn-primary" type="button" role="button" ng-click="showCreateForm()">Create Organization</button>
+  </div>
+  <div class="hk-table-container" ng-show="organizations.length && !loading">
+    <table class="table table-bordered hk-table-clean">
+      <thead>
         <tr>
           <th>Name</th>
-          <th>&nbsp;</th>
+          <th></th>
         </tr>
-        </thead>
-        <tbody>
+      </thead>
+      <tbody>
         <tr ng-repeat="organization in organizations">
           <td>
             <a href="/hawkular-ui/organization/{{organization.id}}/memberships">
               {{organization.name}}
             </a>
           </td>
-          <td>
-            <button type="button" class="btn btn-default" aria-label="Remove" ng-click="remove(organization)">
-              <span class="pficon pficon-delete" aria-hidden="true"></span>
+          <td class="hk-actions-one">
+            <button type="button" class="btn btn-link" aria-label="Delete" ng-click="remove(organization)" data-toggle="tooltip" data-placement="top" data-original-title="Remove">
+              <i class="fa fa-trash-o"></i>
             </button>
           </td>
         </tr>
-        </tbody>
-      </table>
-    </div>
+      </tbody>
+    </table>
   </div>
-  <!-- /col -->
+</div>
+<!-- /col -->
 
 </div>

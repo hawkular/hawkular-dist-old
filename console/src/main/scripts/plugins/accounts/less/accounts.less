@@ -19,6 +19,11 @@
 @import "../../../libs/patternfly/components/bootstrap/less/mixins.less";
 @import "../../../libs/patternfly/less/variables.less";
 
+
+/*------------------------------------*\
+    SCREEN COMPONENTS
+\*------------------------------------*/
+
 #idle {
   background: none repeat scroll 0 0 #cc5100;
   color: #ffffff;
@@ -44,4 +49,15 @@ body.inactivity-modal-open #main, body.inactivity-modal-open .navbar, body.inact
 #organization-not-found-icon {
   color: @gray-light;
   font-size: ceil(@font-size-base * 4);
+}
+
+
+/*------------------------------------*\
+    SCREENS
+\*------------------------------------*/
+
+// Organizations screen
+
+.hk-organizations .text-right .btn-primary {
+  margin-bottom: @grid-gutter-width/4;
 }
