@@ -59,8 +59,8 @@
           Availability Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : MetricsAvailabilityController.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span>
         </button>
       </h3>
-      <span class="hk-settings pull-right">
-        <a href="#" ng-click="vm.openAvailabilitySetup()"><i class="fa fa-cog"></i>Availability Alert Settings</a>
+      <span class="hk-settings pull-left">
+        <a href="#" ng-click="vm.openAvailabilitySetup()"><i class="fa fa-cog"></i>Alert Settings</a>
       </span>
     </div>
 
@@ -68,7 +68,7 @@
       <!-- No Alerts -->
       <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
         <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-        <div class="hk-event">No Alerts have been fired in this category and time range.</div>
+        <div class="hk-event">No Alerts.</div>
       </div>
       <!-- Alerts exist -->
       <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList"
