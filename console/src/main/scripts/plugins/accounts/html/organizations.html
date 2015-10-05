@@ -9,7 +9,7 @@
 
   <div class="blank-slate-pf" ng-show="!organizations.length && !loading && !isOrganization">
     <div class="blank-slate-pf-icon">
-      <i class="fa fa-users" id="empty-organizations-icon"></i>
+      <i class="fa fa-building-o" id="empty-organizations-icon"></i>
     </div>
     <h1>No organizations created.</h1>
     <p>
@@ -26,9 +26,9 @@
     <div class="blank-slate-pf-icon">
       <i class="fa fa-users" id="empty-organizations-icon-for-organizations"></i>
     </div>
-    <h2>You cannot create an organization.</h2>
+    <h1>No organizations inside organization.</h1>
     <p>
-      You are currently logged in as an organization. At this moment, sub-organizations are not supported. To create an organization, switch to your user account.
+      It is not possible to have organizations managed by an organization. <br/> To create an organization, switch to your user profile.
     </p>
   </div>
 

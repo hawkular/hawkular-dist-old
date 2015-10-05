@@ -9,7 +9,7 @@
 
       <div class="hk-container-separator">
         <div class="btn-group" dropdown auto-close="always">
-          <button id="simple-btn-keyboard-nav" type="button" class="btn btn-primary" dropdown-toggle>
+          <button id="simple-btn-keyboard-nav" type="button" class="btn btn-default" dropdown-toggle>
             Sort {{vm.sortInv ? 'Z - A' : 'A - Z'}}  <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="simple-btn-keyboard-nav">
@@ -51,7 +51,7 @@
       </div>
     </div>
     <div class="hk-panel-collapse-area" ng-class="{'hk-collapsed' : !vm.expandedList[ds.id]}">
-      <a href="#" ng-click="vm.expandedList[ds.id] = !vm.expandedList[ds.id]"><span ng-hide="vm.expandedList[ds.id]">View Metrics</span><span ng-show="vm.expandedList[ds.id]">Hide Metrics</span><i class="fa" ng-class="vm.expandedList[ds.id] ? 'fa-angle-up' : 'fa-angle-down'"></i></a>
+      <a href="#" ng-click="vm.expandedList[ds.id] = !vm.expandedList[ds.id]"><span ng-hide="vm.expandedList[ds.id]">View Metrics</span><span ng-show="vm.expandedList[ds.id]">Hide Metrics</span><i class="fa" ng-class="vm.expandedList[ds.id] ? 'fa-chevron-circle-up' : 'fa-chevron-circle-down'"></i></a>
     </div>
 
     <div class="hk-collapsible-area" ng-class="{ 'hide': !vm.expandedList[ds.id]}" ng-if="vm.expandedList[ds.id]">
@@ -62,15 +62,15 @@
           <button class="btn btn-link hk-trigger" ng-click="vm.showAllAlerts = !vm.showAllAlerts" tooltip-trigger
                   tooltip-placement="top" tooltip="Expand/collapse">
             <i class="fa" ng-show="ds.alertList.length > 0"
-               ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> JVM Alerts
+               ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Datasource Alerts
             <span ng-show="ds.alertList.length > 0">
               ({{vm.showAllAlerts ? ds.alertList.length : vm.math.min(ds.alertList.length, 3)}} of {{ds.alertList.length}})
             </span>
           </button>
         </h3>
-        <span class="hk-settings pull-right">
+        <span class="hk-settings pull-left">
           <a href="#" ng-click="vm.openSetup(ds.id)">
-            <i class="fa fa-cog"></i>Datasource Alert Settings
+            <i class="fa fa-cog"></i>Alert Settings
           </a>
         </span>
       </div>
@@ -78,7 +78,7 @@
         <!-- No Alerts -->
         <div class="panel panel-default alert alert-info" ng-show="ds.alertList.length === 0">
           <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-          <div class="hk-event">No Alerts have been fired in this category and time range.</div>
+          <div class="hk-event">No Alerts.</div>
         </div>
         <!-- Alerts exist -->
         <hk-alert-panel-list class="clearfix" hk-alert-list="ds.alertList"

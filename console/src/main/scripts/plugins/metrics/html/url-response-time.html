@@ -44,13 +44,13 @@
           <i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>
           Response Time Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : MetricsViewController.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
       </h3>
-      <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openResponseSetup()"><i class="fa fa-cog"></i>Response Time Alert Settings</a></span>
+      <span class="hk-settings pull-left"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openResponseSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span>
     </div>
     <div class="clearfix">
       <!-- No Alerts -->
       <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
         <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-        <div>No alerts have been fired in this category and time range.</div>
+        <div>No alerts.</div>
       </div>
       <!-- Alerts exist -->
       <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList" hk-limit="(showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
