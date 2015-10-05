@@ -24,6 +24,7 @@ module HawkularAccounts {
   export let _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
   export type PersonaId = string;
 
+  // simple data objects
   export interface IPersona {
     id:  PersonaId;
     name: string;
@@ -34,6 +35,37 @@ module HawkularAccounts {
   export interface IOrganization extends IPersona {
   }
 
+  export interface IInvitation {
+    id: string;
+    token: string;
+    email: string;
+    organization: IOrganization;
+    role: IRole;
+    acceptedAt: Date;
+  }
+
+  export interface IRole {
+    id: string;
+    name: string;
+    description: string;
+  }
+
+  export interface IOperation {
+    id: string;
+    name: string;
+  }
+
+  export interface IResource {
+    id: string;
+  }
+
+  export interface IOrganizationMembership {
+    organization: IOrganization;
+    member: IPersona;
+    role: IRole;
+  }
+
+  // specialized payloads, requests and responses
   export interface IDataPayload {
     message: string;
   }
@@ -46,10 +78,8 @@ module HawkularAccounts {
     data: IDataPayload;
   }
 
-  export interface IInvitation {
-    id: string;
-    token: string;
-    organization: IOrganization;
+  export interface IPermissionResponse {
+    permitted: boolean;
   }
 
   export interface IInvitationRequest {
@@ -62,5 +92,29 @@ module HawkularAccounts {
     success(message: string): void;
     warning(message: string): void;
     error(message: string): void;
+  }
+
+  export class Invitation implements IInvitation {
+    id:string;
+    token:string;
+    email:string;
+    organization:HawkularAccounts.IOrganization;
+    role:HawkularAccounts.IRole;
+    acceptedAt:Date;
+
+    constructor(email:string, role:HawkularAccounts.IRole) {
+      this.email = email;
+      this.role = role;
+    }
+  }
+
+  export class Role implements IRole {
+    id:string;
+    name:string;
+    description:string;
+
+    constructor(name:string) {
+      this.name = name;
+    }
   }
 }

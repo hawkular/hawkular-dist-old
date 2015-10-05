@@ -20,14 +20,30 @@
 module HawkularAccounts {
 
   export class OrganizationMembershipController {
-    public static $inject = ['$log', '$routeParams', '$modal', 'HawkularAccount', 'NotificationsService'];
+    public static $inject = ['$log',
+      '$rootScope',
+      '$scope',
+      '$routeParams',
+      '$modal',
+      'HawkularAccount',
+      'NotificationsService'
+    ];
 
+    // backend data related to this controller
+    public memberships:Array<IOrganizationMembership>;
+    public organization:IOrganization;
+    public pending:Array<IInvitation>;
+    public role:IRole;
+
+    // state control, for easier UI consumption
     public loading:boolean;
     public foundOrganization:boolean;
-    public memberships:Array<IPersona>;
-    public organization:IOrganization;
+    public isAllowedToInvite:boolean = false;
+    public isAllowedToListPending:boolean = false;
 
     constructor(private $log:ng.ILogService,
+                private $rootScope:any,
+                private $scope:any,
                 private $routeParams:any,
                 private $modal:any,
                 private HawkularAccount:any,
@@ -36,26 +52,102 @@ module HawkularAccounts {
       $log.debug('Loading memberships for this organization');
       this.loading = true;
       this.foundOrganization = false;
-      this.organization = HawkularAccount.Organization.get({id: $routeParams.organizationId},
+      this.loadData();
+    }
+
+    public loadData():void {
+      let organizationId = this.$routeParams.organizationId;
+      this.loadOrganization(organizationId);
+      this.loadPermissionToInvite(organizationId);
+      this.loadPermissionToListPending(organizationId);
+
+      this.$rootScope.$on('OrganizationLoaded', () => {
+        this.loadMemberships(organizationId);
+      });
+
+      this.$rootScope.$on('PermissionToListPendingLoaded', () => {
+        if (this.isAllowedToListPending) {
+          this.loadPendingInvitations(organizationId);
+        }
+      });
+    }
+
+    public loadOrganization(organizationId:string):void {
+      this.organization = this.HawkularAccount.Organization.get({id: organizationId},
         () => {
           this.foundOrganization = true;
-          this.memberships = HawkularAccount.OrganizationMembership.query({organizationId:$routeParams.organizationId},
-            () => {
-              this.loading = false;
-              $log.debug(`Finished loading members. Size: ${this.memberships.length}`);
-            },
-            () => {
-              NotificationsService.info('List of organizations could NOT be retrieved.');
-              $log.warn('List of organizations could NOT be retrieved.');
-              this.loading = false;
-            }
-          );
+          this.$scope.$emit('OrganizationLoaded');
         },
-        () => {
-          NotificationsService.warning('Organization not found.');
-          $log.warn(`The requested organization doesn't exist: ${$routeParams.organizationId}`);
+        (error:IErrorPayload) => {
+          this.NotificationsService.warning('Organization not found.');
+          this.$log.warn(`Error while loading the organization: ${error.data.message}`);
           this.loading = false;
         }
+      );
+    }
+
+    public loadMemberships(organizationId:string):void {
+      this.memberships = this.HawkularAccount.OrganizationMembership.query({organizationId:organizationId},
+        () => {
+          this.loading = false;
+          this.$log.debug(`Finished loading members. Size: ${this.memberships.length}`);
+        },
+        (error:IErrorPayload) => {
+          this.NotificationsService.info('List of organizations could NOT be retrieved.');
+          this.$log.warn(`List of organizations could NOT be retrieved: ${error.data.message}`);
+          this.loading = false;
+        }
+      );
+    }
+
+    public loadPendingInvitations(organizationId:string):void {
+      this.pending = this.HawkularAccount.OrganizationInvitation.query({organizationId:organizationId},
+        () => {
+          this.$log.debug(`Finished loading pending invitations. Size: ${this.pending.length}`);
+        },
+        (error:IErrorPayload) => {
+          this.$log.debug(`Error while trying to load the pending invitations: ${error.data.message}`);
+        }
+      );
+    }
+
+    public loadPermissionToInvite(organizationId:string):void {
+      let operationName:string = 'organization-invite';
+      this.loadPermission(organizationId, operationName,
+        (response:IPermissionResponse) => {
+          this.isAllowedToInvite = response.permitted;
+          this.$log.debug(`Finished checking if we can invite other users. Response: ${response.permitted}`);
+        },
+        (error:IErrorPayload) => {
+          this.$log.debug(`Error checking if we can invite other users. Response: ${error.data.message}`);
+        }
+      );
+    }
+
+    public loadPermissionToListPending(organizationId:string):void {
+      let operationName:string = 'organization-list-invitations';
+      this.loadPermission(organizationId, operationName,
+        (response:IPermissionResponse) => {
+          this.isAllowedToListPending = response.permitted;
+          this.$scope.$emit('PermissionToListPendingLoaded');
+          this.$log.debug(`Finished checking if we can list the pending invitations. Response: ${response.permitted}`);
+        },
+        (error:IErrorPayload) => {
+          this.$log.debug(`Error checking if we can list the pending invitations. Response: ${error.data.message}`);
+        }
+      );
+    }
+
+    public loadPermission(
+      resourceId:string,
+      operationName:string,
+      successCallback: (response:IPermissionResponse) => void,
+      errorCallback: (error:IErrorPayload) => void
+    ):void {
+      return this.HawkularAccount.Permission.get(
+        {resourceId:resourceId, operation:operationName},
+        successCallback,
+        errorCallback
       );
     }
 
@@ -63,6 +155,13 @@ module HawkularAccounts {
       let createFormModal = this.$modal.open({
         controller: 'HawkularAccounts.OrganizationInviteModalController as inviteModal',
         templateUrl: 'plugins/accounts/html/organization-invite.html'
+      });
+
+      createFormModal.result.then((emails:Array<string>) => {
+        emails.forEach((email) => {
+          let invitation:IInvitation = new Invitation(email, new Role('Monitor'));
+          this.pending.unshift(invitation);
+        });
       });
 
     }
@@ -87,7 +186,14 @@ module HawkularAccounts {
     public invite():void {
       this.invitation.$save(() => {
         this.NotificationsService.info('Your invitation was submitted.');
-        this.$modalInstance.close('success');
+        this.$modalInstance.close(
+          this.invitation.emails
+            .split(/[,\s]/)
+            .filter((entry:string) => {
+              return entry && entry.length > 0;
+            }
+          )
+        );
       }, (error:IErrorPayload) => {
         this.NotificationsService.warning('An error occurred while trying to send the invitations.');
         this.$log.debug(`Error while trying to send invitations: ${error.data.message}`);
