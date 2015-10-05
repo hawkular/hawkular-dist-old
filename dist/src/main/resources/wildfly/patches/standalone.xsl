@@ -972,6 +972,13 @@
 
         </managed-servers>
 
+        <platform enabled="true">
+          <file-stores   enabled="true" interval="5" timeUnits="minutes" />
+          <memory        enabled="true" interval="1" timeUnits="minutes" />
+          <processors    enabled="true" interval="1" timeUnits="minutes" />
+          <power-sources enabled="true" interval="5" timeUnits="minutes" />
+        </platform>
+
       </subsystem>
 
       <!-- Keycloak-related - our secured deployments (important) -->
