@@ -7,8 +7,13 @@
     <h1 class="text-center">Organization {{controller.organization.name}}</h1>
 
     <div class="pull-right" ng-show="controller.memberships.length && !controller.loading && controller.foundOrganization">
-      <button class="btn btn-primary" type="button" role="button" ng-click="controller.showInviteModal()">
-        Invite People
+      <button
+        class="btn btn-primary"
+        type="button"
+        role="button"
+        ng-click="controller.showInviteModal()"
+        ng-show="controller.isAllowedToInvite">
+          Invite People
       </button>
     </div>
     <h2>Members</h2>
@@ -26,8 +31,13 @@
           With organizations, multiple users can have access<br/>
           to the same resources, with multiple roles.
         </p>
-        <button class="btn btn-primary" type="button" role="button" ng-click="controller.showInviteModal()">
-          Invite People
+        <button
+          class="btn btn-primary"
+          type="button"
+          role="button"
+          ng-click="controller.showInviteModal()"
+          ng-show="controller.isAllowedToInvite">
+            Invite People
         </button>
       </div>
 
@@ -43,6 +53,10 @@
           <tr ng-repeat="membership in controller.memberships">
             <td>{{membership.member.name}}</td>
             <td>{{membership.role.name}}</td>
+          </tr>
+          <tr ng-repeat="invitation in controller.pending" ng-show="controller.isAllowedToListPending">
+            <td>{{invitation.email}} <span class="label label-default">INVITED</span></td>
+            <td>{{invitation.role.name}}</td>
           </tr>
           </tbody>
         </table>
