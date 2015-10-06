@@ -259,6 +259,22 @@ module HawkularMetrics {
       });
     }
 
+    public showDatasourceAddDialog():void {
+
+      /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
+      let datasourceAddDialog = this.$modal.open({
+        templateUrl: 'plugins/metrics/html/app-details/modals/detail-datasources-add.html',
+        controller: 'AppServerDatasourcesAddDialogController as dac',
+        scope: this.$scope.$new()
+      });
+
+      datasourceAddDialog.result.then((modalValue) => {
+        // handle any returned modalValue if required
+      }, (reason) => {
+        // handle any returned cancel reason if required
+      });
+    }
+
     private formatBucketedChartOutput(response):IChartDataPoint[] {
       //  The schema is different for bucketed output
       return _.map(response, (point:IChartDataPoint) => {
