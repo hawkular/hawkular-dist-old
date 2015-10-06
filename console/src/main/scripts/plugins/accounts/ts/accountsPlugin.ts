@@ -41,6 +41,7 @@ module HawkularAccounts {
   _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails',
     ($rootScope, $log, $modal, $document, userDetails) => {
       $rootScope.userDetails = userDetails;
+      $rootScope.PersistenceState = PersistenceState;
 
       $rootScope.$on('IdleStart', () => {
         $('#idle').slideDown();
