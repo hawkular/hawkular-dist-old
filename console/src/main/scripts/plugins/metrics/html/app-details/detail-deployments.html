@@ -34,7 +34,7 @@
     <!-- No Alerts -->
     <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
       <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-      <div>No alerts have been fired in this category and time range.</div>
+      <div>No alerts.</div>
     </div>
     <!-- Alerts exist -->
     <div class="panel panel-default alert alert-danger" ng-repeat="alert in vm.alertList | limitTo: (showAllAlerts ? 100000 : 3) track by $index">

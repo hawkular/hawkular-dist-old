@@ -18,7 +18,7 @@ package org.hawkular.component.pinger;
 
 import java.util.List;
 
-import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.AbstractMessage;
 import org.hawkular.metrics.client.common.SingleMetric;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * @author Lucas Ponce
  */
-public class MetricDataMessage extends BasicMessage {
+public class MetricDataMessage extends AbstractMessage {
 
     @JsonInclude
     private MetricData metricData;

@@ -28,9 +28,9 @@
     <h3 class="pull-left">
       <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Web Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
     </h3>
-    <span class="hk-settings pull-right">
+    <span class="hk-settings pull-left">
       <a href="#" ng-controller="WebAlertController as wac" ng-click="wac.openSetup()">
-        <i class="fa fa-cog"></i>Web Alert Settings
+        <i class="fa fa-cog"></i>Alert Settings
       </a>
     </span>
   </div>
@@ -38,7 +38,7 @@
     <!-- No Alerts -->
     <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
       <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-      <div>No alerts have been fired in this category and time range.</div>
+      <div>No alerts.</div>
     </div>
     <!-- Alerts exist -->
     <!-- Alerts exist -->

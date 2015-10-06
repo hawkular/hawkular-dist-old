@@ -16,7 +16,7 @@
   <ng-include ng-repeat="tab in tabs.availableTabs" src="tab.src" ng-if="tabs.activeTab === tab.id" ng-controller="tab.controller"></ng-include>
 
   <div class="hk-nav-tabs-container pull-right">
-    <button type="button" class="btn btn-primary" data-ng-click="tabs.requestExportJDR()" data-ng-disabled="tabs.jdrGenerating">
+    <button type="button" class="btn btn-default" data-ng-click="tabs.requestExportJDR()" data-ng-disabled="tabs.jdrGenerating">
       Export JDR
     </button>
   </div>

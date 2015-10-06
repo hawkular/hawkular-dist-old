@@ -38,9 +38,9 @@
         </span>
       </button>
     </h3>
-    <span class="hk-settings pull-right">
+    <span class="hk-settings pull-left">
       <a href="#" ng-controller="JvmAlertController as jac" ng-click="jac.openSetup()">
-        <i class="fa fa-cog"></i>JVM Alert Settings
+        <i class="fa fa-cog"></i>Alert Settings
       </a>
     </span>
   </div>
@@ -48,7 +48,7 @@
     <!-- No Alerts -->
     <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
       <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-      <div class="hk-event">No Alerts have been fired in this category and time range.</div>
+      <div class="hk-event">No Alerts.</div>
     </div>
     <!-- Alerts exist -->
     <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList"
