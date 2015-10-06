@@ -70,9 +70,12 @@ module HawkularMetrics {
     username:string;
   }
 
+  export enum PersistenceState {PERSISTING, SUCCESS, ERROR};
+
   export interface IHawkularRootScope extends ng.IRootScopeService {
     currentPersona:IPersona;
     userDetails:IUserDetails;
+    PersistenceState:PersistenceState; // workaround, so that this enum can be accessed from the templates
   }
 
   export interface IResourceProperties {

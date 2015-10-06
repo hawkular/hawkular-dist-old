@@ -51,7 +51,34 @@
         <tbody>
         <tr ng-repeat="membership in controller.memberships">
           <td>{{membership.member.name}}</td>
-          <td>{{membership.role.name}}</td>
+          <td>
+            <span ng-show="membership.member.id === controller.organization.owner.id">Owner</span>
+
+            <span ng-show="membership.member.id !== controller.organization.owner.id">
+              <span ng-show="controller.isAllowedToTransferOrganization">
+                <select
+                  ng-model="membership.role"
+                  ng-change="controller.changeRole(membership)"
+                  ng-options="role.name for role in controller.possibleRoles track by role.name"
+                  >
+                </select>
+              </span>
+
+              <span ng-show="!controller.isAllowedToTransferOrganization">
+                {{membership.role.name}}
+              </span>
+
+              <span ng-show="controller.membershipsToUpdate[membership.id] === PersistenceState.PERSISTING">
+                <i class="fa fa-spinner fa-spin"></i>
+              </span>
+              <span ng-show="controller.membershipsToUpdate[membership.id] === PersistenceState.SUCCESS">
+                <i class="fa fa-check"></i>
+              </span>
+              <span ng-show="controller.membershipsToUpdate[membership.id] === PersistenceState.ERROR">
+                <i class="fa fa-exclamation"></i>
+              </span>
+            </span>
+          </td>
         </tr>
         <tr ng-repeat="invitation in controller.pending" ng-show="controller.isAllowedToListPending">
           <td>{{invitation.email}} <span class="label label-default">INVITED</span></td>

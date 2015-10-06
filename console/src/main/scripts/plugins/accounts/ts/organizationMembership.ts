@@ -34,12 +34,15 @@ module HawkularAccounts {
     public organization:IOrganization;
     public pending:Array<IInvitation>;
     public role:IRole;
+    public possibleRoles:Array<Role>;
 
     // state control, for easier UI consumption
     public loading:boolean;
     public foundOrganization:boolean;
     public isAllowedToInvite:boolean = false;
     public isAllowedToListPending:boolean = false;
+    public isAllowedToTransferOrganization:boolean = false;
+    public membershipsToUpdate:{ [id: string]: PersistenceState; } = {};
 
     constructor(private $log:ng.ILogService,
                 private $rootScope:any,
@@ -53,6 +56,15 @@ module HawkularAccounts {
       this.loading = true;
       this.foundOrganization = false;
       this.loadData();
+      this.possibleRoles = [
+        new Role('Monitor'),
+        new Role('Operator'),
+        new Role('Maintainer'),
+        new Role('Deployer'),
+        new Role('Administrator'),
+        new Role('Auditor'),
+        new Role('SuperUser')
+      ];
     }
 
     public loadData():void {
@@ -60,6 +72,7 @@ module HawkularAccounts {
       this.loadOrganization(organizationId);
       this.loadPermissionToInvite(organizationId);
       this.loadPermissionToListPending(organizationId);
+      this.loadPermissionToTransferOrganization(organizationId);
 
       this.$rootScope.$on('OrganizationLoaded', () => {
         this.loadMemberships(organizationId);
@@ -112,7 +125,7 @@ module HawkularAccounts {
     }
 
     public loadPermissionToInvite(organizationId:string):void {
-      let operationName:string = 'organization-invite';
+      const operationName:string = 'organization-invite';
       this.loadPermission(organizationId, operationName,
         (response:IPermissionResponse) => {
           this.isAllowedToInvite = response.permitted;
@@ -125,7 +138,7 @@ module HawkularAccounts {
     }
 
     public loadPermissionToListPending(organizationId:string):void {
-      let operationName:string = 'organization-list-invitations';
+      const operationName:string = 'organization-list-invitations';
       this.loadPermission(organizationId, operationName,
         (response:IPermissionResponse) => {
           this.isAllowedToListPending = response.permitted;
@@ -134,6 +147,19 @@ module HawkularAccounts {
         },
         (error:IErrorPayload) => {
           this.$log.debug(`Error checking if we can list the pending invitations. Response: ${error.data.message}`);
+        }
+      );
+    }
+
+    public loadPermissionToTransferOrganization(organizationId:string):void {
+      const operationName:string = 'organization-transfer';
+      this.loadPermission(organizationId, operationName,
+        (response:IPermissionResponse) => {
+          this.isAllowedToTransferOrganization = response.permitted;
+          this.$log.debug(`Finished checking if we can transfer this organization. Response: ${response.permitted}`);
+        },
+        (error:IErrorPayload) => {
+          this.$log.debug(`Error checking if we can transfer this organization. Response: ${error.data.message}`);
         }
       );
     }
@@ -162,6 +188,18 @@ module HawkularAccounts {
           let invitation:IInvitation = new Invitation(email, new Role('Monitor'));
           this.pending.unshift(invitation);
         });
+      });
+
+    }
+
+    public changeRole(membership:IOrganizationMembership):void {
+      this.membershipsToUpdate[membership.id] = PersistenceState.PERSISTING;
+
+      membership.$update(null, (response:ISuccessPayload) => {
+        this.membershipsToUpdate[membership.id] = PersistenceState.SUCCESS;
+      }, (error:IErrorPayload) => {
+        this.membershipsToUpdate[membership.id] = PersistenceState.ERROR;
+        this.$log.debug(`Error changing role for membership. Response: ${error.data.message}`);
       });
 
     }

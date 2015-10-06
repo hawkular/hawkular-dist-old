@@ -60,9 +60,13 @@ module HawkularAccounts {
   }
 
   export interface IOrganizationMembership {
+    id: string;
     organization: IOrganization;
     member: IPersona;
     role: IRole;
+    $update(options:{},
+            success?:(success:ISuccessPayload) => void,
+            failure?:(error:IErrorPayload) => void);
   }
 
   // specialized payloads, requests and responses
@@ -117,4 +121,6 @@ module HawkularAccounts {
       this.name = name;
     }
   }
+
+  export enum PersistenceState {PERSISTING, SUCCESS, ERROR};
 }
