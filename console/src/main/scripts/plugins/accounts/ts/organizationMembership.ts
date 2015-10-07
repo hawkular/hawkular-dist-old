@@ -42,6 +42,7 @@ module HawkularAccounts {
     public isAllowedToInvite:boolean = false;
     public isAllowedToListPending:boolean = false;
     public isAllowedToTransferOrganization:boolean = false;
+    public isAllowedToChangeRoleOfMembers:boolean = false;
     public membershipsToUpdate:{ [id: string]: PersistenceState; } = {};
 
     constructor(private $log:ng.ILogService,
@@ -52,27 +53,18 @@ module HawkularAccounts {
                 private HawkularAccount:any,
                 private NotificationsService:INotificationsService) {
 
-      $log.debug('Loading memberships for this organization');
-      this.loading = true;
       this.foundOrganization = false;
       this.loadData();
-      this.possibleRoles = [
-        new Role('Monitor'),
-        new Role('Operator'),
-        new Role('Maintainer'),
-        new Role('Deployer'),
-        new Role('Administrator'),
-        new Role('Auditor'),
-        new Role('SuperUser')
-      ];
     }
 
     public loadData():void {
+      this.loading = true;
       let organizationId = this.$routeParams.organizationId;
       this.loadOrganization(organizationId);
       this.loadPermissionToInvite(organizationId);
       this.loadPermissionToListPending(organizationId);
-      this.loadPermissionToTransferOrganization(organizationId);
+      this.loadPermissionToChangeRoleOfMembers(organizationId);
+      this.loadPossibleRoles();
 
       this.$rootScope.$on('OrganizationLoaded', () => {
         this.loadMemberships(organizationId);
@@ -83,6 +75,30 @@ module HawkularAccounts {
           this.loadPendingInvitations(organizationId);
         }
       });
+
+      this.$rootScope.$on('PermissionToTransferOrganizationLoaded', () => {
+        if (this.isAllowedToTransferOrganization) {
+          this.possibleRoles.push(new Role('Owner'));
+        }
+      });
+
+      this.$rootScope.$on('OwnershipChanged', () => {
+        this.loadPossibleRoles();
+      });
+    }
+
+    public loadPossibleRoles():void {
+      let organizationId = this.$routeParams.organizationId;
+      this.possibleRoles = [
+        new Role('Monitor'),
+        new Role('Operator'),
+        new Role('Maintainer'),
+        new Role('Deployer'),
+        new Role('Administrator'),
+        new Role('Auditor'),
+        new Role('SuperUser')
+      ];
+      this.loadPermissionToTransferOrganization(organizationId);
     }
 
     public loadOrganization(organizationId:string):void {
@@ -156,10 +172,24 @@ module HawkularAccounts {
       this.loadPermission(organizationId, operationName,
         (response:IPermissionResponse) => {
           this.isAllowedToTransferOrganization = response.permitted;
+          this.$scope.$emit('PermissionToTransferOrganizationLoaded');
           this.$log.debug(`Finished checking if we can transfer this organization. Response: ${response.permitted}`);
         },
         (error:IErrorPayload) => {
           this.$log.debug(`Error checking if we can transfer this organization. Response: ${error.data.message}`);
+        }
+      );
+    }
+
+    public loadPermissionToChangeRoleOfMembers(organizationId:string):void {
+      const operationName:string = 'organization-change-role-of-members';
+      this.loadPermission(organizationId, operationName,
+        (response:IPermissionResponse) => {
+          this.isAllowedToChangeRoleOfMembers = response.permitted;
+          this.$log.debug(`Finished checking if we can change the role of members. Response: ${response.permitted}`);
+        },
+        (error:IErrorPayload) => {
+          this.$log.debug(`Error checking if we can change the role of members. Response: ${error.data.message}`);
         }
       );
     }
@@ -193,17 +223,68 @@ module HawkularAccounts {
     }
 
     public changeRole(membership:IOrganizationMembership):void {
+      if (membership.role === null) {
+        return;
+      }
+
+      if (membership.role.name === 'Owner') {
+        this.transferOwnership(membership);
+        return;
+      }
+
       this.membershipsToUpdate[membership.id] = PersistenceState.PERSISTING;
 
       membership.$update(null, (response:ISuccessPayload) => {
         this.membershipsToUpdate[membership.id] = PersistenceState.SUCCESS;
+        // just for a moment, until we re-evaluate if the user still has the permission
+        this.isAllowedToChangeRoleOfMembers = false;
+        this.loadPermissionToChangeRoleOfMembers(this.organization.id);
+
       }, (error:IErrorPayload) => {
         this.membershipsToUpdate[membership.id] = PersistenceState.ERROR;
         this.$log.debug(`Error changing role for membership. Response: ${error.data.message}`);
       });
 
     }
+
+    public transferOwnership(membership:IOrganizationMembership):void {
+      if (!this.isAllowedToTransferOrganization) {
+        this.NotificationsService.error('You don\'t have the permissions to transfer this organization.');
+        return;
+      }
+
+      let transferOrgModal = this.$modal.open({
+        controller: 'HawkularAccounts.OrganizationTransferModalController as transferModal',
+        templateUrl: 'plugins/accounts/html/organization-transfer-modal.html',
+        resolve: {
+          organization: () => this.organization,
+          transferTo: () => membership.member
+        }
+      });
+
+      transferOrgModal.result.then(() => {
+        this.organization.owner = membership.member;
+        this.membershipsToUpdate[membership.id] = PersistenceState.PERSISTING;
+        this.organization.$update(null, (response:IOrganization) => {
+          this.$scope.$emit('OwnershipChanged');
+          this.membershipsToUpdate[membership.id] = PersistenceState.SUCCESS;
+          this.organization = response;
+
+          // now, we refresh the memberships we have, to make sure we have the most up to date IDs
+          this.memberships = [];
+          this.loading = true;
+          this.loadMemberships(this.organization.id);
+        }, (error:IErrorPayload) => {
+          this.membershipsToUpdate[membership.id] = PersistenceState.ERROR;
+          this.$log.debug(`Error changing role for membership. Response: ${error.data.message}`);
+        });
+      }, () => {
+        // the modal was dismissed, get the original data for this membership
+        membership.$get();
+      });
+    }
   }
+
 
   export class OrganizationInviteModalController {
     public static $inject = ['$log', '$routeParams', '$modalInstance', 'HawkularAccount', 'NotificationsService'];
@@ -240,6 +321,28 @@ module HawkularAccounts {
     }
   }
 
+  export class OrganizationTransferModalController {
+    public static $inject = ['$log', '$routeParams', '$modalInstance', 'organization', 'transferTo'];
+
+    constructor(private $log:ng.ILogService,
+                private $routeParams:any,
+                private $modalInstance:any,
+                private organization:IOrganization,
+                private transferTo:IPersona) {
+      this.$log.debug('Organization received: ');
+      this.$log.debug(organization);
+    }
+
+    public cancel():void {
+      this.$modalInstance.dismiss('cancel');
+    }
+
+    public transfer():void {
+      this.$modalInstance.close('transfer');
+    }
+  }
+
   _module.controller('HawkularAccounts.OrganizationMembershipController', OrganizationMembershipController);
   _module.controller('HawkularAccounts.OrganizationInviteModalController', OrganizationInviteModalController);
+  _module.controller('HawkularAccounts.OrganizationTransferModalController', OrganizationTransferModalController);
 }
