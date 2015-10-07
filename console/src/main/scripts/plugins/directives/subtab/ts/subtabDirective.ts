@@ -33,7 +33,7 @@ module Subtab {
                                                                                HawkularNav, HawkularInventory) => {
 
       $scope.isAlertsPage = () => {
-        return $location.path().indexOf('/hawkular/ui/alert-center') !== 0;
+        return $location.path().indexOf('/hawkular/ui/alerts-center') !== 0;
       };
 
       $scope.isAppServerPage = () => {
@@ -53,8 +53,10 @@ module Subtab {
         '31536000000': 'Last Year'
       };
 
-      $scope.getFormattedDate = () => {
+      $scope.getFormattedDate = (): string => {
         let diff = $scope.hkParams.timeOffset;
+        const DATE_FORMAT = 'D MMM YYYY';
+        const HOUR_FORMAT = 'HH:mm';
 
         // FIXME: Use moment ?
         $scope.offsetName = $scope.rangeNames[$scope.hkParams.timeOffset] || 'Custom';
@@ -67,10 +69,10 @@ module Subtab {
         let momEnd = moment();
 
         if (diff < 24 * 60 * 60 * 1000) {
-          return momStart.format('D MMM YYYY') + ' ' + momStart.format('HH:mm') + ' - ' +
-            (momStart.day() !== momEnd.day() ? momEnd.format('D MMM YYYY ') : '') + momEnd.format('HH:mm');
+          return momStart.format(DATE_FORMAT) + ' ' + momStart.format(HOUR_FORMAT) + ' - ' +
+            (momStart.day() !== momEnd.day() ? momEnd.format(DATE_FORMAT) : '') + momEnd.format(HOUR_FORMAT);
         } else {
-          return momStart.format('D MMM YYYY') + ' - ' + momEnd.format('D MMM YYYY');
+          return momStart.format(DATE_FORMAT) + ' - ' + momEnd.format(DATE_FORMAT);
         }
       };
 

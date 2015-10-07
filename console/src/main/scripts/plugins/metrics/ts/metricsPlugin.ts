@@ -143,7 +143,17 @@ module HawkularMetrics {
           }
         }
       }).
-      otherwise({redirectTo: '/hawkular-ui/url/url-list'});
+      when('/hawkular-ui/alerts-center/:timeOffset?/:endTime?', {
+        templateUrl: 'plugins/metrics/html/alerts-center-list.html',
+        controller: 'AlertsCenterController',
+        controllerAs: 'ac'
+      }).
+      when('/hawkular-ui/alerts-center-detail/:alertId/:timeOffset?/:endTime?', {
+        templateUrl: 'plugins/metrics/html/alerts-center-detail.html',
+        controller: 'AlertsCenterDetailsController',
+        controllerAs: 'acd'
+      }).
+      otherwise({redirectTo: '/hawkular-ui/app/app-list'});
   }]);
 
   // so the same scroll doesn't trigger multiple times

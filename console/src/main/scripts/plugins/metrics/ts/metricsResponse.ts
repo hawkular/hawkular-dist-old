@@ -57,7 +57,7 @@ module HawkularMetrics {
 
       this.resourceId = $scope.hkParams.resourceId;
 
-      $scope.$on('RefreshChart', (event) => {
+      $scope.$on(EventNames.REFRESH_CHART, (event) => {
         this.$log.debug('RefreshChart Event');
         this.refreshChartDataNow(this.getMetricId());
       });

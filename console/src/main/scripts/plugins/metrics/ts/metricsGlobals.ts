@@ -21,11 +21,7 @@ module HawkularMetrics {
 
   /// some config vars
   export var pluginName = 'hawkular-metrics';
-
-  export var log:Logging.Logger = Logger.get(pluginName);
-
   export var templatePath = 'plugins/metrics/html';
-
 
   /// These are plugin globals used across several screens (think session vars from server side programming)
 

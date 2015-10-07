@@ -40,6 +40,7 @@ module HawkularMetrics {
   export type TriggerIds = string;
   export type ConditionId = string;
   export type DampeningId = string;
+  export type AlertId = string;
   export type EmailType = string;
   export type PersonaId = string;
   export type Persona = IPersona;
@@ -72,10 +73,18 @@ module HawkularMetrics {
 
   export enum PersistenceState {PERSISTING, SUCCESS, ERROR};
 
+  export interface IhkParams {
+    timeOffset:number;
+    resourceId: ResourceId;
+  }
+
   export interface IHawkularRootScope extends ng.IRootScopeService {
     currentPersona:IPersona;
     userDetails:IUserDetails;
     PersistenceState:PersistenceState; // workaround, so that this enum can be accessed from the templates
+    hkStartTimestamp:TimestampInMillis;
+    hkEndTimestamp:TimestampInMillis;
+    hkParams:IhkParams;
   }
 
   export interface IResourceProperties {
@@ -117,6 +126,60 @@ module HawkularMetrics {
   export interface IAvailResource {
     timestamp: TimestampInMillis;
     value: string;
+  }
+
+  // Alerts
+  export  interface IAlertContext {
+    resourceName: string;
+    resourceType: string;
+    resourcePath: ResourcePath;
+  }
+
+  export interface IAlertAction {
+    //@todo: not needed yet
+  }
+
+  export interface IAlertTrigger {
+    autoDisable: boolean;
+    autoEnable: boolean;
+    autoResolve: boolean;
+    autoResolveAlerts: boolean;
+    autoResolveMatch: string; /// @todo: change to enum
+    description: string;
+    enabled: boolean;
+    firingMatch: string; /// @todo: change to enum
+    group: boolean;
+    id:  TriggerId;
+    name: string;
+    orphan: boolean;
+    severity: string; /// @todo: change to enum
+    tenantId: TenantId;
+    triggerId: TriggerId;
+    ///@todo: ignoring actions for now
+
+  }
+
+  export interface IAlert {
+    alertId: string;
+    ackBy: string;
+    ackNotes: string;
+    ackTime: TimestampInMillis;
+    ctime: TimestampInMillis;
+    resolvedBy: string;
+    resolvedByNotes: string;
+    resolvedTime: TimestampInMillis;
+    severity: string; /// @todo: change to enum
+    status: string;  /// @todo: change to enum
+    tenantId: TenantId;
+    triggerId: TriggerId;
+
+    context:IAlertContext;
+    trigger: IAlertTrigger;
+    // @todo: fillin Dampening and EvalSets
+
+    // UI may augment this by adding a 'selected' property for list results
+    // so we can use the original data structure as-is
+    selected?: boolean;
   }
 
 }

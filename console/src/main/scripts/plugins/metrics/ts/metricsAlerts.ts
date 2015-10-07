@@ -113,7 +113,7 @@ module HawkularMetrics {
     public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
       '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
 
-    private metricId: string; /// @todo: use MetricId
+    private resourceId: ResourceId;
     public alertList: any  = [];
     public openSetup: any;
     public isResolvingAll: boolean = false;
@@ -140,7 +140,7 @@ module HawkularMetrics {
       this.$log.debug('querying data');
       this.$log.debug('$routeParams', $routeParams);
 
-      this.metricId = $routeParams.resourceId;
+      this.resourceId = $routeParams.resourceId;
 
       this.alertsTimeOffset = $routeParams.timeOffset || 3600000;
       // If the end time is not specified in URL use current time as end time
@@ -184,7 +184,7 @@ module HawkularMetrics {
       this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : (new Date()).getTime();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
 
-      let triggerIds = this.metricId + '_trigger_avail,' + this.metricId + '_trigger_thres';
+      let triggerIds = this.resourceId + '_trigger_avail,' + this.resourceId + '_trigger_thres';
 
       this.HawkularAlertsManager.queryAlerts(triggerIds, this.alertsTimeStart, this.alertsTimeEnd,
         this.resCurPage, this.resPerPage).then((queriedAlerts)=> {
