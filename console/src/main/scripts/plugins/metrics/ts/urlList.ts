@@ -328,8 +328,7 @@ module HawkularMetrics {
         })
 
         //this.$location.url('/hawkular/' + metricId);
-        .then(() => this.NotificationsService.info('Your data is being collected. Please be patient (should be about ' +
-          'another minute).'),
+        .then(() => this.$log.log('Your data is being collected.'),
         (e) => err(e, 'Error saving availability trigger.'))
 
         .finally(()=> {
