@@ -190,17 +190,19 @@ module HawkularMetrics {
         counterId: 'MI~R~[' + this.$routeParams.resourceId +
         '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time',
         start: this.startTimeStamp,
-        end: this.endTimeStamp
+        end: this.endTimeStamp,
+        buckets: 1
       }, (resource) => {
-        this.requestTime = resource[0].value;
+        this.requestTime = resource[0].max - resource[0].min;
       }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         counterId: 'MI~R~[' + this.$routeParams.resourceId +
         '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count',
         start: this.startTimeStamp,
-        end: this.endTimeStamp
+        end: this.endTimeStamp,
+        buckets: 1
       }, (resource) => {
-        this.requestCount = resource[0].value - resource[resource.length - 1].value;
+        this.requestCount = resource[0].max - resource[0].min;
       }, this);
     }
 
