@@ -58,11 +58,11 @@ module HawkularMetrics {
     public resCurPage = 0;
     public alertList;
     public lastUpdateTimestamp:Date = new Date();
-    public headerLinks: any = {};
+    public headerLinks:any = {};
 
-    private updatingList: boolean = false;
-    public loadingMoreItems: boolean = false;
-    public addProgress: boolean = false;
+    private updatingList:boolean = false;
+    public loadingMoreItems:boolean = false;
+    public addProgress:boolean = false;
 
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
@@ -120,9 +120,9 @@ module HawkularMetrics {
       // themselves.
       // Also, www is translated to a single space, so that it sorts before any other subdomain.
 
-      var parsedUrl = new URL(url);
-      var hostname = parsedUrl.hostname;
-      var levels = hostname.split('.');
+      let parsedUrl = new URL(url);
+      let hostname = parsedUrl.hostname;
+      let levels = hostname.split('.');
       if (levels.length > 1) {
         //doing this twice on a.b.redhat.com will produce redhat.com.a.b
         levels.unshift(levels.pop());
@@ -134,10 +134,10 @@ module HawkularMetrics {
         });
       }
 
-      var domainSort = levels.join('.');
+      let domainSort = levels.join('.');
 
-      var resourceId = this.md5.createHash(url || '');
-      var resource = {
+      let resourceId = this.md5.createHash(url || '');
+      let resource = {
         resourceTypePath: '/URL',
         id: resourceId,
         properties: {
@@ -148,22 +148,21 @@ module HawkularMetrics {
 
       this.$log.info('Adding new Resource Url to Hawkular-inventory: ' + url);
 
-      var metricId:string;
-      var defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
-      var err = (error:any, msg:string):void => this.ErrorsManager.errorHandler(error, msg);
-      var currentTenantId:TenantId = this.$rootScope.currentPersona.id;
-      var resourcePath :string;
+      let metricId:string;
+      let defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+      let err = (error:any, msg:string):void => this.ErrorsManager.errorHandler(error, msg);
+      let currentTenantId:TenantId = this.$rootScope.currentPersona.id;
+      let resourcePath:string;
 
       /// Add the Resource and its metrics
       this.HawkularInventory.Resource.save({environmentId: globalEnvironmentId}, resource).$promise
         .then((newResource) => {
           this.getResourceList(currentTenantId);
           metricId = resourceId;
-          console.dir(newResource);
           this.$log.info('New Resource ID: ' + metricId + ' created.');
 
-          var metricsIds:string[] = [metricId + '.status.duration', metricId + '.status.code'];
-          var metrics = [{
+          let metricsIds:string[] = [metricId + '.status.duration', metricId + '.status.code'];
+          let metrics = [{
             id: metricsIds[0],
             metricTypePath: '/status.duration.type',
             properties: {
@@ -177,13 +176,13 @@ module HawkularMetrics {
             }
           }];
 
-          var errMetric = (error:any) => err(error, 'Error saving metric.');
-          var createMetric = (metric:any) =>
+          let errMetric = (error:any) => err(error, 'Error saving metric.');
+          let createMetric = (metric:any) =>
             this.HawkularInventory.Metric.save({
               environmentId: globalEnvironmentId
             }, metric).$promise;
 
-          var associateResourceWithMetrics = () =>
+          let associateResourceWithMetrics = () =>
             this.HawkularInventory.MetricOfResource.save({
               environmentId: globalEnvironmentId,
               resourcePath: resourceId
@@ -202,16 +201,16 @@ module HawkularMetrics {
         // Create threshold trigger for newly created metrics
         .then(() => {
 
-          for (let i=0; i < this.resourceList.length; i++) {
+          for (let i = 0; i < this.resourceList.length; i++) {
             if (metricId === this.resourceList[i].id) {
               resourcePath = this.resourceList[i].path;
               break;
             }
           }
 
-          var triggerId = metricId + '_trigger_thres';
-          var dataId: string = triggerId.slice(0,-14) + '.status.duration';
-          var fullTrigger = {
+          let triggerId = metricId + '_trigger_thres';
+          let dataId:string = triggerId.slice(0, -14) + '.status.duration';
+          let fullTrigger = {
             trigger: {
               id: triggerId,
               name: url,
@@ -271,9 +270,9 @@ module HawkularMetrics {
 
         // Create availability trigger for newly created metrics
         .then(() => {
-          var triggerId = metricId + '_trigger_avail';
-          var dataId:string = triggerId.slice(0, -14);
-          var fullTrigger = {
+          let triggerId = metricId + '_trigger_avail';
+          let dataId:string = triggerId.slice(0, -14);
+          let fullTrigger = {
             trigger: {
               id: triggerId,
               name: url,
@@ -342,9 +341,9 @@ module HawkularMetrics {
 
     public getResourceList(currentTenantId?:TenantId):any {
       this.updatingList = true;
-      var tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      var sort = 'hwk-gui-domainSort';
-      var order = 'asc';
+      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      let sort = 'hwk-gui-domainSort';
+      let order = 'asc';
       this.HawkularInventory.ResourceOfType.query(
         {resourceTypeId: 'URL', per_page: this.resPerPage, page: this.resCurPage, sort: sort, order: order},
         (aResourceList, getResponseHeaders) => {
@@ -355,9 +354,9 @@ module HawkularMetrics {
           this.HawkularAlertsManager.queryAllAlerts().then((anAlertList) => {
             this.alertList = anAlertList;
           });
-          var promises = [];
+          let promises = [];
           angular.forEach(aResourceList, function (res) {
-            var traitsArray:string[] = [];
+            let traitsArray:string[] = [];
             if (res.properties['trait-remote-address']) {
               traitsArray.push('IP: ' + res.properties['trait-remote-address']);
             }
@@ -442,15 +441,15 @@ module HawkularMetrics {
     }
 
     deleteResource() {
-      var metricsIds:string[] = [this.resource.id + '.status.duration', this.resource.id + '.status.code'];
-      var triggerIds:string[] = [this.resource.id + '_trigger_thres', this.resource.id + '_trigger_avail'];
-      var deleteMetric = (metricId:string) =>
+      let metricsIds:string[] = [this.resource.id + '.status.duration', this.resource.id + '.status.code'];
+      let triggerIds:string[] = [this.resource.id + '_trigger_thres', this.resource.id + '_trigger_avail'];
+      let deleteMetric = (metricId:string) =>
         this.HawkularInventory.Metric.delete({
           environmentId: globalEnvironmentId,
           metricId: metricId
         }).$promise;
 
-      var removeResource = () =>
+      let removeResource = () =>
         this.HawkularInventory.Resource.delete({
           environmentId: globalEnvironmentId,
           resourcePath: this.resource.id

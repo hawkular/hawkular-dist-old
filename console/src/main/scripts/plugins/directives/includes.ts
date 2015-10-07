@@ -16,4 +16,3 @@
 ///
 
 /// <reference path="../includes.ts"/>
-/// <reference path="../../libs/hawtio-utilities/defs.d.ts"/>

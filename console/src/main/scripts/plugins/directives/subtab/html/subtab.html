@@ -1,24 +1,10 @@
-<!-- <div class="col-sm-3 col-md-2 subtab-pf subtab-pf-left subtab-pf-dark subtab-pf-big-icons subtab-pf-fixed">
-  <nav>
-    <ul class="nav nav-pills nav-stacked nav-dark nav-big-icons" ng-hide="isSinglePage()">
-      <li ng-class="getClass('/metrics/availability')"><a ng-href="/metrics/availability/{{hkParams.resourceId}}/{{hkParams.timeOffset}}/{{hkEndTimestamp}}"><i class="fa fa-arrow-up"></i>Availability</a></li>
-      <li ng-class="getClass('/metrics/response-time')"><a ng-href="/metrics/response-time/{{hkParams.resourceId}}/{{hkParams.timeOffset}}/{{hkEndTimestamp}}"><i class="fa fa-line-chart"></i>Response Time</a></li>
-      <li ng-class="getClass('/metrics/alerts')"><a ng-href="/metrics/alerts/{{hkParams.resourceId}}/{{hkParams.timeOffset}}/{{hkEndTimestamp}}"><i class="fa fa-flag"></i>Alerts</a></li>
-    </ul>
-    <ul class="nav nav-pills nav-stacked nav-dark nav-big-icons" du-spy-context  ng-show="isSinglePage()">
-      <li du-scrollspy="secav" offset="135" class="active"><a href="#secav" du-smooth-scroll offset="135"><i class="fa fa-arrow-up"></i>Availability</a></li>
-      <li du-scrollspy="secrt" offset="125"><a href="#secrt" du-smooth-scroll offset="125"><i class="fa fa-line-chart"></i>Response Time</a></li>
-      <li du-scrollspy="secal" offset="125"><a href="#secal" du-smooth-scroll offset="125"><i class="fa fa-flag"></i>Alerts</a></li>
-    </ul>
-  </nav>
-</div> -->
-
 <div class="hk-screen-top-nav">
   <div>
     <div class="row hk-top-row">
       <div class="col-xs-6">
         <a ng-show="isAppServerPage()" href="/hawkular-ui/app/app-list" class="back">« All Application Servers</a>
         <a ng-hide="isAppServerPage()" href="/hawkular-ui/url/url-list" class="back">« All URLs</a>
+        <a ng-show="isAlertsCenterPage()" href="/hawkular-ui/alerts-center" class="back">« All Alerts</a>
       </div>
       <div class="col-xs-6">
         <div class="hk-date-range dropdown">

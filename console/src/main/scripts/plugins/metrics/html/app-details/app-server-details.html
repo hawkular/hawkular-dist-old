@@ -3,8 +3,10 @@
   <hawkular-subtab ng-controller="Subtab.SubtabController">
     <div class="hk-nav-tabs-container">
       <ul class="nav nav-tabs nav-tabs-pf" ng-init="tabs.activeTab = tabs.activeTab || 'jvm'">
-        <li ng-repeat="tab in tabs.availableTabs" ng-class="tabs.activeTab === tab.id ? 'active' : ''" ng-show="tab.enabled">
-          <a href="#" ng-click="tabs.updateTab(tab.id)" class="hk-{{tab.id}}">{{tab.name}} <span class="label label-danger label-alert pull-right" ng-show="false">3</span></a>
+        <li ng-repeat="tab in tabs.availableTabs" ng-class="tabs.activeTab === tab.id ? 'active' : ''"
+            ng-show="tab.enabled">
+          <a href="#" ng-click="tabs.updateTab(tab.id)" class="hk-{{tab.id}}">{{tab.name}}
+            <span class="label label-danger label-alert pull-right" ng-show="false">3</span></a>
         </li>
       </ul>
     </div>
@@ -13,10 +15,12 @@
 
   <div ng-repeat="tab in tabs.availableTabs">{{tab.controller}}</div>
 
-  <ng-include ng-repeat="tab in tabs.availableTabs" src="tab.src" ng-if="tabs.activeTab === tab.id" ng-controller="tab.controller"></ng-include>
+  <ng-include ng-repeat="tab in tabs.availableTabs" src="tab.src" ng-if="tabs.activeTab === tab.id"
+              ng-controller="tab.controller"></ng-include>
 
   <div class="hk-nav-tabs-container pull-right">
-    <button type="button" class="btn btn-default" data-ng-click="tabs.requestExportJDR()" data-ng-disabled="tabs.jdrGenerating">
+    <button type="button" class="btn btn-primary" ng-click="tabs.requestExportJDR()"
+            ng-disabled="tabs.jdrGenerating">
       Export JDR
     </button>
   </div>

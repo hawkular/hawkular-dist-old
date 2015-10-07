@@ -94,7 +94,7 @@ module HawkularMetrics {
       }
       this.autoRefreshAvailability(20);
 
-      $scope.$on('RefreshAvailabilityChart', (/*event*/) => {
+      $scope.$on(EventNames.REFRESH_AVAIL_CHART, (/*event*/) => {
         this.refreshAvailPageNow(this.getResourceId());
       });
     }
