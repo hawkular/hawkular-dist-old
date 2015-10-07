@@ -100,13 +100,12 @@ module HawkularMetrics {
     }
 
     public openAvailabilitySetup(): void {
-      this.$log.log('openAvailabilitySetup');
 
       let modalInstance = this.$modal.open({
         templateUrl: 'plugins/metrics/html/modals/alerts-url-availability-setup.html',
         controller: 'AlertUrlAvailabilitySetupController as mas',
         resolve: {
-          resourceId: function () {
+          resourceId: () => {
             return this.resourceId;
           }
         }
@@ -114,7 +113,7 @@ module HawkularMetrics {
       });
 
       let logger = this.$log;
-      modalInstance.result.then(null, function () {
+      modalInstance.result.then(null, () => {
         logger.debug('Modal dismissed at: ' + new Date());
       });
     }
@@ -249,10 +248,10 @@ module HawkularMetrics {
     private getDurationAux(duration: number, pattern: string): any {
       let result = [];
       let durations = this.$filter('duration')(duration, pattern).split(' ');
-      _.each(pattern.split(' '), function (unit: any, idx) {
+      _.each(pattern.split(' '), (unit: any, idx) => {
         result.push({value: durations[idx], unit: MetricsAvailabilityController.durationUnits[unit].unit});
       }, this);
-      return this.$window.angular.fromJson(result);
+      return angular.fromJson(<any>result);
     }
 
     private getDowntimeDurationAsJson(): any {
