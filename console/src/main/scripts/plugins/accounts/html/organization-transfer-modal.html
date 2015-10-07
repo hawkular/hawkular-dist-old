@@ -1,0 +1,23 @@
+<div class="modal-header">
+  <button type="button" class="close" dismiss="modal" aria-label="Close" ng-click="transferModal.cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <h4 class="modal-title">Transfer ownership</h4>
+</div>
+
+<div class="modal-body">
+  Are you sure you want to transfer the ownership of
+  {{transferModal.organization.name}}
+  to
+  {{transferModal.transferTo.name}}?
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" dismiss="modal" ng-click="transferModal.cancel()"
+          id="transferOrgCancelBtn">
+    Cancel
+  </button>
+  <button type="button" class="btn btn-danger" id="transferOrgTransferBtn" ng-click="transferModal.transfer()">
+    Transfer
+  </button>
+</div>

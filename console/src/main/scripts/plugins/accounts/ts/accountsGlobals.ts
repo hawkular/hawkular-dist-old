@@ -33,6 +33,10 @@ module HawkularAccounts {
   }
 
   export interface IOrganization extends IPersona {
+    owner: IPersona;
+    $update(options:{},
+            success?:(success:IOrganization) => void,
+            failure?:(error:IErrorPayload) => void);
   }
 
   export interface IInvitation {
@@ -64,7 +68,10 @@ module HawkularAccounts {
     organization: IOrganization;
     member: IPersona;
     role: IRole;
-    $update(options:{},
+    $update(options?:{},
+            success?:(success:ISuccessPayload) => void,
+            failure?:(error:IErrorPayload) => void);
+    $get(options?:{},
             success?:(success:ISuccessPayload) => void,
             failure?:(error:IErrorPayload) => void);
   }

@@ -55,7 +55,7 @@
             <span ng-show="membership.member.id === controller.organization.owner.id">Owner</span>
 
             <span ng-show="membership.member.id !== controller.organization.owner.id">
-              <span ng-show="controller.isAllowedToTransferOrganization">
+              <span ng-show="controller.isAllowedToChangeRoleOfMembers">
                 <select
                   ng-model="membership.role"
                   ng-change="controller.changeRole(membership)"
@@ -64,7 +64,7 @@
                 </select>
               </span>
 
-              <span ng-show="!controller.isAllowedToTransferOrganization">
+              <span ng-show="!controller.isAllowedToChangeRoleOfMembers">
                 {{membership.role.name}}
               </span>
 
