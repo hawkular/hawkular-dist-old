@@ -17,67 +17,31 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.hawkular</groupId>
-    <artifactId>hawkular</artifactId>
+    <artifactId>hawkular-itest-parent</artifactId>
     <version>1.0.0.Alpha6-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-end-to-end-tests</artifactId>
-  <name>Hawkular: End-To-End integration tests</name>
-  <description>A module for some End-To-End integration tests on Rest-API level</description>
+  <artifactId>hawkular-itest-dist</artifactId>
 
   <dependencies>
-
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-itest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
-      <artifactId>hawkular-inventory-api</artifactId>
-      <scope>test</scope>
+      <artifactId>hawkular-inventory-itest</artifactId>
+      <version>${version.org.hawkular.inventory}</version>
     </dependency>
-
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-client</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.groovy.modules.http-builder</groupId>
-      <artifactId>http-builder</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- because integration tests are run by maven-failsafe-plugin -->
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
   <profiles>
     <profile>
@@ -115,6 +79,8 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
+
+              <testClassesDirectory>${project.build.testOutputDirectory}</testClassesDirectory>
               <includes>
                 <include>**/*ITest*</include>
               </includes>
@@ -205,6 +171,35 @@
             </executions>
           </plugin>
 
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>unpack</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.hawkular</groupId>
+                      <artifactId>hawkular-itest</artifactId>
+                      <version>${project.version}</version>
+                      <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>org.hawkular.inventory</groupId>
+                      <artifactId>hawkular-inventory-itest</artifactId>
+                      <version>${version.org.hawkular.inventory}</version>
+                      <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
