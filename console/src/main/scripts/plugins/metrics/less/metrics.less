@@ -83,6 +83,10 @@ h3 {
   }
 }
 
+h1, h2 {
+  font-weight: 100;
+}
+
 .hk-spinner-legend-below {
   color: @gray-light;
   font-size: ceil(@font-size-base + 2);
@@ -101,15 +105,11 @@ h3 {
   }
 
   dd {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+  }
 
-   .btn {
-      margin-top: 15px;
-
-      &:first-child {
-        margin-right: 10px;
-      }
-    }
+  .bootstrap-select.btn-group {
+    margin-bottom: 0;
   }
 }
 
@@ -127,6 +127,21 @@ a:hover {
 
 .hk-bold {
   font-weight: bold;
+}
+
+.btn + .btn {
+  margin-left: @grid-gutter-width/8;
+}
+
+
+// Help components
+
+.hk-display-table {
+  display: table;
+
+  > div {
+    display: table-cell;
+  }
 }
 
 
@@ -552,8 +567,7 @@ a:hover {
 }
 
 .label {
-  padding: 1px 8px;
-  border-radius: 3px;
+  font-size: ceil(@font-size-base - 2);
 }
 
 .label-alert {
@@ -674,7 +688,7 @@ p + .form-horizontal {
   color: @brand-danger;
 }
 
-.form-actions .btn + .btn {
+.btn + .btn {
   margin-left: @grid-gutter-width/8;
 }
 
@@ -1000,12 +1014,16 @@ a:hover .fa-spinner {
   border: none;
 
   .panel-heading {
-    border-color: @list-group-border;
     background-color: transparent;
 
     .hk-heading {
       color: inherit;
       font-weight: 600;
+    }
+
+    h2 {
+      line-height: 1.3;
+      margin: @grid-gutter-width/8 0;
     }
 
     .dropdown {
@@ -1076,14 +1094,26 @@ a:hover .fa-spinner {
       }
     }
   }
+
+  .hk-box-v-item {
+    border-top: 1px solid @list-group-border;
+    margin-left: -15px;
+    margin-right: -15px;
+    padding: 15px;
+
+    &:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
 }
 
 .hk-info-top + .hk-panel-table-list {
   margin-top: @grid-gutter-width/4;
-}
-
-.panel.hk-alert-details {
-  padding: 10px;
 }
 
 .hk-alert-center-detail .hk-panel-table-list {
@@ -1355,6 +1385,13 @@ td.hk-actions-two {
 .hk-td-radio,
 .hk-td-checkbox {
   width: 20px;
+}
+
+.hk-actions-table-search {
+  position: absolute;
+  top: 0;
+  z-index: 10;
+  left: 177px
 }
 
 
@@ -1816,6 +1853,37 @@ section {
 
   .form-horizontal .inline-row .duration {
     margin-right: 35px;
+  }
+}
+
+
+// Alert Details screen
+
+.hk-alert-center-detail {
+
+  .hk-icon-container {
+    padding-right: 10px;
+    text-align: center;
+    width: 24px;
+  }
+
+  .hk-info-container span {
+    display: block;
+
+    &.email {
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    &.type {
+      margin-bottom: 5px;
+    }
+  }
+
+  .form-actions {
+    .btn:first-child {
+      margin-left: -14px;
+    }
   }
 }
 
