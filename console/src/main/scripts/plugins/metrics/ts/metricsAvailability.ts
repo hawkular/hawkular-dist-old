@@ -120,7 +120,8 @@ module HawkularMetrics {
 
     private getAlerts(metricId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       let triggerIds = metricId + '_trigger_avail';
-      this.HawkularAlertsManager.queryAlerts(triggerIds, startTime, endTime).then((alertAvailData)=> {
+      this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN', triggerIds: triggerIds, startTime: startTime,
+        endTime: endTime}).then((alertAvailData)=> {
           _.forEach(alertAvailData.alertList, (item) => { item['alertType']='PINGAVAIL';});
           this.alertList = alertAvailData.alertList;
         }, (error) => {

@@ -1,17 +1,17 @@
 <div class="hk-alert-center-detail">
 
-  <!--<div class="hk-screen-top-nav">-->
-    <!--<div class="container">-->
-      <!--<div class="row hk-top-row">-->
+  <div class="hk-screen-top-nav">
+    <div class="container">
+      <div class="row hk-top-row">
         <div class="col-xs-6">
-          <a href="/hawkular-ui/alerts-center" class="back">&laquo; Alert Center List</a>
+          <a href="/hawkular-ui/alerts-center" class="back">&laquo; All Alerts</a>
         </div>
-
+      </div>
       <div class="hk-heading">
         <h1>Alert Center</h1>
       </div>
-    <!--</div>-->
-  <!--</div>-->
+    </div>
+  </div>
 
   <div class="container">
 
@@ -37,7 +37,7 @@
              data-content="e = environment, f = feed, r = the resource id"><i class="fa fa-info-circle"></i></a>
         </dt>
         <dd>{{acd.detailAlert.context.resourcePath}}</dd>
-        <dt>Feed Id:</dt>
+        <dt>Feed Id</dt>
         <dd>{{acd.feedId}}</dd>
         <dt><span class="hide">Actions</span>
         <dd>
@@ -47,8 +47,7 @@
       </dl>
     </div>
 
-    <!--
-    <div class="hk-info-top clearfix">
+    <div class="hk-info-top clearfix" ng-show="acd.actionsHistory.length > 0">
       <h3 class="pull-left">Notification History</h3>
     </div>
     <div class="hk-table-container">
@@ -58,23 +57,21 @@
           <th>Time</th>
           <th>Type</th>
           <th>Recipients</th>
+          <th>Result</th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-          <td>15 Aug 2015, 21:55</td>
-          <td>Email</td>
-          <td>jdoe@redhat.com</td>
-        </tr>
-        <tr>
-          <td>12 Aug 2015, 09:34</td>
-          <td>SMS</td>
-          <td>508-555-1212</td>
+        <tr ng-repeat="action in acd.actionsHistory">
+          <td>{{action.ctime | date:'d MMM yyyy, HH:mm'}}</td>
+          <td>{{action.actionPlugin}}</td>
+          <td>{{action.actionId}}</td>
+          <td>{{action.result}}</td>
         </tr>
         </tbody>
       </table>
     </div>
 
+    <!--
     <div class="hk-info-top clearfix">
       <h3 class="pull-left">Metrics</h3>
     </div>

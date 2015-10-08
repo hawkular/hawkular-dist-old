@@ -82,11 +82,11 @@ module HawkularMetrics {
       let expiredSessionsTriggerId = metricIdPrefix + '_web_expired_sessions';
       let rejectedSessionsTriggerId = metricIdPrefix + '_web_rejected_sessions';
 
-      let triggersId = activeSessionsTriggerId + ',' + expiredSessionsTriggerId + ',' + rejectedSessionsTriggerId;
+      let triggerIds = activeSessionsTriggerId + ',' + expiredSessionsTriggerId + ',' + rejectedSessionsTriggerId;
 
       let sessionsArray:any;
-      let sessionsPromise = this.HawkularAlertsManager.queryAlerts(triggersId, startTime, endTime)
-        .then((sessionsData)=> {
+      let sessionsPromise = this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN', triggerIds: triggerIds,
+        startTime: startTime, endTime: endTime}).then((sessionsData)=> {
           _.forEach(sessionsData.alertList, (item) => {
             if (item['triggerId'] === activeSessionsTriggerId) {
               item['alertType'] = 'ACTIVE_SESSIONS';
@@ -119,61 +119,7 @@ module HawkularMetrics {
       });
     }
 
-    private formatBucketedChartOutput(response):IChartDataPoint[] {
-
-      //  The schema is different for bucketed output
-      return _.map(response, (point:IChartDataPoint) => {
-        return {
-          timestamp: point.start,
-          date: new Date(point.start),
-          value: !angular.isNumber(point.value) ? 0 : point.value,
-          avg: (point.empty) ? 0 : point.avg,
-          min: !angular.isNumber(point.min) ? 0 : point.min,
-          max: !angular.isNumber(point.max) ? 0 : point.max,
-          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
-          median: !angular.isNumber(point.median) ? 0 : point.median,
-          empty: point.empty
-        };
-      });
-    }
-
-    private formatCounterChartOutput(response, buckets = 60):IChartDataPoint[] {
-      let result = response;
-      /// FIXME: Simulating buckets.. this should come from metrics.
-      if (response.length > buckets) {
-        let step = Math.floor(response.length / buckets);
-        result = [];
-        let accValue = 0;
-        _.forEach(response, function (point:any, idx) {
-          if (parseInt(idx, 10) % step === (step - 1)) {
-            result.push({timestamp: point.timestamp, value: accValue});
-            accValue = 0;
-          }
-          else {
-            accValue += point.value;
-          }
-        });
-      }
-
-      //  The schema is different for bucketed output
-      return _.map(result, (point:IChartDataPoint, idx) => {
-        let theValue = idx === 0 ? 0 : (result[idx - 1].value - point.value);
-        return {
-          timestamp: point.timestamp,
-          date: new Date(point.timestamp),
-          value: theValue,
-          avg: theValue,
-          min: theValue,
-          max: theValue,
-          percentile95th: theValue,
-          median: theValue,
-          empty: !angular.isNumber(point.value)
-        };
-      });
-    }
-
     public getWebData():void {
-      ///this.alertList = []; // FIXME: when we have alerts for app server
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
@@ -220,7 +166,7 @@ module HawkularMetrics {
         this.chartWebSessionData[0] = {
           key: 'Active Sessions',
           color: AppServerWebDetailsController.ACTIVE_COLOR,
-          values: this.formatBucketedChartOutput(data)
+          values: MetricsService.formatBucketedChartOutput(data)
         };
       }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
@@ -232,7 +178,7 @@ module HawkularMetrics {
         this.chartWebSessionData[1] = {
           key: 'Expired Sessions',
           color: AppServerWebDetailsController.EXPIRED_COLOR,
-          values: this.formatCounterChartOutput(data)
+          values: MetricsService.formatBucketedChartOutput(data)
         };
       }, this);
       this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
@@ -244,7 +190,7 @@ module HawkularMetrics {
         this.chartWebSessionData[2] = {
           key: 'Rejected Sessions',
           color: AppServerWebDetailsController.REJECTED_COLOR,
-          values: this.formatCounterChartOutput(data)
+          values: MetricsService.formatBucketedChartOutput(data)
         };
       }, this);
       /* FIXME: Currently this is always returning negative values, as WFLY returns -1 per webapp. is it config value?

@@ -350,8 +350,8 @@ module HawkularMetrics {
           this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
 
           aResourceList.expanded = this.resourceList ? this.resourceList.expanded : [];
-          this.HawkularAlertsManager.queryAllAlerts().then((anAlertList) => {
-            this.alertList = anAlertList;
+          this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN'}).then((queriedAlerts) => {
+            this.alertList = queriedAlerts.alertList;
           });
           let promises = [];
           angular.forEach(aResourceList, function (res) {

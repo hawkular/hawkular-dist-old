@@ -43,9 +43,6 @@ module HawkularAccounts {
       $scope.loadPersonas = () => {
         $scope.personas = HawkularAccount.Persona.query({},
           () => {
-            $scope.personas = $scope.personas.filter((persona) => {
-              return persona.id !== $scope.currentPersona.id;
-            });
             $scope.loading = false;
           },
           () => {
@@ -57,11 +54,7 @@ module HawkularAccounts {
       };
 
       $scope.switchPersona = (persona) => {
-        $scope.personas.push($scope.currentPersona);
         $scope.currentPersona = persona;
-        $scope.personas = $scope.personas.filter((persona) => {
-          return persona.id !== $scope.currentPersona.id;
-        });
         $log.info('Switching persona to (emit)');
         $log.info(persona);
         $scope.$emit('SwitchedPersona', persona);

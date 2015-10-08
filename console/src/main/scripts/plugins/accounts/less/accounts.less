@@ -17,6 +17,8 @@
 
 @import "../../../libs/patternfly/components/bootstrap/less/variables.less";
 @import "../../../libs/patternfly/components/bootstrap/less/mixins.less";
+@import "../../../libs/patternfly/components/bootstrap/less/type.less";
+@import "../../../libs/patternfly/components/bootstrap/less/dropdowns.less";
 @import "../../../libs/patternfly/less/variables.less";
 
 
@@ -51,6 +53,18 @@ body.inactivity-modal-open #main, body.inactivity-modal-open .navbar, body.inact
   font-size: ceil(@font-size-base * 4);
 }
 
+.selected-persona, .selected-persona .fa {
+  .bg-primary;
+  color: #fff !important;
+}
+
+.selected-persona:hover, .selected-persona:hover .fa {
+  color: #333 !important;
+}
+
+.icon-invisible {
+  visibility: hidden;
+}
 
 /*------------------------------------*\
     SCREENS

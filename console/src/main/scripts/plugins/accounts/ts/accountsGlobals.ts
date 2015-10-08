@@ -76,6 +76,16 @@ module HawkularAccounts {
             failure?:(error:IErrorPayload) => void);
   }
 
+  export interface IUserSettings {
+    id: string;
+    $update(options?:{},
+            success?:(success:IUserSettings) => void,
+            failure?:(error:IErrorPayload) => void);
+    $get(options?:{},
+            success?:(success:IUserSettings) => void,
+            failure?:(error:IErrorPayload) => void);
+  }
+
   // specialized payloads, requests and responses
   export interface IDataPayload {
     message: string;
