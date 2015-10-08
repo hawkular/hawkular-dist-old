@@ -108,7 +108,6 @@ module HawkularAccounts {
           this.$scope.$emit('OrganizationLoaded');
         },
         (error:IErrorPayload) => {
-          this.NotificationsService.warning('Organization not found.');
           this.$log.warn(`Error while loading the organization: ${error.data.message}`);
           this.loading = false;
         }
@@ -122,8 +121,8 @@ module HawkularAccounts {
           this.$log.debug(`Finished loading members. Size: ${this.memberships.length}`);
         },
         (error:IErrorPayload) => {
-          this.NotificationsService.info('List of organizations could NOT be retrieved.');
-          this.$log.warn(`List of organizations could NOT be retrieved: ${error.data.message}`);
+          this.NotificationsService.error('List of memberships could NOT be retrieved.');
+          this.$log.warn(`List of memberships could NOT be retrieved: ${error.data.message}`);
           this.loading = false;
         }
       );

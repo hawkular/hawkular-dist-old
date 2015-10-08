@@ -51,7 +51,12 @@
             </a>
           </td>
           <td class="hk-actions-one">
-            <button type="button" class="btn btn-link" aria-label="Delete" ng-click="remove(organization)" data-toggle="tooltip" data-placement="top" data-original-title="Remove">
+            <button type="button"
+                    class="btn btn-link"
+                    tooltip-trigger
+                    tooltip-placement="top"
+                    tooltip="Remove"
+                    ng-click="remove(organization)">
               <i class="fa fa-trash-o"></i>
             </button>
           </td>
