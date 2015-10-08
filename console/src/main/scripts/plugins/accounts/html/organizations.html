@@ -1,6 +1,6 @@
 <div class="hk-organizations" ng-controller="HawkularAccounts.OrganizationsController">
 
-  <h1 class="text-center">Organizations</h1>
+  <h1 class="text-center" ng-show="!loading">Organizations</h1>
 
   <div class="text-center hk-spinner-container-alone" ng-show="loading">
     <div class="spinner spinner-lg"></div>
