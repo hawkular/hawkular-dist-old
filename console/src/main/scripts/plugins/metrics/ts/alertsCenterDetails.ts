@@ -42,6 +42,7 @@ module HawkularMetrics {
     public alertsTimeOffset:TimestampInMillis;
     public isWorking: boolean = false;
 
+    public actionsHistory;
 
     constructor(private $scope:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
@@ -61,7 +62,9 @@ module HawkularMetrics {
       // If the end time is not specified in URL use current time as end time
       this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : Date.now();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
+      this.actionsHistory = [];
       this.getAlert(this._alertId);
+      this.getActions(this._alertId);
 
     }
 
@@ -75,6 +78,12 @@ module HawkularMetrics {
       });
     }
 
+    public getActions(alertId:AlertId) {
+      return this.HawkularAlertsManager.queryActionsHistory(alertId).then((queriedActions) => {
+        console.dir(queriedActions);
+        this.actionsHistory = queriedActions.actionsList;
+      });
+    }
 
     public resolve():void {
       this.$log.log('ResolveDetail: ' + this._alertId);
@@ -89,6 +98,7 @@ module HawkularMetrics {
       this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then(() => {
         this.isWorking = false;
         this.getAlert(this._alertId);
+        this.getActions(this._alertId);
       });
     }
 
@@ -106,8 +116,8 @@ module HawkularMetrics {
       this.HawkularAlertsManager.ackAlerts(ackAlerts).then(() => {
         this.isWorking = false;
         this.getAlert(this._alertId);
+        this.getActions(this._alertId);
       });
-
     }
 
 

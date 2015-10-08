@@ -73,6 +73,22 @@ module HawkularMetrics {
                 endTime?:TimestampInMillis, currentPage?:number, perPage?:number):
       ng.IPromise<IHawkularAlertQueryResult>;
 
+    /**
+     * @name queryActionsHistory
+     * @desc Fetch Actions from history with different criterias
+     * @param alertIds - A string with a comma separated list with alertsId to query
+     * @param actionPlugins - A string with a comma separated list with plugins to query
+     * @param actionIds - A string with a comma separated list with action IDs to query
+     * @param results - A string with a comma separated list with results to query
+     * @param thin - A flag to include the full alert in the action or just the action details
+     * @param startTime
+     * @param endTime
+     * @param currentPage
+     * @param perPage
+     */
+    queryActionsHistory(alertIds?:string, actionPlugins?:string, actionIds?:string, results?:string, thin?:boolean,
+                        startTime?:TimestampInMillis, endTime?:TimestampInMillis,
+                        currentPage?:number, perPage?:number): ng.IPromise<any>;
 
     /**
      * @name resolveAlerts
@@ -411,6 +427,63 @@ module HawkularMetrics {
             headers: headers
           };
         });
+    }
+    public queryActionsHistory(alertIds?:string, actionPlugins?:string, actionIds?:string, results?:string,
+                               thin?:boolean, startTime?:TimestampInMillis, endTime?:TimestampInMillis,
+                               currentPage?:number, perPage?:number): ng.IPromise<any> {
+      let actionHistoryList = [];
+      let headers;
+      let queryParams = {};
+
+      if (alertIds) {
+        queryParams['alertIds'] = alertIds;
+      }
+
+      if (actionPlugins) {
+        queryParams['actionPlugins'] = actionPlugins;
+      }
+
+      if (actionIds) {
+        queryParams['actionIds'] = actionIds;
+      }
+
+      if (results) {
+        queryParams['results'] = results;
+      }
+
+      if (thin) {
+        queryParams['thin'] = thin;
+      } else {
+        queryParams['thin'] = true;
+      }
+
+      if (startTime) {
+        queryParams['startTime'] = startTime;
+      }
+
+      if (endTime) {
+        queryParams['endTime'] = endTime;
+      }
+
+      if (currentPage || currentPage === 0) {
+        queryParams['page'] = currentPage;
+      }
+
+      if (perPage) {
+        queryParams['per_page'] = perPage;
+      }
+
+      return this.HawkularAlert.Action.queryHistory(queryParams, (serverActionsHistory:any, getHeaders:any) => {
+        headers = getHeaders();
+        actionHistoryList = serverActionsHistory;
+      }, (error) => {
+        this.$log.debug('querying data error', error);
+      }).$promise.then(() => {
+          return {
+            actionsList: actionHistoryList,
+            headers: headers
+          };
+      });
     }
 
     public resolveAlerts(resolvedAlerts:any):ng.IPromise<any> {
