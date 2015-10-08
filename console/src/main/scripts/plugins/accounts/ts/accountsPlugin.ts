@@ -35,7 +35,11 @@ module HawkularAccounts {
 
         .when(
         '/hawkular-ui/invitation/accept/:token',
-        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-accept-invitation.html')});
+        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-accept-invitation.html')})
+
+        .when(
+        '/hawkular-ui/settings',
+        {templateUrl: builder.join(HawkularAccounts.templatePath, 'user-settings.html')});
   }]);
 
   _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails',
