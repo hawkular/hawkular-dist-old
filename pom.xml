@@ -57,7 +57,7 @@
     <module>modules/avail-creator</module>
     <module>modules/redhat-access-integration-backend</module>
     <module>dist</module>
-    <module>modules/end-to-end-test</module>
+    <module>modules/itest-parent</module>
   </modules>
 
   <scm>
