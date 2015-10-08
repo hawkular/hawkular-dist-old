@@ -82,11 +82,11 @@ module HawkularMetrics {
       let expiredSessionsTriggerId = metricIdPrefix + '_web_expired_sessions';
       let rejectedSessionsTriggerId = metricIdPrefix + '_web_rejected_sessions';
 
-      let triggersId = activeSessionsTriggerId + ',' + expiredSessionsTriggerId + ',' + rejectedSessionsTriggerId;
+      let triggerIds = activeSessionsTriggerId + ',' + expiredSessionsTriggerId + ',' + rejectedSessionsTriggerId;
 
       let sessionsArray:any;
-      let sessionsPromise = this.HawkularAlertsManager.queryAlerts(triggersId, startTime, endTime)
-        .then((sessionsData)=> {
+      let sessionsPromise = this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN', triggerIds: triggerIds,
+        startTime: startTime, endTime: endTime}).then((sessionsData)=> {
           _.forEach(sessionsData.alertList, (item) => {
             if (item['triggerId'] === activeSessionsTriggerId) {
               item['alertType'] = 'ACTIVE_SESSIONS';

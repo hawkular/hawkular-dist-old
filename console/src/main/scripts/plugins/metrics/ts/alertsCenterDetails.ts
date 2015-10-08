@@ -24,7 +24,7 @@ module HawkularMetrics {
 
   export class AlertsCenterDetailsController {
 
-    public static  $inject = ['$scope', 'HawkularAlertsManager', 'HawkularAlert', 'ErrorsManager',
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager',
       '$log', '$q', '$rootScope', '$routeParams', '$location', 'MetricsService', 'NotificationsService'];
 
     private _alertId:AlertId;
@@ -42,10 +42,10 @@ module HawkularMetrics {
     public alertsTimeOffset:TimestampInMillis;
     public isWorking: boolean = false;
 
+    public actionsHistory;
 
     constructor(private $scope:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
-                private HawkularAlert:any,
                 private ErrorsManager:IErrorsManager,
                 private $log:ng.ILogService,
                 private $q:ng.IQService,
@@ -61,20 +61,27 @@ module HawkularMetrics {
       // If the end time is not specified in URL use current time as end time
       this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : Date.now();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
+      this.actionsHistory = [];
       this.getAlert(this._alertId);
+      this.getActions(this._alertId);
 
     }
 
     public getAlert(alertId:AlertId) {
-      return this.HawkularAlert.Alert.get({alertId: alertId}, (alertResponse) => {
-        this.detailAlert = alertResponse;
-        let descriptionsParts = alertResponse.trigger.description.split('~');
+      return this.HawkularAlertsManager.getAlert(alertId).then((alert) => {
+        this.detailAlert = alert;
+        let descriptionsParts = alert.trigger.description.split('~');
         this.description = descriptionsParts[0];
         this.feedId = descriptionsParts[1];
-
       });
     }
 
+    public getActions(alertId:AlertId) {
+      return this.HawkularAlertsManager.queryActionsHistory(alertId).then((queriedActions) => {
+        console.dir(queriedActions);
+        this.actionsHistory = queriedActions.actionsList;
+      });
+    }
 
     public resolve():void {
       this.$log.log('ResolveDetail: ' + this._alertId);
@@ -89,6 +96,7 @@ module HawkularMetrics {
       this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then(() => {
         this.isWorking = false;
         this.getAlert(this._alertId);
+        this.getActions(this._alertId);
       });
     }
 
@@ -106,8 +114,8 @@ module HawkularMetrics {
       this.HawkularAlertsManager.ackAlerts(ackAlerts).then(() => {
         this.isWorking = false;
         this.getAlert(this._alertId);
+        this.getActions(this._alertId);
       });
-
     }
 
 

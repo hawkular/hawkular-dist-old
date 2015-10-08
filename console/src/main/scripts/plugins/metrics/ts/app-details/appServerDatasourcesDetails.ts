@@ -79,8 +79,8 @@ module HawkularMetrics {
 
     private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis, res:any):void {
       let connArray: any, respArray: any;
-      let connPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_ds_conn', startTime, endTime)
-        .then((connData)=> {
+      let connPromise = this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN',
+        triggerIds: metricIdPrefix + '_ds_conn', startTime: startTime, endTime: endTime}).then((connData)=> {
           _.forEach(connData.alertList, (item) => {
             item['alertType']='DSCONN';
             item['condition']=item['dataId'].substr(item['dataId'].lastIndexOf('~')+1);
@@ -90,8 +90,8 @@ module HawkularMetrics {
           //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
 
-      let respPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_ds_resp', startTime, endTime)
-        .then((respData)=> {
+      let respPromise = this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN',
+        triggerIds: metricIdPrefix + '_ds_resp', startTime: startTime, endTime: endTime}).then((respData)=> {
           _.forEach(respData.alertList, (item) => {
             item['alertType']='DSRESP';
             item['condition']=item['dataId'].substr(item['dataId'].lastIndexOf('~')+1);
