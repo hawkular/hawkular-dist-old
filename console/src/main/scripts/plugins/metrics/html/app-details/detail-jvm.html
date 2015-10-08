@@ -63,7 +63,7 @@
     </div>
   </div>
 
-  <div class="panel panel-default hk-graph" ng-if="vm.chartHeapData[0]">
+  <div class="panel panel-default hk-graph" ng-if="vm.chartGCDurationData">
     <h2>JVM Heap Usage</h2>
     <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
@@ -74,14 +74,29 @@
           chart-height="250">
       </hawkular-chart>
     </div>
-    <div class="hk-legend text-left hk-legend-metrics">
-      <span><i class="fa fa-circle hk-blue"></i>Used</span>
-      <span><i class="fa fa-circle hk-orange"></i>Maximum</span>
-      <span><i class="fa fa-circle hk-gray"></i>Commited</span>
+    <div class="row hk-legend text-left hk-legend-metrics">
+      <div class="col-md-3 col-lg-2">
+        <div class="hk-graphselector hk-blue">
+          <input type="checkbox" id="h-used" checked="checked" ng-click="vm.toggleChartData('Heap Used')">
+          <label for="h-used"><span>Used</span></label>
+        </div>
+      </div>
+      <div class="col-md-3 col-lg-2">
+        <div class="hk-graphselector hk-gray">
+          <input type="checkbox" id="h-committed" checked="checked" ng-click="vm.toggleChartData('Heap Committed')">
+          <label for="h-committed"><span>Committed</span></label>
+        </div>
+      </div>
+      <div class="col-md-3 col-lg-2">
+        <div class="hk-graphselector hk-orange">
+          <input type="checkbox" id="h-maximum" checked="checked" ng-click="vm.toggleChartData('Heap Max')">
+          <label for="h-maximum"><span>Maximum</span></label>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="panel panel-default hk-graph" ng-if="vm.chartNonHeapData[0]">
+  <div class="panel panel-default hk-graph" ng-if="vm.chartGCDurationData">
     <h2>Non Heap Usage</h2>
     <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
@@ -92,13 +107,23 @@
           chart-height="250">
       </hawkular-chart>
     </div>
-    <div class="hk-legend text-left hk-legend-metrics">
-      <span><i class="fa fa-circle hk-blue"></i>Used</span>
-      <span><i class="fa fa-circle hk-gray"></i>Commited</span>
+    <div class="row hk-legend text-left hk-legend-metrics">
+      <div class="col-md-3 col-lg-2">
+        <div class="hk-graphselector hk-blue">
+          <input type="checkbox" id="nh-used" checked="checked" ng-click="vm.toggleChartData('NonHeap Used')">
+          <label for="nh-used"><span>Used</span></label>
+        </div>
+      </div>
+      <div class="col-md-3 col-lg-2">
+        <div class="hk-graphselector hk-gray">
+          <input type="checkbox" id="nh-committed" checked="checked" ng-click="vm.toggleChartData('NonHeap Committed')">
+          <label for="nh-committed"><span>Committed</span></label>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="panel panel-default hk-graph" ng-if="vm.chartNonHeapData[0]">
+  <div class="panel panel-default hk-graph" ng-if="vm.chartGCDurationData">
     <h2>GC Duration</h2>
     <div class="hk-graph-container hk-graph-metrics">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
