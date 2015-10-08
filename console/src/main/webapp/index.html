@@ -63,8 +63,15 @@
                 {{currentPersona.name}} <b class="caret"></b>
               </a>
               <ul class="dropdown-menu" id="personaSwitcher">
+                <li class="text-muted">Use Hawkular as:</li>
                 <li ng-repeat="persona in personas">
-                  <a href="#" ng-click="switchPersona(persona)">{{persona.name}}</a>
+                  <a
+                          href="#"
+                          ng-click="switchPersona(persona)"
+                          ng-class="{'selected-persona': persona.id === currentPersona.id}">
+                    <i class="fa fa-check" ng-class="{'icon-invisible': persona.id !== currentPersona.id}"></i>
+                    {{persona.name}}
+                  </a>
                 </li>
                 <li class="divider" ng-show="personas.length"></li>
                 <li>

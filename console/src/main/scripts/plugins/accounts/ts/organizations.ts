@@ -55,7 +55,7 @@ module HawkularAccounts {
         });
 
         createFormModal.result.then((organization) =>  {
-          NotificationsService.info(`Organization ${organization.name} created`);
+          NotificationsService.success(`Organization successfully created`);
           $scope.organizations.unshift(organization);
         }, (type, error) => {
           if (type === 'error') {
@@ -68,17 +68,28 @@ module HawkularAccounts {
       };
 
       $scope.remove = (organization) => {
-        organization.$remove().then(
-          () => {
-            NotificationsService.info(`Organization ${organization.name} removed`);
-            $scope.$emit('OrganizationRemoved');
-            $scope.organizations.splice($scope.organizations.indexOf(organization), 1);
-          }, (error) => {
-            $log.warn('Error while trying to remove organization');
-            $log.warn(error);
-            NotificationsService.info(`Failed to remove the organization ${organization.name}: ${error.data.message}`);
+        var removeOrgModal = $modal.open({
+          controller: 'HawkularAccounts.OrganizationRemoveController',
+          templateUrl: 'plugins/accounts/html/organization-remove-modal.html',
+          resolve: {
+            organization: () => organization
           }
-        );
+        });
+
+        removeOrgModal.result.then(() => {
+          organization.$remove().then(
+            () => {
+              NotificationsService.success(`Organization successfully deleted`);
+              $scope.$emit('OrganizationRemoved');
+              $scope.organizations.splice($scope.organizations.indexOf(organization), 1);
+            }, (error) => {
+              $log.warn('Error while trying to remove organization');
+              $log.warn(error);
+              let message = error.data.message;
+              NotificationsService.error(`Failed to remove the organization ${organization.name}: ${message}`);
+            }
+          );
+        });
       };
 
       $scope.load();
@@ -111,6 +122,19 @@ module HawkularAccounts {
           }
         );
         $log.debug('Trying to persist the organization');
+      };
+    }]);
+
+  export var OrganizationRemoveController = _module.controller('HawkularAccounts.OrganizationRemoveController', [
+    '$scope', '$modalInstance', 'organization', ($scope, $modalInstance, organization) => {
+      $scope.organization = organization;
+
+      $scope.cancel = () => {
+        $modalInstance.dismiss('cancel');
+      };
+
+      $scope.delete = () => {
+        $modalInstance.close();
       };
     }]);
 }
