@@ -5048,14 +5048,6 @@ angular.module('RedhatAccess.cases').controller('TypeSelect', [
         });
     }
 ]);
-'use strict';
-/*jshint unused:vars */
-angular.module('RedhatAccess.cases').directive('rha403error', function () {
-    return {
-        templateUrl: 'cases/views/403.html',
-        restrict: 'A'
-    };
-});
 
 'use strict';
 /*jshint unused:vars */

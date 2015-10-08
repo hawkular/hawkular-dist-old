@@ -32,5 +32,12 @@ angular.module('RedhatAccess.cases')
         function () {
           console.log('Unable to get tree data');
         });
-    }
-  ]);
+    }]
+);
+
+angular.module('RedhatAccess.cases').directive('rha403error', function () {
+  return {
+    templateUrl: '/support-403.html',
+    restrict: 'A'
+  };
+});
