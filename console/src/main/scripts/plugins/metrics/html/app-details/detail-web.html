@@ -65,11 +65,25 @@
         chart-height="250">
       </hawkular-chart>
     </div>
-    <div class="hk-legend text-left hk-legend-metrics">
-      <span><i class="fa fa-circle hk-green"></i>Active Sessions</span>
-      <!--<span><i class="fa fa-circle hk-blue"></i>Max Active Sessions</span>-->
-      <span><i class="fa fa-circle hk-orange"></i>Expired Sessions</span>
-      <span><i class="fa fa-circle hk-red"></i>Rejected Sessions</span>
+    <div class="row hk-legend text-left hk-legend-metrics">
+      <div class="col-md-3 col-lg-2">
+        <div class="hk-graphselector hk-green">
+          <input type="checkbox" id="active" checked="checked" ng-click="vm.toggleChartData('Active Sessions')">
+          <label for="active"><span>Active Sessions</span></label>
+        </div>
+      </div>
+      <div class="col-md-3 col-lg-2">
+        <div class="hk-graphselector hk-orange">
+          <input type="checkbox" id="expired" checked="checked" ng-click="vm.toggleChartData('Expired Sessions')">
+          <label for="expired"><span>Expired Sessions</span></label>
+        </div>
+      </div>
+      <div class="col-md-3 col-lg-2">
+        <div class="hk-graphselector hk-red">
+          <input type="checkbox" id="rejected" checked="checked" ng-click="vm.toggleChartData('Rejected Sessions')">
+          <label for="rejected"><span>Rejected Sessions</span></label>
+        </div>
+      </div>
     </div>
   </div>
 
