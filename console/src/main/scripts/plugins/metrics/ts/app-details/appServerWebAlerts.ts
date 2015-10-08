@@ -23,8 +23,8 @@
 module HawkularMetrics {
 
   export class WebAlertController {
-    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
-      '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService',
+      '$log', '$q', '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
 
     private resourceId:string;
     public alertList:any = [];
@@ -43,9 +43,10 @@ module HawkularMetrics {
     constructor(private $scope:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
+                private NotificaitonsService:INotificationsService,
                 private $log:ng.ILogService,
                 private $q:ng.IQService,
-                private $rootScope:any,
+                private $rootScope:IHawkularRootScope,
                 private $routeParams:any,
                 private $modal:any,
                 private $interval:ng.IIntervalService,
@@ -245,6 +246,7 @@ module HawkularMetrics {
         });
 
         modalInstance.result.then(angular.noop, () => {
+          this.NotificaitonsService.alertSettingsSaved();
           log.debug('Web Alert Setup modal dismissed at: ' + new Date());
         });
       }, () => {

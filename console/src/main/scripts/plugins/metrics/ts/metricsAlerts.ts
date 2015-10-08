@@ -24,8 +24,8 @@ module HawkularMetrics {
 
   export class AlertSetupController {
 
-    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
-      '$rootScope', '$routeParams', '$modalInstance', 'resourceId'];
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService',
+      '$log', '$q', '$rootScope', '$routeParams', '$modalInstance', 'resourceId'];
 
     public triggerDefinition:any = {};
 
@@ -37,6 +37,7 @@ module HawkularMetrics {
     constructor(public $scope:any,
                 public HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
                 public ErrorsManager:HawkularMetrics.IErrorsManager,
+                public NotificationsService:INotificationsService,
                 public $log:ng.ILogService,
                 public $q:ng.IQService,
                 public $rootScope:any,
@@ -85,6 +86,7 @@ module HawkularMetrics {
 
         if (!isError) {
           // notify success
+          this.NotificationsService.alertSettingsSaved();
           this.$rootScope.hkNotifications.alerts.push({
             type: 'success',
             message: 'Changes saved successfully.'
@@ -110,7 +112,7 @@ module HawkularMetrics {
 
 
   export class MetricsAlertController {
-    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', '$log', '$q',
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService','$log', '$q',
       '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
 
     private resourceId: ResourceId;
@@ -129,6 +131,7 @@ module HawkularMetrics {
     constructor(private $scope:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 private ErrorsManager: HawkularMetrics.IErrorsManager,
+                private NotificationsService:INotificationsService,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: IHawkularRootScope,
@@ -165,7 +168,8 @@ module HawkularMetrics {
 
       modalInstance.result.then(function (selectedItem) {
         this.selected = selectedItem;
-      }, function () {
+      }, () => {
+        this.NotificationsService.alertSettingsSaved();
         logger.info('Modal dismissed at: ' + new Date());
       });
     }

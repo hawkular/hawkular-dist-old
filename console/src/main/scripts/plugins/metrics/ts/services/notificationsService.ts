@@ -24,6 +24,7 @@ module HawkularMetrics {
     success(message: string): void;
     warning(message: string): void;
     error(message: string): void;
+    alertSettingsSaved(): void;
   }
 
   export class NotificationsService implements INotificationsService {
@@ -53,6 +54,13 @@ module HawkularMetrics {
 
     public error(message: string): void {
       this.toastrPop(message, 'error');
+    }
+
+    public alertSettingsSaved(): void {
+      //this.toastrPop('Alert settings successfully saved', 'error');
+      this.toastr.success('Alert settings successfully saved','',
+        {timeOut: 5000, closeButton: true,
+          showEasing: 'easeOutBounce', hideEasing: 'easeInBack', closeEasing: 'easeInBack'});
     }
   }
 
