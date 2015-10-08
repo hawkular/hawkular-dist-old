@@ -190,8 +190,8 @@ module HawkularMetrics {
 
       let triggerIds = this.resourceId + '_trigger_avail,' + this.resourceId + '_trigger_thres';
 
-      this.HawkularAlertsManager.queryAlerts(triggerIds, this.alertsTimeStart, this.alertsTimeEnd,
-        this.resCurPage, this.resPerPage).then((queriedAlerts)=> {
+      this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN', triggerIds: triggerIds, startTime: this.alertsTimeStart,
+        endTime: this.alertsTimeEnd, currentPage: this.resCurPage, perPage: this.resPerPage}).then((queriedAlerts)=> {
           this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
           _.forEach(queriedAlerts.alertList, (item) => {
             if (item['type'] === 'THRESHOLD') {

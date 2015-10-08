@@ -85,8 +85,8 @@ module HawkularMetrics {
 
     private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       let pheapArray:any, nheapArray:any, garbaArray:any;
-      let pheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_pheap', startTime, endTime)
-        .then((pheapData)=> {
+      let pheapPromise = this.HawkularAlertsManager.queryAlerts({statuses:'OPEN',
+        triggerIds: metricIdPrefix + '_jvm_pheap', startTime: startTime, endTime: endTime}).then((pheapData)=> {
           _.forEach(pheapData.alertList, (item) => {
             item['alertType'] = 'PHEAP';
           });
@@ -95,8 +95,8 @@ module HawkularMetrics {
           return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
 
-      let nheapPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_nheap', startTime, endTime)
-        .then((nheapData)=> {
+      let nheapPromise = this.HawkularAlertsManager.queryAlerts({statuses:'OPEN',
+        triggerIds: metricIdPrefix + '_jvm_nheap', startTime: startTime, endTime: endTime}).then((nheapData)=> {
           _.forEach(nheapData.alertList, (item) => {
             item['alertType'] = 'NHEAP';
           });
@@ -105,8 +105,8 @@ module HawkularMetrics {
           return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
         });
 
-      let garbaPromise = this.HawkularAlertsManager.queryAlerts(metricIdPrefix + '_jvm_garba', startTime, endTime)
-        .then((garbaData)=> {
+      let garbaPromise = this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN',
+        triggerIds: metricIdPrefix + '_jvm_garba', startTime: startTime, endTime: endTime}).then((garbaData)=> {
           _.forEach(garbaData.alertList, (item) => {
             item['alertType'] = 'GARBA';
           });

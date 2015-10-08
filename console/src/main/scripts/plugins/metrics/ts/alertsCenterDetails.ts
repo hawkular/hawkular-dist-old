@@ -24,7 +24,7 @@ module HawkularMetrics {
 
   export class AlertsCenterDetailsController {
 
-    public static  $inject = ['$scope', 'HawkularAlertsManager', 'HawkularAlert', 'ErrorsManager',
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager',
       '$log', '$q', '$rootScope', '$routeParams', '$location', 'MetricsService', 'NotificationsService'];
 
     private _alertId:AlertId;
@@ -46,7 +46,6 @@ module HawkularMetrics {
 
     constructor(private $scope:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
-                private HawkularAlert:any,
                 private ErrorsManager:IErrorsManager,
                 private $log:ng.ILogService,
                 private $q:ng.IQService,
@@ -69,12 +68,11 @@ module HawkularMetrics {
     }
 
     public getAlert(alertId:AlertId) {
-      return this.HawkularAlert.Alert.get({alertId: alertId}, (alertResponse) => {
-        this.detailAlert = alertResponse;
-        let descriptionsParts = alertResponse.trigger.description.split('~');
+      return this.HawkularAlertsManager.getAlert(alertId).then((alert) => {
+        this.detailAlert = alert;
+        let descriptionsParts = alert.trigger.description.split('~');
         this.description = descriptionsParts[0];
         this.feedId = descriptionsParts[1];
-
       });
     }
 

@@ -26,6 +26,21 @@ module HawkularMetrics {
     RANGE
   }
 
+  export interface IHawkularAlertCriteria {
+    startTime?: TimestampInMillis;
+    endTime?: TimestampInMillis;
+    alertIds?: string;
+    triggerIds?: string;
+    statuses?: string;
+    severities?: string;
+    tags?: string;
+    thin?: boolean;
+    currentPage?: number;
+    perPage?: number;
+    sort?: string;
+    order?: string;
+  }
+
   export interface IHawkularAlertQueryResult {
     alertList: IAlert[];
     headers: any;
@@ -43,35 +58,20 @@ module HawkularMetrics {
     addEmailAction(email:EmailType): ng.IPromise<void>;
 
     /**
-     * @name queryAllAlerts
-     * @desc Fetch all Alerts with status OPEN
-     * @returns {ng.IPromise} with a list of Alerts
-     */
-    queryAllAlerts(): ng.IPromise<IHawkularAlertQueryResult>;
-
-    /**
-     * queryAllAlertsPaginated
-     * @param startTime
-     * @param endTime
-     * @param currentPage
-     * @param perPage
-     */
-    queryAllAlertsPaginated(startTime?:TimestampInMillis, endTime?:TimestampInMillis,
-                            currentPage?:number, perPage?:number): ng.IPromise<IHawkularAlertQueryResult>;
-
-    /**
      * @name queryAlerts
      * @desc Fetch Alerts with different criterias
-     * @param triggerdIds - A string with a comma separated list with triggersId to query
-     * @param startTime - Start time of Alerts interval to fetch
-     * @param endTime - End time of Alerts interval to fetch
-     * @param currentPage - Page to fetch
-     * @param perPage - Number of Alerts per page to fetch
+     * @param criteria - Filter for alerts query
      * @returns {ng.IPromise} with a list of Alerts
      */
-    queryAlerts(triggerIds:TriggerIds, startTime?:TimestampInMillis,
-                endTime?:TimestampInMillis, currentPage?:number, perPage?:number):
+    queryAlerts(criteria?: IHawkularAlertCriteria):
       ng.IPromise<IHawkularAlertQueryResult>;
+
+    /**
+     * @name getAlert
+     * @desc Single alert fetch
+     * @param alertId - Alert to query
+     */
+    getAlert(alertId: string): ng.IPromise<IAlert>;
 
     /**
      * @name queryActionsHistory
@@ -214,51 +214,70 @@ module HawkularMetrics {
                 private ErrorsManager:IErrorsManager) {
     }
 
-    public queryAllAlerts():ng.IPromise<IHawkularAlertQueryResult> {
-      return this.HawkularAlert.Alert.query({statuses: 'OPEN'}).$promise;
-    }
-
-    public queryAlertById(alertId:AlertId) {
-      return this.HawkularAlert.Alert.query();
-    }
-
-
-    ///@todo: finish me!
-    public queryAllAlertsPaginated(startTime?:TimestampInMillis, endTime?:TimestampInMillis,
-                                   currentPage?:number, perPage?:number):ng.IPromise<IHawkularAlertQueryResult> {
+    public queryAlerts(criteria: IHawkularAlertCriteria):ng.IPromise<IHawkularAlertQueryResult> {
       let alertList = [];
       let headers;
 
       /* Format of Alerts:
 
        alert: {
-       type: 'THRESHOLD' or 'AVAILABILITY',
-       avg: Average value based on the evalSets 'values',
-       start: The time of the first data ('dataTimestamp') in evalSets,
-       threshold: The threshold taken from condition.threshold,
-       end: The time when the alert was sent ('ctime')
+        type: 'THRESHOLD' or 'AVAILABILITY',
+        avg: Average value based on the evalSets 'values',
+        start: The time of the first data ('dataTimestamp') in evalSets,
+        threshold: The threshold taken from condition.threshold,
+        end: The time when the alert was sent ('ctime')
        }
 
        */
 
-      let queryParams = {
-        statuses: 'OPEN'
-      };
+      let queryParams = {};
 
-      if (currentPage || currentPage === 0) {
-        queryParams['page'] = currentPage;
+      if (criteria && criteria.startTime) {
+        queryParams['startTime'] = criteria.startTime;
       }
 
-      if (perPage) {
-        queryParams['per_page'] = perPage;
+      if (criteria && criteria.endTime) {
+        queryParams['endTime'] = criteria.endTime;
       }
 
-      if (startTime) {
-        queryParams['startTime'] = startTime;
+      if (criteria && criteria.alertIds) {
+        queryParams['alertIds'] = criteria.alertIds;
       }
 
-      if (endTime) {
-        queryParams['endTime'] = endTime;
+      if (criteria && criteria.triggerIds) {
+        queryParams['triggerIds'] = criteria.triggerIds;
+      }
+
+      if (criteria && criteria.statuses) {
+        queryParams['statuses'] = criteria.statuses;
+      }
+
+      if (criteria && criteria.severities) {
+        queryParams['severities'] = criteria.severities;
+      }
+
+      if (criteria && criteria.tags) {
+        queryParams['tags'] = criteria.tags;
+      }
+
+      if (criteria && criteria.thin) {
+        queryParams['thin'] = criteria.thin;
+      }
+
+      if (criteria && criteria.currentPage && criteria.currentPage === 0) {
+        queryParams['page'] = criteria.currentPage;
+      }
+
+      if (criteria && criteria.perPage) {
+        queryParams['per_page'] = criteria.perPage;
+      }
+
+      if (criteria && criteria.sort) {
+        queryParams['sort'] = criteria.sort;
+      }
+
+      if (criteria && criteria.order) {
+        queryParams['order'] = criteria.order;
       }
 
       return this.HawkularAlert.Alert.query(queryParams, (serverAlerts:any, getHeaders:any) => {
@@ -267,51 +286,57 @@ module HawkularMetrics {
         let momentNow = this.$moment();
 
         for (let i = 0; i < serverAlerts.length; i++) {
-          let consoleAlert:any = {};
           let serverAlert = serverAlerts[i];
+          let consoleAlert:any = serverAlert;
 
           consoleAlert.id = serverAlert.alertId;
 
           consoleAlert.triggerId = serverAlert.triggerId;
 
-          consoleAlert.dataId = serverAlert.evalSets[0][0].condition.dataId;
+          if (serverAlert.evalSets && serverAlert.evalSets[0] && serverAlert.evalSets[0][0]) {
+            consoleAlert.dataId = serverAlert.evalSets[0][0].condition.dataId;
+          }
 
           consoleAlert.end = serverAlert.ctime;
 
           let sum:number = 0.0;
           let count:number = 0.0;
 
-          for (let j = 0; j < serverAlert.evalSets.length; j++) {
-            let evalItem = serverAlert.evalSets[j][0];
+          if (serverAlert.evalSets) {
 
-            if (!consoleAlert.start && evalItem.dataTimestamp) {
-              consoleAlert.start = evalItem.dataTimestamp;
-            }
+            for (let j = 0; j < serverAlert.evalSets.length; j++) {
+              let evalItem = serverAlert.evalSets[j][0];
 
-            if (!consoleAlert.threshold && evalItem.condition.threshold) {
-              consoleAlert.threshold = evalItem.condition.threshold;
-            }
-
-            if (!consoleAlert.type && evalItem.condition.type) {
-              consoleAlert.type = evalItem.condition.type;
-            }
-
-            let momentAlert = this.$moment(consoleAlert.end);
-
-            if (momentAlert.year() === momentNow.year()) {
-              consoleAlert.isThisYear = true;
-              if (momentAlert.dayOfYear() === momentNow.dayOfYear()) {
-                consoleAlert.isToday = true;
+              if (!consoleAlert.start && evalItem.dataTimestamp) {
+                consoleAlert.start = evalItem.dataTimestamp;
               }
+
+              if (!consoleAlert.threshold && evalItem.condition.threshold) {
+                consoleAlert.threshold = evalItem.condition.threshold;
+              }
+
+              if (!consoleAlert.type && evalItem.condition.type) {
+                consoleAlert.type = evalItem.condition.type;
+              }
+
+              let momentAlert = this.$moment(consoleAlert.end);
+
+              if (momentAlert.year() === momentNow.year()) {
+                consoleAlert.isThisYear = true;
+                if (momentAlert.dayOfYear() === momentNow.dayOfYear()) {
+                  consoleAlert.isToday = true;
+                }
+              }
+
+              sum += evalItem.value;
+              count++;
             }
 
-            sum += evalItem.value;
-            count++;
+            consoleAlert.avg = sum / count;
+
+            consoleAlert.durationTime = consoleAlert.end - consoleAlert.start;
+
           }
-
-          consoleAlert.avg = sum / count;
-
-          consoleAlert.durationTime = consoleAlert.end - consoleAlert.start;
 
           alertList.push(consoleAlert);
         }
@@ -325,109 +350,10 @@ module HawkularMetrics {
         });
     }
 
-
-    public queryAlerts(triggerIds:TriggerIds, startTime?:TimestampInMillis, endTime?:TimestampInMillis,
-                       currentPage?:number, perPage?:number):ng.IPromise<IHawkularAlertQueryResult> {
-      let alertList = [];
-      let headers;
-
-      /* Format of Alerts:
-
-       alert: {
-       type: 'THRESHOLD' or 'AVAILABILITY',
-       avg: Average value based on the evalSets 'values',
-       start: The time of the first data ('dataTimestamp') in evalSets,
-       threshold: The threshold taken from condition.threshold,
-       end: The time when the alert was sent ('ctime')
-       }
-
-       */
-
-      let queryParams = {
-        statuses: 'OPEN'
-      };
-
-      if (currentPage || currentPage === 0) {
-        queryParams['page'] = currentPage;
-      }
-
-      if (perPage) {
-        queryParams['per_page'] = perPage;
-      }
-
-      queryParams['triggerIds'] = triggerIds;
-
-      if (startTime) {
-        queryParams['startTime'] = startTime;
-      }
-
-      if (endTime) {
-        queryParams['endTime'] = endTime;
-      }
-
-      return this.HawkularAlert.Alert.query(queryParams, (serverAlerts:any, getHeaders:any) => {
-
-        headers = getHeaders();
-        let momentNow = this.$moment();
-
-        for (let i = 0; i < serverAlerts.length; i++) {
-          let consoleAlert:any = {};
-          let serverAlert = serverAlerts[i];
-
-          consoleAlert.id = serverAlert.alertId;
-
-          consoleAlert.triggerId = serverAlert.triggerId;
-
-          consoleAlert.dataId = serverAlert.evalSets[0][0].condition.dataId;
-
-          consoleAlert.end = serverAlert.ctime;
-
-          let sum:number = 0.0;
-          let count:number = 0.0;
-
-          for (let j = 0; j < serverAlert.evalSets.length; j++) {
-            let evalItem = serverAlert.evalSets[j][0];
-
-            if (!consoleAlert.start && evalItem.dataTimestamp) {
-              consoleAlert.start = evalItem.dataTimestamp;
-            }
-
-            if (!consoleAlert.threshold && evalItem.condition.threshold) {
-              consoleAlert.threshold = evalItem.condition.threshold;
-            }
-
-            if (!consoleAlert.type && evalItem.condition.type) {
-              consoleAlert.type = evalItem.condition.type;
-            }
-
-            let momentAlert = this.$moment(consoleAlert.end);
-
-            if (momentAlert.year() === momentNow.year()) {
-              consoleAlert.isThisYear = true;
-              if (momentAlert.dayOfYear() === momentNow.dayOfYear()) {
-                consoleAlert.isToday = true;
-              }
-            }
-
-            sum += evalItem.value;
-            count++;
-          }
-
-          consoleAlert.avg = sum / count;
-
-          consoleAlert.durationTime = consoleAlert.end - consoleAlert.start;
-
-          alertList.push(consoleAlert);
-        }
-      }, (error) => {
-        this.$log.debug('querying data error', error);
-      }).$promise.then(():IHawkularAlertQueryResult => {
-          return {
-            alertList: alertList,
-            headers: headers
-          };
-        });
+    public getAlert(alertId: string): ng.IPromise<IAlert> {
+      return this.HawkularAlert.Alert.get({alertId: alertId}).$promise;
     }
+
     public queryActionsHistory(alertIds?:string, actionPlugins?:string, actionIds?:string, results?:string,
                                thin?:boolean, startTime?:TimestampInMillis, endTime?:TimestampInMillis,
                                currentPage?:number, perPage?:number): ng.IPromise<any> {

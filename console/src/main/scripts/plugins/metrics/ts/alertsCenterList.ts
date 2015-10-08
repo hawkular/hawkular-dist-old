@@ -24,7 +24,7 @@ module HawkularMetrics {
 
   export class AlertsCenterController {
 
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager',
+    public static  $inject = ['$scope', 'HawkularAlertsManager',
       'ErrorsManager', '$log', '$q', '$rootScope', '$interval', '$routeParams',
       'HkHeaderParser', '$location'];
 
@@ -45,7 +45,6 @@ module HawkularMetrics {
     public addProgress:boolean = false;
 
     constructor(private $scope:any,
-                private HawkularAlert:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
                 private $log:ng.ILogService,
@@ -84,17 +83,15 @@ module HawkularMetrics {
     }
 
     public getAlerts():void {
-      this.HawkularAlert.Alert.query().$promise.
-        then((alerts:IAlert[]) => {
-          this.alertsList = alerts;
-
-        }, (error) => {
-          this.$log.warn(error);
-        }).catch((error) => {
-          this.$log.error('Error:' + error);
-        }).finally(() => {
-          this.lastUpdateDate = new Date();
-        });
+      this.HawkularAlertsManager.queryAlerts().then((queriedAlerts) => {
+        this.alertsList = queriedAlerts.alertList;
+      }, (error) => {
+        this.$log.warn(error);
+      }).catch((error) => {
+        this.$log.error('Error:' + error);
+      }).finally(() => {
+        this.lastUpdateDate = new Date();
+      });
     }
 
     //public getAlerts():void {
