@@ -2869,7 +2869,7 @@ sink({
         $rootScope.data = window['datasets'][index % window['datasets'].length];
       };
 
-      $rootScope.$on('select', function(ev, item) {
+      $rootScope.$on('select', (ev, item) => {
         var text = '';
         if (item) {
           text = 'Selected: ' + item.metadata.name;

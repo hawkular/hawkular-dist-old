@@ -15,20 +15,13 @@
 /// limitations under the License.
 ///
 
-(function(root, factory) {
-    // if (typeof(define) === 'function' && define.amd) {
-    //     define(['base1/angular', './d3' ], factory);
-    // }
-    // else {
-    factory(root.angular, root.d3);
-    // }
-}(this, function(angular, d3) {
+((root, factory) => factory(root.angular, root.d3))(this, (angular, d3) => {
     'use strict';
 
     /* A cache to prevent jumping when rapidly toggling views */
-    var cache = { };
+    var cache = {};
 
-    var topology_graph = function(selector, force, notify) {
+    var topology_graph = (selector, force, notify) => {
         var outer = d3.select(selector);
 
         /* Kinds of objects to show */
@@ -65,17 +58,17 @@
         var vertices = d3.select();
         var edges = d3.select();
 
-        force.on('tick', function() {
-            edges.attr('x1', function(d) { return d.source.x; })
-                .attr('y1', function(d) { return d.source.y; })
-                .attr('x2', function(d) { return d.target.x; })
-                .attr('y2', function(d) { return d.target.y; });
+        force.on('tick', () => {
+            edges.attr('x1', (d) => d.source.x)
+                .attr('y1', (d) => d.source.y)
+                .attr('x2', (d) => d.target.x)
+                .attr('y2', (d) => d.target.y);
 
-            vertices.attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+            vertices.attr('transform', (d) => 'translate(' + d.x + ',' + d.y + ')');
         });
 
         drag
-            .on('dragstart', function(d) {
+            .on('dragstart', (d) => {
                 notify(d.item);
 
                 if (d.fixed !== true) {
@@ -84,7 +77,7 @@
                 d.fixed = true;
                 d3.select(this).classed('fixed', true);
             })
-            .on('dragend', function(d) {
+            .on('dragend', (d) => {
                 var moved = true;
                 if (d.floatpoint) {
                     moved = (d.x < d.floatpoint[0] - 5 || d.x > d.floatpoint[0] + 5) ||
@@ -96,13 +89,13 @@
             });
 
         svg
-            .on('dblclick', function() {
+            .on('dblclick', () => {
                 svg.selectAll('g')
                     .classed('fixed', false)
-                    .each(function(d) { d.fixed = false; });
+                    .each((d) => d.fixed = false);
                 force.start();
             })
-            .on('click', function(ev) {
+            .on('click', (ev) => {
                 if (!d3.select(d3.event.target).datum()) {
                     notify(null);
                 }
@@ -111,7 +104,7 @@
         function select(item) {
             selection = item;
             svg.selectAll('g')
-                .classed('selected', function(d) { return d.item === item; });
+                .classed('selected', (d) => d.item === item);
         }
 
         function adjust() {
@@ -131,10 +124,10 @@
             edges.exit().remove();
             edges.enter().insert('line', ':first-child');
 
-            edges.attr('class', function(d) { return d.kinds; });
+            edges.attr('class', (d) => d.kinds);
 
             vertices = svg.selectAll('g')
-                .data(nodes, function(d) { return d.id; });
+                .data(nodes, (d) => d.id);
 
             vertices.exit().remove();
 
@@ -161,10 +154,7 @@
             lookup = {};
 
             var item, id, kind, node;
-            // for (var i = 0; i < items.length; i++) {
-            // for (id in items) {
             angular.forEach(items, (item, id) => {
-                // var id = items[i];
                 kind = item.kind;
 
                 if (kinds && !kinds[kind]) {
@@ -220,18 +210,18 @@
 
         return {
             select: select,
-            kinds: function(value) {
+            kinds: (value) => {
                 kinds = value;
                 var added = digest();
                 return [vertices, added];
             },
-            data: function(new_items, new_relations) {
+            data: (new_items, new_relations) => {
                 items = new_items || {};
                 relations = new_relations || [];
                 var added = digest();
                 return [vertices, added];
             },
-            close: function() {
+            close: () => {
                 window.removeEventListener('resize', resized);
                 window.clearTimeout(timeout);
 
@@ -241,10 +231,7 @@
                  */
                 var id, node;
                 cache = {};
-                // for (var i = 0; i < lookup.length; i++) {
                 angular.forEach(lookup, (value, id) => {
-                    // for (id in lookup) {
-                    // var id = lookup[i];
                     node = nodes[lookup[id]];
                     delete node.item;
                     cache[id] = node;
@@ -255,8 +242,6 @@
             }
         };
     };
-     window['topology_graph'] = topology_graph;
-     /* The kubernetesUI component is quite loosely bound, define if it doesn't exist */
-     // try { angular.module(pluginName); } catch(e) { angular.module(pluginName, []); }
+    window['topology_graph'] = topology_graph;
 
-}));
+});

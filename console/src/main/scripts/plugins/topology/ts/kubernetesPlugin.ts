@@ -21,7 +21,7 @@
 module HawkularTopology {
 
   _module.directive('kubernetesTopologyGraph', [
-    function() {
+    () => {
       return {
         restrict: 'E',
         scope: {
@@ -31,7 +31,7 @@ module HawkularTopology {
           selection: '=',
           force: '='
         },
-        link: function($scope, element, attributes) {
+        link: ($scope, element, attributes) => {
           element.css('display', 'block');
 
           var graph;
@@ -53,10 +53,7 @@ module HawkularTopology {
 
           function weak(d) {
             var status = d.item.status;
-            if (status && status.phase && status.phase !== 'Running') {
-              return true;
-            }
-            return false;
+            return status && status.phase && status.phase !== 'Running';
           }
 
           function title(d) {
@@ -79,43 +76,30 @@ module HawkularTopology {
 
           graph = window['topology_graph'](element[0], $scope.force, notify);
 
-          /* If there's a kinds in the current scope, watch it for changes */
-          $scope.$root.$watchCollection('kinds', function(value) {
-            render(graph.kinds(value));
-          });
+          $scope.$root.$watchCollection('kinds', (value) => render(graph.kinds(value)));
 
-          $scope.$watchCollection('[items, relations]', function(values) {
-            render(graph.data(values[0], values[1]));
-          });
+          $scope.$watchCollection('[items, relations]', (values) => render(graph.data(values[0], values[1])));
 
-          /* Watch the selection for changes */
-          $scope.$watch('selection', function(item) {
-            graph.select(item);
-          });
+          $scope.$watch('selection', (item) => graph.select(item));
 
-          element.on('$destroy', function() {
-            graph.close();
-          });
+          element.on('$destroy', () => graph.close());
         }
       };
     }
     ])
 
-.directive('kubernetesTopologyIcon',
-  function() {
-    return {
+.directive('kubernetesTopologyIcon', () => {
+     return {
       restrict: 'E',
       transclude: true,
       template: '<ng-transclude></ng-transclude>',
-      link: function($scope, element, attrs) {
+      link: ($scope, element, attrs) => {
         var kind = attrs.kind;
         var value = $scope.kinds[kind];
 
-        $scope.$root.$watchCollection('kinds', function() {
-          element.toggleClass('active', kind in $scope.$root.kinds);
-        });
+        $scope.$root.$watchCollection('kinds', () => element.toggleClass('active', kind in $scope.$root.kinds));
 
-        element.on('click', function() {
+        element.on('click', () => {
           if (kind in $scope.$root.kinds) {
             value = $scope.$root.kinds[kind];
             delete $scope.$root.kinds[kind];
@@ -124,6 +108,9 @@ module HawkularTopology {
           }
           if ($scope.$parent) {
             $scope.$parent.$digest();
+          }
+          if ($scope.$root) {
+            $scope.$root.$digest();
           }
           $scope.$digest();
         });
