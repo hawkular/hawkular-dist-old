@@ -75,6 +75,7 @@ module HawkularMetrics {
 
     private autoRefresh(intervalInSeconds:number):void {
       let autoRefreshPromise = this.$interval(()  => {
+        this.$log.debug('autoRefresh .... ' + new Date());
         this.getAlerts();
       }, intervalInSeconds * 1000);
 
@@ -84,8 +85,20 @@ module HawkularMetrics {
     }
 
     public getAlerts():void {
-      this.HawkularAlertsManager.queryAlerts().then((queriedAlerts) => {
-        this.alertsList = queriedAlerts.alertList;
+
+      this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : Date.now();
+      this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
+
+      this.HawkularAlertsManager.queryAlerts({startTime: this.alertsTimeStart,
+        endTime: this.alertsTimeEnd,
+        currentPage: this.alertsCurPage,
+        perPage: this.alertsPerPage
+        })
+        .then((queriedAlerts) => {
+          this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
+          this.alertsList = queriedAlerts.alertList;
+          this.lastUpdateDate = new Date();
+          console.dir(this.headerLinks);
       }, (error) => {
         this.$log.warn(error);
       }).catch((error) => {
@@ -94,24 +107,6 @@ module HawkularMetrics {
         this.lastUpdateDate = new Date();
       });
     }
-
-    //public getAlerts():void {
-    //  this.$log.info('GetAlerts');
-    //  this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : Date.now();
-    //  this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
-    //
-    //  this.HawkularAlertsManager.queryAllAlertsPaginated(this.alertsTimeStart, this.alertsTimeEnd, this.alertsCurPage,
-    //    this.alertsPerPage).then((queriedAlerts) => {
-    //      console.dir(queriedAlerts);
-    //      this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
-    //      this.alertsList = queriedAlerts.alertList;
-    //      this.lastUpdateDate = new Date();
-    //      //this.alertsList.$resolved = true;
-    //    }, (error) => {
-    //      return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
-    //    });
-    //}
-
 
     public showDetailPage(alertId:AlertId):void {
       let timeOffset = this.alertsTimeOffset;
