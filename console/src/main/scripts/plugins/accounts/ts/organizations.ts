@@ -55,7 +55,7 @@ module HawkularAccounts {
         });
 
         createFormModal.result.then((organization) =>  {
-          NotificationsService.success(`Organization successfully created`);
+          NotificationsService.success(`Organization successfully created.`);
           $scope.organizations.unshift(organization);
         }, (type, error) => {
           if (type === 'error') {
@@ -79,11 +79,11 @@ module HawkularAccounts {
         removeOrgModal.result.then(() => {
           organization.$remove().then(
             () => {
-              NotificationsService.success(`Organization successfully deleted`);
+              NotificationsService.success(`Organization successfully deleted.`);
               $scope.$emit('OrganizationRemoved');
               $scope.organizations.splice($scope.organizations.indexOf(organization), 1);
             }, (error) => {
-              $log.warn('Error while trying to remove organization');
+              $log.warn('Error while trying to remove organization.');
               $log.warn(error);
               let message = error.data.message;
               NotificationsService.error(`Failed to remove the organization ${organization.name}: ${message}`);
