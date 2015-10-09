@@ -167,7 +167,7 @@ module HawkularMetrics {
     ackTime: TimestampInMillis;
     ctime: TimestampInMillis;
     resolvedBy: string;
-    resolvedByNotes: string;
+    resolvedNotes: string;
     resolvedTime: TimestampInMillis;
     severity: string; /// @todo: change to enum
     status: string;  /// @todo: change to enum

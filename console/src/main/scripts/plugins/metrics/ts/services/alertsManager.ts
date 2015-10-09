@@ -41,6 +41,20 @@ module HawkularMetrics {
     order?: string;
   }
 
+  export interface IHawkularActionCriteria {
+    startTime?: TimestampInMillis;
+    endTime?: TimestampInMillis;
+    actionPlugins?: string;
+    actionIds?: string;
+    alertIds?: string;
+    results?: string;
+    thin?: boolean;
+    currentPage?: number;
+    perPage?: number;
+    sort?: string;
+    order?: string;
+  }
+
   export interface IHawkularAlertQueryResult {
     alertList: IAlert[];
     headers: any;
@@ -76,19 +90,9 @@ module HawkularMetrics {
     /**
      * @name queryActionsHistory
      * @desc Fetch Actions from history with different criterias
-     * @param alertIds - A string with a comma separated list with alertsId to query
-     * @param actionPlugins - A string with a comma separated list with plugins to query
-     * @param actionIds - A string with a comma separated list with action IDs to query
-     * @param results - A string with a comma separated list with results to query
-     * @param thin - A flag to include the full alert in the action or just the action details
-     * @param startTime
-     * @param endTime
-     * @param currentPage
-     * @param perPage
+     * @param criteria - Filter for actions query
      */
-    queryActionsHistory(alertIds?:string, actionPlugins?:string, actionIds?:string, results?:string, thin?:boolean,
-                        startTime?:TimestampInMillis, endTime?:TimestampInMillis,
-                        currentPage?:number, perPage?:number): ng.IPromise<any>;
+    queryActionsHistory(criteria?: IHawkularActionCriteria): ng.IPromise<any>;
 
     /**
      * @name resolveAlerts
@@ -264,7 +268,7 @@ module HawkularMetrics {
         queryParams['thin'] = criteria.thin;
       }
 
-      if (criteria && criteria.currentPage && criteria.currentPage === 0) {
+      if (criteria && criteria.currentPage && criteria.currentPage !== 0) {
         queryParams['page'] = criteria.currentPage;
       }
 
@@ -354,49 +358,55 @@ module HawkularMetrics {
       return this.HawkularAlert.Alert.get({alertId: alertId}).$promise;
     }
 
-    public queryActionsHistory(alertIds?:string, actionPlugins?:string, actionIds?:string, results?:string,
-                               thin?:boolean, startTime?:TimestampInMillis, endTime?:TimestampInMillis,
-                               currentPage?:number, perPage?:number): ng.IPromise<any> {
+    public queryActionsHistory(criteria?: IHawkularActionCriteria): ng.IPromise<any> {
       let actionHistoryList = [];
       let headers;
       let queryParams = {};
 
-      if (alertIds) {
-        queryParams['alertIds'] = alertIds;
+      if (criteria && criteria.alertIds) {
+        queryParams['alertIds'] = criteria.alertIds;
       }
 
-      if (actionPlugins) {
-        queryParams['actionPlugins'] = actionPlugins;
+      if (criteria && criteria.actionPlugins) {
+        queryParams['actionPlugins'] = criteria.actionPlugins;
       }
 
-      if (actionIds) {
-        queryParams['actionIds'] = actionIds;
+      if (criteria && criteria.actionIds) {
+        queryParams['actionIds'] = criteria.actionIds;
       }
 
-      if (results) {
-        queryParams['results'] = results;
+      if (criteria && criteria.results) {
+        queryParams['results'] = criteria.results;
       }
 
-      if (thin) {
-        queryParams['thin'] = thin;
+      if (criteria && criteria.thin) {
+        queryParams['thin'] = criteria.thin;
       } else {
         queryParams['thin'] = true;
       }
 
-      if (startTime) {
-        queryParams['startTime'] = startTime;
+      if (criteria && criteria.startTime) {
+        queryParams['startTime'] = criteria.startTime;
       }
 
-      if (endTime) {
-        queryParams['endTime'] = endTime;
+      if (criteria && criteria.endTime) {
+        queryParams['endTime'] = criteria.endTime;
       }
 
-      if (currentPage || currentPage === 0) {
-        queryParams['page'] = currentPage;
+      if (criteria && criteria.currentPage && criteria.currentPage !== 0) {
+        queryParams['page'] = criteria.currentPage;
       }
 
-      if (perPage) {
-        queryParams['per_page'] = perPage;
+      if (criteria && criteria.perPage) {
+        queryParams['per_page'] = criteria.perPage;
+      }
+
+      if (criteria && criteria.sort) {
+        queryParams['sort'] = criteria.sort;
+      }
+
+      if (criteria && criteria.order) {
+        queryParams['order'] = criteria.order;
       }
 
       return this.HawkularAlert.Action.queryHistory(queryParams, (serverActionsHistory:any, getHeaders:any) => {
