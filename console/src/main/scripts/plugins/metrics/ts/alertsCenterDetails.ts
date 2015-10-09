@@ -31,11 +31,12 @@ module HawkularMetrics {
     public feedId:FeedId;
     public detailAlert:IAlert;
     public description:string;
+    public comments:string;
+    public status:string;
+    public statuses;
 
     public endTimeStamp:TimestampInMillis;
     public startTimeStamp:TimestampInMillis;
-    public bucketedDataPoints;
-    public chartData;
 
     public alertsTimeStart:TimestampInMillis;
     public alertsTimeEnd:TimestampInMillis;
@@ -51,7 +52,7 @@ module HawkularMetrics {
                 private $q:ng.IQService,
                 private $rootScope:IHawkularRootScope,
                 private $routeParams:any,
-                private $location:ng.ILocaleService,
+                private $location:ng.ILocationService,
                 private MetricsService:IMetricsService,
                 private NotificationsService:INotificationsService) {
       $scope.acd = this;
@@ -62,6 +63,7 @@ module HawkularMetrics {
       this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : Date.now();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
       this.actionsHistory = [];
+      this.statuses = [];
       this.getAlert(this._alertId);
       this.getActions(this._alertId);
 
@@ -73,14 +75,41 @@ module HawkularMetrics {
         let descriptionsParts = alert.trigger.description.split('~');
         this.description = descriptionsParts[0];
         this.feedId = descriptionsParts[1];
+        this.status = alert.status;
+        if (this.status === 'OPEN') {
+          this.statuses = ['OPEN', 'ACKNOWLEDGED', 'RESOLVED'];
+        } else {
+          this.statuses = ['ACKNOWLEDGED', 'RESOLVED'];
+        }
+        if (alert.status === 'OPEN' || alert.status === 'ACKNOWLEDGED') {
+          this.comments = alert.ackNotes;
+        } else {
+          this.comments = alert.resolvedNotes;
+        }
       });
     }
 
     public getActions(alertId:AlertId) {
-      return this.HawkularAlertsManager.queryActionsHistory(alertId).then((queriedActions) => {
+      return this.HawkularAlertsManager.queryActionsHistory({alertIds: alertId, sort: 'ctime'})
+        .then((queriedActions) => {
         console.dir(queriedActions);
         this.actionsHistory = queriedActions.actionsList;
       });
+    }
+
+    public cancel():void {
+      this.$location.url(`/hawkular-ui/alerts-center`);
+    }
+
+    public save(): void {
+      if (this.status === 'OPEN') {
+        return;
+      }
+      if (this.status === 'ACKNOWLEDGED') {
+        this.acknowledge();
+      } else {
+        this.resolve();
+      }
     }
 
     public resolve():void {
@@ -90,7 +119,7 @@ module HawkularMetrics {
       let resolvedAlerts = {
         alertIds: this._alertId,
         resolvedBy: this.$rootScope.currentPersona.name,
-        resolvedNotes: 'Manually resolved'
+        resolvedNotes: this.comments
       };
 
       this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then(() => {
@@ -100,7 +129,6 @@ module HawkularMetrics {
       });
     }
 
-
     public acknowledge() {
       this.$log.log('Ack Alert Detail: ' + this._alertId);
       this.isWorking = true;
@@ -108,7 +136,7 @@ module HawkularMetrics {
       let ackAlerts = {
         alertIds: this._alertId,
         ackBy: this.$rootScope.currentPersona.name,
-        ackNotes: 'Manually acknowledged'
+        ackNotes: this.comments
       };
 
       this.HawkularAlertsManager.ackAlerts(ackAlerts).then(() => {
@@ -117,48 +145,6 @@ module HawkularMetrics {
         this.getActions(this._alertId);
       });
     }
-
-
-
-    public refreshHistoricalChartDataForTimestamp(resourceId:ResourceId,
-                                                  startTime?:TimestampInMillis,
-                                                  endTime?:TimestampInMillis):void {
-      /// calling refreshChartData without params use the model values
-      if (!endTime) {
-        endTime = this.endTimeStamp;
-      }
-      if (!startTime) {
-        startTime = this.startTimeStamp;
-      }
-
-      if (resourceId) {
-
-        this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id, resourceId,
-          startTime, endTime, 120)
-          .then((response) => {
-
-            // we want to isolate the response from the data we are feeding to the chart
-            this.bucketedDataPoints = MetricsService.formatBucketedChartOutput(response);
-
-            if (this.bucketedDataPoints.length) {
-              // this is basically the DTO for the chart
-              this.chartData = {
-                id: resourceId,
-                startTimeStamp: startTime,
-                endTimeStamp: endTime,
-                dataPoints: this.bucketedDataPoints
-              };
-
-            } else {
-              this.$log.warn('No Data found for id: ' + resourceId);
-            }
-
-          }, (error) => {
-            this.NotificationsService.error('Error Loading Chart Data: ' + error);
-          });
-      }
-    }
-
 
   }
 

@@ -18,61 +18,96 @@
     <div class="hk-info-top clearfix">
       <h3 class="pull-left">Alert Details</h3>
     </div>
-    <div class="panel panel-default clearfix hk-alert-details">
-      <h2>Alert: {{acd.description | characters: 55}}</h2>
-      <dl class="dl-horizontal">
-        <dt>State</dt>
-        <dd><span class="hk-open">{{acd.detailAlert.status | firstUpper}}</span></dd>
-        <dt>Severity</dt>
-        <dd>{{acd.detailAlert.severity | firstUpper}}</dd>
-        <dt>Description
-          <a class="hk-btn-icon" tabindex="0" role="button"
-             popover-trigger="click" popover-placement="top" popover-append-to-body="true"
-            popover="Alert Trigger description"><i class="fa fa-info-circle"></i></a>
-        </dt>
-        <dd>{{acd.description|characters: 40}}</dd>
-        <dt>Created</dt>
-        <dd>{{acd.detailAlert.ctime | date:'d MMM yyyy, HH:mm'}}</dd>
-        <dt>Resource Path
-          <a class="hk-btn-icon" tabindex="0" role="button"
-             popover-trigger="click" popover-placement="top" popover-append-to-body="true"
-             popover="e = environment, f = feed, r = resource id"
-            ><i class="fa fa-info-circle"></i></a>
-        </dt>
-        <dd>{{acd.detailAlert.context.resourcePath}}</dd>
-        <dt><span class="hide">Actions</span>
-        <dd>
-          <button class="btn btn-default" type="button"
-                  ng-disabled="acd.detailAlert.status != 'OPEN'" ng-click="acd.acknowledge()">Acknowledge</button>
-          <button class="btn btn-primary" type="button"
-                  ng-disabled="acd.detailAlert.status == 'RESOLVED'"
-                  ng-click="acd.resolve()">Resolve</button>
-        </dd>
-      </dl>
-    </div>
 
-    <div class="hk-info-top clearfix" ng-show="acd.actionsHistory.length > 0">
-      <h3 class="pull-left">Notification History</h3>
-    </div>
-    <div class="hk-table-container">
-      <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-          <th>Time</th>
-          <th>Type</th>
-          <th>Recipients</th>
-          <th>Result</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="action in acd.actionsHistory">
-          <td>{{action.ctime | date:'d MMM yyyy, HH:mm'}}</td>
-          <td>{{action.actionPlugin}}</td>
-          <td>{{action.actionId}}</td>
-          <td>{{action.result}}</td>
-        </tr>
-        </tbody>
-      </table>
+    <div class="row">
+      <div class="col-md-9">
+        <div class="panel panel-default clearfix">
+          <div class="panel-heading">
+            <h2>{{acd.description | characters: 55}}</h2>
+          </div>
+          <div class="panel-body">
+            <form class="form-horizontal">
+              <fieldset>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="status">State</label>
+                  <div class="col-sm-6">
+                    <select pf-select ng-model="acd.status" id="status">
+                      <option ng-repeat="status in acd.statuses" value="{{status}}">{{status | firstUpper}}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Severity</label>
+                  <div class="col-sm-10">
+                    <span class="hk-input-text">{{acd.detailAlert.severity | firstUpper}}</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Description
+                    <a class="hk-btn-icon" tabindex="0" role="button" data-toggle="popover" data-html="true" data-placement="top" data-content="Trigger description"><i class="fa fa-info-circle"></i></a>
+                  </label>
+                  <div class="col-sm-10">
+                    <span class="hk-input-text">{{acd.description}}</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Created</label>
+                  <div class="col-sm-10">
+                    <span class="hk-input-text">{{acd.detailAlert.ctime | date:'d MMM yyyy, HH:mm'}}</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Resource Path
+                    <a class="hk-btn-icon" tabindex="0" role="button" data-toggle="popover" data-html="true" data-placement="top" data-content="e = environment, f = feed, r = the resource id"><i class="fa fa-info-circle"></i></a>
+                  </label>
+                  <div class="col-sm-10">
+                    <span class="hk-input-text">{{acd.detailAlert.context.resourcePath}}</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Feed Id</label>
+                  <div class="col-sm-10">
+                    <span class="hk-input-text">{{acd.feedId}}</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Comments</label>
+                  <div class="col-sm-10">
+                    <textarea class="form-control" rows="2" ng-disabled="acd.status == 'OPEN'" ng-model="acd.comments"></textarea>
+                  </div>
+                </div>
+              </fieldset>
+            </form>
+            <div class="form-actions col-sm-10 col-sm-offset-2">
+              <button class="btn btn-default" type="button" ng-click="acd.cancel()">Cancel</button>
+              <button class="btn btn-primary" type="button" ng-disabled="acd.status == 'OPEN'" ng-click="acd.save()">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="panel panel-default clearfix" ng-show="acd.actionsHistory.length > 0">
+          <div class="panel-heading">
+            <h2>Notifications</h2>
+          </div>
+          <div class="panel-body">
+            <div class="hk-box-v-item" ng-repeat="action in acd.actionsHistory">
+              <div class="hk-display-table">
+                <div class="hk-icon-container">
+                  <i class="fa fa-envelope-o"></i>
+                </div>
+                <div class="hk-info-container">
+                  <span class="email">{{action.actionId}}</span>
+                  <span class="type">{{action.actionPlugin | firstUpper}}</span>
+                  <span class="date">{{action.ctime | date:'d MMM yyyy, HH:mm'}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>
