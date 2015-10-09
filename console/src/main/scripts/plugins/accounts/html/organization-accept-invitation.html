@@ -1,34 +1,39 @@
-<div class="row">
-  <div class="col-md-12" ng-controller="HawkularAccounts.InvitationController as controller">
-    <ol class="breadcrumb">
-      <li><a data-ng-href="/hawkular-ui/organizations">&laquo; All organizations</a></li>
-    </ol>
+<div ng-controller="HawkularAccounts.InvitationController as controller">
 
-    <h1 class="text-center" ng-show="controller.success">Invitation for {{controller.invitation.organization.name}}</h1>
-    <h1 class="text-center" ng-show="!controller.success">Invitation</h1>
-
-    <div class="progress-description" ng-show="controller.loading">
-      <div class="spinner spinner-xs spinner-inline"></div>
-      <strong>Loading:</strong> processing invitation
+  <div class="hk-screen-top-nav">
+    <div class="row hk-top-row" >
+      <div class="col-xs-6" ng-show="!controller.loading">
+        <a data-ng-href="/hawkular-ui/organizations">&laquo; All organizations</a>
+      </div>
     </div>
-
-    <div class="row text-center" ng-show="!controller.loading && controller.success">
-      <i class="fa fa-users" id="accepted-invitation-icon"></i>
-      <h2>Invitation accepted</h2>
-      <p>
-        You can now use Hawkular as {{controller.invitation.organization.name}}. To do that, just select
-        '{{controller.invitation.organization.name}}' from the account switcher, on the top-right corner of this screen.
-      </p>
+    <div class="hk-heading">
+      <h1 ng-show="controller.success">Invitation for {{controller.invitation.organization.name}}</h1>
+      <h1 ng-show="!controller.success">Invitation</h1>
     </div>
-
-    <div class="row text-center" ng-show="!controller.loading && !controller.success">
-      <i class="fa fa-users" id="error-accepted-invitation-icon"></i>
-      <h2>Error</h2>
-      <p>
-        Something went wrong while processing your invitation.
-      </p>
-    </div>
-
   </div>
-  <!-- /col -->
+
+  <div class="text-center hk-spinner-container-alone" ng-show="controller.loading">
+    <div class="spinner spinner-lg"></div>
+    <p class="hk-spinner-legend-below">Loading...</p>
+  </div>
+
+  <div class="blank-slate-pf" ng-show="!controller.loading && controller.success">
+    <div class="blank-slate-pf-icon">
+      <i class="fa fa-users" id="accepted-invitation-icon"></i>
+    </div>
+    <h1>Invitation accepted</h1>
+    <p>
+      You can now use Hawkular as {{controller.invitation.organization.name}}. To do that, select
+      '{{controller.invitation.organization.name}}' in the account switcher.
+    </p>
+  </div>
+
+  <div class="blank-slate-pf" ng-show="!controller.loading && !controller.success">
+    <div class="blank-slate-pf-icon">
+      <i class="fa fa-meh-o" id="error-accepted-invitation-icon"></i>
+    </div>
+    <h1>Something went wrong while processing your invitation.</h1>
+    </p>
+  </div>
+
 </div>

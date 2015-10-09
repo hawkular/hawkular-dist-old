@@ -43,7 +43,7 @@ module HawkularAccounts {
         (error:IErrorPayload) => {
           this.success = false;
           this.loading = false;
-          this.NotificationsService.warning(`An error occurred while processing the invitation: ${error.data.message}`);
+          this.NotificationsService.error(`Error: ${error.data.message}`);
           this.$log.debug(`Error while trying to process the invitation: ${error.data.message}`);
         }
       );

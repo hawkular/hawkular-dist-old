@@ -34,7 +34,7 @@ module HawkularAccounts {
             $scope.$emit('CurrentPersonaLoaded', $scope.currentPersona);
           },
           () => {
-            NotificationsService.error('Failed in retrieving the current persona.');
+            NotificationsService.error('Error: Failed in retrieving the current persona.');
             $log.warn('Failed in retrieving the current persona');
           }
         );
@@ -46,7 +46,7 @@ module HawkularAccounts {
             $scope.loading = false;
           },
           () => {
-            NotificationsService.error('List of personas could NOT be retrieved.');
+            NotificationsService.error('Error: List of personas could NOT be retrieved.');
             $log.warn('List of personas could NOT be retrieved.');
             $scope.loading = false;
           }

@@ -44,27 +44,25 @@ body.inactivity-modal-open #main, body.inactivity-modal-open .navbar, body.inact
   filter: blur(5px);
 }
 
-#empty-organizations-icon,
-#empty-organizations-icon-for-organizations,
-#accepted-invitation-icon,
-#error-accepted-invitation-icon,
-#organization-not-found-icon {
-  color: @gray-light;
-  font-size: ceil(@font-size-base * 4);
+
+// User dropdown
+
+#personaSwitcher {
+
+  .hk-using {
+    padding: 7px 15px 5px 15px;
+  }
+
+  .fa-check {
+    font-size: 14px;
+    vertical-align: text-bottom;
+  }
+
+  .active .fa-check {
+    color: white;
+  }
 }
 
-.selected-persona, .selected-persona .fa {
-  .bg-primary;
-  color: #fff !important;
-}
-
-.selected-persona:hover, .selected-persona:hover .fa {
-  color: #333 !important;
-}
-
-.icon-invisible {
-  visibility: hidden;
-}
 
 /*------------------------------------*\
     SCREENS

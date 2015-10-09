@@ -248,7 +248,7 @@ module HawkularAccounts {
 
     public transferOwnership(membership:IOrganizationMembership):void {
       if (!this.isAllowedToTransferOrganization) {
-        this.NotificationsService.error('You don\'t have the permissions to transfer this organization.');
+        this.NotificationsService.error('Error: You don\'t have the permissions to transfer this organization.');
         return;
       }
 
@@ -303,7 +303,7 @@ module HawkularAccounts {
 
     public invite():void {
       this.invitation.$save(() => {
-        this.NotificationsService.info('Your invitation was submitted.');
+        this.NotificationsService.success('Invitation successfully sent.');
         this.$modalInstance.close(
           this.invitation.emails
             .split(/[,\s]/)
@@ -313,7 +313,7 @@ module HawkularAccounts {
           )
         );
       }, (error:IErrorPayload) => {
-        this.NotificationsService.warning('An error occurred while trying to send the invitations.');
+        this.NotificationsService.error('An error occurred while trying to send the invitations.');
         this.$log.debug(`Error while trying to send invitations: ${error.data.message}`);
         this.$modalInstance.close('error');
       });
