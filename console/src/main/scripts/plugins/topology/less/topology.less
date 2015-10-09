@@ -1,0 +1,162 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@import "../../../libs/patternfly/components/bootstrap/less/variables.less";
+@import "../../../libs/patternfly/components/bootstrap/less/mixins.less";
+@import "../../../libs/patternfly/less/variables.less";
+
+// Variables Override
+
+@body-bg:                                                           #f5f5f5;
+@danger-bg:                                                         rgba(204,0,0,0.07);
+
+/*@font-face {
+  font-family: 'FontAwesome';
+  src: url('bower_components/font-awesome/fonts/fontawesome-webfont.woff') format('woff');
+}
+@font-face {
+  font-family: 'PatternFlyIcons-webfont';
+  src: url('bower_components/patternfly/dist/fonts/PatternFlyIcons-webfont.woff') format('woff');
+}*/
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0px;
+  font-family: sans-serif;
+}
+kubernetes-topology-graph {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+}
+.controls {
+  position: absolute;
+  left: 60px;
+  right: 60px;
+  background-color: rgba(255, 39, 39, 0);
+  padding: 0 10px;
+  width: 190px;
+}
+#selected {
+  float: right;
+  display: none;
+  margin-top: 15px;
+}
+
+.container {
+    margin-right: auto;
+    margin-left: auto important!;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+// kube-topology specific
+kubernetes-topology-graph {
+    display: block;
+    user-select: none;
+}
+
+.kube-topology g {
+    font-family: PatternFlyIcons-webfont;
+    font-size: 18px;
+    text-anchor: middle;
+    cursor: pointer;
+}
+
+.kube-topology g text {
+    stroke: none;
+    stroke-width: 0px;
+}
+
+.kube-topology g.weak use {
+    opacity: .6;
+}
+
+.kube-topology g.Server text {
+    font-family: FontAwesome;
+    fill: #4C4C4C;
+    font-size: 16px;
+}
+
+.kube-topology g.Database text {
+    font-family: FontAwesome;
+    fill: #056A9E;
+    font-size: 16px;
+}
+
+.kube-topology g.App text {
+    font-family: FontAwesome;
+    fill: #4FA638;
+    font-size: 19px;
+}
+
+.kube-topology g.DataSource text {
+    font-family: FontAwesome;
+    fill: #84CCEE;
+    font-size: 14px;
+}
+
+.kube-topology g circle {
+    stroke: #bbb;
+    fill: #fff;
+}
+
+.kube-topology g.fixed use {
+    stroke-width: 2px;
+}
+
+.kube-topology g.selected use,
+.kube-topology g.selected circle {
+    stroke-width: 4px;
+}
+
+.kube-topology line {
+    stroke: #bbb;
+    stroke-width: 1;
+}
+
+.kube-topology line.ReplicationControllerPod {
+    stroke-linecap: round;
+    stroke-dasharray: 1, 2;
+}
+
+kubernetes-topology-icon {
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    padding: 10px;
+    user-select: none;
+}
+
+kubernetes-topology-icon svg {
+    width: 32px;
+    height: 32px;
+    display: block;
+}
+
+kubernetes-topology-icon use {
+    opacity: 0.4;
+}
+
+kubernetes-topology-icon.active use {
+    opacity: 1;
+}
+
+kubernetes-topology-icon:hover use {
+    opacity: 0.7;
+}

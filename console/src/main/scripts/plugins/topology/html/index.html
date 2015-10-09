@@ -1,0 +1,63 @@
+<div class="hk-application-servers" data-ng-controller="HawkularTopology.TopologyController as vm">
+
+    <kubernetes-topology-graph items="vm.data.items" relations="vm.data.relations" kinds="vm.kinds">
+    </kubernetes-topology-graph>
+
+    <div class="controls">
+       <label id="selected"></label>
+       <button ng-click="vm.poke()" class="ng-hide">Poke</button>
+
+       <kubernetes-topology-icon kind="Pod">
+         <svg class="kube-topology">
+           <use xlink:href="#vertex-Pod" x="15" y="15"></use>
+         </svg>
+       </kubernetes-topology-icon>
+       <label>Servers</label>
+
+       <kubernetes-topology-icon kind="Service">
+         <svg class="kube-topology">
+           <use xlink:href="#vertex-Service" x="15" y="15"></use>
+         </svg>
+       </kubernetes-topology-icon>
+       <label>Apps</label>
+
+       <kubernetes-topology-icon kind="Node">
+         <svg class="kube-topology">
+           <use xlink:href="#vertex-Node" x="15" y="15"></use>
+         </svg>
+       </kubernetes-topology-icon>
+       <label>Databases</label>
+
+       <kubernetes-topology-icon kind="ReplicationController">
+         <svg class="kube-topology">
+           <use xlink:href="#vertex-ReplicationController" x="15" y="15"></use>
+         </svg>
+       </kubernetes-topology-icon>
+       <label>Datasources</label>
+    </div>
+
+    <svg class="kube-topology" hidden>
+      <defs>
+        <g class="Database" id="vertex-Node">
+          <circle r="15"></circle>
+          <!-- <text y="9">&#xf1c0;</text> -->
+          <text y="6">&#xf1c0;</text>
+        </g>
+        <g class="Server" id="vertex-Pod">
+          <circle r="15"></circle>
+          <!-- <text y="6" x="0.5">&#xf233;</text> -->
+          <text y="6" x="0.5">&#xf233;</text>
+        </g>
+        <g class="App" id="vertex-Service">
+          <circle r="15"></circle>
+          <!-- <text y="10" x="1">&#xf135;</text> -->
+          <text y="7" x="0">&#xf135;</text>
+        </g>
+        <g class="DataSource" id="vertex-ReplicationController">
+          <circle r="15"></circle>
+          <!-- <text y="7.5">&#xf0ec;</text> -->
+          <text y="5">&#xf0ec;</text>
+        </g>
+      </defs>
+    </svg>
+</div>
