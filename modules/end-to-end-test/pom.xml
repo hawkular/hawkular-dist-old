@@ -35,10 +35,15 @@
 
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
+      <artifactId>hawkular-inventory-itest</artifactId>
+      <version>${version.org.hawkular.inventory}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.inventory</groupId>
       <artifactId>hawkular-inventory-api</artifactId>
       <scope>test</scope>
     </dependency>
-
 
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
@@ -205,6 +210,29 @@
             </executions>
           </plugin>
 
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>unpack-tests</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.hawkular.inventory</groupId>
+                      <artifactId>hawkular-inventory-itest</artifactId>
+                      <version>${version.org.hawkular.inventory}</version>
+                      <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
