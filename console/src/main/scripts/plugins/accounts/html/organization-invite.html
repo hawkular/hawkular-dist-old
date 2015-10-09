@@ -6,16 +6,20 @@
 </div>
 
 <div class="modal-body">
-  <form role="form" class="form-horizontal">
+  <form role="form" name="form" class="form-horizontal">
     <div class="form-group">
       <label for="emails" class="col-md-4 control-label">Invite via email</label>
       <div class="col-md-6">
         <input type="text"
                class="form-control"
+               name="emails"
                id="emails"
                placeholder="Emails, separated by comma or space"
-               ng-model="inviteModal.invitation.emails"
-          />
+               hawkular-emails
+               ng-model="inviteModal.invitation.emails"/>
+          <span class="help-block" ng-show="form.emails.$error.emails">
+            Please enter valid email addresses.
+          </span>
       </div>
     </div>
   </form>
@@ -26,7 +30,11 @@
           id="inviteToOrganizationFormCancelBtn">
     Cancel
   </button>
-  <button type="button" class="btn btn-primary" id="inviteToOrganizationFormBtn" ng-click="inviteModal.invite()">
+  <button type="button"
+          class="btn btn-primary"
+          id="inviteToOrganizationFormBtn"
+          ng-disabled="!form.$valid"
+          ng-click="inviteModal.invite()">
     Invite
   </button>
 </div>
