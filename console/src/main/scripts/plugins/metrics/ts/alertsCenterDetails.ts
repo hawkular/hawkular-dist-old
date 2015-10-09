@@ -98,7 +98,9 @@ module HawkularMetrics {
     }
 
     public cancel():void {
-      this.$location.url(`/hawkular-ui/alerts-center`);
+      let timeOffset = this.alertsTimeOffset;
+      let endTime = this.alertsTimeEnd;
+      this.$location.url(`/hawkular-ui/alerts-center/${timeOffset}/${endTime}`);
     }
 
     public save(): void {
