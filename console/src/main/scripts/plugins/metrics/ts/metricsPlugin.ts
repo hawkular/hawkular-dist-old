@@ -24,6 +24,13 @@ module HawkularMetrics {
     'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr',
     'infinite-scroll', 'mgo-angular-wizard', 'truncate', '500tech.smart-truncate']);
 
+  _module.config(['$compileProvider', function ($compileProvider) {
+    //disable debug info
+    //NOTE: tools like Batarang and Protractor may not work properly with this debug info off
+    //However, this can be turned back on at runtime in the js console by typing: angular.reloadWithDebugInfo()
+    $compileProvider.debugInfoEnabled(false);
+  }]);
+
   _module.config(['$httpProvider', '$locationProvider', '$routeProvider',
     ($httpProvider, $locationProvider) => {
       $locationProvider.html5Mode(true);
