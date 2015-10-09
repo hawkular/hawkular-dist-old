@@ -35,7 +35,8 @@ module HawkularMetrics {
     public lastUpdateDate:Date = new Date();
 
     public alertsList:IAlert[];
-    public alertsPerPage = 5;
+    public selectedItems:IAlert[];
+    public alertsPerPage = 10;
     public alertsCurPage = 0;
     public headerLinks:any = {};
     public selectCount = 0;
@@ -148,7 +149,7 @@ module HawkularMetrics {
       this.isWorking = true;
       let ackIdList = '';
       this.alertsList.forEach((alertItem:IAlert) => {
-        if (alertItem.selected) {
+        if (alertItem.selected && alertItem.status !== 'ACKNOWLEDGED' || alertItem.status !== 'RESOLVED') {
           ackIdList = ackIdList + alertItem.alertId + ',';
         }
       });
@@ -175,9 +176,13 @@ module HawkularMetrics {
 
     public selectItem(item:IAlert):void {
       item.selected = !item.selected;
-      let selectedItems  = _.filter(this.alertsList, 'selected');
-      this.selectCount = selectedItems.length;
-      this.hasOpenSelectedItems = _.some(selectedItems,{'status': 'OPEN'});
+      this.selectedItems  = _.filter(this.alertsList, 'selected');
+      this.selectCount = this.selectedItems.length;
+      this.hasOpenSelectedItems = _.some(this.selectedItems,{'status': 'OPEN'});
+    }
+
+    public hasResolvedItems(): boolean {
+      return _.some(this.selectedItems,{'status': 'RESOLVED'});
     }
 
     private resetAllUnselected() {

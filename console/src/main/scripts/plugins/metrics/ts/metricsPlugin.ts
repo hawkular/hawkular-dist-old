@@ -22,7 +22,7 @@ module HawkularMetrics {
 
   export let _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkular.charts',
     'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr',
-    'infinite-scroll','mgo-angular-wizard']);
+    'infinite-scroll', 'mgo-angular-wizard', 'truncate', '500tech.smart-truncate']);
 
   _module.config(['$httpProvider', '$locationProvider', '$routeProvider',
     ($httpProvider, $locationProvider) => {
@@ -57,7 +57,7 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/url-response-time.html',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) =>  {
+          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
             let p = HawkularInventory.Resource.get({
               environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
             }).$promise;
@@ -76,7 +76,7 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/url-availability.html',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) =>  {
+          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
             let p = HawkularInventory.Resource.get({
               environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
             }).$promise;

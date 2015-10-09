@@ -19,30 +19,34 @@
       <h3 class="pull-left">Alert Details</h3>
     </div>
     <div class="panel panel-default clearfix hk-alert-details">
-      <h2>{{acd.description}}</h2>
+      <h2>Alert: {{acd.description | characters: 55}}</h2>
       <dl class="dl-horizontal">
         <dt>State</dt>
         <dd><span class="hk-open">{{acd.detailAlert.status | firstUpper}}</span></dd>
         <dt>Severity</dt>
         <dd>{{acd.detailAlert.severity | firstUpper}}</dd>
         <dt>Description
-          <a class="hk-btn-icon" tabindex="0" role="button" data-toggle="popover" data-html="true" data-placement="top"
-             data-content="Trigger description"><i class="fa fa-info-circle"></i></a>
+          <a class="hk-btn-icon" tabindex="0" role="button"
+             popover-trigger="click" popover-placement="top" popover-append-to-body="true"
+            popover="Alert Trigger description"><i class="fa fa-info-circle"></i></a>
         </dt>
-        <dd>{{acd.description}}</dd>
+        <dd>{{acd.description|characters: 40}}</dd>
         <dt>Created</dt>
         <dd>{{acd.detailAlert.ctime | date:'d MMM yyyy, HH:mm'}}</dd>
         <dt>Resource Path
-          <a class="hk-btn-icon" tabindex="0" role="button" data-toggle="popover" data-html="true" data-placement="top"
-             data-content="e = environment, f = feed, r = the resource id"><i class="fa fa-info-circle"></i></a>
+          <a class="hk-btn-icon" tabindex="0" role="button"
+             popover-trigger="click" popover-placement="top" popover-append-to-body="true"
+             popover="e = environment, f = feed, r = resource id"
+            ><i class="fa fa-info-circle"></i></a>
         </dt>
         <dd>{{acd.detailAlert.context.resourcePath}}</dd>
-        <dt>Feed Id</dt>
-        <dd>{{acd.feedId}}</dd>
         <dt><span class="hide">Actions</span>
         <dd>
-          <button class="btn btn-default" type="button" ng-click="acd.acknowledge()">Acknowledge</button>
-          <button class="btn btn-primary" type="button" ng-click="acd.resolve()">Resolve</button>
+          <button class="btn btn-default" type="button"
+                  ng-disabled="acd.detailAlert.status != 'OPEN'" ng-click="acd.acknowledge()">Acknowledge</button>
+          <button class="btn btn-primary" type="button"
+                  ng-disabled="acd.detailAlert.status == 'RESOLVED'"
+                  ng-click="acd.resolve()">Resolve</button>
         </dd>
       </dl>
     </div>
@@ -70,20 +74,6 @@
         </tbody>
       </table>
     </div>
-
-    <!--
-    <div class="hk-info-top clearfix">
-      <h3 class="pull-left">Metrics</h3>
-    </div>
-    <div class="panel panel-default hk-graph">
-
-      <div class="hk-legend text-left">
-        <span><i class="fa fa-circle hk-primary"></i>Used</span>
-        <span><i class="fa fa-circle hk-orange"></i>Maximum</span>
-        <span><i class="fa fa-circle hk-gray"></i>Commited</span>
-      </div>
-    </div>
-    -->
 
   </div>
 
