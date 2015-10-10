@@ -67,7 +67,7 @@ module HawkularMetrics {
     public openSetup():void {
       // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
 
-      var defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+      let defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
 
       let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
 

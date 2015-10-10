@@ -159,8 +159,8 @@ module HawkularMetrics {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
-      var tmpChartWebSessionData = [];
-      var promises = [];
+      let tmpChartWebSessionData = [];
+      let promises = [];
 
       if (!this.skipChartData['Active Sessions']) {
         promises.push(this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
