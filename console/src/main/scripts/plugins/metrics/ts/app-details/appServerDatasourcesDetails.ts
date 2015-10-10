@@ -43,6 +43,12 @@ module HawkularMetrics {
     public alertList;
     public chartAvailData;
     public chartRespData;
+    // will contain in the format: 'metric name' : true | false
+    public skipChartData = {};
+
+    public resolvedAvailData = {};
+    public resolvedRespData = {};
+
     public defaultEmail: string;
 
     constructor(private $scope: any,
@@ -275,24 +281,6 @@ module HawkularMetrics {
       });
     }
 
-    private formatBucketedChartOutput(response):IChartDataPoint[] {
-      //  The schema is different for bucketed output
-      return _.map(response, (point:IChartDataPoint) => {
-        return {
-          timestamp: point.start,
-          date: new Date(point.start),
-          value: !angular.isNumber(point.value) ? 0 : point.value,
-          avg: (point.empty) ? 0 : point.avg,
-          min: !angular.isNumber(point.min) ? 0 : point.min,
-          max: !angular.isNumber(point.max) ? 0 : point.max,
-          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
-          median: !angular.isNumber(point.median) ? 0 : point.median,
-          empty: point.empty
-        };
-      });
-    }
-
-
     public autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getDatasources();
@@ -353,57 +341,101 @@ module HawkularMetrics {
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
       let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+
+      let availPromises = [];
+      let respPromises = [];
+
+      let tmpChartAvailData = {};
+      let tmpChartRespData = {};
+
       angular.forEach(this.resourceList, function(res, idx) {
-        this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-          gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
-          start: this.startTimeStamp,
-          end: this.endTimeStamp, buckets:60}, (data) => {
-            this.chartAvailData[res.id] = this.chartAvailData[res.id] || [];
-            this.chartAvailData[res.id][0] = { key: 'Available Count',
+
+        if (!this.skipChartData[res.id + '_Available Count']) {
+          availPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
+            start: this.startTimeStamp,
+            end: this.endTimeStamp, buckets: 60
+          }, (data) => {
+            tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
+            tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
+              key: 'Available Count',
               color: AppServerDatasourcesDetailsController.AVAILABLE_COLOR,
-              values: this.formatBucketedChartOutput(data) };
-          }, this);
-        this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-          gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
-          start: this.startTimeStamp,
-          end: this.endTimeStamp, buckets:60}, (data) => {
-            this.chartAvailData[res.id] = this.chartAvailData[res.id] || [];
-            this.chartAvailData[res.id][1] = { key: 'In Use',
+              values: MetricsService.formatBucketedChartOutput(data)
+            };
+          }, this).$promise);
+        }
+        if (!this.skipChartData[res.id + '_In Use Count']) {
+          availPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
+            start: this.startTimeStamp,
+            end: this.endTimeStamp, buckets: 60
+          }, (data) => {
+            tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
+            tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
+              key: 'In Use',
               color: AppServerDatasourcesDetailsController.IN_USE_COLOR,
-              values: this.formatBucketedChartOutput(data) };
-          }, this);
-        this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-          gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Timed Out',
-          start: this.startTimeStamp,
-          end: this.endTimeStamp, buckets:60}, (data) => {
-            this.chartAvailData[res.id] = this.chartAvailData[res.id] || [];
-            this.chartAvailData[res.id][2] = { key: 'Timed Out',
+              values: MetricsService.formatBucketedChartOutput(data)
+            };
+          }, this).$promise);
+        }
+        if (!this.skipChartData[res.id + '_Timed Out']) {
+          availPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Timed Out',
+            start: this.startTimeStamp,
+            end: this.endTimeStamp, buckets: 60
+          }, (data) => {
+            tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
+            tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
+              key: 'Timed Out',
               color: AppServerDatasourcesDetailsController.TIMED_OUT_COLOR,
-              values: this.formatBucketedChartOutput(data) };
-          }, this);
+              values: MetricsService.formatBucketedChartOutput(data)
+            };
+          }, this).$promise);
+        }
+        this.$q.all(availPromises).finally(()=> {
+          this.chartAvailData[res.id] = tmpChartAvailData[res.id] || [];
+          this.resolvedAvailData[res.id] = true;
+        });
 
-        this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-          gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Get Time',
-          start: this.startTimeStamp,
-          end: this.endTimeStamp, buckets:60}, (data) => {
-            this.chartRespData[res.id] = this.chartRespData[res.id] || [];
-            this.chartRespData[res.id][0] = { key: 'Wait Time (Avg.)',
+        if (!this.skipChartData[res.id + '_Average Get Time']) {
+          respPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Get Time',
+            start: this.startTimeStamp,
+            end: this.endTimeStamp, buckets: 60
+          }, (data) => {
+            tmpChartRespData[res.id] = tmpChartRespData[res.id] || [];
+            tmpChartRespData[res.id][tmpChartRespData[res.id].length] = {
+              key: 'Wait Time (Avg.)',
               color: AppServerDatasourcesDetailsController.WAIT_COLOR,
-              values: this.formatBucketedChartOutput(data) };
-          }, this);
-        this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-          gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Creation Time',
-          start: this.startTimeStamp,
-          end: this.endTimeStamp, buckets:60}, (data) => {
-            this.chartRespData[res.id] = this.chartRespData[res.id] || [];
-            this.chartRespData[res.id][1] = { key: 'Creation Time (Avg.)',
+              values: MetricsService.formatBucketedChartOutput(data)
+            };
+          }, this).$promise);
+        }
+        if (!this.skipChartData[res.id + '_Average Creation Time']) {
+          respPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Creation Time',
+            start: this.startTimeStamp,
+            end: this.endTimeStamp, buckets: 60
+          }, (data) => {
+            tmpChartRespData[res.id] = tmpChartRespData[res.id] || [];
+            tmpChartRespData[res.id][tmpChartRespData[res.id].length] = {
+              key: 'Creation Time (Avg.)',
               color: AppServerDatasourcesDetailsController.CREATION_COLOR,
-              values: this.formatBucketedChartOutput(data) };
-          }, this);
-        }, this);
-
+              values: MetricsService.formatBucketedChartOutput(data)
+            };
+          }, this).$promise);
+        }
+        this.$q.all(respPromises).finally(()=> {
+          this.chartRespData[res.id] = tmpChartRespData[res.id] || [];
+          this.resolvedRespData[res.id] = true;
+        });
+      }, this);
     }
 
+    public toggleChartData(name): void {
+      this.skipChartData[name] = !this.skipChartData[name];
+      this.getDatasourceChartData();
+    }
 
   }
 
