@@ -4,7 +4,8 @@
 
     <div class="hk-control-actions-bar pull-left">
       <div class="hk-container-separator">
-        <input type="text" class="form-control separator" ng-model="vm.filter.properties.name" placeholder="Filter by Name...">
+        <input type="text" class="form-control separator" ng-model="vm.filter.properties.name"
+               placeholder="Filter by Name...">
       </div>
 
       <div class="hk-container-separator">
@@ -13,8 +14,12 @@
             Sort {{vm.sortInv ? 'Z - A' : 'A - Z'}}  <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="simple-btn-keyboard-nav">
-            <li ng-class="{'active': !vm.sortInv}"><a href="" ng-click="vm.sortInv = false" dropdown-toggle>Sort A - Z</a></li>
-            <li ng-class="{'active': vm.sortInv}"><a href="" ng-click="vm.sortInv = true" dropdown-toggle>Sort Z - A</a></li>
+            <li ng-class="{'active': !vm.sortInv}">
+              <a href="" ng-click="vm.sortInv = false" dropdown-toggle>Sort A - Z</a>
+            </li>
+            <li ng-class="{'active': vm.sortInv}">
+              <a href="" ng-click="vm.sortInv = true" dropdown-toggle>Sort Z - A</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -23,7 +28,9 @@
       <button class="btn btn-default" type="button" ng-click="vm.showDatasourceAddDialog()">Add Datasource</button>
     </div>
 
-    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+      <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+    </span>
   </div>
 
   <div class="hk-resource-container"
@@ -35,23 +42,31 @@
       </div>
       <div class="row">
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data">{{ds.alertList.length}} <i class="fa fa-flag" ng-show="ds.alertList.length > 0"></i></span>
+          <span class="hk-data">{{ds.alertList.length}} <i class="fa fa-flag" ng-show="ds.alertList.length"></i></span>
           <span class="hk-item">Datasources Alerts</span>
         </div>
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data" ng-show="ds.availableCount.value">{{ ds.inUseCount.value / (ds.inUseCount.value + ds.availableCount.value) * 100 | number : 0 }} %</span>
+          <span class="hk-data" ng-show="ds.availableCount.value">
+            {{ ds.inUseCount.value / (ds.inUseCount.value + ds.availableCount.value) * 100 | number : 0 }} %
+          </span>
           <span class="hk-data" ng-hide="ds.availableCount.value">n/a</span>
           <span class="hk-item">Connections Used (%)</span>
         </div>
         <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data" ng-show="ds.availableCount.value">{{ ds.availableCount.value }} Available (of {{ ds.inUseCount.value + ds.availableCount.value }})</span>
+          <span class="hk-data" ng-show="ds.availableCount.value">
+            {{ ds.availableCount.value }} Available (of {{ ds.inUseCount.value + ds.availableCount.value }})
+          </span>
           <span class="hk-data" ng-hide="ds.availableCount.value">n/a</span>
           <span class="hk-item">Available Connections (of total)</span>
         </div>
       </div>
     </div>
     <div class="hk-panel-collapse-area" ng-class="{'hk-collapsed' : !vm.expandedList[ds.id]}">
-      <a href="#" ng-click="vm.expandedList[ds.id] = !vm.expandedList[ds.id]"><span ng-hide="vm.expandedList[ds.id]">View Metrics</span><span ng-show="vm.expandedList[ds.id]">Hide Metrics</span><i class="fa" ng-class="vm.expandedList[ds.id] ? 'fa-chevron-circle-up' : 'fa-chevron-circle-down'"></i></a>
+      <a href="#" ng-click="vm.expandedList[ds.id] = !vm.expandedList[ds.id]">
+        <span ng-hide="vm.expandedList[ds.id]">View Metrics</span>
+        <span ng-show="vm.expandedList[ds.id]">Hide Metrics</span>
+        <i class="fa" ng-class="vm.expandedList[ds.id] ? 'fa-chevron-circle-up' : 'fa-chevron-circle-down'"></i>
+      </a>
     </div>
 
     <div class="hk-collapsible-area" ng-class="{ 'hide': !vm.expandedList[ds.id]}" ng-if="vm.expandedList[ds.id]">
@@ -64,7 +79,8 @@
             <i class="fa" ng-show="ds.alertList.length > 0"
                ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Datasource Alerts
             <span ng-show="ds.alertList.length > 0">
-              ({{vm.showAllAlerts ? ds.alertList.length : vm.math.min(ds.alertList.length, 3)}} of {{ds.alertList.length}})
+              ({{vm.showAllAlerts ? ds.alertList.length : vm.math.min(ds.alertList.length, 3)}} of
+              {{ds.alertList.length}})
             </span>
           </button>
         </h3>
@@ -88,9 +104,24 @@
       <!-- Alerts ->
       <div class="hk-info-top clearfix">
         <h3 class="pull-left">
-          <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Deployment Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
-        </h3>
-        <!-- <span class="hk-settings pull-right"><a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()"><i class="fa fa-cog"></i>Alert Settings</a></span> ->
+          <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts" tooltip-trigger
+                  tooltip-placement="top" tooltip="Expand/collapse">
+            <i class="fa" ng-show="vm.alertList.length > 0"
+               ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'">
+            </i>
+            Deployment Alerts
+            <span ng-show="vm.alertList.length > 0">
+              ({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})
+            </span>
+          </button>
+        </h3>-->
+        <!--
+        <span class="hk-settings pull-right">
+          <a href="#" ng-controller="MetricsAlertController as mac" ng-click="mac.openSetup()">
+            <i class="fa fa-cog"></i>Alert Settings
+          </a>
+        </span>
+        ->
       </div>
       <div class="clearfix">
         <!-- No Alerts ->
@@ -99,7 +130,8 @@
           <div>No alerts have been fired in this category and time range.</div>
         </div>
         <!-- Alerts exist --
-        <div class="panel panel-default alert alert-danger" ng-repeat="alert in vm.alertList | limitTo: (showAllAlerts ? 100000 : 3) track by $index">
+        <div class="panel panel-default alert alert-danger"
+             ng-repeat="alert in vm.alertList | limitTo: (showAllAlerts ? 100000 : 3) track by $index">
           <div class="hk-alert-icon"><i class="fa fa-flag"></i></div>
           <div class="hk-date">{{alert.evalSets[0][0].evalTimestamp | date:'medium' }}</div>
           <div class="hk-event"><strong>Alert Summary</strong>: alert details.</div>
@@ -110,11 +142,13 @@
         <h3 class="pull-left">Metrics</h3>
 
         <div class="hk-update pull-right">
-          <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart"><i class="fa fa-refresh"></i></button>
+          <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart">
+            <i class="fa fa-refresh"></i>
+          </button>
         </div>
       </div>
 
-      <div class="panel panel-default hk-graph" ng-if="vm.chartAvailData[ds.id][2]">
+      <div class="panel panel-default hk-graph" ng-if="vm.resolvedAvailData[ds.id]">
         <h2>Availability</h2>
         <div class="hk-graph-container hk-graph-metrics">
           <hawkular-chart
@@ -128,22 +162,28 @@
           <div class="col-md-12">
             <h4>Connection Availability</h4>
             <div class="hk-graphselector hk-blue">
-              <input id="connavail" type="checkbox" checked="checked" disabled>
-              <label for="connavail"><span>Available Connections</span></label>
+              <input id="connavail_{{$index}}" type="checkbox"
+                     ng-checked="!vm.skipChartData[ds.id + '_Available Count']"
+                     ng-click="vm.toggleChartData(ds.id + '_Available Count')">
+              <label for="connavail_{{$index}}"><span>Available Connections</span></label>
             </div>
             <div class="hk-graphselector hk-green">
-              <input id="conninuse" type="checkbox" checked="checked" disabled>
-              <label for="conninuse"><span>Connections in Use</span></label>
+              <input id="conninuse_{{$index}}" type="checkbox"
+                     ng-checked="!vm.skipChartData[ds.id + '_In Use Count']"
+                     ng-click="vm.toggleChartData(ds.id + '_In Use Count')">
+              <label for="conninuse_{{$index}}"><span>Connections in Use</span></label>
             </div>
             <div class="hk-graphselector hk-gray">
-              <input id="conntimed" type="checkbox" checked="checked" disabled>
-              <label for="conntimed"><span>Timed-out Connections</span></label>
+              <input id="conntimed_{{$index}}" type="checkbox"
+                     ng-checked="!vm.skipChartData[ds.id + '_Timed Out']"
+                     ng-click="vm.toggleChartData(ds.id + '_Timed Out')">
+              <label for="conntimed_{{$index}}"><span>Timed-out Connections</span></label>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="panel panel-default hk-graph" ng-if="vm.chartRespData[ds.id][1]">
+      <div class="panel panel-default hk-graph" ng-if="vm.resolvedRespData[ds.id]">
         <h2>Responsiveness</h2>
         <div class="hk-graph-container hk-graph-metrics">
           <hawkular-chart
@@ -157,12 +197,16 @@
           <div class="col-md-12">
             <h4>Responsiveness</h4>
             <div class="hk-graphselector hk-yellow">
-              <input id="waittime" type="checkbox" checked="checked" disabled>
-              <label for="waittime"><span>Wait Time (Avg.)</span></label>
+              <input id="waittime_{{$index}}" type="checkbox"
+                     ng-checked="!vm.skipChartData[ds.id + '_Average Get Time']"
+                     ng-click="vm.toggleChartData(ds.id + '_Average Get Time')">
+              <label for="waittime_{{$index}}"><span>Wait Time (Avg.)</span></label>
             </div>
             <div class="hk-graphselector hk-purple">
-              <input id="creationtime" type="checkbox" checked="checked" disabled>
-              <label for="creationtime"><span>Creation Time (Avg.)</span></label>
+              <input id="creationtime_{{$index}}" type="checkbox"
+                     ng-checked="!vm.skipChartData[ds.id + '_Average Creation Time']"
+                     ng-click="vm.toggleChartData(ds.id + '_Average Creation Time')">
+              <label for="creationtime_{{$index}}"><span>Creation Time (Avg.)</span></label>
             </div>
           </div>
         </div>
