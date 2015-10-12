@@ -24,6 +24,7 @@ module HawkularAccounts {
     public invitation:IInvitation;
     public loading:boolean;
     public success:boolean;
+    public error: IErrorPayload;
 
     constructor(private $log:ng.ILogService,
                 private $routeParams:any,
@@ -41,9 +42,9 @@ module HawkularAccounts {
           this.loading = false;
         },
         (error:IErrorPayload) => {
+          this.error = error;
           this.success = false;
           this.loading = false;
-          this.NotificationsService.error(`Error: ${error.data.message}`);
           this.$log.debug(`Error while trying to process the invitation: ${error.data.message}`);
         }
       );
