@@ -67,6 +67,10 @@ module HawkularMetrics {
     public openSetup():void {
       // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
 
+      let defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+
+      let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
+
       let heapTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_pheap').then(() => {
         // Jvm trigger exists, nothing to do
         this.$log.debug('Jvm trigger exists, nothing to do');
@@ -235,7 +239,7 @@ module HawkularMetrics {
 
       let log = this.$log;
 
-      this.$q.all([heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise]).then(() => {
+      this.$q.all([defaultEmailPromise, heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise]).then(() => {
         let modalInstance = this.$modal.open({
           templateUrl: 'plugins/metrics/html/modals/alerts-jvm-setup.html',
           controller: 'JvmAlertSetupController as jas',
