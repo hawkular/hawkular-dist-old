@@ -239,7 +239,6 @@ module HawkularMetrics {
 
         modalInstance.result.then(angular.noop, () => {
           log.info('Jvm Alert Setup modal dismissed at: ' + new Date());
-          this.NotificationsService.alertSettingsSaved();
         });
       }, () => {
         this.$log.error('Missing and unable to create new JVM Alert triggers.');

@@ -169,7 +169,6 @@ module HawkularMetrics {
       modalInstance.result.then(function (selectedItem) {
         this.selected = selectedItem;
       }, () => {
-        this.NotificationsService.alertSettingsSaved();
         logger.info('Modal dismissed at: ' + new Date());
       });
     }

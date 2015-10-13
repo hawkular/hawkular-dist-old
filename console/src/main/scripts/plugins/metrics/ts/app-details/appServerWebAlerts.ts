@@ -43,7 +43,7 @@ module HawkularMetrics {
     constructor(private $scope:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
-                private NotificaitonsService:INotificationsService,
+                private NotificationsService:INotificationsService,
                 private $log:ng.ILogService,
                 private $q:ng.IQService,
                 private $rootScope:IHawkularRootScope,
@@ -246,7 +246,6 @@ module HawkularMetrics {
         });
 
         modalInstance.result.then(angular.noop, () => {
-          this.NotificaitonsService.alertSettingsSaved();
           log.debug('Web Alert Setup modal dismissed at: ' + new Date());
         });
       }, () => {
