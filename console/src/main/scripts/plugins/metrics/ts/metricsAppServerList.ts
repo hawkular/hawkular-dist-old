@@ -128,6 +128,12 @@ module HawkularMetrics {
           angular.forEach(aFeedList, (feed) => {
             this.getResourceListForOneFeed(feed.id, tenantId);
           });
+          if (!aFeedList.length) {
+            // there are no feeds, no app servers
+            this.resourceList = [];
+            this.resourceList.$resolved = true;
+            this['lastUpdateTimestamp'] = new Date();
+          }
         });
     }
 
