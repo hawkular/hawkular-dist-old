@@ -32,16 +32,22 @@ module HawkularTopology {
     }]);
 
   export class TopologyController {
-    public static $inject = ['$rootScope', '$log', '$routeParams', '$modal', 'HawkularAccount',
-    /*'NotificationsService',*/ 'userDetails'];
+    public static $inject = ['$rootScope', '$log', '$routeParams', '$modal', '$q', 'HawkularAccount',
+    'HawkularInventory', /*'NotificationsApp',*/ 'userDetails'];
     private data: any;
+    private index = 0;
+    private partialData: any;
 
     constructor(private $rootScope:any,
-      private $log:ng.ILogService,
+      // private $log:ng.ILogApp,
+      private $log:any,
       private $routeParams:any,
       private $modal:any,
+      // private $q: ng.IQApp,
+      private $q: any,
       private HawkularAccount:any,
-      // private NotificationsService:INotificationsService,
+      private HawkularInventory:any,
+      // private NotificationsApp:INotificationsApp,
       private userDetails:any) {
 
       $log.info('Loading topology controller');
@@ -57,16 +63,16 @@ module HawkularTopology {
         'items': {
           '39113587-088f-11e5-b0b0-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Node',
+            'kind': 'Database',
             'metadata': {
               'creationTimestamp': '2015-06-01T18:51:33Z',
-              'name': 'node-1.rha',
+              'name': 'Database-1.rha',
               'resourceVersion': '10065',
-              'selfLink': '/api/v1beta3/nodes/node-1.rha',
+              'selfLink': '/api/v1beta3/Databases/Database-1.rha',
               'uid': '39113587-088f-11e5-b0b0-525400398fe5'
             },
             'spec': {
-              'externalID': 'node-1.rha'
+              'externalID': 'Database-1.rha'
             },
             'status': {
               'capacity': {
@@ -82,7 +88,7 @@ module HawkularTopology {
                 'type': 'Ready'
               }
               ],
-              'nodeInfo': {
+              'DatabaseInfo': {
                 'bootID': 'd51f8e13-399c-4245-9e88-3091c4d1f6f2',
                 'containerRuntimeVersion': 'docker://1.6.0',
                 'kernelVersion': '4.0.4-301.fc22.x86_64',
@@ -96,7 +102,7 @@ module HawkularTopology {
           },
           '3953a982-088f-11e5-b0b0-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Service',
+            'kind': 'App',
             'metadata': {
               'creationTimestamp': '2015-06-01T18:51:33Z',
               'labels': {
@@ -106,7 +112,7 @@ module HawkularTopology {
               'name': 'kubernetes',
               'namespace': 'default',
               'resourceVersion': '5',
-              'selfLink': '/api/v1beta3/namespaces/default/services/kubernetes',
+              'selfLink': '/api/v1beta3/namespaces/default/Apps/kubernetes',
               'uid': '3953a982-088f-11e5-b0b0-525400398fe5'
             },
             'spec': {
@@ -126,7 +132,7 @@ module HawkularTopology {
           },
           '3953c23b-088f-11e5-b0b0-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Service',
+            'kind': 'App',
             'metadata': {
               'creationTimestamp': '2015-06-01T18:51:33Z',
               'labels': {
@@ -136,7 +142,7 @@ module HawkularTopology {
               'name': 'kubernetes-ro',
               'namespace': 'default',
               'resourceVersion': '6',
-              'selfLink': '/api/v1beta3/namespaces/default/services/kubernetes-ro',
+              'selfLink': '/api/v1beta3/namespaces/default/Apps/kubernetes-ro',
               'uid': '3953c23b-088f-11e5-b0b0-525400398fe5'
             },
             'spec': {
@@ -156,7 +162,7 @@ module HawkularTopology {
           },
           '79ec9243-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Service',
+            'kind': 'App',
             'metadata': {
               'creationTimestamp': '2015-06-02T07:53:37Z',
               'labels': {
@@ -166,7 +172,7 @@ module HawkularTopology {
               'name': 'database',
               'namespace': 'sample',
               'resourceVersion': '1515',
-              'selfLink': '/api/v1beta3/namespaces/sample/services/database',
+              'selfLink': '/api/v1beta3/namespaces/sample/Apps/database',
               'uid': '79ec9243-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
@@ -188,7 +194,7 @@ module HawkularTopology {
           },
           '7a01f790-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Service',
+            'kind': 'App',
             'metadata': {
               'creationTimestamp': '2015-06-02T07:53:37Z',
               'labels': {
@@ -198,7 +204,7 @@ module HawkularTopology {
               'name': 'frontend',
               'namespace': 'sample',
               'resourceVersion': '1517',
-              'selfLink': '/api/v1beta3/namespaces/sample/services/frontend',
+              'selfLink': '/api/v1beta3/namespaces/sample/Apps/frontend',
               'uid': '7a01f790-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
@@ -220,7 +226,7 @@ module HawkularTopology {
           },
           '7a0ea065-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'ReplicationController',
+            'kind': 'DataSource',
             'metadata': {
               'creationTimestamp': '2015-06-02T07:53:37Z',
               'labels': {
@@ -230,7 +236,7 @@ module HawkularTopology {
               'name': 'database',
               'namespace': 'sample',
               'resourceVersion': '1527',
-              'selfLink': '/api/v1beta3/namespaces/sample/replicationcontrollers/database',
+              'selfLink': '/api/v1beta3/namespaces/sample/DataSources/database',
               'uid': '7a0ea065-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
@@ -289,11 +295,11 @@ module HawkularTopology {
           },
           '7a132ea2-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'sample\',\'name\':\'database\','
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'sample\',\'name\':\'database\','
                 + '\'uid\':\'7a0ea065-08fc-11e5-a9e7-525400398fe5\',\'apiVersion\':\'v1beta3\','
                 + '\'resourceVersion\':\'1519\'}}'
               },
@@ -306,7 +312,7 @@ module HawkularTopology {
               'name': 'database-f807k',
               'namespace': 'sample',
               'resourceVersion': '1546',
-              'selfLink': '/api/v1beta3/namespaces/sample/pods/database-f807k',
+              'selfLink': '/api/v1beta3/namespaces/sample/Servers/database-f807k',
               'uid': '7a132ea2-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
@@ -340,7 +346,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-1.rha',
+              'host': 'Database-1.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -368,12 +374,12 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.61.8'
+              'ServerIP': '18.0.61.8'
             }
           },
           '7a1a82bd-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'ReplicationController',
+            'kind': 'DataSource',
             'metadata': {
               'creationTimestamp': '2015-06-02T07:53:37Z',
               'labels': {
@@ -383,7 +389,7 @@ module HawkularTopology {
               'name': 'frontend',
               'namespace': 'sample',
               'resourceVersion': '1656',
-              'selfLink': '/api/v1beta3/namespaces/sample/replicationcontrollers/frontend',
+              'selfLink': '/api/v1beta3/namespaces/sample/DataSources/frontend',
               'uid': '7a1a82bd-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
@@ -450,7 +456,7 @@ module HawkularTopology {
           },
           '891054a1-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Service',
+            'kind': 'App',
             'metadata': {
               'creationTimestamp': '2015-06-01T19:00:57Z',
               'labels': {
@@ -459,7 +465,7 @@ module HawkularTopology {
               'name': 'redis-master',
               'namespace': 'guestbook4',
               'resourceVersion': '81',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/services/redis-master',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/Apps/redis-master',
               'uid': '891054a1-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -481,7 +487,7 @@ module HawkularTopology {
           },
           '89222e96-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Service',
+            'kind': 'App',
             'metadata': {
               'creationTimestamp': '2015-06-01T19:00:57Z',
               'labels': {
@@ -490,7 +496,7 @@ module HawkularTopology {
               'name': 'redis-slave',
               'namespace': 'guestbook4',
               'resourceVersion': '83',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/services/redis-slave',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/Apps/redis-slave',
               'uid': '89222e96-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -512,7 +518,7 @@ module HawkularTopology {
           },
           '892e8cee-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Service',
+            'kind': 'App',
             'metadata': {
               'creationTimestamp': '2015-06-01T19:00:57Z',
               'labels': {
@@ -521,7 +527,7 @@ module HawkularTopology {
               'name': 'frontend',
               'namespace': 'guestbook4',
               'resourceVersion': '85',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/services/frontend',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/Apps/frontend',
               'uid': '892e8cee-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -543,7 +549,7 @@ module HawkularTopology {
           },
           '89443a7e-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'creationTimestamp': '2015-06-01T19:00:57Z',
               'labels': {
@@ -552,7 +558,7 @@ module HawkularTopology {
               'name': 'redis-master',
               'namespace': 'guestbook4',
               'resourceVersion': '686',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/redis-master',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/redis-master',
               'uid': '89443a7e-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -576,7 +582,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-1.rha',
+              'host': 'Database-1.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -611,12 +617,12 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.61.7'
+              'ServerIP': '18.0.61.7'
             }
           },
           '8959751f-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'ReplicationController',
+            'kind': 'DataSource',
             'metadata': {
               'creationTimestamp': '2015-06-01T19:00:57Z',
               'labels': {
@@ -625,7 +631,7 @@ module HawkularTopology {
               'name': 'redis-slave',
               'namespace': 'guestbook4',
               'resourceVersion': '111',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/replicationcontrollers/redis-slave',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/DataSources/redis-slave',
               'uid': '8959751f-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -672,11 +678,11 @@ module HawkularTopology {
           },
           '8960db98-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'guestbook4\','
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'guestbook4\','
                 + '\'name\':\'redis-slave\',\'uid\':\'8959751f-0890-11e5-a3b5-525400398fe5\','
                 + '\'apiVersion\':\'v1beta3\',\'resourceVersion\':\'90\'}}'
               },
@@ -688,7 +694,7 @@ module HawkularTopology {
               'name': 'redis-slave-xmboh',
               'namespace': 'guestbook4',
               'resourceVersion': '675',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/redis-slave-xmboh',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/redis-slave-xmboh',
               'uid': '8960db98-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -712,7 +718,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-1.rha',
+              'host': 'Database-1.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -747,16 +753,16 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.61.2'
+              'ServerIP': '18.0.61.2'
             }
           },
           '89610137-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'guestbook4\','
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'guestbook4\','
                 + '\'name\':\'redis-slave\',\'uid\':\'8959751f-0890-11e5-a3b5-525400398fe5\','
                 + '\'apiVersion\':\'v1beta3\',\'resourceVersion\':\'90\'}}'
               },
@@ -768,7 +774,7 @@ module HawkularTopology {
               'name': 'redis-slave-y1a8g',
               'namespace': 'guestbook4',
               'resourceVersion': '678',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/redis-slave-y1a8g',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/redis-slave-y1a8g',
               'uid': '89610137-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -792,7 +798,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-1.rha',
+              'host': 'Database-1.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -827,12 +833,12 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.61.6'
+              'ServerIP': '18.0.61.6'
             }
           },
           '89672aaf-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'ReplicationController',
+            'kind': 'DataSource',
             'metadata': {
               'creationTimestamp': '2015-06-01T19:00:57Z',
               'labels': {
@@ -841,7 +847,7 @@ module HawkularTopology {
               'name': 'frontend',
               'namespace': 'guestbook4',
               'resourceVersion': '116',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/replicationcontrollers/frontend',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/DataSources/frontend',
               'uid': '89672aaf-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -888,11 +894,11 @@ module HawkularTopology {
           },
           '897f26dd-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'guestbook4\','
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'guestbook4\','
                 + '\'name\':\'frontend\',\'uid\':\'89672aaf-0890-11e5-a3b5-525400398fe5\',\'apiVersion\':\'v1beta3\','
                 + '\'resourceVersion\':\'94\'}}'
               },
@@ -904,7 +910,7 @@ module HawkularTopology {
               'name': 'frontend-cfie3',
               'namespace': 'guestbook4',
               'resourceVersion': '673',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/frontend-cfie3',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/frontend-cfie3',
               'uid': '897f26dd-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -928,7 +934,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-1.rha',
+              'host': 'Database-1.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -963,16 +969,16 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.61.3'
+              'ServerIP': '18.0.61.3'
             }
           },
           '897f4916-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'guestbook4\',\'name\':\'frontend'
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'guestbook4\',\'name\':\'frontend'
                 + '\',\'uid\':\'89672aaf-0890-11e5-a3b5-525400398fe5\',\'apiVersion\':\'v1beta3\','
                 + '\'resourceVersion\':\'94\'}}'
               },
@@ -984,7 +990,7 @@ module HawkularTopology {
               'name': 'frontend-cv934',
               'namespace': 'guestbook4',
               'resourceVersion': '671',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/frontend-cv934',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/frontend-cv934',
               'uid': '897f4916-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -1008,7 +1014,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-1.rha',
+              'host': 'Database-1.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -1043,16 +1049,16 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.61.4'
+              'ServerIP': '18.0.61.4'
             }
           },
           '897f63c3-0890-11e5-a3b5-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'guestbook4\','
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'guestbook4\','
                 + '\'name\':\'frontend\',\'uid\':\'89672aaf-0890-11e5-a3b5-525400398fe5\',\'apiVersion\':\'v1beta3\','
                 + '\'resourceVersion\':\'94\'}}'
               },
@@ -1064,7 +1070,7 @@ module HawkularTopology {
               'name': 'frontend-rz8eu',
               'namespace': 'guestbook4',
               'resourceVersion': '669',
-              'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/frontend-rz8eu',
+              'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/frontend-rz8eu',
               'uid': '897f63c3-0890-11e5-a3b5-525400398fe5'
             },
             'spec': {
@@ -1088,7 +1094,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-1.rha',
+              'host': 'Database-1.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -1123,16 +1129,16 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.61.5'
+              'ServerIP': '18.0.61.5'
             }
           },
           'a2d40845-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'sample\','
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'sample\','
                 + '\'name\':\'frontend\',\'uid\':\'7a1a82bd-08fc-11e5-a9e7-525400398fe5\',\'apiVersion\':\'v1beta3\','
                 + '\'resourceVersion\':\'1556\'}}'
               },
@@ -1145,7 +1151,7 @@ module HawkularTopology {
               'name': 'frontend-kelvj',
               'namespace': 'sample',
               'resourceVersion': '1611',
-              'selfLink': '/api/v1beta3/namespaces/sample/pods/frontend-kelvj',
+              'selfLink': '/api/v1beta3/namespaces/sample/Servers/frontend-kelvj',
               'uid': 'a2d40845-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
@@ -1187,7 +1193,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-1.rha',
+              'host': 'Database-1.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -1215,21 +1221,21 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.61.13'
+              'ServerIP': '18.0.61.13'
             }
           },
           'a82eb2b2-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Node',
+            'kind': 'Database',
             'metadata': {
               'creationTimestamp': '2015-06-02T07:54:55Z',
-              'name': 'node-2.rha',
+              'name': 'Database-2.rha',
               'resourceVersion': '10064',
-              'selfLink': '/api/v1beta3/nodes/node-2.rha',
+              'selfLink': '/api/v1beta3/Databases/Database-2.rha',
               'uid': 'a82eb2b2-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
-              'externalID': 'node-2.rha'
+              'externalID': 'Database-2.rha'
             },
             'status': {
               'capacity': {
@@ -1245,7 +1251,7 @@ module HawkularTopology {
                 'type': 'Ready'
               }
               ],
-              'nodeInfo': {
+              'DatabaseInfo': {
                 'bootID': 'f18301fb-e2d0-47db-840c-4fa812f3806c',
                 'containerRuntimeVersion': 'docker://1.6.0',
                 'kernelVersion': '4.0.4-301.fc22.x86_64',
@@ -1259,16 +1265,16 @@ module HawkularTopology {
           },
           'a9bc7525-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Node',
+            'kind': 'Database',
             'metadata': {
               'creationTimestamp': '2015-06-02T07:54:57Z',
-              'name': 'node-3.rha',
+              'name': 'Database-3.rha',
               'resourceVersion': '10066',
-              'selfLink': '/api/v1beta3/nodes/node-3.rha',
+              'selfLink': '/api/v1beta3/Databases/Database-3.rha',
               'uid': 'a9bc7525-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
-              'externalID': 'node-3.rha'
+              'externalID': 'Database-3.rha'
             },
             'status': {
               'capacity': {
@@ -1284,7 +1290,7 @@ module HawkularTopology {
                 'type': 'Ready'
               }
               ],
-              'nodeInfo': {
+              'DatabaseInfo': {
                 'bootID': 'f7f2dbb2-1e41-4572-a51a-af8f32fe8e61',
                 'containerRuntimeVersion': 'docker://1.6.0',
                 'kernelVersion': '4.0.4-301.fc22.x86_64',
@@ -1298,11 +1304,11 @@ module HawkularTopology {
           },
           'b215c18b-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'sample\',\'name\':\'frontend\','
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'sample\',\'name\':\'frontend\','
                 + '\'uid\':\'7a1a82bd-08fc-11e5-a9e7-525400398fe5\',\'apiVersion\':\'v1beta3\','
                 + '\'resourceVersion\':\'1635\'}}'
               },
@@ -1315,7 +1321,7 @@ module HawkularTopology {
               'name': 'frontend-tcfwz',
               'namespace': 'sample',
               'resourceVersion': '1690',
-              'selfLink': '/api/v1beta3/namespaces/sample/pods/frontend-tcfwz',
+              'selfLink': '/api/v1beta3/namespaces/sample/Servers/frontend-tcfwz',
               'uid': 'b215c18b-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
@@ -1357,7 +1363,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-2.rha',
+              'host': 'Database-2.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -1385,16 +1391,16 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.13.2'
+              'ServerIP': '18.0.13.2'
             }
           },
           'b2160699-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'sample\',\'name\':\'frontend\','
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'sample\',\'name\':\'frontend\','
                 + '\'uid\':\'7a1a82bd-08fc-11e5-a9e7-525400398fe5\',\'apiVersion\':\'v1beta3\','
                 + '\'resourceVersion\':\'1635\'}}'
               },
@@ -1407,7 +1413,7 @@ module HawkularTopology {
               'name': 'frontend-si2t7',
               'namespace': 'sample',
               'resourceVersion': '1686',
-              'selfLink': '/api/v1beta3/namespaces/sample/pods/frontend-si2t7',
+              'selfLink': '/api/v1beta3/namespaces/sample/Servers/frontend-si2t7',
               'uid': 'b2160699-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
@@ -1449,7 +1455,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-3.rha',
+              'host': 'Database-3.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -1477,16 +1483,16 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.29.2'
+              'ServerIP': '18.0.29.2'
             }
           },
           'b2163172-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'sample\',\'name\':\'frontend\','
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'sample\',\'name\':\'frontend\','
                 + '\'uid\':\'7a1a82bd-08fc-11e5-a9e7-525400398fe5\',\'apiVersion\':\'v1beta3\','
                 + '\'resourceVersion\':\'1635\'}}'
               },
@@ -1499,7 +1505,7 @@ module HawkularTopology {
               'name': 'frontend-ldxlo',
               'namespace': 'sample',
               'resourceVersion': '1687',
-              'selfLink': '/api/v1beta3/namespaces/sample/pods/frontend-ldxlo',
+              'selfLink': '/api/v1beta3/namespaces/sample/Servers/frontend-ldxlo',
               'uid': 'b2163172-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
@@ -1541,7 +1547,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-2.rha',
+              'host': 'Database-2.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -1569,16 +1575,16 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.13.3'
+              'ServerIP': '18.0.13.3'
             }
           },
           'b21644cd-08fc-11e5-a9e7-525400398fe5': {
             'apiVersion': 'v1beta3',
-            'kind': 'Pod',
+            'kind': 'Server',
             'metadata': {
               'annotations': {
                 'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-                + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'sample\',\'name\':\'frontend\','
+                + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'sample\',\'name\':\'frontend\','
                 + '\'uid\':\'7a1a82bd-08fc-11e5-a9e7-525400398fe5\',\'apiVersion\':\'v1beta3\','
                 + '\'resourceVersion\':\'1635\'}}'
               },
@@ -1591,7 +1597,7 @@ module HawkularTopology {
               'name': 'frontend-mtdl4',
               'namespace': 'sample',
               'resourceVersion': '1689',
-              'selfLink': '/api/v1beta3/namespaces/sample/pods/frontend-mtdl4',
+              'selfLink': '/api/v1beta3/namespaces/sample/Servers/frontend-mtdl4',
               'uid': 'b21644cd-08fc-11e5-a9e7-525400398fe5'
             },
             'spec': {
@@ -1633,7 +1639,7 @@ module HawkularTopology {
               }
               ],
               'dnsPolicy': 'ClusterFirst',
-              'host': 'node-3.rha',
+              'host': 'Database-3.rha',
               'restartPolicy': 'Always',
               'volumes': null
             },
@@ -1661,7 +1667,7 @@ module HawkularTopology {
               }
               ],
               'phase': 'Running',
-              'podIP': '18.0.29.3'
+              'ServerIP': '18.0.29.3'
             }
           }
         },
@@ -1815,16 +1821,16 @@ sink({
   'items': {
     '39113587-088f-11e5-b0b0-525400398fe5': {
       'apiVersion': 'v1beta3',
-      'kind': 'Node',
+      'kind': 'Database',
       'metadata': {
         'creationTimestamp': '2015-06-01T18:51:33Z',
-        'name': 'node-1.rha',
+        'name': 'Database-1.rha',
         'resourceVersion': '10465',
-        'selfLink': '/api/v1beta3/nodes/node-1.rha',
+        'selfLink': '/api/v1beta3/Databases/Database-1.rha',
         'uid': '39113587-088f-11e5-b0b0-525400398fe5'
       },
       'spec': {
-        'externalID': 'node-1.rha'
+        'externalID': 'Database-1.rha'
       },
       'status': {
         'capacity': {
@@ -1840,7 +1846,7 @@ sink({
           'type': 'Ready'
         }
         ],
-        'nodeInfo': {
+        'DatabaseInfo': {
           'bootID': 'd51f8e13-399c-4245-9e88-3091c4d1f6f2',
           'containerRuntimeVersion': 'docker://1.6.0',
           'kernelVersion': '4.0.4-301.fc22.x86_64',
@@ -1856,7 +1862,7 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '3953a982-088f-11e5-b0b0-525400398fe5',
       'index': 10,
-      'kind': 'Service',
+      'kind': 'App',
       'metadata': {
         'creationTimestamp': '2015-06-01T18:51:33Z',
         'labels': {
@@ -1866,7 +1872,7 @@ sink({
         'name': 'kubernetes',
         'namespace': 'default',
         'resourceVersion': '5',
-        'selfLink': '/api/v1beta3/namespaces/default/services/kubernetes',
+        'selfLink': '/api/v1beta3/namespaces/default/Apps/kubernetes',
         'uid': '3953a982-088f-11e5-b0b0-525400398fe5'
       },
       'px': 525.4949878190479,
@@ -1893,7 +1899,7 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '3953c23b-088f-11e5-b0b0-525400398fe5',
       'index': 9,
-      'kind': 'Service',
+      'kind': 'App',
       'metadata': {
         'creationTimestamp': '2015-06-01T18:51:33Z',
         'labels': {
@@ -1903,7 +1909,7 @@ sink({
         'name': 'kubernetes-ro',
         'namespace': 'default',
         'resourceVersion': '6',
-        'selfLink': '/api/v1beta3/namespaces/default/services/kubernetes-ro',
+        'selfLink': '/api/v1beta3/namespaces/default/Apps/kubernetes-ro',
         'uid': '3953c23b-088f-11e5-b0b0-525400398fe5'
       },
       'px': 463.4721433746296,
@@ -1930,7 +1936,7 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '891054a1-0890-11e5-a3b5-525400398fe5',
       'index': 13,
-      'kind': 'Service',
+      'kind': 'App',
       'metadata': {
         'creationTimestamp': '2015-06-01T19:00:57Z',
         'labels': {
@@ -1939,7 +1945,7 @@ sink({
         'name': 'redis-master',
         'namespace': 'guestbook4',
         'resourceVersion': '81',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/services/redis-master',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/Apps/redis-master',
         'uid': '891054a1-0890-11e5-a3b5-525400398fe5'
       },
       'px': -400.54802999104936,
@@ -1968,7 +1974,7 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '89222e96-0890-11e5-a3b5-525400398fe5',
       'index': 14,
-      'kind': 'Service',
+      'kind': 'App',
       'metadata': {
         'creationTimestamp': '2015-06-01T19:00:57Z',
         'labels': {
@@ -1977,7 +1983,7 @@ sink({
         'name': 'redis-slave',
         'namespace': 'guestbook4',
         'resourceVersion': '83',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/services/redis-slave',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/Apps/redis-slave',
         'uid': '89222e96-0890-11e5-a3b5-525400398fe5'
       },
       'px': 354.5234029520906,
@@ -2006,7 +2012,7 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '892e8cee-0890-11e5-a3b5-525400398fe5',
       'index': 15,
-      'kind': 'Service',
+      'kind': 'App',
       'metadata': {
         'creationTimestamp': '2015-06-01T19:00:57Z',
         'labels': {
@@ -2015,7 +2021,7 @@ sink({
         'name': 'frontend',
         'namespace': 'guestbook4',
         'resourceVersion': '85',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/services/frontend',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/Apps/frontend',
         'uid': '892e8cee-0890-11e5-a3b5-525400398fe5'
       },
       'px': 1594.7252608712558,
@@ -2044,7 +2050,7 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '89443a7e-0890-11e5-a3b5-525400398fe5',
       'index': 0,
-      'kind': 'Pod',
+      'kind': 'Server',
       'metadata': {
         'creationTimestamp': '2015-06-01T19:00:57Z',
         'labels': {
@@ -2053,7 +2059,7 @@ sink({
         'name': 'redis-master',
         'namespace': 'guestbook4',
         'resourceVersion': '686',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/redis-master',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/redis-master',
         'uid': '89443a7e-0890-11e5-a3b5-525400398fe5'
       },
       'px': -322.20293463806587,
@@ -2079,7 +2085,7 @@ sink({
         }
         ],
         'dnsPolicy': 'ClusterFirst',
-        'host': 'node-1.rha',
+        'host': 'Database-1.rha',
         'restartPolicy': 'Always',
         'volumes': null
       },
@@ -2114,7 +2120,7 @@ sink({
         }
         ],
         'phase': 'Running',
-        'podIP': '18.0.61.7'
+        'ServerIP': '18.0.61.7'
       },
       'weight': 2,
       'x': -330.26477097206845,
@@ -2124,7 +2130,7 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '8959751f-0890-11e5-a3b5-525400398fe5',
       'index': 11,
-      'kind': 'ReplicationController',
+      'kind': 'DataSource',
       'metadata': {
         'creationTimestamp': '2015-06-01T19:00:57Z',
         'labels': {
@@ -2133,7 +2139,7 @@ sink({
         'name': 'redis-slave',
         'namespace': 'guestbook4',
         'resourceVersion': '111',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/replicationcontrollers/redis-slave',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/DataSources/redis-slave',
         'uid': '8959751f-0890-11e5-a3b5-525400398fe5'
       },
       'px': 423.87570524344557,
@@ -2187,11 +2193,11 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '8960db98-0890-11e5-a3b5-525400398fe5',
       'index': 1,
-      'kind': 'Pod',
+      'kind': 'Server',
       'metadata': {
         'annotations': {
           'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-          + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'guestbook4\',\'name\':\'redis-slave\','
+          + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'guestbook4\',\'name\':\'redis-slave\','
           + '\'uid\':\'8959751f-0890-11e5-a3b5-525400398fe5\',\'apiVersion\':\'v1beta3\',\'resourceVersion\':\'90\'}}'
         },
         'creationTimestamp': '2015-06-01T19:00:57Z',
@@ -2202,7 +2208,7 @@ sink({
         'name': 'redis-slave-xmboh',
         'namespace': 'guestbook4',
         'resourceVersion': '675',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/redis-slave-xmboh',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/redis-slave-xmboh',
         'uid': '8960db98-0890-11e5-a3b5-525400398fe5'
       },
       'px': 253.97503022839777,
@@ -2228,7 +2234,7 @@ sink({
         }
         ],
         'dnsPolicy': 'ClusterFirst',
-        'host': 'node-1.rha',
+        'host': 'Database-1.rha',
         'restartPolicy': 'Always',
         'volumes': null
       },
@@ -2263,7 +2269,7 @@ sink({
         }
         ],
         'phase': 'Running',
-        'podIP': '18.0.61.2'
+        'ServerIP': '18.0.61.2'
       },
       'weight': 3,
       'x': 201.96996121657807,
@@ -2273,11 +2279,11 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '89610137-0890-11e5-a3b5-525400398fe5',
       'index': 4,
-      'kind': 'Pod',
+      'kind': 'Server',
       'metadata': {
         'annotations': {
           'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-          + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'guestbook4\',\'name\':\'redis-slave\','
+          + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'guestbook4\',\'name\':\'redis-slave\','
           + '\'uid\':\'8959751f-0890-11e5-a3b5-525400398fe5\',\'apiVersion\':\'v1beta3\',\'resourceVersion\':\'90\'}}'
         },
         'creationTimestamp': '2015-06-01T19:00:57Z',
@@ -2288,7 +2294,7 @@ sink({
         'name': 'redis-slave-y1a8g',
         'namespace': 'guestbook4',
         'resourceVersion': '678',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/redis-slave-y1a8g',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/redis-slave-y1a8g',
         'uid': '89610137-0890-11e5-a3b5-525400398fe5'
       },
       'px': 392.77933934511833,
@@ -2314,7 +2320,7 @@ sink({
         }
         ],
         'dnsPolicy': 'ClusterFirst',
-        'host': 'node-1.rha',
+        'host': 'Database-1.rha',
         'restartPolicy': 'Always',
         'volumes': null
       },
@@ -2349,7 +2355,7 @@ sink({
         }
         ],
         'phase': 'Running',
-        'podIP': '18.0.61.6'
+        'ServerIP': '18.0.61.6'
       },
       'weight': 3,
       'x': 447.2274793497317,
@@ -2359,7 +2365,7 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '89672aaf-0890-11e5-a3b5-525400398fe5',
       'index': 12,
-      'kind': 'ReplicationController',
+      'kind': 'DataSource',
       'metadata': {
         'creationTimestamp': '2015-06-01T19:00:57Z',
         'labels': {
@@ -2368,7 +2374,7 @@ sink({
         'name': 'frontend',
         'namespace': 'guestbook4',
         'resourceVersion': '116',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/replicationcontrollers/frontend',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/DataSources/frontend',
         'uid': '89672aaf-0890-11e5-a3b5-525400398fe5'
       },
       'px': 260.90629540462,
@@ -2422,11 +2428,11 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '897f26dd-0890-11e5-a3b5-525400398fe5',
       'index': 6,
-      'kind': 'Pod',
+      'kind': 'Server',
       'metadata': {
         'annotations': {
           'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-          + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'guestbook4\',\'name\':\'frontend\','
+          + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'guestbook4\',\'name\':\'frontend\','
           + '\'uid\':\'89672aaf-0890-11e5-a3b5-525400398fe5\',\'apiVersion\':\'v1beta3\',\'resourceVersion\':\'94\'}}'
         },
         'creationTimestamp': '2015-06-01T19:00:57Z',
@@ -2437,7 +2443,7 @@ sink({
         'name': 'frontend-cfie3',
         'namespace': 'guestbook4',
         'resourceVersion': '673',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/frontend-cfie3',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/frontend-cfie3',
         'uid': '897f26dd-0890-11e5-a3b5-525400398fe5'
       },
       'px': -8.327533665412252,
@@ -2463,7 +2469,7 @@ sink({
         }
         ],
         'dnsPolicy': 'ClusterFirst',
-        'host': 'node-1.rha',
+        'host': 'Database-1.rha',
         'restartPolicy': 'Always',
         'volumes': null
       },
@@ -2498,7 +2504,7 @@ sink({
         }
         ],
         'phase': 'Running',
-        'podIP': '18.0.61.3'
+        'ServerIP': '18.0.61.3'
       },
       'weight': 3,
       'x': 157.24946043411106,
@@ -2508,11 +2514,11 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '897f4916-0890-11e5-a3b5-525400398fe5',
       'index': 7,
-      'kind': 'Pod',
+      'kind': 'Server',
       'metadata': {
         'annotations': {
           'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-          + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'guestbook4\',\'name\':\'frontend\','
+          + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'guestbook4\',\'name\':\'frontend\','
           + '\'uid\':\'89672aaf-0890-11e5-a3b5-525400398fe5\',\'apiVersion\':\'v1beta3\',\'resourceVersion\':\'94\'}}'
         },
         'creationTimestamp': '2015-06-01T19:00:57Z',
@@ -2523,7 +2529,7 @@ sink({
         'name': 'frontend-cv934',
         'namespace': 'guestbook4',
         'resourceVersion': '671',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/frontend-cv934',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/frontend-cv934',
         'uid': '897f4916-0890-11e5-a3b5-525400398fe5'
       },
       'px': 403.9176234315363,
@@ -2549,7 +2555,7 @@ sink({
         }
         ],
         'dnsPolicy': 'ClusterFirst',
-        'host': 'node-1.rha',
+        'host': 'Database-1.rha',
         'restartPolicy': 'Always',
         'volumes': null
       },
@@ -2584,7 +2590,7 @@ sink({
         }
         ],
         'phase': 'Running',
-        'podIP': '18.0.61.4'
+        'ServerIP': '18.0.61.4'
       },
       'weight': 3,
       'x': 548.4506097097817,
@@ -2594,11 +2600,11 @@ sink({
       'apiVersion': 'v1beta3',
       'id': '897f63c3-0890-11e5-a3b5-525400398fe5',
       'index': 8,
-      'kind': 'Pod',
+      'kind': 'Server',
       'metadata': {
         'annotations': {
           'kubernetes.io/created-by': '{\'kind\':\'SerializedReference\',\'apiVersion\':\'v1beta3\','
-          + '\'reference\':{\'kind\':\'ReplicationController\',\'namespace\':\'guestbook4\',\'name\':\'frontend\','
+          + '\'reference\':{\'kind\':\'DataSource\',\'namespace\':\'guestbook4\',\'name\':\'frontend\','
           + '\'uid\':\'89672aaf-0890-11e5-a3b5-525400398fe5\',\'apiVersion\':\'v1beta3\',\'resourceVersion\':\'94\'}}'
         },
         'creationTimestamp': '2015-06-01T19:00:57Z',
@@ -2609,7 +2615,7 @@ sink({
         'name': 'frontend-rz8eu',
         'namespace': 'guestbook4',
         'resourceVersion': '669',
-        'selfLink': '/api/v1beta3/namespaces/guestbook4/pods/frontend-rz8eu',
+        'selfLink': '/api/v1beta3/namespaces/guestbook4/Servers/frontend-rz8eu',
         'uid': '897f63c3-0890-11e5-a3b5-525400398fe5'
       },
       'px': 895.5900578989485,
@@ -2635,7 +2641,7 @@ sink({
         }
         ],
         'dnsPolicy': 'ClusterFirst',
-        'host': 'node-1.rha',
+        'host': 'Database-1.rha',
         'restartPolicy': 'Always',
         'volumes': null
       },
@@ -2670,7 +2676,7 @@ sink({
         }
         ],
         'phase': 'Running',
-        'podIP': '18.0.61.5'
+        'ServerIP': '18.0.61.5'
       },
       'weight': 3,
       'x': 1001.292356339048,
@@ -2680,18 +2686,18 @@ sink({
       'apiVersion': 'v1beta3',
       'id': 'a82eb2b2-08fc-11e5-a9e7-525400398fe5',
       'index': 3,
-      'kind': 'Node',
+      'kind': 'Database',
       'metadata': {
         'creationTimestamp': '2015-06-02T07:54:55Z',
-        'name': 'node-2.rha',
+        'name': 'Database-2.rha',
         'resourceVersion': '10463',
-        'selfLink': '/api/v1beta3/nodes/node-2.rha',
+        'selfLink': '/api/v1beta3/Databases/Database-2.rha',
         'uid': 'a82eb2b2-08fc-11e5-a9e7-525400398fe5'
       },
       'px': 421.83957932880463,
       'py': 122.24596083543373,
       'spec': {
-        'externalID': 'node-2.rha'
+        'externalID': 'Database-2.rha'
       },
       'status': {
         'capacity': {
@@ -2707,7 +2713,7 @@ sink({
           'type': 'Ready'
         }
         ],
-        'nodeInfo': {
+        'DatabaseInfo': {
           'bootID': 'f18301fb-e2d0-47db-840c-4fa812f3806c',
           'containerRuntimeVersion': 'docker://1.6.0',
           'kernelVersion': '4.0.4-301.fc22.x86_64',
@@ -2726,18 +2732,18 @@ sink({
       'apiVersion': 'v1beta3',
       'id': 'a9bc7525-08fc-11e5-a9e7-525400398fe5',
       'index': 5,
-      'kind': 'Node',
+      'kind': 'Database',
       'metadata': {
         'creationTimestamp': '2015-06-02T07:54:57Z',
-        'name': 'node-3.rha',
+        'name': 'Database-3.rha',
         'resourceVersion': '10464',
-        'selfLink': '/api/v1beta3/nodes/node-3.rha',
+        'selfLink': '/api/v1beta3/Databases/Database-3.rha',
         'uid': 'a9bc7525-08fc-11e5-a9e7-525400398fe5'
       },
       'px': 275.976833717852,
       'py': 229.8390490800018,
       'spec': {
-        'externalID': 'node-3.rha'
+        'externalID': 'Database-3.rha'
       },
       'status': {
         'capacity': {
@@ -2753,7 +2759,7 @@ sink({
           'type': 'Ready'
         }
         ],
-        'nodeInfo': {
+        'DatabaseInfo': {
           'bootID': 'f7f2dbb2-1e41-4572-a51a-af8f32fe8e61',
           'containerRuntimeVersion': 'docker://1.6.0',
           'kernelVersion': '4.0.4-301.fc22.x86_64',
@@ -2853,21 +2859,28 @@ sink({
 
 
 
-      var index = 0;
-      $rootScope.data = window['datasets'][index];
-      this.data = $rootScope.data;
+
+      $rootScope.data = window['datasets'][this.index];
+      // this.data = $rootScope.data;
 
       $rootScope.kinds = {
-        Pod: '#vertex-Pod',
-        ReplicationController: '#vertex-ReplicationController',
-        Node: '#vertex-Node',
-        Service: '#vertex-Service'
+        Server: '#vertex-Server',
+        DataSource: '#vertex-DataSource',
+        Database: '#vertex-Database',
+        App: '#vertex-App'
       };
 
-      $rootScope.poke = () => {
-        index += 1;
-        $rootScope.data = window['datasets'][index % window['datasets'].length];
-      };
+      // poke = () => {
+      //   index += 1;
+      //   $rootScope.data = window['datasets'][this.index % window['datasets'].length];
+      // };
+
+      // testClick = () => {
+      //   index += 1;
+      //   this.data.items[this.index] = {
+      //     kind: 'DataSource'
+      //   };
+      // };
 
       $rootScope.$on('select', (ev, item) => {
         var text = '';
@@ -2876,6 +2889,71 @@ sink({
         }
         angular.element(document.getElementById('selected')).text(text);
       });
+
+      this.getData();
+      // $rootScope.$digest();
+    }
+
+    public poke() {
+      this.index += 1;
+      this.data = window['datasets'][this.index % window['datasets'].length];
+    }
+
+    public testClick() {
+      this.index += 1;
+      this.data.items[this.index] = {
+        kind: 'DataSource'
+      };
+      this.$rootScope.$digest();
+    }
+
+    private getResourcesForResType(feedId: string, resourceType: string) {
+      return this.HawkularInventory.ResourceOfTypeUnderFeed.query({ environmentId: globalEnvironmentId,
+        feedId: feedId,
+        resourceTypeId: resourceType }).$promise;
+    }
+
+    public getDataForOneFeed(feedId: string): ng.IPromise<any> {
+      let promises = [];
+      promises.push(this.getResourcesForResType(feedId, 'WildFly Server'));
+      promises.push(this.getResourcesForResType(feedId, 'Datasource'));
+      promises.push(this.getResourcesForResType(feedId, 'Deployment'));
+
+      return this.$q.all(promises);
+    }
+
+    public getData(): any {
+      let typeToKind = {
+        'WildFly Server': 'Server',
+        'Datasource': 'DataSource',
+        'Deployment': 'App'
+      };
+      this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId},
+        (aFeedList) => {
+          let promises = [];
+          angular.forEach(aFeedList, (feed) => {
+            promises.push(this.getDataForOneFeed(feed.id));
+          });
+          this.$q.all(promises).then((aResourceList) => {
+            let newData = {
+              items: {},
+              relations: {}
+            };
+            let flatResources = _.flatten(aResourceList, true);
+            angular.forEach(flatResources, (res) => {
+              let newItem = {
+                kind: typeToKind[res.type.id],
+                id: res.id,
+                metadata: {
+                  name: res.properties.name
+                }
+              };
+              newData.items[res.id] = newItem;
+            });
+            console.log('resp2: ' + newData);
+            this.data = newData;
+          });
+        });
     }
 
     // todo: create methods and fields instead of doing everything on the '$rootScope'

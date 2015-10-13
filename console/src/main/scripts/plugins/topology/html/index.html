@@ -5,32 +5,33 @@
 
     <div class="controls">
        <label id="selected"></label>
-       <button ng-click="vm.poke()" class="ng-hide">Poke</button>
+       <button ng-click="vm.poke()" >Poke1</button>
+       <button ng-click="vm.testClick()">test</button>
 
-       <kubernetes-topology-icon kind="Pod">
+       <kubernetes-topology-icon kind="Server">
          <svg class="kube-topology">
-           <use xlink:href="#vertex-Pod" x="15" y="15"></use>
+           <use xlink:href="#vertex-Server" x="15" y="15"></use>
          </svg>
        </kubernetes-topology-icon>
        <label>Servers</label>
 
-       <kubernetes-topology-icon kind="Service">
+       <kubernetes-topology-icon kind="App">
          <svg class="kube-topology">
-           <use xlink:href="#vertex-Service" x="15" y="15"></use>
+           <use xlink:href="#vertex-App" x="15" y="15"></use>
          </svg>
        </kubernetes-topology-icon>
        <label>Apps</label>
 
-       <kubernetes-topology-icon kind="Node">
+       <kubernetes-topology-icon kind="Database">
          <svg class="kube-topology">
-           <use xlink:href="#vertex-Node" x="15" y="15"></use>
+           <use xlink:href="#vertex-Database" x="15" y="15"></use>
          </svg>
        </kubernetes-topology-icon>
        <label>Databases</label>
 
-       <kubernetes-topology-icon kind="ReplicationController">
+       <kubernetes-topology-icon kind="DataSource">
          <svg class="kube-topology">
-           <use xlink:href="#vertex-ReplicationController" x="15" y="15"></use>
+           <use xlink:href="#vertex-DataSource" x="15" y="15"></use>
          </svg>
        </kubernetes-topology-icon>
        <label>Datasources</label>
@@ -38,22 +39,22 @@
 
     <svg class="kube-topology" hidden>
       <defs>
-        <g class="Database" id="vertex-Node">
+        <g class="Database" id="vertex-Database">
           <circle r="15"></circle>
           <!-- <text y="9">&#xf1c0;</text> -->
           <text y="6">&#xf1c0;</text>
         </g>
-        <g class="Server" id="vertex-Pod">
+        <g class="Server" id="vertex-Server">
           <circle r="15"></circle>
           <!-- <text y="6" x="0.5">&#xf233;</text> -->
           <text y="6" x="0.5">&#xf233;</text>
         </g>
-        <g class="App" id="vertex-Service">
+        <g class="App" id="vertex-App">
           <circle r="15"></circle>
           <!-- <text y="10" x="1">&#xf135;</text> -->
           <text y="7" x="0">&#xf135;</text>
         </g>
-        <g class="DataSource" id="vertex-ReplicationController">
+        <g class="DataSource" id="vertex-DataSource">
           <circle r="15"></circle>
           <!-- <text y="7.5">&#xf0ec;</text> -->
           <text y="5">&#xf0ec;</text>

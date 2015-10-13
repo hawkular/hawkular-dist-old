@@ -78,7 +78,7 @@ module HawkularTopology {
 
           $scope.$root.$watchCollection('kinds', (value) => render(graph.kinds(value)));
 
-          $scope.$watchCollection('[items, relations]', (values) => render(graph.data(values[0], values[1])));
+          $scope.$watchGroup(['items', 'relations'], (values) => render(graph.data(values[0], values[1])));
 
           $scope.$watch('selection', (item) => graph.select(item));
 

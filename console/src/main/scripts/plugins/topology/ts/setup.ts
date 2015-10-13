@@ -2,14 +2,14 @@
 /// Copyright 2015 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
-/// Licensed under the Apache License, Version 2.0 (the "License");
+/// Licensed under the Apache License, Version 2.0 (the 'License');
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
 ///
 ///    http://www.apache.org/licenses/LICENSE-2.0
 ///
 /// Unless required by applicable law or agreed to in writing, software
-/// distributed under the License is distributed on an "AS IS" BASIS,
+/// distributed under the License is distributed on an 'AS IS' BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
@@ -67,6 +67,10 @@
             vertices.attr('transform', (d) => 'translate(' + d.x + ',' + d.y + ')');
         });
 
+        let tip = d3.select('body').append('div')
+        .attr('class', 'tooltip')
+        .style('opacity', 0);
+
         drag
             .on('dragstart', (d) => {
                 notify(d.item);
@@ -88,16 +92,35 @@
                 d3.select(this).classed('fixed', d.fixed);
             });
 
-        svg
+            svg
             .on('dblclick', () => {
                 svg.selectAll('g')
-                    .classed('fixed', false)
-                    .each((d) => d.fixed = false);
+                .classed('fixed', false)
+                .each((d) => d.fixed = false);
                 force.start();
             })
             .on('click', (ev) => {
                 if (!d3.select(d3.event.target).datum()) {
                     notify(null);
+                }
+            })
+            .on('mouseover', (ev) => {
+                let target = d3.select(d3.event.target);
+                if (target.datum()) {
+                    tip.transition()
+                    .duration(200)
+                    .style('opacity', .9);
+                    tip.html(d3.select(d3.event.target).datum() + '<br/>'  + 'foobar')
+                    .style('left', (d3.event.pageX) + 'px')
+                    .style('top', (d3.event.pageY - 28) + 'px');
+                }
+            })
+            .on('mouseout', (ev) => {
+                let target = d3.select(d3.event.target);
+                if (target.datum()) {
+                    tip.transition()
+                    .duration(500)
+                    .style('opacity', 0);
                 }
             });
 
