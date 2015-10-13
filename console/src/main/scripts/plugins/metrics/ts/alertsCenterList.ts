@@ -41,6 +41,8 @@ module HawkularMetrics {
     public headerLinks:any = {};
     public selectCount = 0;
     public hasOpenSelectedItems:boolean = false;
+    public hasResolvedAlerts:boolean = false;
+    public alertsStatuses:string = 'OPEN,ACKNOWLEDGED';
 
     public loadingMoreItems:boolean = false;
     public addProgress:boolean = false;
@@ -89,7 +91,8 @@ module HawkularMetrics {
       this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : Date.now();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
 
-      this.HawkularAlertsManager.queryAlerts({startTime: this.alertsTimeStart,
+      this.HawkularAlertsManager.queryAlerts({statuses: this.alertsStatuses,
+        startTime: this.alertsTimeStart,
         endTime: this.alertsTimeEnd,
         currentPage: this.alertsCurPage,
         perPage: this.alertsPerPage
@@ -195,6 +198,15 @@ module HawkularMetrics {
         item.selected = toggleTo;
       });
       this.selectCount = toggleTo ? this.alertsList.length : 0;
+    }
+
+    public changeResolvedFilter():void {
+      if (this.hasResolvedAlerts) {
+        this.alertsStatuses = 'OPEN,ACKNOWLEDGED,RESOLVED';
+      } else {
+        this.alertsStatuses = 'OPEN,ACKNOWLEDGED';
+      }
+      this.getAlerts();
     }
 
   }
