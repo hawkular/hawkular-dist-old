@@ -88,6 +88,9 @@ module HawkularMetrics {
             name: resourceId,
             id: triggerId,
             description: 'Active Web Sessions for ' + resourceId,
+            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+            autoEnable: true, // Enable trigger once an alert is resolved
+            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             actions: {email: [this.defaultEmail]},
             context: {
               resourceType: 'App Server',
@@ -143,6 +146,9 @@ module HawkularMetrics {
               name: resourceId,
               id: triggerId,
               description: 'Expired Web Sessions for ' + resourceId,
+              autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+              autoEnable: true, // Enable trigger once an alert is resolved
+              autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               actions: {email: [this.defaultEmail]},
               context: {
                 resourceType: 'App Server',
@@ -196,6 +202,9 @@ module HawkularMetrics {
               name: resourceId,
               id: triggerId,
               description: 'Rejected Web Sessions for ' + resourceId,
+              autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+              autoEnable: true, // Enable trigger once an alert is resolved
+              autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               actions: {email: [this.defaultEmail]},
               context: {
                 resourceType: 'App Server',
