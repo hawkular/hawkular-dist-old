@@ -11,6 +11,11 @@
       <div class="hk-info-top clearfix">
         <h3>Alerts ({{ac.alertsList.length}})</h3>
       </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" ng-model="ac.hasResolvedAlerts" ng-change="ac.changeResolvedFilter()"> Display Resolved Alerts
+        </label>
+      </div>
       <div class="blank-slate-pf">
         <div class="blank-slate-pf-icon">
           <i class="fa fa-flag"></i>
