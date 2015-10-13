@@ -92,7 +92,7 @@
     <version.org.hawkular.metrics>0.9.0.Final-SRC-revision-9080fcfbe40a66ce8143c477b5d6f8fbadeecf3a</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.7.0.Final</version.org.hawkular.inventory>
     <version.org.hawkular.nest>${version.org.hawkular.bus}</version.org.hawkular.nest>
-    <version.org.keycloak>1.3.1.Final</version.org.keycloak>
+    <version.org.keycloak>1.6.1.Final</version.org.keycloak>
     <version.org.testng>6.5.2</version.org.testng>
   </properties>
 
@@ -109,6 +109,13 @@
       <dependency>
         <groupId>org.hawkular.accounts</groupId>
         <artifactId>hawkular-accounts-events-backend</artifactId>
+        <version>${version.org.hawkular.accounts}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.accounts</groupId>
+        <artifactId>hawkular-accounts-secret-store</artifactId>
         <version>${version.org.hawkular.accounts}</version>
         <type>war</type>
       </dependency>

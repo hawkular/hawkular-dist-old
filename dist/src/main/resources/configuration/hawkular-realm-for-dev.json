@@ -29,7 +29,7 @@
       "temporary" : false
     } ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "user" ],
+    "realmRoles" : [ "user", "offline_access" ],
     "applicationRoles" : {
       "account" : [ "view-profile", "manage-account" ]
     }
