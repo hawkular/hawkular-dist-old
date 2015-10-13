@@ -43,6 +43,8 @@ module HawkularMetrics {
     public hasOpenSelectedItems:boolean = false;
     public hasResolvedAlerts:boolean = false;
     public alertsStatuses:string = 'OPEN,ACKNOWLEDGED';
+    public sortField:string = 'ctime';
+    public sortAsc:boolean = false;
 
     public loadingMoreItems:boolean = false;
     public addProgress:boolean = false;
@@ -91,11 +93,18 @@ module HawkularMetrics {
       this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : Date.now();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
 
+      let ordering = 'asc';
+      if (!this.sortAsc) {
+        ordering = 'desc';
+      }
+
       this.HawkularAlertsManager.queryAlerts({statuses: this.alertsStatuses,
         startTime: this.alertsTimeStart,
         endTime: this.alertsTimeEnd,
         currentPage: this.alertsCurPage,
-        perPage: this.alertsPerPage
+        perPage: this.alertsPerPage,
+        sort: this.sortField,
+        order: ordering
         })
         .then((queriedAlerts) => {
           this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
@@ -147,7 +156,7 @@ module HawkularMetrics {
       this.isWorking = true;
       let ackIdList = '';
       this.alertsList.forEach((alertItem:IAlert) => {
-        if (alertItem.selected && alertItem.status !== 'ACKNOWLEDGED' || alertItem.status !== 'RESOLVED') {
+        if (alertItem.selected && (alertItem.status !== 'ACKNOWLEDGED' || alertItem.status !== 'RESOLVED')) {
           ackIdList = ackIdList + alertItem.alertId + ',';
         }
       });
@@ -207,6 +216,13 @@ module HawkularMetrics {
         this.alertsStatuses = 'OPEN,ACKNOWLEDGED';
       }
       this.getAlerts();
+    }
+
+    public sortBy(field:string):void {
+      this.sortField = field;
+      this.sortAsc = !this.sortAsc;
+      this.getAlerts();
+      this.$log.debug('Sorting by ' + field + ' ascending ' + this.sortAsc + ' ' + new Date());
     }
 
   }
