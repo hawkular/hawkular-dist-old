@@ -11,6 +11,11 @@
       <div class="hk-info-top clearfix">
         <h3>Alerts ({{ac.alertsList.length}})</h3>
       </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" ng-model="ac.hasResolvedAlerts" ng-change="ac.changeResolvedFilter()"> Display Resolved Alerts
+        </label>
+      </div>
       <div class="blank-slate-pf">
         <div class="blank-slate-pf-icon">
           <i class="fa fa-flag"></i>
@@ -40,6 +45,13 @@
         <div class="dataTables_header">
           <div id="DataTables_Table_0_filter" class="dataTables_filter">
             <label><input type="search" ng-model="ac.search" aria-controls="DataTables_Table_0"></label>
+          </div>
+          <div class="hk-actions-table-search">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" ng-model="ac.hasResolvedAlerts" ng-change="ac.changeResolvedFilter()"> Display Resolved Alerts
+              </label>
+            </div>
           </div>
           <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing <b>1</b> to <b>{{(ac.alertsList | filter:ac.search).length}}</b> of <b>{{ac.alertsList.length}}</b> Items</div>
         </div>

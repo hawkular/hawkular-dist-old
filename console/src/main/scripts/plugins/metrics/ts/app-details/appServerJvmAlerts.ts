@@ -67,6 +67,10 @@ module HawkularMetrics {
     public openSetup():void {
       // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
 
+      let defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+
+      let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
+
       let heapTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_pheap').then(() => {
         // Jvm trigger exists, nothing to do
         this.$log.debug('Jvm trigger exists, nothing to do');
@@ -84,6 +88,9 @@ module HawkularMetrics {
             name: resourceId,
             id: triggerId,
             description: 'JVM Heap Used for ' + resourceId,
+            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+            autoEnable: true, // Enable trigger once an alert is resolved
+            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             actions: {email: [this.defaultEmail]},
             context: {
               resourceType: 'App Server',
@@ -138,6 +145,9 @@ module HawkularMetrics {
             name: resourceId,
             id: triggerId,
             description: 'JVM Non Heap Used for ' + resourceId,
+            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+            autoEnable: true, // Enable trigger once an alert is resolved
+            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             actions: {email: [this.defaultEmail]},
             context: {
               resourceType: 'App Server',
@@ -189,6 +199,9 @@ module HawkularMetrics {
             name: resourceId,
             id: triggerId,
             description: 'Accumulated GC Duration for ' + resourceId,
+            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+            autoEnable: true, // Enable trigger once an alert is resolved
+            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             actions: {email: [this.defaultEmail]},
             context: {
               resourceType: 'App Server',
@@ -226,7 +239,7 @@ module HawkularMetrics {
 
       let log = this.$log;
 
-      this.$q.all([heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise]).then(() => {
+      this.$q.all([defaultEmailPromise, heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise]).then(() => {
         let modalInstance = this.$modal.open({
           templateUrl: 'plugins/metrics/html/modals/alerts-jvm-setup.html',
           controller: 'JvmAlertSetupController as jas',
@@ -239,7 +252,6 @@ module HawkularMetrics {
 
         modalInstance.result.then(angular.noop, () => {
           log.info('Jvm Alert Setup modal dismissed at: ' + new Date());
-          this.NotificationsService.alertSettingsSaved();
         });
       }, () => {
         this.$log.error('Missing and unable to create new JVM Alert triggers.');
