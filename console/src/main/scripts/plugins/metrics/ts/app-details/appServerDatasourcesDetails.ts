@@ -281,6 +281,23 @@ module HawkularMetrics {
       });
     }
 
+    public deleteDatasource(datasource: any): void {
+      /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
+      let datasourceDeleteDialog = this.$modal.open({
+        templateUrl: 'plugins/metrics/html/app-details/modals/detail-datasources-delete.html',
+        controller: 'AppServerDatasourcesDeleteDialogController as mvm',
+        resolve: {
+          datasource: () => datasource
+        }
+      });
+
+      datasourceDeleteDialog.result.then((modalValue) => {
+        // handle any returned modalValue if required
+      }, (reason) => {
+        // handle any returned cancel reason if required
+      });
+    }
+
     public autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getDatasources();

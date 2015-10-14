@@ -39,6 +39,19 @@
     <div class="panel panel-default hk-summary">
       <div class="panel-heading">
         <span class="hk-heading">{{ds.properties.name}}</span>
+        <div class="btn-group pull-right" dropdown auto-close="always">
+          <button id="ds-actions" class="btn btn-link" type="button" dropdown-toggle aria-haspopup="true"
+                  aria-expanded="true">
+            Actions
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="ds-actions">
+            <li class="disabled"><a href="#">Edit</a></li>
+            <li><a href="" ng-click="vm.deleteDatasource(ds)">Delete</a></li>
+            <li class="disabled"><a href="#">Enable</a></li>
+            <li class="disabled"><a href="#">Disable</a></li>
+          </ul>
+        </div>
       </div>
       <div class="row">
         <div class="col-sm-4 hk-summary-item">
