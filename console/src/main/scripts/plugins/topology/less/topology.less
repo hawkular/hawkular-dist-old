@@ -109,6 +109,8 @@ kubernetes-topology-graph {
     font-family: FontAwesome;
     fill: #84CCEE;
     font-size: 14px;
+    fill: #056A9E;
+    font-size: 16px;
 }
 
 .kube-topology g circle {
@@ -161,15 +163,26 @@ kubernetes-topology-icon:hover use {
     opacity: 0.7;
 }
 
-div.tooltip {   
-  position: absolute;           
-  text-align: center;           
-  width: 60px;                  
-  height: 28px;                 
-  padding: 2px;             
-  font: 12px sans-serif;        
-  background: lightsteelblue;   
-  border: 0px;      
-  border-radius: 8px;           
-  pointer-events: none;         
+.iconWithLabel {
+  > kubernetes-topology-icon {
+    float: left;
+  }
+
+  > label {
+    float: left;
+    line-height: 50px;
+    width: 50%;
+  }
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 140px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
 }

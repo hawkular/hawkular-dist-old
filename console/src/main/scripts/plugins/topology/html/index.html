@@ -4,46 +4,54 @@
     </kubernetes-topology-graph>
 
     <div class="controls">
-       <label id="selected"></label>
-       <button ng-click="vm.poke()" >Poke1</button>
-       <button ng-click="vm.testClick()">test</button>
+      <label id="selected"></label>
+      <!--<button ng-click="vm.poke()" >Random Data</button>-->
+      <!--<button ng-click="vm.testClick()">test</button>-->
 
-       <kubernetes-topology-icon kind="Server">
-         <svg class="kube-topology">
-           <use xlink:href="#vertex-Server" x="15" y="15"></use>
-         </svg>
-       </kubernetes-topology-icon>
-       <label>Servers</label>
+       <div class="iconWithLabel">
+         <kubernetes-topology-icon kind="Server">
+           <svg class="kube-topology">
+             <use xlink:href="#vertex-Server" x="15" y="15"></use>
+           </svg>
+         </kubernetes-topology-icon>
+         <label>Servers</label>
+         <br/>
+       </div>
 
-       <kubernetes-topology-icon kind="App">
-         <svg class="kube-topology">
-           <use xlink:href="#vertex-App" x="15" y="15"></use>
-         </svg>
-       </kubernetes-topology-icon>
-       <label>Apps</label>
+       <div class="iconWithLabel">
+         <kubernetes-topology-icon kind="App">
+           <svg class="kube-topology">
+             <use xlink:href="#vertex-App" x="15" y="15"></use>
+           </svg>
+         </kubernetes-topology-icon>
+         <label>Apps</label>
+         <br/>
+       </div>
 
-       <kubernetes-topology-icon kind="Database">
+       <!--<kubernetes-topology-icon kind="Database">
          <svg class="kube-topology">
            <use xlink:href="#vertex-Database" x="15" y="15"></use>
          </svg>
        </kubernetes-topology-icon>
-       <label>Databases</label>
+       <label>Databases</label>-->
 
-       <kubernetes-topology-icon kind="DataSource">
-         <svg class="kube-topology">
-           <use xlink:href="#vertex-DataSource" x="15" y="15"></use>
-         </svg>
-       </kubernetes-topology-icon>
-       <label>Datasources</label>
+       <div class="iconWithLabel">
+         <kubernetes-topology-icon kind="DataSource">
+           <svg class="kube-topology">
+             <use xlink:href="#vertex-DataSource" x="15" y="15"></use>
+           </svg>
+         </kubernetes-topology-icon>
+         <label>Datasources</label>
+         <br/>
+       </div>
     </div>
 
     <svg class="kube-topology" hidden>
-      <defs>
+      <defs><!--
         <g class="Database" id="vertex-Database">
           <circle r="15"></circle>
-          <!-- <text y="9">&#xf1c0;</text> -->
           <text y="6">&#xf1c0;</text>
-        </g>
+        </g>-->
         <g class="Server" id="vertex-Server">
           <circle r="15"></circle>
           <!-- <text y="6" x="0.5">&#xf233;</text> -->
@@ -57,7 +65,7 @@
         <g class="DataSource" id="vertex-DataSource">
           <circle r="15"></circle>
           <!-- <text y="7.5">&#xf0ec;</text> -->
-          <text y="5">&#xf0ec;</text>
+          <text y="5">&#xf1c0;</text>
         </g>
       </defs>
     </svg>

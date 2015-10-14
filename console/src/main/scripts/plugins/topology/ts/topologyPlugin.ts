@@ -2928,6 +2928,8 @@ sink({
         'Datasource': 'DataSource',
         'Deployment': 'App'
       };
+      let extractServerId = (id: string): string => id.substring(0, id.indexOf('/')) + '~';
+
       this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId},
         (aFeedList) => {
           let promises = [];
@@ -2935,6 +2937,7 @@ sink({
             promises.push(this.getDataForOneFeed(feed.id));
           });
           this.$q.all(promises).then((aResourceList) => {
+            let newRelations = [];
             let newData = {
               items: {},
               relations: {}
@@ -2948,9 +2951,16 @@ sink({
                   name: res.properties.name
                 }
               };
+              if (newItem.kind !== 'Server') {
+                newRelations.push({
+                  source: extractServerId(res.id),
+                  target: res.id
+                });
+              }
               newData.items[res.id] = newItem;
             });
             console.log('resp2: ' + newData);
+            newData.relations = newRelations;
             this.data = newData;
           });
         });
