@@ -136,17 +136,19 @@ module HawkularMetrics {
       });
       resolveIdList = resolveIdList.slice(0, -1);
 
-      let resolvedAlerts = {
-        alertIds: resolveIdList,
-        resolvedBy: this.$rootScope.currentPersona.name,
-        resolvedNotes: 'Manually resolved'
-      };
+      if (resolveIdList.length > 0) {
+        let resolvedAlerts = {
+          alertIds: resolveIdList,
+          resolvedBy: this.$rootScope.currentPersona.name,
+          resolvedNotes: ''
+        };
 
-      this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then(() => {
-        this.isWorking = false;
-        this.resetAllUnselected();
-        this.getAlerts();
-      });
+        this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then(() => {
+          this.isWorking = false;
+          this.resetAllUnselected();
+          this.getAlerts();
+        });
+      }
     }
 
 
@@ -161,18 +163,19 @@ module HawkularMetrics {
       });
       ackIdList = ackIdList.slice(0, -1);
 
-      let ackAlerts = {
-        alertIds: ackIdList,
-        ackBy: this.$rootScope.currentPersona.name,
-        ackNotes: 'Manually acknowledged'
-      };
+      if (ackIdList.length > 0) {
+        let ackAlerts = {
+          alertIds: ackIdList,
+          ackBy: this.$rootScope.currentPersona.name,
+          ackNotes: ''
+        };
 
-      this.HawkularAlertsManager.ackAlerts(ackAlerts).then(() => {
-        this.isWorking = false;
-        this.resetAllUnselected();
-        this.getAlerts();
-      });
-
+        this.HawkularAlertsManager.ackAlerts(ackAlerts).then(() => {
+          this.isWorking = false;
+          this.resetAllUnselected();
+          this.getAlerts();
+        });
+      }
     }
 
     public setPage(page:number):void {
