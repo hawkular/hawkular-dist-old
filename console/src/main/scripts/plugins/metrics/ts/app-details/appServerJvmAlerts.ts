@@ -91,6 +91,7 @@ module HawkularMetrics {
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+            severity: 'MEDIUM',
             actions: {email: [this.defaultEmail]},
             context: {
               resourceType: 'App Server',
@@ -148,6 +149,7 @@ module HawkularMetrics {
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+            severity: 'HIGH',
             actions: {email: [this.defaultEmail]},
             context: {
               resourceType: 'App Server',
@@ -202,6 +204,7 @@ module HawkularMetrics {
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+            severity: 'HIGH',
             actions: {email: [this.defaultEmail]},
             context: {
               resourceType: 'App Server',

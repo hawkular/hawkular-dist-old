@@ -110,7 +110,6 @@ module HawkularMetrics {
           this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
           this.alertsList = queriedAlerts.alertList;
           this.lastUpdateDate = new Date();
-          console.dir(this.headerLinks);
       }, (error) => {
         this.$log.warn(error);
       }).catch((error) => {

@@ -68,7 +68,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="alert in ac.alertsList | filter:ac.search | orderBy:ac.sortField:ac.sortAsc" ng-class="{'hk-selected': ac.selected}"
+          <tr ng-repeat="alert in ac.alertsList | filter:ac.search" ng-class="{'hk-selected': ac.selected}"
               ng-click="ac.selectItem(alert)">
             <td><input type="checkbox" ng-checked="alert.selected"/></td>
             <td ng-class="{'hk-bold': alert.status === 'OPEN'}">{{alert.status|firstUpper}}</td>

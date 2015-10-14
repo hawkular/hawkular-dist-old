@@ -215,6 +215,7 @@ module HawkularMetrics {
               id: triggerId,
               name: url,
               description: 'Response Time for URL ' + url,
+              severity: 'HIGH',
               actions: {email: [defaultEmail]},
               context: {
                 resourceType: 'URL',
@@ -277,6 +278,7 @@ module HawkularMetrics {
               id: triggerId,
               name: url,
               description: 'Availability for URL ' + url,
+              severity: 'CRITICAL',
               actions: {email: [defaultEmail]},
               context: {
                 resourceType: 'URL',
