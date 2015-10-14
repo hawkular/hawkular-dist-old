@@ -282,6 +282,10 @@ module HawkularAccounts {
         membership.$get();
       });
     }
+
+    public isOrganization():boolean {
+      return this.$rootScope.currentPersona.id !== this.$rootScope.userDetails.id;
+    }
   }
 
 

@@ -5,8 +5,8 @@
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
 
-  <h1 class="text-center" ng-show="!controller.loading">User Settings</h1>
-  <form name="form" class="form-horizontal" ng-show="!controller.loading" novalidate>
+  <h1 class="text-center" ng-show="!controller.loading && !controller.isOrganization()">User Settings</h1>
+  <form name="form" class="form-horizontal" ng-show="!controller.loading && !controller.isOrganization()" novalidate>
     <fieldset>
       <legend>Alert Notifications</legend>
       <p>Receive alert notifications on the following email.
@@ -46,5 +46,16 @@
       </button>
     </div>
   </form>
+
+  <div class="blank-slate-pf" ng-show="controller.isOrganization() && !controller.loading">
+    <div class="blank-slate-pf-icon">
+      <i class="fa fa-users"></i>
+    </div>
+    <h1>User settings are for users only.</h1>
+    <p>
+      To change your user settings, switch from the current organization to your main user account. You can do that
+      by selecting your user at the account switcher, on the top-right corner of the screen.
+    </p>
+  </div>
 </div>
 <!-- /col -->

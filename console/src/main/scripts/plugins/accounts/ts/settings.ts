@@ -20,6 +20,7 @@
 module HawkularAccounts {
   export class UserSettingsController {
     public static $inject = ['$log',
+      '$rootScope',
       'HawkularAccount',
       'NotificationsService'
     ];
@@ -31,6 +32,7 @@ module HawkularAccounts {
     public loading:boolean;
 
     constructor(private $log:ng.ILogService,
+                private $rootScope:any,
                 private HawkularAccount:any,
                 private NotificationsService:INotificationsService) {
 
@@ -60,6 +62,10 @@ module HawkularAccounts {
       }, (error:IErrorPayload) => {
         this.NotificationsService.error('User settings could not be updated.');
       });
+    }
+
+    public isOrganization():boolean {
+      return this.$rootScope.currentPersona.id !== this.$rootScope.userDetails.id;
     }
   }
 
