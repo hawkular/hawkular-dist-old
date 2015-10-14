@@ -53,10 +53,6 @@ public class PingManagerTest {
         Mockito.verify(manager.metricPublisher).sendToMetricsViaRest(metricsRestStatusCaptor.capture());
         assertStatus(expectedDest, expectedPoweredBy, metricsRestStatusCaptor.getValue());
 
-        ArgumentCaptor<PingStatus> metricsStatusCaptor = ArgumentCaptor.forClass(PingStatus.class);
-        Mockito.verify(manager.metricPublisher).publishToTopic(metricsStatusCaptor.capture());
-        assertStatus(expectedDest, expectedPoweredBy, metricsStatusCaptor.getValue());
-
         ArgumentCaptor<PingStatus> traitsStatusCaptor = ArgumentCaptor.forClass(PingStatus.class);
         Mockito.verify(manager.traitsPublisher).publish(traitsStatusCaptor.capture());
         assertStatus(expectedDest, expectedPoweredBy, traitsStatusCaptor.getValue());

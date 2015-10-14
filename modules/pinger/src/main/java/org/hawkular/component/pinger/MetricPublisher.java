@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
-import javax.jms.ConnectionFactory;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -32,12 +31,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.hawkular.bus.common.BasicMessage;
-import org.hawkular.bus.common.ConnectionContextFactory;
-import org.hawkular.bus.common.Endpoint;
-import org.hawkular.bus.common.MessageProcessor;
-import org.hawkular.bus.common.producer.ProducerConnectionContext;
-import org.hawkular.metrics.client.common.SingleMetric;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,12 +56,6 @@ public class MetricPublisher {
         mMetrics.add(outer);
     }
 
-    @javax.annotation.Resource(lookup = "java:/topic/HawkularMetricData")
-    javax.jms.Topic topic;
-
-    @javax.annotation.Resource(lookup = "java:/HawkularBusConnectionFactory")
-    ConnectionFactory connectionFactory;
-
     private final PingerConfiguration configuration = PingerConfiguration.getInstance();
 
     /**
@@ -89,11 +76,12 @@ public class MetricPublisher {
         addDataItem(mMetrics, resourceId, timestamp, status.getCode(), "code");
 
         // Send it to metrics via rest
-        String payload = null;
+        String payload;
         try {
             payload = new ObjectMapper().writeValueAsString(mMetrics);
         } catch (JsonProcessingException e) {
             Log.LOG.eCouldNotParseMessage(e);
+            return;
         }
         HttpClient client = HttpClientBuilder.create().build();
 
@@ -109,47 +97,6 @@ public class MetricPublisher {
             }
         } catch (IOException e) {
             Log.LOG.eMetricsIoException(e);
-        }
-    }
-
-    /**
-     * Serializes the given {@link PingStatus} and then submits it on the Metrics topic of the bus.
-     *
-     * @param status
-     *            the {@link PingStatus} to publish
-     */
-    @Asynchronous
-    public void publishToTopic(PingStatus status) {
-        if (topic != null) {
-
-            try (ConnectionContextFactory factory = new ConnectionContextFactory(connectionFactory)) {
-
-                List<SingleMetric> singleMetrics = new ArrayList<>();
-
-                final PingDestination dest = status.getDestination();
-                final String resourceId = dest.getResourceId();
-                final long timestamp = status.getTimestamp();
-
-                SingleMetric singleMetric = new SingleMetric(resourceId + ".status.duration", timestamp,
-                        (double) status.getDuration());
-                singleMetrics.add(singleMetric);
-                singleMetric = new SingleMetric(resourceId + ".status.code", timestamp, (double) status.getCode());
-                singleMetrics.add(singleMetric);
-
-                MetricDataMessage.MetricData metricData = new MetricDataMessage.MetricData();
-                metricData.setTenantId(status.getDestination().getTenantId());
-                metricData.setData(singleMetrics);
-
-                Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC, topic.getTopicName());
-                ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
-                BasicMessage msg = new MetricDataMessage(metricData);
-                MessageProcessor processor = new MessageProcessor();
-                processor.send(pc, msg);
-            } catch (Exception e) {
-                Log.LOG.eCouldNotSendMessage(e);
-            }
-        } else {
-            Log.LOG.wNoTopicConnection("HawkularMetricData");
         }
     }
 
