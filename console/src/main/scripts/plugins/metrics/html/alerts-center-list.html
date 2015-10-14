@@ -24,7 +24,6 @@
       </div>
     </div>
 
-    <!-- have alerts -->
     <div ng-show="ac.alertsList.length > 0">
 
       <div class="hk-info-top clearfix">
@@ -35,12 +34,16 @@
 
       <div class="hk-table-container">
         <div class="hk-actions-table">
-          <button class="btn btn-default" type="button" ng-click="ac.ackSelected()"
-                  ng-disabled="!ac.hasOpenSelectedItems || ac.isWorking">Acknowledge
-          </button>
-          <button class="btn btn-primary" type="button" ng-click="ac.resolveSelected()"
-                  ng-disabled="ac.selectCount < 1 || ac.isWorking || ac.hasResolvedItems()">Resolve
-          </button>
+          <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+              Change State
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="ac.ackSelected()" ng-disabled="!ac.hasOpenSelectedItems || ac.isWorking">Acknowledge</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="ac.resolveSelected()" ng-disabled="ac.selectCount < 1 || ac.isWorking || ac.hasResolvedItems()">Resolve</a></li>
+            </ul>
+          </div>
         </div>
         <div class="dataTables_header">
           <div id="DataTables_Table_0_filter" class="dataTables_filter">
@@ -71,7 +74,7 @@
           <tr ng-repeat="alert in ac.alertsList | filter:ac.search" ng-class="{'hk-selected': ac.selected}"
               ng-click="ac.selectItem(alert)">
             <td><input type="checkbox" ng-checked="alert.selected"/></td>
-            <td ng-class="{'hk-bold': alert.status === 'OPEN'}">{{alert.status|firstUpper}}</td>
+            <td ng-class="{'hk-bold': alert.status === 'OPEN'}">{{alert.status|firstUpper}} <i ng-show="(alert.status === 'ACKNOWLEDGED' && alert.ackNotes.length > 0) || (alert.status === 'RESOLVED' && alert.resolvedNotes.length > 0)" class="fa fa-comment-o"></i></td>
             <td>{{alert.severity|firstUpper}}</td>
             <td>{{alert.trigger.description| characters: 35}}</td>
             <td>{{alert.ctime | date:'d MMM yyyy, HH:mm'}}</td>
