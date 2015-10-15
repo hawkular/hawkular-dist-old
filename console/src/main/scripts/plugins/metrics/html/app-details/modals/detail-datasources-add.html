@@ -385,7 +385,7 @@
               ng-hide="dac.dsData.hasOperationFailed || dac.dsData.hasOperationSucceeded"
               ng-disabled="dac.dsData.uploading">Cancel</button>
       <button type="button" wz-previous class="btn btn-default" ng-disabled="dac.dsData.uploading"
-              ng-hide="dac.dsData.hasOperationSucceeded"> &#60; Back</button>
+              ng-hide="dac.dsData.hasOperationSucceeded" ng-click="dac.backStepReview()"> &#60; Back</button>
       <button type="button" class="btn btn-primary" ng-click="dac.addDatasource()"
               ng-hide="dac.dsData.hasOperationFailed || dac.dsData.hasOperationSucceeded"
               ng-disabled="dac.dsData.uploading">Add</button>

@@ -142,6 +142,12 @@ module HawkularMetrics {
       }, this);
     }
 
+    public backStepReview():void {
+      this.dsData.uploading = false;
+      this.dsData.hasOperationFailed = false;
+      this.dsData.hasOperationSucceeded = false;
+    }
+
     public addDatasource():void {
       console.log('adding DS', this.dsData);
       this.dsData.uploading = true;
