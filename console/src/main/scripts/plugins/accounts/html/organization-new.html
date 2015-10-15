@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <button type="button" class="close" dismiss="modal" aria-label="Close" ng-click="cancel()">
+  <button type="button" class="close" dismiss="modal" aria-label="Close" ng-click="newModal.cancel()">
     <span aria-hidden="true">&times;</span>
   </button>
   <h4 class="modal-title">Create Organization</h4>
@@ -10,16 +10,13 @@
     <div class="form-group">
       <label for="name" class="col-md-4 control-label">Organization name</label>
       <div class="col-md-6">
-        <input type="text" class="form-control" id="name" ng-model="organizationNew.name" autofocus>
+        <input type="text" class="form-control" id="name" ng-model="newModal.organizationNew.name" autofocus>
       </div>
     </div>
   </form>
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-default" dismiss="modal" ng-click="cancel()"
-          id="createOrganizationFormCancelBtn">
-    Cancel
-  </button>
-  <button type="button" class="btn btn-primary" id="createOrganizationFormBtn" ng-click="persist()">Create</button>
+  <button type="button" class="btn btn-default" dismiss="modal" ng-click="newModal.cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" ng-click="newModal.persist()">Create</button>
 </div>
