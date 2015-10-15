@@ -19,25 +19,33 @@
 
 module HawkularAccounts {
   export class UserSettingsController {
-    public static $inject = ['$log',
-      '$rootScope',
-      'HawkularAccount',
-      'NotificationsService'
-    ];
+    public static $inject = ['$log', '$rootScope', 'HawkularAccount', 'NotificationsService'];
 
     // backend data related to this controller
     public settings:IUserSettings;
 
     // state control, for easier UI consumption
     public loading:boolean;
+    public isOrganization:boolean;
 
     constructor(private $log:ng.ILogService,
                 private $rootScope:any,
                 private HawkularAccount:any,
                 private NotificationsService:INotificationsService) {
-
+      this.prepareListeners();
       this.loadData();
+
+      if (this.$rootScope.currentPersona) {
+        this.isOrganization = this.$rootScope.currentPersona.id !== this.$rootScope.userDetails.id;
+      }
     }
+
+    public prepareListeners() {
+      this.$rootScope.$on('SwitchedPersona', (event:any, persona:IPersona) => {
+        this.isOrganization = persona.id !== this.$rootScope.userDetails.id;
+      });
+    }
+
     public loadData():void {
       this.loading = true;
       this.loadSettings();
@@ -62,10 +70,6 @@ module HawkularAccounts {
       }, (error:IErrorPayload) => {
         this.NotificationsService.error('User settings could not be updated.');
       });
-    }
-
-    public isOrganization():boolean {
-      return this.$rootScope.currentPersona.id !== this.$rootScope.userDetails.id;
     }
   }
 

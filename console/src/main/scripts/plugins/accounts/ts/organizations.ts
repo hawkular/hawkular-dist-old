@@ -17,124 +17,133 @@
 
 /// <reference path='accountsPlugin.ts'/>
 module HawkularAccounts {
-  export var OrganizationsController = _module.controller('HawkularAccounts.OrganizationsController', [
-    '$rootScope', '$scope', '$modal', '$log', '$location', 'HawkularAccount', 'NotificationsService',
-    ($rootScope, $scope, $modal, $log, $location, HawkularAccount, NotificationsService) => {
+  export class OrganizationsController {
+    public static $inject = ['$rootScope', '$scope', '$modal', '$log', 'HawkularAccount', 'NotificationsService'];
 
-      $scope.organizations = [];
-      $scope.loading = true;
-      $scope.isOrganization = false;
+    public organizations:Array<IOrganization>;
+    public loading:boolean = true;
+    public isOrganization:boolean = false;
 
-      $rootScope.$on('SwitchedPersona', (e, persona) => {
-        $scope.isOrganization = persona.id !== $rootScope.userDetails.id;
+    constructor(private $rootScope:any,
+                private $scope:any,
+                private $modal:any,
+                private $log:ng.ILogService,
+                private HawkularAccount:any,
+                private NotificationsService:INotificationsService) {
+      this.prepareListeners();
+      this.loadData();
+
+      if (this.$rootScope.currentPersona) {
+        this.isOrganization = this.$rootScope.currentPersona.id !== this.$rootScope.userDetails.id;
+      }
+    }
+
+    public prepareListeners() {
+      this.$rootScope.$on('SwitchedPersona', (event:any, persona:IPersona) => {
+        this.loadData();
+        this.isOrganization = persona.id !== this.$rootScope.userDetails.id;
       });
+    }
 
-      $scope.load = () => {
-        $scope.loadOrganizations();
-      };
+    public loadData():void {
+      this.loading = true;
+      this.organizations = this.HawkularAccount.Organization.query({},
+        (response:Array<IOrganization>) => {
+          this.loading = false;
+        }, (error:IErrorPayload) => {
+          this.$log.warn(`List of organizations could NOT be retrieved: ${error.data.message}`);
+          this.NotificationsService.warning(`List of organizations could NOT be retrieved: ${error.data.message}`);
+          this.loading = false;
+        }
+      );
+    }
 
-      $scope.loadOrganizations = () => {
-        $scope.organizations = [];
-        $scope.loading = true;
-        $scope.organizations = HawkularAccount.Organization.query({},
-          ()=> {
-            $scope.loading = false;
-          },
-          () => {
-            NotificationsService.info('List of organizations could NOT be retrieved.');
-            $log.warn('List of organizations could NOT be retrieved.');
-            $scope.loading = false;
-          }
-        );
-      };
-
-      $scope.showCreateForm = () => {
-        var createFormModal = $modal.open({
-          controller: 'HawkularAccounts.OrganizationNewController',
-          templateUrl: 'plugins/accounts/html/organization-new.html'
-        });
-
-        createFormModal.result.then((organization) =>  {
-          NotificationsService.success(`Organization successfully created.`);
-          $scope.organizations.unshift(organization);
-        }, (type, error) => {
+    public showCreateForm():void {
+      this.$modal.open({
+        controller: 'HawkularAccounts.OrganizationNewController as newModal',
+        templateUrl: 'plugins/accounts/html/organization-new.html'
+      })
+        .result
+        .then((organization:IOrganization) => {
+          this.NotificationsService.success('Organization successfully created.');
+          this.organizations.unshift(organization);
+        }, (type:string, error:IErrorPayload) => {
           if (type === 'error') {
-            NotificationsService.error(`Error while creating organization: ${error.data.message}`);
-            $log.info(`Modal dismissed with ERROR at: ${new Date()}`);
-          } else {
-            $log.info(`Modal dismissed at: ${new Date()}`);
+            this.NotificationsService.error(`Error while creating organization: ${error.data.message}`);
           }
         });
-      };
+    }
 
-      $scope.remove = (organization) => {
-        var removeOrgModal = $modal.open({
-          controller: 'HawkularAccounts.OrganizationRemoveController',
-          templateUrl: 'plugins/accounts/html/organization-remove-modal.html',
-          resolve: {
-            organization: () => organization
-          }
+    public remove(organization:IOrganization):void {
+      this.$modal.open({
+        controller: 'HawkularAccounts.OrganizationRemoveController as removeModal',
+        templateUrl: 'plugins/accounts/html/organization-remove-modal.html',
+        resolve: {
+          organization: () => organization
+        }
+      })
+        .result
+        .then(() => {
+          organization.$remove({}, () => {
+            this.NotificationsService.success('Organization successfully deleted.');
+            this.$rootScope.$broadcast('OrganizationRemoved');
+            this.organizations.splice(this.organizations.indexOf(organization), 1);
+          }, (error:IErrorPayload) => {
+            let message = `Failed to remove the organization ${organization.name}: ${error.data.message}`;
+            this.$log.warn(message);
+            this.NotificationsService.error(message);
+          });
         });
+    }
+  }
 
-        removeOrgModal.result.then(() => {
-          organization.$remove().then(
-            () => {
-              NotificationsService.success(`Organization successfully deleted.`);
-              $scope.$emit('OrganizationRemoved');
-              $scope.organizations.splice($scope.organizations.indexOf(organization), 1);
-            }, (error) => {
-              $log.warn('Error while trying to remove organization.');
-              $log.warn(error);
-              let message = error.data.message;
-              NotificationsService.error(`Failed to remove the organization ${organization.name}: ${message}`);
-            }
-          );
+  export class OrganizationNewController {
+    public organizationNew:IOrganization;
+
+    public static $inject = ['$rootScope', '$scope', '$modalInstance', '$log', 'HawkularAccount'];
+
+    constructor(private $rootScope:any,
+                private $scope:any,
+                private $modalInstance:any,
+                private $log:ng.ILogService,
+                private HawkularAccount:any) {
+      this.organizationNew = new HawkularAccount.Organization();
+    }
+
+    public cancel():void {
+      this.$modalInstance.dismiss('cancel');
+    }
+
+    public persist():void {
+      this.organizationNew.$save({},
+        (organization:IOrganization) => {
+          this.$rootScope.$broadcast('OrganizationCreated');
+          this.$modalInstance.close(organization);
+        }, (error:IErrorPayload) => {
+          this.$log.debug(`Organization could NOT be added: ${error.data.message}`);
+          this.$modalInstance.dismiss('error', error);
         });
-      };
+    }
+  }
 
-      $scope.load();
+  export class OrganizationRemoveController {
+    public static $inject = ['$scope', '$modalInstance', 'organization'];
 
-      $rootScope.$on('SwitchedPersona', () => {
-        $scope.loadOrganizations();
-      });
-    }]);
+    constructor(private $scope:any,
+                private $modalInstance:any,
+                private organization:IOrganization) {
+    }
 
-  export var OrganizationNewController = _module.controller('HawkularAccounts.OrganizationNewController', [
-    '$scope', '$modalInstance', '$log', '$location', 'HawkularAccount',
-    ($scope, $modalInstance, $log, $location, HawkularAccount) => {
+    public cancel():void {
+      this.$modalInstance.dismiss('cancel');
+    }
 
-      $scope.organizationNew = new HawkularAccount.Organization({});
+    public remove():void {
+      this.$modalInstance.close();
+    }
+  }
 
-      $scope.cancel = () => {
-        $modalInstance.dismiss('cancel');
-      };
-
-      $scope.persist = () => {
-        $scope.organizationNew.$save({},
-          () => {
-            $scope.$emit('OrganizationCreated');
-            $modalInstance.close($scope.organizationNew);
-          },
-          (e) => {
-            // error
-            $log.debug('Organization could NOT be added.');
-            $modalInstance.dismiss('error', e);
-          }
-        );
-        $log.debug('Trying to persist the organization');
-      };
-    }]);
-
-  export var OrganizationRemoveController = _module.controller('HawkularAccounts.OrganizationRemoveController', [
-    '$scope', '$modalInstance', 'organization', ($scope, $modalInstance, organization) => {
-      $scope.organization = organization;
-
-      $scope.cancel = () => {
-        $modalInstance.dismiss('cancel');
-      };
-
-      $scope.delete = () => {
-        $modalInstance.close();
-      };
-    }]);
+  _module.controller('HawkularAccounts.OrganizationsController', OrganizationsController);
+  _module.controller('HawkularAccounts.OrganizationNewController', OrganizationNewController);
+  _module.controller('HawkularAccounts.OrganizationRemoveController', OrganizationRemoveController);
 }

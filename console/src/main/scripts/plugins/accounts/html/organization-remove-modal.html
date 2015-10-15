@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <button type="button" class="close" ng-click="cancel()">
+  <button type="button" class="close" ng-click="removeModal.cancel()">
     <span class="pficon pficon-close"></span>
   </button>
   <h4 class="modal-title">Delete Organization</h4>
@@ -7,12 +7,12 @@
 <div class="modal-body">
   <div class="form-group">
     <p class="primary-message">
-      Are you sure you want to delete the organization <strong>{{organization.name}}</strong>?
+      Are you sure you want to delete the organization <strong>{{removeModal.organization.name}}</strong>?
     </p>
     <p>This action can't be undone.</p>
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
-  <button type="button" class="btn btn-danger" ng-click="delete()">Delete</button>
+  <button type="button" class="btn btn-default" ng-click="removeModal.cancel()">Cancel</button>
+  <button type="button" class="btn btn-danger" ng-click="removeModal.remove()">Delete</button>
 </div>

@@ -37,6 +37,12 @@ module HawkularAccounts {
     $update(options:{},
             success?:(success:IOrganization) => void,
             failure?:(error:IErrorPayload) => void);
+    $save(options:{},
+            success?:(success:IOrganization) => void,
+            failure?:(error:IErrorPayload) => void);
+    $remove(options:{},
+            success?:(success:IOrganization) => void,
+            failure?:(error:IErrorPayload) => void);
   }
 
   export interface IInvitation {

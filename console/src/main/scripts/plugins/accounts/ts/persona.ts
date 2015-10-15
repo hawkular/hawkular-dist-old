@@ -17,61 +17,65 @@
 
 /// <reference path='accountsPlugin.ts'/>
 module HawkularAccounts {
+  export class PersonaController {
+    public static $inject = ['$rootScope', '$scope', '$log', 'HawkularAccount', 'NotificationsService'];
 
-  export var PersonaController = _module.controller('HawkularAccounts.PersonaController', [
-    '$rootScope', '$scope', '$log', 'HawkularAccount', 'NotificationsService',
-    ($rootScope, $scope, $log, HawkularAccount, NotificationsService) => {
-      $scope.personas = [];
-      $scope.currentPersona = null;
+    public personas:Array<IPersona>;
+    public currentPersona:IPersona;
+    public loading:boolean = true;
 
-      $scope.load = () => {
-        $scope.loadCurrentPersona();
-      };
+    constructor(private $rootScope:any,
+                private $scope:any,
+                private $log:ng.ILogService,
+                private HawkularAccount:any,
+                private NotificationsService:INotificationsService) {
+      this.prepareListeners();
+      this.loadData();
+    }
 
-      $scope.loadCurrentPersona = () => {
-        $scope.currentPersona = HawkularAccount.Persona.get({id: 'current'},
-          () => {
-            $scope.$emit('CurrentPersonaLoaded', $scope.currentPersona);
-          },
-          () => {
-            NotificationsService.error('Error: Failed in retrieving the current persona.');
-            $log.warn('Failed in retrieving the current persona');
-          }
-        );
-      };
-
-      $scope.loadPersonas = () => {
-        $scope.personas = HawkularAccount.Persona.query({},
-          () => {
-            $scope.loading = false;
-          },
-          () => {
-            NotificationsService.error('Error: List of personas could NOT be retrieved.');
-            $log.warn('List of personas could NOT be retrieved.');
-            $scope.loading = false;
-          }
-        );
-      };
-
-      $scope.switchPersona = (persona) => {
-        $scope.currentPersona = persona;
-        $log.info('Switching persona to (emit)');
-        $log.info(persona);
-        $scope.$emit('SwitchedPersona', persona);
-      };
-
-      $rootScope.$on('CurrentPersonaLoaded', () => {
-        $scope.loadPersonas();
+    public prepareListeners():void {
+      this.$rootScope.$on('CurrentPersonaLoaded', () => {
+        this.loadPersonas();
       });
 
-      $rootScope.$on('OrganizationCreated', () => {
-        $scope.loadPersonas();
+      this.$rootScope.$on('OrganizationCreated', () => {
+        this.loadPersonas();
       });
 
-      $rootScope.$on('OrganizationRemoved', () => {
-        $scope.loadPersonas();
+      this.$rootScope.$on('OrganizationRemoved', () => {
+        this.loadPersonas();
       });
+    }
 
-      $scope.load();
-    }]);
+    public loadData():void {
+      this.loading = true;
+      this.currentPersona = this.HawkularAccount.Persona.get({id: 'current'},
+        (response:IPersona) => {
+          this.$rootScope.$broadcast('CurrentPersonaLoaded', response);
+        }, (error:IErrorPayload) => {
+          this.NotificationsService.error(`Failed to retrieve the current persona: ${error.data.message}`);
+          this.$log.warn(`Failed to retrieve the current persona: ${error.data.message}`);
+        }
+      );
+    }
+
+    public loadPersonas():void {
+      this.personas = this.HawkularAccount.Persona.query({},
+        (response:Array<IPersona>) => {
+          this.loading = false;
+        }, (error:IErrorPayload) => {
+          this.NotificationsService.error(`Failed to retrieve the list of possible personas: ${error.data.message}`);
+          this.$log.warn(`Failed to retrieve the list of possible personas: ${error.data.message}`);
+          this.loading = false;
+        }
+      );
+    }
+
+    public switchPersona(persona:IPersona):void {
+      this.currentPersona = persona;
+      this.$rootScope.$broadcast('SwitchedPersona', persona);
+    }
+  }
+
+  _module.controller('HawkularAccounts.PersonaController', PersonaController);
 }

@@ -57,20 +57,22 @@
                 </li>
               </ul>
             </li>
-            <li class="dropdown" ng-controller="HawkularAccounts.PersonaController">
+            <li class="dropdown" ng-controller="HawkularAccounts.PersonaController as personaController">
               <a href="#" dropdown-toggle>
                 <span class="pficon pficon-user"></span>
-                {{currentPersona.name}} <b class="caret"></b>
+                {{personaController.currentPersona.name}} <b class="caret"></b>
               </a>
               <ul class="dropdown-menu" id="personaSwitcher">
                 <li class="text-muted hk-using">Use Hawkular as:</li>
-                <li ng-repeat="persona in personas" ng-class="{'active': persona.id === currentPersona.id}">
-                  <a href="#" ng-click="switchPersona(persona)">
-                    <i class="fa fa-check" ng-class="{'hk-invisible': persona.id !== currentPersona.id}"></i>
+                <li ng-repeat="persona in personaController.personas"
+                    ng-class="{'active': persona.id === currentPersona.id}">
+                  <a href="#" ng-click="personaController.switchPersona(persona)">
+                    <i class="fa fa-check"
+                       ng-class="{'hk-invisible': persona.id !== personaController.currentPersona.id}"></i>
                     {{persona.name}}
                   </a>
                 </li>
-                <li class="divider" ng-show="personas.length"></li>
+                <li class="divider" ng-show="personaController.personas.length"></li>
                 <li>
                   <a id="organizationsOption" href="/hawkular-ui/organizations">Manage Organizations</a>
                 </li>
