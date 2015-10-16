@@ -988,7 +988,6 @@
       <subsystem xmlns="urn:jboss:domain:keycloak:1.1">
         <realm name="hawkular">
           <auth-server-url>/auth</auth-server-url>
-          <auth-server-url-for-backend-requests><xsl:text disable-output-escaping="yes">http://${jboss.bind.address:127.0.0.1}:${jboss.http.port:8080}/auth</xsl:text></auth-server-url-for-backend-requests>
           <ssl-required>none</ssl-required>
         </realm>
         <secure-deployment name="hawkular-accounts.war">
