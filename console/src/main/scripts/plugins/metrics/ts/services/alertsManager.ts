@@ -55,8 +55,23 @@ module HawkularMetrics {
     order?: string;
   }
 
+  export interface IHawkularTriggerCriteria {
+    triggerIds?: string;
+    tags?: string;
+    thin?: boolean;
+    currentPage?: number;
+    perPage?: number;
+    sort?: string;
+    order?: string;
+  }
+
   export interface IHawkularAlertQueryResult {
     alertList: IAlert[];
+    headers: any;
+  }
+
+  export interface IHawkularTriggerQueryResult {
+    triggerList: IAlertTrigger[];
     headers: any;
   }
 
@@ -160,6 +175,15 @@ module HawkularMetrics {
      *    }
      */
     getTrigger(triggerId:TriggerId): any;
+
+    /**
+     * @name queryTriggers
+     * @desc Fetch Triggers with different criterias
+     * @param criteria - Filter for triggers query
+     * @returns {ng.IPromise} with a list of Triggers
+     */
+    queryTriggers(criteria?: IHawkularTriggerCriteria):
+      ng.IPromise<IHawkularTriggerQueryResult>;
 
     /**
      * @name getTriggerConditions
@@ -603,6 +627,68 @@ module HawkularMetrics {
       }
 
       return this.$q.all(Array.prototype.concat(emailPromise, dampeningPromises, conditionPromises));
+    }
+
+    public queryTriggers(criteria: IHawkularTriggerCriteria):ng.IPromise<IHawkularTriggerQueryResult> {
+      let triggerList = [];
+      let headers;
+
+      /* Format of Triggers:
+
+       trigger: {
+       }
+
+       */
+
+      let queryParams = {};
+
+      if (criteria && criteria.triggerIds) {
+        queryParams['triggerIds'] = criteria.triggerIds;
+      }
+
+      if (criteria && criteria.tags) {
+        queryParams['tags'] = criteria.tags;
+      }
+
+      if (criteria && criteria.thin) {
+        queryParams['thin'] = criteria.thin;
+      }
+
+      if (criteria && criteria.currentPage && criteria.currentPage !== 0) {
+        queryParams['page'] = criteria.currentPage;
+      }
+
+      if (criteria && criteria.perPage) {
+        queryParams['per_page'] = criteria.perPage;
+      }
+
+      if (criteria && criteria.sort) {
+        queryParams['sort'] = criteria.sort;
+      }
+
+      if (criteria && criteria.order) {
+        queryParams['order'] = criteria.order;
+      }
+
+      return this.HawkularAlert.Trigger.query(queryParams, (serverTriggers:any, getHeaders:any) => {
+
+        headers = getHeaders();
+        let momentNow = this.$moment();
+
+        for (let i = 0; i < serverTriggers.length; i++) {
+          let serverTrigger = serverTriggers[i];
+          let consoleTrigger:any = serverTrigger;
+
+          triggerList.push(consoleTrigger);
+        }
+      }, (error) => {
+        this.$log.debug('querying data error', error);
+      }).$promise.then(():IHawkularTriggerQueryResult => {
+          return {
+            triggerList: triggerList,
+            headers: headers
+          };
+        });
     }
 
     private getEmailAction(email:EmailType):ng.IPromise<void> {

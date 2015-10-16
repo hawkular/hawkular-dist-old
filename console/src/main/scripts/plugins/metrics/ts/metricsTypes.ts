@@ -79,6 +79,7 @@ module HawkularMetrics {
   }
 
   export interface IHawkularRootScope extends ng.IRootScopeService {
+
     currentPersona:IPersona;
     userDetails:IUserDetails;
     PersistenceState:PersistenceState; // workaround, so that this enum can be accessed from the templates
@@ -159,6 +160,9 @@ module HawkularMetrics {
     triggerId: TriggerId;
     ///@todo: ignoring actions for now
 
+    // UI may augment this by adding a 'selected' property for list results
+    // so we can use the original data structure as-is
+    selected?: boolean;
   }
 
   export interface IAlert {
