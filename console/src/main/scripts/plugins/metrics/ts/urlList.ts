@@ -218,6 +218,7 @@ module HawkularMetrics {
               severity: 'HIGH',
               actions: {email: [defaultEmail]},
               context: {
+                description: 'Response Time for URL ' + url, // Workaround for sorting
                 resourceType: 'URL',
                 resourceName: url,
                 resourcePath: resourcePath
@@ -281,6 +282,7 @@ module HawkularMetrics {
               severity: 'CRITICAL',
               actions: {email: [defaultEmail]},
               context: {
+                description: 'Availability for URL ' + url, // Workaround for sorting
                 resourceType: 'URL',
                 resourceName: url,
                 resourcePath: resourcePath

@@ -1,10 +1,14 @@
 <div class="hk-screen-content">
-
   <hawkular-subtab ng-controller="Subtab.SubtabController">
+    <div class="hk-nav-tabs-container">
+      <ul class="nav nav-tabs nav-tabs-pf">
+        <li class="active"><a href="/hawkular-ui/alerts-center" class="hk-alerts">All Alerts</a></li>
+        <li><a href="#" class="hk-availability">Definitions</a></li>
+      </ul>
+    </div>
   </hawkular-subtab>
 
   <div class="hk-alert-center">
-    <h1 class="text-center">Alert Center</h1>
 
     <!-- No Alerts -->
     <div ng-show="ac.alertsList.length === 0">
@@ -64,9 +68,9 @@
             <th ng-click="ac.selectAll()"><input type="checkbox"/></th>
             <th ng-class="{'sorting_asc': ac.sortField == 'status' && ac.sortAsc, 'sorting_desc': ac.sortField == 'status' && !ac.sortAsc, 'sorting': ac.sortField != 'status'}" ng-click="ac.sortBy('status')">State</th>
             <th ng-class="{'sorting_asc': ac.sortField == 'severity' && ac.sortAsc, 'sorting_desc': ac.sortField == 'severity' && !ac.sortAsc, 'sorting': ac.sortField != 'severity'}" ng-click="ac.sortBy('severity')">Severity</th>
-            <th>Description</th>
+            <th ng-class="{'sorting_asc': ac.sortField == 'context.description' && ac.sortAsc, 'sorting_desc': ac.sortField == 'context.description' && !ac.sortAsc, 'sorting': ac.sortField != 'context.description'}" ng-click="ac.sortBy('context.description')">Description</th>
             <th ng-class="{'sorting_asc': ac.sortField == 'ctime' && ac.sortAsc, 'sorting_desc': ac.sortField == 'ctime' && !ac.sortAsc, 'sorting': ac.sortField != 'ctime'}" ng-click="ac.sortBy('ctime')" ng-click="ac.sortBy('ctime')">Created</th>
-            <th>Resource Path</th>
+            <th ng-class="{'sorting_asc': ac.sortField == 'context.resourcePath' && ac.sortAsc, 'sorting_desc': ac.sortField == 'context.resourcePath' && !ac.sortAsc, 'sorting': ac.sortField != 'context.resourcePath'}" ng-click="ac.sortBy('context.resourcePath')">Resource Path</th>
             <th></th>
           </tr>
           </thead>

@@ -33,7 +33,7 @@ module Subtab {
                                                                                HawkularNav, HawkularInventory) => {
 
       $scope.isAlertsPage = () => {
-        return $location.path().indexOf('/hawkular/ui/alerts-center') !== 0;
+        return $location.path().indexOf('/hawkular-ui/alerts-center') === 0;
       };
 
       $scope.isUrlPage = () => {
