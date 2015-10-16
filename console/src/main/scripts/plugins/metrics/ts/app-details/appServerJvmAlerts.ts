@@ -94,6 +94,7 @@ module HawkularMetrics {
             severity: 'MEDIUM',
             actions: {email: [this.defaultEmail]},
             context: {
+              description: 'JVM Heap Used for ' + resourceId, // Workaround for sorting
               resourceType: 'App Server',
               resourceName: resourceId,
               resourcePath: this.$rootScope.resourcePath
@@ -152,6 +153,7 @@ module HawkularMetrics {
             severity: 'HIGH',
             actions: {email: [this.defaultEmail]},
             context: {
+              description: 'JVM Non Heap Used for ' + resourceId, // Workaround for sorting
               resourceType: 'App Server',
               resourceName: resourceId,
               resourcePath: this.$rootScope.resourcePath
@@ -207,6 +209,7 @@ module HawkularMetrics {
             severity: 'HIGH',
             actions: {email: [this.defaultEmail]},
             context: {
+              description: 'Accumulated GC Duration for ' + resourceId, // Workaround for sorting
               resourceType: 'App Server',
               resourceName: resourceId,
               resourcePath: this.$rootScope.resourcePath

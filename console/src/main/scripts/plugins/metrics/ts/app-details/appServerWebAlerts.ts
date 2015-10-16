@@ -94,6 +94,7 @@ module HawkularMetrics {
             severity: 'MEDIUM',
             actions: {email: [this.defaultEmail]},
             context: {
+              description: 'Active Web Sessions for ' + resourceId, // Workaround for sorting
               resourceType: 'App Server',
               resourceName: resourceId,
               resourcePath: this.$rootScope.resourcePath
@@ -153,6 +154,7 @@ module HawkularMetrics {
               severity: 'LOW',
               actions: {email: [this.defaultEmail]},
               context: {
+                description: 'Expired Web Sessions for ' + resourceId, // Workaround for sorting
                 resourceType: 'App Server',
                 resourceName: resourceId,
                 resourcePath: this.$rootScope.resourcePath
@@ -210,6 +212,7 @@ module HawkularMetrics {
               severity: 'LOW',
               actions: {email: [this.defaultEmail]},
               context: {
+                description: 'Rejected Web Sessions for ' + resourceId, // Workaround for sorting
                 resourceType: 'App Server',
                 resourceName: resourceId,
                 resourcePath: this.$rootScope.resourcePath

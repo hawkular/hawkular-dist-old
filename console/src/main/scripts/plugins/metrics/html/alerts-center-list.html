@@ -68,9 +68,9 @@
             <th ng-click="ac.selectAll()"><input type="checkbox"/></th>
             <th ng-class="{'sorting_asc': ac.sortField == 'status' && ac.sortAsc, 'sorting_desc': ac.sortField == 'status' && !ac.sortAsc, 'sorting': ac.sortField != 'status'}" ng-click="ac.sortBy('status')">State</th>
             <th ng-class="{'sorting_asc': ac.sortField == 'severity' && ac.sortAsc, 'sorting_desc': ac.sortField == 'severity' && !ac.sortAsc, 'sorting': ac.sortField != 'severity'}" ng-click="ac.sortBy('severity')">Severity</th>
-            <th>Description</th>
+            <th ng-class="{'sorting_asc': ac.sortField == 'context.description' && ac.sortAsc, 'sorting_desc': ac.sortField == 'context.description' && !ac.sortAsc, 'sorting': ac.sortField != 'context.description'}" ng-click="ac.sortBy('context.description')">Description</th>
             <th ng-class="{'sorting_asc': ac.sortField == 'ctime' && ac.sortAsc, 'sorting_desc': ac.sortField == 'ctime' && !ac.sortAsc, 'sorting': ac.sortField != 'ctime'}" ng-click="ac.sortBy('ctime')" ng-click="ac.sortBy('ctime')">Created</th>
-            <th>Resource Path</th>
+            <th ng-class="{'sorting_asc': ac.sortField == 'context.resourcePath' && ac.sortAsc, 'sorting_desc': ac.sortField == 'context.resourcePath' && !ac.sortAsc, 'sorting': ac.sortField != 'context.resourcePath'}" ng-click="ac.sortBy('context.resourcePath')">Resource Path</th>
             <th></th>
           </tr>
           </thead>
