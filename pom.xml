@@ -84,11 +84,11 @@
     <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.hawkular.accounts>1.0.16.Final-SRC-revision-56f2e6171d1afc4b0fab825ddca976c9646ce098</version.org.hawkular.accounts>
-    <version.org.hawkular.agent>0.10.1.Final-SRC-revision-978a81e1a3f688e1505950d2c67d3c615c0b313d</version.org.hawkular.agent>
+    <version.org.hawkular.agent>0.10.1.Final-SRC-revision-573e908c607bdc2e21c454429240885215128c53</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.5.0.Final-SRC-revision-1386ca7dc771bc65c7c322e98246b445539bc017</version.org.hawkular.alerts>
     <version.org.hawkular.bus>0.7.1.Final-SRC-revision-dcf45532ff3dee64048989aa89889be5cadef69f</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.2.2.Final-SRC-revision-f4f9deaa1b7dd4c0c7b61a39bdf12fd62d31a651</version.org.hawkular.commons>
-    <version.org.hawkular.cmdgw>0.9.1.Final-SRC-revision-d8f85d04925ffe7e8e172a5b5059f9a14b9fef53</version.org.hawkular.cmdgw>
+    <version.org.hawkular.cmdgw>0.9.1.Final-SRC-revision-7a5aae31107aa17ec8469e155aa72d5053b19766</version.org.hawkular.cmdgw>
     <version.org.hawkular.metrics>0.9.0.Final-SRC-revision-9080fcfbe40a66ce8143c477b5d6f8fbadeecf3a</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.6.0.Final</version.org.hawkular.inventory>
     <version.org.hawkular.nest>${version.org.hawkular.bus}</version.org.hawkular.nest>
