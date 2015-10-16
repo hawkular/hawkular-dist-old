@@ -93,8 +93,6 @@ public class MetricReceiver implements MessageListener {
             }
             availPublisher.sendToMetricsViaRest(outer);
 
-            availPublisher.publishToTopic(outer, this);
-
         } catch (Exception e) {
             Log.LOG.eCouldNotHandleBusMessage(e);
         }

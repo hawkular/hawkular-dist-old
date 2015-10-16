@@ -89,7 +89,7 @@
     <version.org.hawkular.bus>0.7.1.Final-SRC-revision-dcf45532ff3dee64048989aa89889be5cadef69f</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.2.2.Final-SRC-revision-f4f9deaa1b7dd4c0c7b61a39bdf12fd62d31a651</version.org.hawkular.commons>
     <version.org.hawkular.cmdgw>0.9.1.Final-SRC-revision-d8f85d04925ffe7e8e172a5b5059f9a14b9fef53</version.org.hawkular.cmdgw>
-    <version.org.hawkular.metrics>0.7.0.Final</version.org.hawkular.metrics>
+    <version.org.hawkular.metrics>0.9.0.Final-SRC-revision-9080fcfbe40a66ce8143c477b5d6f8fbadeecf3a</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.6.0.Final</version.org.hawkular.inventory>
     <version.org.hawkular.nest>${version.org.hawkular.bus}</version.org.hawkular.nest>
     <version.org.keycloak>1.3.1.Final</version.org.keycloak>
@@ -202,14 +202,8 @@
       </dependency>
 
       <dependency>
-        <groupId>org.rhq.metrics</groupId>
-        <artifactId>rhq-metrics-api</artifactId>
-        <version>${version.org.hawkular.metrics}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.hawkular.metrics</groupId>
-        <artifactId>hawkular-metrics-api-jaxrs</artifactId>
+        <artifactId>hawkular-metrics-component</artifactId>
         <version>${version.org.hawkular.metrics}</version>
         <type>war</type>
       </dependency>

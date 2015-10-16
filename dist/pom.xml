@@ -101,7 +101,7 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
-      <artifactId>hawkular-metrics-api-jaxrs</artifactId>
+      <artifactId>hawkular-metrics-component</artifactId>
       <type>war</type>
     </dependency>
     <dependency>

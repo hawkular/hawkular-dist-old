@@ -192,7 +192,6 @@ public class PingManager {
 
         for (PingStatus status : results) {
             metricPublisher.sendToMetricsViaRest(status);
-            metricPublisher.publishToTopic(status);
             traitsPublisher.publish(status);
         }
 

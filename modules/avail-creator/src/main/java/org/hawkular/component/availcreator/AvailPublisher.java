@@ -30,10 +30,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.hawkular.bus.common.ConnectionContextFactory;
-import org.hawkular.bus.common.Endpoint;
-import org.hawkular.bus.common.MessageProcessor;
-import org.hawkular.bus.common.producer.ProducerConnectionContext;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,11 +70,12 @@ public class AvailPublisher {
             Availability availability = new Availability(avr.timestamp, avr.avail.toLowerCase());
             List<Availability> list = new ArrayList<>(1);
             list.add(availability);
-            String payload = null;
+            String payload;
             try {
                 payload = new ObjectMapper().writeValueAsString(list);
             } catch (JsonProcessingException e) {
                 Log.LOG.eCouldNotParseMessage(e);
+                return;
             }
             request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
 
@@ -90,26 +87,6 @@ public class AvailPublisher {
             } catch (IOException e) {
                 Log.LOG.wAvailPostStatus(e.getMessage());
             }
-        }
-    }
-
-    public void publishToTopic(List<SingleAvail> availRecordList, MetricReceiver metricReceiver) {
-        if (metricReceiver.topic != null) {
-            AvailDataMessage.AvailData availData = new AvailDataMessage.AvailData();
-            availData.setData(availRecordList);
-
-            try (ConnectionContextFactory factory = new ConnectionContextFactory(metricReceiver.connectionFactory)) {
-                Endpoint endpoint = new Endpoint(Endpoint.Type.TOPIC, metricReceiver.topic.getTopicName());
-                ProducerConnectionContext pc = factory.createProducerConnectionContext(endpoint);
-                MessageProcessor processor = new MessageProcessor();
-                AvailDataMessage msg = new AvailDataMessage(availData);
-                processor.send(pc, msg);
-            } catch (Exception e) {
-                Log.LOG.eCouldNotSendMessage(e);
-            }
-        }
-        else {
-            Log.LOG.wNoTopicConnection("HawkularAvailData");
         }
     }
 }
