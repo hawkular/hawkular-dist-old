@@ -22,7 +22,7 @@
     <!-- endbower -->
   </head>
 
-  <body class="ng-cloak">
+  <body class="ng-cloak" ng-controller="GlobalController as global">
     <nav class="navbar navbar-default navbar-pf" role="navigation">
       <div idle-countdown="countdown" ng-init="countdown=30" id="idle">
         <strong>You'll be logged out in {{countdown}} second(s).</strong>.
@@ -36,8 +36,9 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">
-            <img id="hawkularLogo" src="resources/img/brand.svg" alt="RED HAT JBOSS HAWKULAR Management Console" title="Hawkular">
+          <a class="navbar-brand" ng-click="global.experimentalMode()" >
+            <img id="hawkularLogo" src="resources/img/brand.svg"
+                 alt="RED HAT JBOSS HAWKULAR Management Console" title="Hawkular">
           </a>
         </div>
         <div class="collapse navbar-collapse navbar-collapse-1">
