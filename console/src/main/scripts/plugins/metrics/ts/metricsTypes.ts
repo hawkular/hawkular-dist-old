@@ -86,6 +86,7 @@ module HawkularMetrics {
     hkEndTimestamp:TimestampInMillis;
     hkParams:IhkParams;
     resourcePath:ResourcePath;
+    isExperimental:boolean;
   }
 
   export interface IResourceProperties {

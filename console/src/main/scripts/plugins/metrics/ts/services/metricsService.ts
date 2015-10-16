@@ -79,18 +79,21 @@ module HawkularMetrics {
      * @param response
      * @returns IChartDataPoint[]
      */
-    public static formatBucketedChartOutput(response):IChartDataPoint[] {
+    public static formatBucketedChartOutput(response,multiplier?: number):IChartDataPoint[] {
+      if (!multiplier) {
+          multiplier =1;
+      }
       //  The schema is different for bucketed output
       return _.map(response, (point:IChartDataPoint) => {
         return {
           timestamp: point.start,
           date: new Date(point.start),
-          value: !angular.isNumber(point.value) ? 0 : point.value,
-          avg: (point.empty) ? 0 : point.avg,
-          min: !angular.isNumber(point.min) ? 0 : point.min,
-          max: !angular.isNumber(point.max) ? 0 : point.max,
-          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
-          median: !angular.isNumber(point.median) ? 0 : point.median,
+          value: !angular.isNumber(point.value) ? 0 : point.value * multiplier,
+          avg: (point.empty) ? 0 : point.avg * multiplier,
+          min: !angular.isNumber(point.min) ? 0 : point.min * multiplier,
+          max: !angular.isNumber(point.max) ? 0 : point.max * multiplier,
+          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th * multiplier,
+          median: !angular.isNumber(point.median) ? 0 : point.median * multiplier,
           empty: point.empty
         };
       });

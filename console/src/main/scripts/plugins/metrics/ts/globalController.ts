@@ -40,8 +40,9 @@ module HawkularMetrics {
     }
 
     public experimentalMode():void {
-      this.$log.info('Starting Experimintal Mode');
+      this.$log.info('Starting Experimental Mode');
       this.isExperimental = true;
+      this.$rootScope.isExperimental = true;
     }
   }
 

@@ -1,0 +1,144 @@
+<section id="hk-platform-metrics" class="hk-tab-content">
+
+  <h3 class="pull-left">Platform Status</h3>
+
+  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+  <div class="panel panel-default hk-summary">
+    <div class="row">
+      <div class="col-sm-3 hk-summary-item">
+        <span class="hk-data">{{os.alertList.length}}
+            <i class="fa fa-flag" ng-show="os.alertList.length > 0"></i></span>
+        <span class="hk-item">Platform Alerts</span>
+      </div>
+      <div class="col-sm-3 hk-summary-item">
+        <span class="hk-data" ng-show="os.memoryAvail">{{ os.memoryAvail.avg / 1024 / 1024 | number : 0 }} MB</span>
+        <span class="hk-data" ng-hide="os.memoryAvail">n/a</span>
+        <span class="hk-item">Average Memory Usage</span>
+      </div>
+      <div class="col-sm-3 hk-summary-item">
+        <span class="hk-data" ng-show="os.cpuUsage">{{ os.cpuUsage.avg * 100 | number : 1 }} %</span>
+        <span class="hk-data" ng-hide="os.cpuUsage">n/a</span>
+        <span class="hk-item">CPU Usage</span>
+      </div>
+      <div class="col-sm-3 hk-summary-item">
+        <span class="hk-data" ng-show="os.cpuUsage">{{ os.cpuUsage.max * 100 | number : 1 }} %</span>
+        <span class="hk-data" ng-hide="os.cpuUsage">n/a</span>
+        <span class="hk-item">Maximum CPU Usage</span>
+      </div>
+    </div>
+  </div>
+
+<!--
+  <div class="hk-info-top clearfix">
+    <h3 class="pull-left">
+      <button class="btn btn-link hk-trigger" ng-click="vm.showAllAlerts = !vm.showAllAlerts" tooltip-trigger
+              tooltip-placement="top" tooltip="Expand/collapse">
+        <i class="fa" ng-show="vm.alertList.length > 0"
+           ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> JVM Alerts
+        <span ng-show="vm.alertList.length > 0">
+          ({{vm.showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})
+        </span>
+      </button>
+    </h3>
+    <span class="hk-settings pull-left">
+      <a href="#" ng-controller="JvmAlertController as jac" ng-click="jac.openSetup()">
+        <i class="fa fa-cog"></i>Alert Settings
+      </a>
+    </span>
+  </div>
+-->
+  <div class="clearfix">
+    <!-- No Alerts -->
+    <div class="panel panel-default alert alert-info" ng-show="os.alertList.length === 0">
+      <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
+      <div class="hk-event">No Alerts.</div>
+    </div>
+    <!-- Alerts exist -->
+    <hk-alert-panel-list class="clearfix" hk-alert-list="os.alertList"
+                         hk-limit="(os.showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
+  </div>
+
+
+  <div class="hk-info-top clearfix">
+    <h3 class="pull-left">Metrics</h3>
+    <div class="hk-update pull-right">
+      <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top"
+              tooltip="Update chart" ng-click="os.getCPUChartData()"><i class="fa fa-refresh"></i></button>
+    </div>
+  </div>
+
+  <div class="panel panel-default hk-graph" ng-if="os.chartMemoryUsageData">
+    <h2>Memory Usage</h2>
+    <div class="hk-graph-container hk-graph-metrics" ng-if="os.resolvedMemoryData">
+      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+      <hawkular-chart
+          data="os.chartMemoryUsageData"
+          chart-type="hawkularmetric"
+          y-axis-units="Usage (MB)"
+          chart-height="250">
+      </hawkular-chart>
+    </div>
+  </div>
+
+  <div class="panel panel-default hk-graph" ng-if="os.chartCpuData">
+    <h2>CPU Usage</h2>
+    <div class="hk-graph-container hk-graph-metrics" ng-if="os.resolvedCPUData">
+      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+      <hawkular-chart
+          data="os.chartCpuData"
+          chart-type="hawkularmetric"
+          y-axis-units="Usage (%)"
+          chart-height="250">
+      </hawkular-chart>
+    </div>
+
+  <div class="panel panel-default hk-graph">
+    <h2>File System usage</h2>
+
+
+      <div class="hk-resource-container"
+           ng-repeat="fs in os.fileStoreList">
+
+          <div class="panel panel-default hk-summary">
+              <div class="panel-heading">
+                  <span class="hk-heading">{{fs.properties.name}}</span>
+              </div>
+              <div class="hk-panel-collapse-area" ng-class="{'hk-collapsed' : !os.expandedList[fs.id]}">
+                <a href="#" ng-click="os.expandedList[fs.id] = !os.expandedList[fs.id]">
+                  <span ng-hide="os.expandedList[fs.id]">View Metrics</span>
+                  <span ng-show="os.expandedList[fs.id]">Hide Metrics</span>
+                  <i class="fa"
+                     ng-class="os.expandedList[fs.id] ? 'fa-chevron-circle-up' : 'fa-chevron-circle-down'"></i>
+                </a>
+              </div>
+
+              <div class="hk-collapsible-area" ng-class="{ 'hide': !os.expandedList[fs.id]}"
+                   ng-if="os.expandedList[fs.id]">
+
+                  <div class="hk-info-top clearfix">
+                    <h3 class="pull-left">Metrics</h3>
+
+                    <div class="hk-update pull-right">
+                      <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart">
+                        <i class="fa fa-refresh"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                <div class="hk-graph-container hk-graph-metrics" ng-if="os.resolvedChartFileSystemData[fs.id]">
+                  <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+                  <hawkular-chart
+                          multi-data="os.chartFileSystemData[fs.id]"
+                          chart-type="multiline"
+                          y-axis-units="FS Usage (MB)"
+                          chart-height="250">
+                  </hawkular-chart>
+                </div>
+              <div class="hk-legend text-left hk-legend-metrics">
+              </div>
+          </div>
+         </div>
+      </div>
+
+  </div>
+</section>
