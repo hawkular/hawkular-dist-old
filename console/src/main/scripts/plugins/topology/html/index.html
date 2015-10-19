@@ -1,0 +1,72 @@
+<div class="hk-application-servers" data-ng-controller="HawkularTopology.TopologyController as vm">
+
+    <hawkular-topology-graph items="vm.data.items" relations="vm.data.relations" kinds="vm.kinds">
+    </hawkular-topology-graph>
+
+    <div class="controls">
+      <label id="selected"></label>
+      <!--<button ng-click="vm.poke()" >Random Data</button>-->
+      <!--<button ng-click="vm.testClick()">test</button>-->
+
+       <div class="iconWithLabel">
+         <hawkular-topology-icon kind="Server">
+           <svg class="hawkular-topology">
+             <use xlink:href="#vertex-Server" x="15" y="15"></use>
+           </svg>
+         </hawkular-topology-icon>
+         <label>Servers</label>
+         <br/>
+       </div>
+
+       <div class="iconWithLabel">
+         <hawkular-topology-icon kind="App">
+           <svg class="hawkular-topology">
+             <use xlink:href="#vertex-App" x="15" y="15"></use>
+           </svg>
+         </hawkular-topology-icon>
+         <label>Apps</label>
+         <br/>
+       </div>
+
+       <!--<hawkular-topology-icon kind="Database">
+         <svg class="hawkular-topology">
+           <use xlink:href="#vertex-Database" x="15" y="15"></use>
+         </svg>
+       </hawkular-topology-icon>
+       <label>Databases</label>-->
+
+       <div class="iconWithLabel">
+         <hawkular-topology-icon kind="DataSource">
+           <svg class="hawkular-topology">
+             <use xlink:href="#vertex-DataSource" x="15" y="15"></use>
+           </svg>
+         </hawkular-topology-icon>
+         <label>Datasources</label>
+         <br/>
+       </div>
+    </div>
+
+    <svg class="hawkular-topology" hidden>
+      <defs><!--
+        <g class="Database" id="vertex-Database">
+          <circle r="15"></circle>
+          <text y="6">&#xf1c0;</text>
+        </g>-->
+        <g class="Server" id="vertex-Server">
+          <circle r="15"></circle>
+          <!-- <text y="6" x="0.5">&#xf233;</text> -->
+          <text y="6" x="0.5">&#xf233;</text>
+        </g>
+        <g class="App" id="vertex-App">
+          <circle r="15"></circle>
+          <!-- <text y="10" x="1">&#xf135;</text> -->
+          <text y="7" x="0">&#xf135;</text>
+        </g>
+        <g class="DataSource" id="vertex-DataSource">
+          <circle r="15"></circle>
+          <!-- <text y="7.5">&#xf0ec;</text> -->
+          <text y="5">&#xf1c0;</text>
+        </g>
+      </defs>
+    </svg>
+</div>

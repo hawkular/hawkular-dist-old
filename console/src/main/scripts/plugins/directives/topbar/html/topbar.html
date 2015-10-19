@@ -8,4 +8,7 @@
   <li ng-class="getClass('/hawkular-ui/app/')">
     <a href="/hawkular-ui/app/app-list">Application Servers</a>
   </li>
+  <li ng-class="getClass('/hawkular-ui/topology/')" ng-show="$rootScope.isExperimental">
+    <a href="/hawkular-ui/topology/view">Topology</a>
+  </li>
 </ul>
