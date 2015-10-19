@@ -77,6 +77,7 @@ module HawkularMetrics {
     /**
      * formatBucketedChartOutput
      * @param response
+     * @param multiplier Value to multiply the original value with. Eg. 100 for double -> % or (1/1024) for byte->kb
      * @returns IChartDataPoint[]
      */
     public static formatBucketedChartOutput(response,multiplier?: number):IChartDataPoint[] {

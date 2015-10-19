@@ -45,7 +45,9 @@ module HawkularMetrics {
     public alertList;
     public fileStoreList;
     public processorList;
+    public processorListNames;
     public chartCpuData:IChartDataPoint[];
+    public chartCpuDataMulti:IChartDataPoint[];
     public chartFileSystemData;//:IMultiDataPoint[];
     public startTimeStamp:TimestampInMillis;
     public endTimeStamp:TimestampInMillis;
@@ -80,29 +82,29 @@ module HawkularMetrics {
       this.endTimeStamp = +moment();
       this.chartCpuData = [];
       this.chartFileSystemData = {};
+      this.chartCpuDataMulti = [];
       this.feedId= this.$routeParams.resourceId.split('~')[0];
 
       if ($rootScope.currentPersona) {
           this.$log.log('We have have a persona');
-          this.getProcessors();
-          this.getFileSystems();
-          this.getPlatformData();
-          this.getCPUMemoryChartData();
-          this.getFSChartData();
+        this.setup();
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
         $rootScope.$watch('currentPersona',
-          (currentPersona) => currentPersona
-          && this.getProcessors()
-          && this.getFileSystems()
-          && this.getPlatformData());
+          (currentPersona) => currentPersona && this.setup());
       }
 
       //this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
 
-
       this.autoRefresh(20);
     }
+
+    private setup() {
+      this.getProcessors();
+      this.getFileSystems();
+      this.getPlatformData();
+      this.refresh();
+    };
 
     private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       let pheapArray:any, nheapArray:any, garbaArray:any;
@@ -146,10 +148,7 @@ module HawkularMetrics {
 
     private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(() => {
-        //this.getFileSystems();
-        this.getPlatformData();
-        this.getCPUMemoryChartData();
-        this.getFSChartData();
+        this.refresh();
         //this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
       }, intervalInSeconds * 1000);
 
@@ -157,6 +156,14 @@ module HawkularMetrics {
         this.$interval.cancel(this.autoRefreshPromise);
       });
     }
+
+    private refresh() {
+      this.getPlatformData();
+      this.getCPUChartData();
+      this.getMemoryChartData();
+      this.getFSChartData();
+      this.getCpuChartDetailData();
+    };
 
     public getFileSystems(): any {
 this.$log.log('getFileSystems');
@@ -198,12 +205,16 @@ this.$log.log('getProcessors');
           let tmpResourceList = [];
           this.$q.all(promises).then(() => {
             this.processorList = []; // aResourceList;
+            this.processorListNames = [];
             // Generate metric key from resource id
             for (var i = 0; i < aResourceList.length;i++) {
                 let tmp:string = this.feedId + '~MI~R~[' + aResourceList[i].id + ']~MT~CPU Usage';
                 this.processorList[i] = tmp;
+                this.processorListNames[tmp] = aResourceList[i].id;
 
             }
+            this.$log.log('Success, got CPUs ' + aResourceList.length);
+            this.getCPUChartData();
           });
         },
         () => { // error
@@ -245,6 +256,7 @@ this.$log.log('getPlatformData');
     }
 
     public getFSChartData():void {
+this.$log.log('getFSChartData');
         this.endTimeStamp = this.$routeParams.endTime || +moment();
         this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
@@ -255,43 +267,53 @@ this.$log.log('getPlatformData');
         let tmpChartAvailData = {};
 
         angular.forEach(this.fileStoreList, function(res, idx) {
+          if (!this.skipChartData[res.id + '_Free']) {
             availPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-                gaugeId: this.feedId + '~MI~R~[' + res.id + ']~MT~Usable Space',
-                start: this.startTimeStamp,
-                end: this.endTimeStamp, buckets: 60
+              gaugeId: this.feedId + '~MI~R~[' + res.id + ']~MT~Usable Space',
+              start: this.startTimeStamp,
+              end: this.endTimeStamp, buckets: 60
             }, (data) => {
-                tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
-                tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
-                    key: 'Usable Space',
-                    color: AppServerPlatformDetailsController.USED_COLOR,
-                    values: MetricsService.formatBucketedChartOutput(data,1/(1024*1024))
-                };
+              tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
+              tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
+                key: 'Usable Space',
+                color: AppServerPlatformDetailsController.USED_COLOR,
+                values: MetricsService.formatBucketedChartOutput(data, 1 / (1024 * 1024))
+              };
             }, this).$promise);
+          }
+          if (!this.skipChartData[res.id + '_Total']) {
             availPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-                gaugeId: this.feedId + '~MI~R~[' + res.id + ']~MT~Total Space',
-                start: this.startTimeStamp,
-                end: this.endTimeStamp, buckets: 60
+              gaugeId: this.feedId + '~MI~R~[' + res.id + ']~MT~Total Space',
+              start: this.startTimeStamp,
+              end: this.endTimeStamp,
+              buckets: 60
             }, (data) => {
-                tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
-                tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
-                    key: 'Total Space',
-                    color: AppServerPlatformDetailsController.MAXIMUM_COLOR,
-                    values: MetricsService.formatBucketedChartOutput(data,1/(1024*1024))
-                };
+              tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
+              tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
+                key: 'Total Space',
+                color: AppServerPlatformDetailsController.MAXIMUM_COLOR,
+                values: MetricsService.formatBucketedChartOutput(data, 1 / (1024 * 1024))
+              };
             }, this).$promise);
-            this.$q.all(availPromises).finally(()=> {
-                this.chartFileSystemData[res.id] = tmpChartAvailData[res.id] || [];
-                this.resolvedChartFileSystemData[res.id] = true;
-            });
+          }
+          this.$q.all(availPromises).finally(()=> {
+              this.chartFileSystemData[res.id] = tmpChartAvailData[res.id] || [];
+              this.resolvedChartFileSystemData[res.id] = true;
+          });
         },this);
     }
 
-    public getCPUMemoryChartData():void {
+    public getCPUChartData():void {
+      this.$log.log('getCPUChartData');
+
+      let tenantId:TenantId = this.$rootScope.currentPersona.id;
 
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
-    if (this.processorList) {
+      this.$log.log('Got cpus: ' + this.processorList);
+      if (this.processorList) {
+
         this.HawkularMetric.GaugeMetricMultipleStats(this.$rootScope.currentPersona.id).get({
           metrics: this.processorList,
           start: this.startTimeStamp,
@@ -299,13 +321,51 @@ this.$log.log('getPlatformData');
           buckets: 60
         }, (resource) => {
           if (resource.length) {
-            this.chartCpuData = MetricsService.formatBucketedChartOutput(resource,100);
+            this.chartCpuData = MetricsService.formatBucketedChartOutput(resource, 100);
             this.resolvedCPUData = true;
           }
         }, this);
+      }
     }
 
+    public getCpuChartDetailData():void {
 
+      let tenantId:TenantId = this.$rootScope.currentPersona.id;
+
+      this.endTimeStamp = this.$routeParams.endTime || +moment();
+      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
+
+      this.$log.log('CPU Chart detail Got cpus: ' + this.processorList);
+      if (this.processorList) {
+
+
+        let cpuPromises = [];
+        let tmpChartData = {};
+        let res:string = '';
+
+        //for (var i = 0; i < this.processorList.length;i++) {
+        angular.forEach(this.processorList, function(res:string, idx) {
+          //res = this.processorList[i];
+
+          cpuPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+            gaugeId: res,
+            start: this.startTimeStamp,
+            end: this.endTimeStamp,
+            buckets: 60
+          }, (data) => {
+            this.$log.log('Loaded ' + res);
+            //tmpChartData[res] = MetricsService.formatBucketedChartOutput(data, 100);
+            this.chartCpuDataMulti[res] = MetricsService.formatBucketedChartOutput(data, 100);
+          }, this).$cpuPromise);
+        this.$q.all(cpuPromises).then(() => {
+          //this.chartCpuDataMulti[res] = tmpChartData[res] || [];
+        });
+      },this);
+    }
+}
+
+    public getMemoryChartData():void {
+      this.$log.log('getMemoryChartData');
 
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: this.feedId + '~MI~R~[' + 'Memory' + ']~MT~Available Memory',
@@ -322,7 +382,6 @@ this.$log.log('getPlatformData');
 
     public toggleChartData(name): void {
       this.skipChartData[name] = !this.skipChartData[name];
-      this.getCPUMemoryChartData();
     }
 
   }
