@@ -1,5 +1,11 @@
 <div class="hk-application-servers" data-ng-controller="HawkularTopology.TopologyController as vm">
 
+  <div class="text-center hk-urls-list hk-spinner-container" ng-hide="vm.data.relations.length">
+    <div class="spinner spinner-lg"></div>
+    <p class="hk-spinner-legend-below">Loading...</p>
+  </div>
+  <div ng-show="vm.data.relations.length" ng-class="{'hk-fade-in': vm.data.relations.length}">
+
     <hawkular-topology-graph items="vm.data.items" relations="vm.data.relations" kinds="vm.kinds">
     </hawkular-topology-graph>
 
@@ -69,4 +75,5 @@
         </g>
       </defs>
     </svg>
+    </div>
 </div>

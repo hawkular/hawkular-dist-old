@@ -32,15 +32,18 @@ module HawkularTopology {
     }]);
 
   export class TopologyController {
-    public static $inject = ['$rootScope', '$log', '$routeParams', '$modal', '$q', 'HawkularAccount',
-    'HawkularInventory', /*'NotificationsApp',*/ 'userDetails'];
+    public static $inject = ['$rootScope', '$scope', '$interval', '$log', '$routeParams', '$modal', '$q',
+    'HawkularAccount', 'HawkularInventory', /*'NotificationsApp',*/ 'userDetails'];
     private data: any;
     private index = 0;
     private partialData: any;
     private kinds: any;
+    private autoRefreshPromise: ng.IPromise<any>;
 
     constructor(private $rootScope:any,
+      private $scope: any,
       // private $log:ng.ILogApp,
+      private $interval: ng.IIntervalService,
       private $log:any,
       private $routeParams:any,
       private $modal:any,
@@ -50,8 +53,6 @@ module HawkularTopology {
       private HawkularInventory:any,
       // private NotificationsApp:INotificationsApp,
       private userDetails:any) {
-
-      $log.info('Loading topology controller');
 
 
       var datasets = [];
@@ -77,6 +78,7 @@ module HawkularTopology {
 
       // fetch the data from the inventory
       this.getData();
+      this.autoRefresh(20);
     }
 
     public testClick() {
@@ -85,6 +87,16 @@ module HawkularTopology {
         kind: 'DataSource'
       };
       this.$rootScope.$digest();
+    }
+
+    private autoRefresh(intervalInSeconds: number): void {
+      this.autoRefreshPromise = this.$interval(() => {
+        this.getData();
+      }, intervalInSeconds * 1000);
+
+      this.$scope.$on('$destroy', () => {
+        this.$interval.cancel(this.autoRefreshPromise);
+      });
     }
 
     private getResourcesForResType(feedId: string, resourceType: string) {
@@ -152,14 +164,11 @@ module HawkularTopology {
               }
               newData.items[res.id] = newItem;
             });
-            console.log('resp2: ' + newData);
             newData.relations = newRelations;
             this.data = newData;
           });
 });
 }
-
-    // todo: create methods and fields instead of doing everything on the '$rootScope'
 
   }
 
