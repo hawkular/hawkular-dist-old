@@ -1,8 +1,0 @@
-= Hawkular Rest Api
-
-Base Url: /hawkular/api
-
-The API offers the following endpoints:
-
-== Add URL
-
