@@ -1,7 +1,7 @@
 <div class="hk-application-servers" data-ng-controller="HawkularTopology.TopologyController as vm">
 
-    <kubernetes-topology-graph items="vm.data.items" relations="vm.data.relations" kinds="vm.kinds">
-    </kubernetes-topology-graph>
+    <hawkular-topology-graph items="vm.data.items" relations="vm.data.relations" kinds="vm.kinds">
+    </hawkular-topology-graph>
 
     <div class="controls">
       <label id="selected"></label>
@@ -9,44 +9,44 @@
       <!--<button ng-click="vm.testClick()">test</button>-->
 
        <div class="iconWithLabel">
-         <kubernetes-topology-icon kind="Server">
-           <svg class="kube-topology">
+         <hawkular-topology-icon kind="Server">
+           <svg class="hawkular-topology">
              <use xlink:href="#vertex-Server" x="15" y="15"></use>
            </svg>
-         </kubernetes-topology-icon>
+         </hawkular-topology-icon>
          <label>Servers</label>
          <br/>
        </div>
 
        <div class="iconWithLabel">
-         <kubernetes-topology-icon kind="App">
-           <svg class="kube-topology">
+         <hawkular-topology-icon kind="App">
+           <svg class="hawkular-topology">
              <use xlink:href="#vertex-App" x="15" y="15"></use>
            </svg>
-         </kubernetes-topology-icon>
+         </hawkular-topology-icon>
          <label>Apps</label>
          <br/>
        </div>
 
-       <!--<kubernetes-topology-icon kind="Database">
-         <svg class="kube-topology">
+       <!--<hawkular-topology-icon kind="Database">
+         <svg class="hawkular-topology">
            <use xlink:href="#vertex-Database" x="15" y="15"></use>
          </svg>
-       </kubernetes-topology-icon>
+       </hawkular-topology-icon>
        <label>Databases</label>-->
 
        <div class="iconWithLabel">
-         <kubernetes-topology-icon kind="DataSource">
-           <svg class="kube-topology">
+         <hawkular-topology-icon kind="DataSource">
+           <svg class="hawkular-topology">
              <use xlink:href="#vertex-DataSource" x="15" y="15"></use>
            </svg>
-         </kubernetes-topology-icon>
+         </hawkular-topology-icon>
          <label>Datasources</label>
          <br/>
        </div>
     </div>
 
-    <svg class="kube-topology" hidden>
+    <svg class="hawkular-topology" hidden>
       <defs><!--
         <g class="Database" id="vertex-Database">
           <circle r="15"></circle>

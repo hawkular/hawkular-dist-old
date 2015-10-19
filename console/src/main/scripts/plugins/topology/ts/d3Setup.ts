@@ -2,18 +2,21 @@
 /// Copyright 2015 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
-/// Licensed under the Apache License, Version 2.0 (the 'License');
+/// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
 ///
 ///    http://www.apache.org/licenses/LICENSE-2.0
 ///
 /// Unless required by applicable law or agreed to in writing, software
-/// distributed under the License is distributed on an 'AS IS' BASIS,
+/// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 ///
+
+/// <reference path='../../includes.ts'/>
+/// <reference path='topologyGlobals.ts'/>
 
 module HawkularTopology {
 
@@ -22,7 +25,7 @@ module HawkularTopology {
         /* A cache to prevent jumping when rapidly toggling views */
         var cache = {};
 
-        var topology_graph = (selector, force, notify) => {
+        var initGraph = (selector, force, notify) => {
             var outer = d3.select(selector);
 
             /* Kinds of objects to show */
@@ -56,7 +59,7 @@ module HawkularTopology {
             var svg = outer.append('svg')
                 .attr('viewBox', '0 0 1600 1200')
                 .attr('preserveAspectRatio', 'xMidYMid meet')
-                .attr('class', 'kube-topology');
+                .attr('class', 'hawkular-topology');
 
             var vertices = d3.select();
             var edges = d3.select();
@@ -73,8 +76,17 @@ module HawkularTopology {
             let tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
-                .html((d) => '<span class="chartHoverLabel">' + d.item.kind +
-                    ':</span> <span class="chartHoverValue">' + d.item.metadata.name + '</span>');
+                .html((d) => {
+                    return '<table><tr><td><span class="chartHoverLabel">' + d.item.kind +
+                        ':</span></td><td><span class="chartHoverValue">' + d.item.metadata.name + '</span></td></tr>' +
+                    (d.item.kind === 'Server' ?
+                        '<tr><td><span class="chartHoverLabel">IP:</span></td><td><span class="chartHoverValue">' +
+                        d.item.metadata.ip +
+                        '</span></td></tr><tr><td><span class="chartHoverLabel">Hostname:</span></td><td>' +
+                        '<span class="chartHoverValue">' +
+                        d.item.metadata.hostname + '</span></td></tr></table>' : '');
+
+                });
 
             drag
                 .on('dragstart', (d) => {
@@ -155,17 +167,17 @@ module HawkularTopology {
                         var path;
                         switch (n.item.kind) {
                             case 'Server':
-                            var id = n.item.id.substring(0, n.item.id.length - 2);
-                            path = '/hawkular-ui/app/app-details/' + id + '/jvm';
-                            break;
+                                var id = n.item.id.substring(0, n.item.id.length - 2);
+                                path = '/hawkular-ui/app/app-details/' + id + '/jvm';
+                                break;
                             case 'App':
                                 path = '/hawkular-ui/app/app-details/' + extractServerId(n.item.id) + '/deployments/';
-                            break;
+                                break;
                             case 'DataSource':
                                 path = '/hawkular-ui/app/app-details/' + extractServerId(n.item.id) + '/datasources';
-                            break;
+                                break;
                             default:
-                            return;
+                                return;
                         }
                         $location.path(path);
                         $rootScope.$digest();
@@ -280,7 +292,6 @@ module HawkularTopology {
                 }
             };
         };
-        window['topology_graph'] = topology_graph;
-
+        HawkularTopology.initGraph = initGraph;
     });
 }

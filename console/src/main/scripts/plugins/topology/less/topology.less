@@ -38,7 +38,7 @@ body {
   margin: 0px;
   font-family: sans-serif;
 }
-kubernetes-topology-graph {
+hawkular-topology-graph {
   position: fixed;
   height: 100%;
   width: 100%;
@@ -65,47 +65,47 @@ kubernetes-topology-graph {
 }
 
 
-// kube-topology specific
-kubernetes-topology-graph {
+// hawkular-topology specific
+hawkular-topology-graph {
     display: block;
     user-select: none;
 }
 
-.kube-topology g {
+.hawkular-topology g {
     font-family: PatternFlyIcons-webfont;
     font-size: 18px;
     text-anchor: middle;
     cursor: pointer;
 }
 
-.kube-topology g text {
+.hawkular-topology g text {
     stroke: none;
     stroke-width: 0px;
 }
 
-.kube-topology g.weak use {
+.hawkular-topology g.weak use {
     opacity: .6;
 }
 
-.kube-topology g.Server text {
+.hawkular-topology g.Server text {
     font-family: FontAwesome;
     fill: #4C4C4C;
     font-size: 16px;
 }
 
-.kube-topology g.Database text {
+.hawkular-topology g.Database text {
     font-family: FontAwesome;
     fill: #056A9E;
     font-size: 16px;
 }
 
-.kube-topology g.App text {
+.hawkular-topology g.App text {
     font-family: FontAwesome;
     fill: #4FA638;
     font-size: 19px;
 }
 
-.kube-topology g.DataSource text {
+.hawkular-topology g.DataSource text {
     font-family: FontAwesome;
     fill: #84CCEE;
     font-size: 14px;
@@ -113,31 +113,31 @@ kubernetes-topology-graph {
     font-size: 16px;
 }
 
-.kube-topology g circle {
+.hawkular-topology g circle {
     stroke: #bbb;
     fill: #fff;
 }
 
-.kube-topology g.fixed use {
+.hawkular-topology g.fixed use {
     stroke-width: 2px;
 }
 
-.kube-topology g.selected use,
-.kube-topology g.selected circle {
+.hawkular-topology g.selected use,
+.hawkular-topology g.selected circle {
     stroke-width: 4px;
 }
 
-.kube-topology line {
+.hawkular-topology line {
     stroke: #bbb;
     stroke-width: 1;
 }
 
-.kube-topology line.DatasourceServer {
+.hawkular-topology line.DatasourceServer {
     stroke-linecap: round;
     stroke-dasharray: 1, 2;
 }
 
-kubernetes-topology-icon {
+hawkular-topology-icon {
     display: inline-block;
     vertical-align: middle;
     cursor: pointer;
@@ -145,26 +145,26 @@ kubernetes-topology-icon {
     user-select: none;
 }
 
-kubernetes-topology-icon svg {
+hawkular-topology-icon svg {
     width: 32px;
     height: 32px;
     display: block;
 }
 
-kubernetes-topology-icon use {
+hawkular-topology-icon use {
     opacity: 0.4;
 }
 
-kubernetes-topology-icon.active use {
+hawkular-topology-icon.active use {
     opacity: 1;
 }
 
-kubernetes-topology-icon:hover use {
+hawkular-topology-icon:hover use {
     opacity: 0.7;
 }
 
 .iconWithLabel {
-  > kubernetes-topology-icon {
+  > hawkular-topology-icon {
     float: left;
   }
 
@@ -175,14 +175,6 @@ kubernetes-topology-icon:hover use {
   }
 }
 
-div.tooltip {
-  position: absolute;
-  text-align: center;
+.topologyHoverLabel {
   width: 140px;
-  padding: 2px;
-  font: 12px sans-serif;
-  background: lightsteelblue;
-  border: 0px;
-  border-radius: 8px;
-  pointer-events: none;
 }

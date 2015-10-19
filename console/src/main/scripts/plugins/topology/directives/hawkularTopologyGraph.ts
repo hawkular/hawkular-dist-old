@@ -16,11 +16,10 @@
 ///
 
 /// <reference path='../../includes.ts'/>
-/// <reference path='topologyGlobals.ts'/>
+/// <reference path='../ts/topologyGlobals.ts'/>
 
 module HawkularTopology {
-
-  _module.directive('kubernetesTopologyGraph', [
+  _module.directive('hawkularTopologyGraph',
     () => {
       return {
         restrict: 'E',
@@ -44,7 +43,7 @@ module HawkularTopology {
 
           function icon(d) {
             var text;
-            var kinds = $scope.$root.kinds;
+            var kinds = $scope.kinds;
             if (kinds) {
               text = kinds[d.item.kind];
             }
@@ -74,9 +73,9 @@ module HawkularTopology {
             }
           }
 
-          graph = window['topology_graph'](element[0], $scope.force, notify);
+          graph = HawkularTopology.initGraph(element[0], $scope.force, notify);
 
-          $scope.$root.$watchCollection('kinds', (value) => render(graph.kinds(value)));
+          $scope.$watchCollection('kinds', (value) => render(graph.kinds(value)));
 
           $scope.$watchGroup(['items', 'relations'], (values) => render(graph.data(values[0], values[1])));
 
@@ -86,35 +85,5 @@ module HawkularTopology {
         }
       };
     }
-    ])
-
-.directive('kubernetesTopologyIcon', () => {
-     return {
-      restrict: 'E',
-      transclude: true,
-      template: '<ng-transclude></ng-transclude>',
-      link: ($scope, element, attrs) => {
-        var kind = attrs.kind;
-        var value = $scope.kinds[kind];
-
-        $scope.$root.$watchCollection('kinds', () => element.toggleClass('active', kind in $scope.$root.kinds));
-
-        element.on('click', () => {
-          if (kind in $scope.$root.kinds) {
-            value = $scope.$root.kinds[kind];
-            delete $scope.$root.kinds[kind];
-          } else {
-            $scope.$root.kinds[kind] = value;
-          }
-          if ($scope.$parent) {
-            $scope.$parent.$digest();
-          }
-          if ($scope.$root) {
-            $scope.$root.$digest();
-          }
-          $scope.$digest();
-        });
-      }
-    };
-  });
+  );
 }

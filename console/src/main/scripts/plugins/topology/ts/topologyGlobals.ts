@@ -26,13 +26,12 @@ module HawkularTopology {
 
   export var templatePath = 'plugins/topology/html';
 
-  export var _module = angular.module(HawkularTopology.pluginName, ['ngResource', 'ui.select', 'hawkular.charts',
-    'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr',
+  export var _module = angular.module(HawkularTopology.pluginName, ['ngResource', 'ui.select',
+    'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'toastr',
     'infinite-scroll','mgo-angular-wizard']);
 
-
-  /// These are plugin globals used across several screens (think session vars from server side programming)
-
   export var globalEnvironmentId = 'test';
+
+  export var initGraph;
 
 }
