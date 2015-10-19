@@ -69,14 +69,18 @@
                 <div class="form-group">
                   <label class="col-sm-2 control-label">Comments</label>
                   <div class="col-sm-10">
-                    <textarea class="form-control" rows="2" ng-disabled="acd.status == 'OPEN'" ng-model="acd.comments"></textarea>
+                    <div ng-repeat="note in acd.detailAlert.notes">
+                      <div><span class="pficon pficon-user"></span> {{note.user}} - {{note.ctime | date:'d MMM yyyy, HH:mm'}}</div>
+                      <p>{{note.text}}</p>
+                    </div>
+                    <textarea class="form-control" rows="2" ng-model="acd.comments"></textarea>
                   </div>
                 </div>
               </fieldset>
             </form>
             <div class="form-actions col-sm-10 col-sm-offset-2">
               <button class="btn btn-default" type="button" ng-click="acd.cancel()">Cancel</button>
-              <button class="btn btn-primary" type="button" ng-disabled="acd.status == 'OPEN'" ng-click="acd.save()">Save</button>
+              <button class="btn btn-primary" type="button" ng-click="acd.save()">Save</button>
             </div>
           </div>
         </div>
@@ -96,6 +100,7 @@
                 <div class="hk-info-container">
                   <span class="email">{{action.actionId}}</span>
                   <span class="type">{{action.actionPlugin | firstUpper}}</span>
+                  <span class="type">{{action.alert.status | firstUpper}}</span>
                   <span class="date">{{action.ctime | date:'d MMM yyyy, HH:mm'}}</span>
                 </div>
               </div>
