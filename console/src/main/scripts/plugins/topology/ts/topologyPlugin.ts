@@ -132,44 +132,45 @@ module HawkularTopology {
       };
       let extractServerId = (id: string): string => id.substring(0, id.indexOf('/')) + '~';
 
-      this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId},
-        (aFeedList) => {
-          let promises = [];
-          angular.forEach(aFeedList, (feed) => {
-            promises.push(this.getDataForOneFeed(feed.id));
-          });
-          this.$q.all(promises).then((aResourceList) => {
-            let newRelations = [];
-            let newData = {
-              items: {},
-              relations: {}
+      this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId}, (aFeedList) => {
+        if (!aFeedList.length) {
+          return;
+        }
+        let promises = [];
+        angular.forEach(aFeedList, (feed) => {
+          promises.push(this.getDataForOneFeed(feed.id));
+        });
+        this.$q.all(promises).then((aResourceList) => {
+          let newRelations = [];
+          let newData = {
+            items: {},
+            relations: {}
+          };
+          let flatResources = _.flatten(aResourceList, true);
+          angular.forEach(flatResources, (res) => {
+            let newItem = {
+              kind: typeToKind[res.type.id],
+              id: res.id,
+              metadata: {
+                name: res.properties.name
+              }
             };
-            let flatResources = _.flatten(aResourceList, true);
-            angular.forEach(flatResources, (res) => {
-              let newItem = {
-                kind: typeToKind[res.type.id],
-                id: res.id,
-                metadata: {
-                  name: res.properties.name
-                }
-              };
-              if (newItem.kind !== 'Server') {
-                newRelations.push({
-                  source: extractServerId(res.id),
-                  target: res.id
-                });
-              } else {
+            if (newItem.kind !== 'Server') {
+              newRelations.push({
+                source: extractServerId(res.id),
+                target: res.id
+              });
+            } else {
                 // todo: feed id
                 this.getServerMetadata('localhost', res.id, newItem);
               }
               newData.items[res.id] = newItem;
             });
-            newData.relations = newRelations;
-            this.data = newData;
-          });
-});
-}
-
+          newData.relations = newRelations;
+          this.data = newData;
+        });
+      });
+    }
   }
 
   _module.controller('HawkularTopology.TopologyController', TopologyController);
