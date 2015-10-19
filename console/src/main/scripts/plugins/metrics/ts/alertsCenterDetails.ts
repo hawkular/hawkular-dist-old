@@ -90,7 +90,7 @@ module HawkularMetrics {
     }
 
     public getActions(alertId:AlertId) {
-      return this.HawkularAlertsManager.queryActionsHistory({alertIds: alertId, sort: 'ctime'})
+      return this.HawkularAlertsManager.queryActionsHistory({alertIds: alertId, sort: 'ctime', thin: false})
         .then((queriedActions) => {
         console.dir(queriedActions);
         this.actionsHistory = queriedActions.actionsList;
@@ -104,14 +104,35 @@ module HawkularMetrics {
     }
 
     public save(): void {
-      if (this.status === 'OPEN') {
-        return;
-      }
-      if (this.status === 'ACKNOWLEDGED') {
-        this.acknowledge();
+      console.log('this.status: ' + this.status);
+      console.log('this.detailAlert.status: ' + this.detailAlert.status);
+      if (this.status === this.detailAlert.status) {
+        if (this.comments && this.comments.length > 0) {
+          this.notes();
+        }
       } else {
-        this.resolve();
+        if (this.status === 'ACKNOWLEDGED') {
+          this.acknowledge();
+        } else {
+          this.resolve();
+        }
       }
+    }
+
+    public notes():void {
+      this.isWorking = true;
+
+      let newComment = {
+        alertId: this._alertId,
+        user: this.$rootScope.currentPersona.name,
+        text: this.comments
+      };
+
+      this.HawkularAlertsManager.addNote(newComment).then(() => {
+        this.isWorking = false;
+        this.getAlert(this._alertId);
+        this.getActions(this._alertId);
+      });
     }
 
     public resolve():void {

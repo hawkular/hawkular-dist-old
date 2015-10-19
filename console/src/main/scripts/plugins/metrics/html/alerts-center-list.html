@@ -77,7 +77,7 @@
           <tr ng-repeat="alert in ac.alertsList | filter:ac.search" ng-class="{'hk-selected': ac.selected}"
               ng-click="ac.selectItem(alert)">
             <td><input type="checkbox" ng-checked="alert.selected"/></td>
-            <td ng-class="{'hk-bold': alert.status === 'OPEN'}">{{alert.status|firstUpper}} <i ng-show="(alert.status === 'ACKNOWLEDGED' && alert.ackNotes.length > 0) || (alert.status === 'RESOLVED' && alert.resolvedNotes.length > 0)" class="fa fa-comment-o"></i></td>
+            <td ng-class="{'hk-bold': alert.status === 'OPEN'}">{{alert.status|firstUpper}} <i ng-show="(alert.notes.length > 0)" class="fa fa-comment-o"></i></td>
             <td>{{alert.severity|firstUpper}}</td>
             <td>{{alert.trigger.description| characters: 35}}</td>
             <td>{{alert.ctime | date:'d MMM yyyy, HH:mm'}}</td>

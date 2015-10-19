@@ -109,12 +109,23 @@ module HawkularMetrics {
      */
     resolveAlerts(resolvedAlerts:any): ng.IPromise<any>;
 
-
+    /**
+     * @name addNote
+     * @desc Add a note on an alert
+     * @param alertNote - An object with the user and the text of the note in the form
+     *
+     *  alertNote = {
+     *    alertId: A string with the alertId to place the note,
+     *    user: The user author of the note,
+     *    text: the content of the note
+     *  }
+     */
+    addNote(alertNote:any): ng.IPromise<any>;
 
     /**
      * @name ackAlerts
      * @param ackAlerts
-     *  * @param ackAlerts - An object with the description of the acknowledge of the alerts, in the form
+     * @param ackAlerts - An object with the description of the acknowledge of the alerts, in the form
      *
      *    ackAlerts = {
      *      alertIds: A string with a comma separated list of Alert ids,
@@ -379,7 +390,7 @@ module HawkularMetrics {
         queryParams['results'] = criteria.results;
       }
 
-      if (criteria && criteria.thin) {
+      if (criteria) {
         queryParams['thin'] = criteria.thin;
       } else {
         queryParams['thin'] = true;
@@ -424,6 +435,10 @@ module HawkularMetrics {
 
     public resolveAlerts(resolvedAlerts:any):ng.IPromise<any> {
       return this.HawkularAlert.Alert.resolvemany(resolvedAlerts, {}).$promise;
+    }
+
+    public addNote(alertNote:any):ng.IPromise<any> {
+      return this.HawkularAlert.Alert.note(alertNote).$promise;
     }
 
     public ackAlerts(ackAlerts:any):ng.IPromise<any> {
