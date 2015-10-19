@@ -61,7 +61,13 @@ module HawkularMetrics {
                 private $location:ng.ILocationService) {
       $scope.ac = this;
 
-      this.alertsTimeOffset = $routeParams.timeOffset || 3600000 * 12;
+      if ($routeParams.timeOffset === undefined) {
+        $routeParams.timeOffset = 3600000 * 12;
+        $scope.hkParams.timeOffset = $routeParams.timeOffset;
+      }
+
+      this.alertsTimeOffset = $routeParams.timeOffset;
+
       // If the end time is not specified in URL use current time as end time
       this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : Date.now();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
