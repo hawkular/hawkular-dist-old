@@ -85,7 +85,7 @@ module HawkularMetrics {
 
         let fullTrigger = {
           trigger: {
-            name: resourceId,
+            name: 'JVM Heap Used',
             id: triggerId,
             description: 'JVM Heap Used for ' + resourceId,
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
@@ -144,7 +144,7 @@ module HawkularMetrics {
         let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used';
         let fullTrigger = {
           trigger: {
-            name: resourceId,
+            name: 'JVM Non Heap Used',
             id: triggerId,
             description: 'JVM Non Heap Used for ' + resourceId,
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
@@ -200,7 +200,7 @@ module HawkularMetrics {
         let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration';
         let fullTrigger = {
           trigger: {
-            name: resourceId,
+            name: 'Accumulated GC Duration',
             id: triggerId,
             description: 'Accumulated GC Duration for ' + resourceId,
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue

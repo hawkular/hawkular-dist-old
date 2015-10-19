@@ -104,25 +104,26 @@ module HawkularMetrics {
         ordering = 'desc';
       }
 
-      this.HawkularAlertsManager.queryAlerts({statuses: this.alertsStatuses,
+      this.HawkularAlertsManager.queryAlerts({
+        statuses: this.alertsStatuses,
         startTime: this.alertsTimeStart,
         endTime: this.alertsTimeEnd,
         currentPage: this.alertsCurPage,
         perPage: this.alertsPerPage,
         sort: this.sortField,
         order: ordering
-        })
+      })
         .then((queriedAlerts) => {
           this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
           this.alertsList = queriedAlerts.alertList;
           this.lastUpdateDate = new Date();
-      }, (error) => {
-        this.$log.warn(error);
-      }).catch((error) => {
-        this.$log.error('Error:' + error);
-      }).finally(() => {
-        this.lastUpdateDate = new Date();
-      });
+        }, (error) => {
+          this.$log.warn(error);
+        }).catch((error) => {
+          this.$log.error('Error:' + error);
+        }).finally(() => {
+          this.lastUpdateDate = new Date();
+        });
     }
 
     public showDetailPage(alertId:AlertId):void {
@@ -191,13 +192,13 @@ module HawkularMetrics {
 
     public selectItem(item:IAlert):void {
       item.selected = !item.selected;
-      this.selectedItems  = _.filter(this.alertsList, 'selected');
+      this.selectedItems = _.filter(this.alertsList, 'selected');
       this.selectCount = this.selectedItems.length;
-      this.hasOpenSelectedItems = _.some(this.selectedItems,{'status': 'OPEN'});
+      this.hasOpenSelectedItems = _.some(this.selectedItems, {'status': 'OPEN'});
     }
 
-    public hasResolvedItems(): boolean {
-      return _.some(this.selectedItems,{'status': 'RESOLVED'});
+    public hasResolvedItems():boolean {
+      return _.some(this.selectedItems, {'status': 'RESOLVED'});
     }
 
     private resetAllUnselected() {

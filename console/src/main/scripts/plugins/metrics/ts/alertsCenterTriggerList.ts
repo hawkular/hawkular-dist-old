@@ -37,7 +37,11 @@ module HawkularMetrics {
     public triggersCurPage = 0;
     public headerLinks:any = {};
     public selectCount = 0;
-    public hasOpenSelectedItems:boolean = false;
+    public hasEnabledSelectedItems:boolean = false;
+    public hasDisabledSelectedItems:boolean = false;
+    public sortField:string = 'name';
+    public sortAsc:boolean = false;
+
 
     public loadingMoreItems:boolean = false;
     public addProgress:boolean = false;
@@ -78,8 +82,15 @@ module HawkularMetrics {
 
     public getTriggers():void {
 
+      let ordering = 'asc';
+      if (!this.sortAsc) {
+        ordering = 'desc';
+      }
+
       this.HawkularAlertsManager.queryTriggers({currentPage: this.triggersCurPage,
-        perPage: this.triggersPerPage
+        perPage: this.triggersPerPage,
+        sort: this.sortField,
+        order: ordering
         })
         .then((queriedTriggers) => {
           this.headerLinks = this.HkHeaderParser.parse(queriedTriggers.headers);
@@ -95,6 +106,73 @@ module HawkularMetrics {
       });
     }
 
+    public enableSelected():void {
+      this.$log.debug('Enable Selected Triggers');
+
+      // Error notification done with callback function on error
+      let errorCallback = (error:any, msg:string) => {
+        this.$log.error('Error:' + error);
+      };
+
+      this.isWorking = true;
+      let isError = false;
+      // Check if email action exists
+
+      console.log('Start!');
+      let updateTriggersPromises = this.updateSelected(true, errorCallback);
+
+      this.$q.all(updateTriggersPromises).finally(()=> {
+        this.isWorking = false;
+        console.log('Done!');
+        if (!isError) {
+          // notify success ?
+        }
+      });
+    }
+
+    public disableSelected():void {
+      this.$log.debug('Disable Selected Triggers');
+
+      // Error notification done with callback function on error
+      let errorCallback = (error:any, msg:string) => {
+        this.$log.error('Error:' + error);
+      };
+
+      this.isWorking = true;
+      let isError = false;
+      // Check if email action exists
+
+      let updateTriggersPromises = this.updateSelected(false, errorCallback);
+
+      this.$q.all(updateTriggersPromises).finally(()=> {
+        this.isWorking = false;
+
+        if (!isError) {
+          // notify success ?
+        }
+      });
+    }
+
+    updateSelected(enabled, errorCallback):Array<ng.IPromise<any>> {
+
+      let promises = [];
+      let triggerDefinition = {};
+      let triggerBackup = {};
+
+      this.triggersList.forEach((triggerItem:IAlertTrigger) => {
+        if (triggerItem.selected && (triggerItem.enabled !== enabled)) {
+          console.log("Setting " + enabled.toString());
+          triggerDefinition['trigger'] = angular.copy(triggerItem);
+          triggerBackup['trigger'] = angular.copy(triggerItem);
+          triggerDefinition['trigger'].enabled = enabled;
+          promises.push(this.HawkularAlertsManager.updateTrigger(triggerDefinition, errorCallback, triggerBackup));
+          console.log("Called Server!");
+        }
+      });
+
+      return promises;
+    }
+
     public showDetailPage(triggerId:TriggerId):void {
       this.$location.url(`/hawkular-ui/alerts-center-trigger-detail/${triggerId}`);
     }
@@ -108,12 +186,17 @@ module HawkularMetrics {
       item.selected = !item.selected;
       this.selectedItems  = _.filter(this.triggersList, 'selected');
       this.selectCount = this.selectedItems.length;
-      this.hasOpenSelectedItems = _.some(this.selectedItems,{'status': 'OPEN'});
+      this.hasEnabledSelectedItems = _.some(this.selectedItems,{'enabled': true});
+      this.hasDisabledSelectedItems = _.some(this.selectedItems,{'enabled': false});
+      console.log("selectedItems:" + this.selectedItems.length);
+      console.log("hasEnabled:" + this.hasEnabledSelectedItems);
+      console.log("hasDisabled:" + this.hasDisabledSelectedItems);
     }
 
     private resetAllUnselected() {
       this.selectCount = 0;
-      this.hasOpenSelectedItems = false;
+      this.hasEnabledSelectedItems = false;
+      this.hasDisabledSelectedItems = false;
       this.triggersList.forEach((item:IAlertTrigger) => {
         item.selected = false;
       });
@@ -125,6 +208,13 @@ module HawkularMetrics {
         item.selected = toggleTo;
       });
       this.selectCount = toggleTo ? this.triggersList.length : 0;
+    }
+
+    public sortBy(field:string):void {
+      this.sortField = field;
+      this.sortAsc = !this.sortAsc;
+      this.getTriggers();
+      this.$log.debug('Sorting by ' + field + ' ascending ' + this.sortAsc + ' ' + new Date());
     }
 
   }
