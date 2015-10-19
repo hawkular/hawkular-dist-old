@@ -43,6 +43,32 @@ body {
   float: none;
 }
 
+.row { // reducing space between boxes
+  > .col-md-9 + .col-md-3 {
+    padding-left: 0;
+  }
+
+  > .col-lg-3 + .col-lg-6 {
+    @media (min-width: @screen-lg-min) {
+      padding-right: 0;
+    }
+  }
+
+  > .col-md-4 {
+    padding-right: 0;
+  }
+}
+
+.container {
+  @media (min-width: 1201px) and (max-width: 1440px) {
+    width: calc(~"100% - 40px");
+  }
+
+  @media (min-width: 1401px) {
+    width: 1400px;
+  }
+}
+
 
 /*------------------------------------*\
     SCREEN COMPONENTS
@@ -101,11 +127,15 @@ h1, h2 {
   dt {
     @media (min-width: @screen-sm-min) {
       text-align: left;
+      width: 60px;
     }
   }
 
   dd {
     margin-bottom: 10px;
+    @media (min-width: @screen-sm-min) {
+      margin-left: 80px;
+    }
   }
 
   .bootstrap-select.btn-group {
@@ -134,6 +164,7 @@ a:hover {
 
 .hk-display-table {
   display: table;
+  width: 100%;
 
   > div {
     display: table-cell;
@@ -146,6 +177,18 @@ a:hover {
 
 .hk-invisible {
   visibility: hidden;
+}
+
+.hk-word-break {
+  word-break: break-all;
+}
+
+.hk-warning {
+  color: @brand-warning;
+}
+
+.hk-success {
+  color: @brand-success;
 }
 
 
@@ -208,8 +251,8 @@ a:hover {
 .btn-link, a {
 
   .fa {
-    color: @gray;
-    vertical-align: middle;
+    color: @link-color;
+    vertical-align: text-bottom;
   }
 
   &:hover .fa {
@@ -789,6 +832,15 @@ a:hover .fa-spinner {
 
   .form-horizontal {
     margin-top: @grid-gutter-width/2;
+
+    &:first-child {
+      margin-top: @grid-gutter-width/4;
+
+      legend {
+        border-top: none;
+        padding-top: 0;
+      }
+    }
   }
 
   p + .form-horizontal {
@@ -1030,6 +1082,11 @@ a:hover .fa-spinner {
       margin: @grid-gutter-width/8 0;
     }
 
+    .hk-time-range {
+      line-height: 23px;
+      margin-top: 5px;
+    }
+
     .dropdown {
       margin-top: -5px;
 
@@ -1041,6 +1098,17 @@ a:hover .fa-spinner {
       &.pull-right {
         margin-right: -10px;
       }
+    }
+  }
+
+  .panel-body {
+    .dl-horizontal {
+      margin-bottom: 0;
+    }
+
+    .label {
+      margin-bottom: 5px;
+      margin-right: 5px;
     }
   }
 
@@ -1113,6 +1181,27 @@ a:hover .fa-spinner {
     &:last-child {
       padding-bottom: 0;
     }
+
+    &.hk-action {
+
+      .hk-icon-container .fa {
+        color: @link-color;
+        font-size: ceil(@font-size-base * 1.5);
+        margin-left: @grid-gutter-width/4;
+        margin-right: @grid-gutter-width/4;
+      }
+
+      .hk-heading {
+        font-size: ceil(@font-size-base * 1.25);
+        font-weight: 600;
+        line-height: 1.2;
+        margin-bottom: 3px;
+
+        a:not(:hover) {
+          color: @gray-dark;
+        }
+      }
+    }
   }
 }
 
@@ -1144,6 +1233,116 @@ a:hover .fa-spinner {
 
 .container > .blank-slate-pf:first-child {
   margin-top: @grid-gutter-width/2;
+}
+
+.hk-box-v-item {
+
+  .hk-icon-container {
+    text-align: center;
+    width: 24px;
+
+    &:first-child {
+      padding-right: 5px;
+    }
+
+    &:last-child {
+      padding-left: 5px;
+      vertical-align: middle;
+    }
+  }
+
+  .hk-info-heading {
+    margin-bottom: 5px;
+
+    &:not(.hk-acknowledged) {
+      font-weight: bold;
+    }
+  }
+
+  .hk-info-info {
+    margin-bottom: 5px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .hk-display-alerts {
+  }
+}
+
+
+// Summary
+
+.hk-summary {
+  clear: both;
+
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.hk-data {
+  font-weight: 100;
+}
+
+.hk-summary-item {
+  border-right: 1px solid @table-border-color;
+  color: @gray;
+  display: inline-block;
+  padding: @grid-gutter-width/2 @grid-gutter-width/4*3;
+  text-align: center;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  &.text-left {
+    padding-left: @grid-gutter-width/4*5;
+  }
+
+  .hk-data {
+    display: block;
+    line-height: 1.3;
+    font-size: ceil(@font-size-base * 2);
+
+    span {
+      font-size: 0.75em;
+    }
+
+    .fa {
+      margin-left: 2px;
+      vertical-align: inherit;
+    }
+
+    &.spinner {
+      margin-bottom: 7px;
+      margin-top: 5px;
+    }
+  }
+
+  .hk-item {
+    display: block;
+    margin-top: 5px;
+  }
+
+  a,
+  a .hk-item {
+    color: @gray-dark;
+  }
+
+  a:hover,
+  a:hover .hk-item,
+  a:focus,
+  a:focus .hk-item {
+    color: @link-hover-color;
+    text-decoration: none;
+  }
+
+  .fa {
+    font-size: inherit;
+  }
 }
 
 
@@ -1301,12 +1500,6 @@ a:hover .fa-spinner {
   }
 }
 
-.hk-alert-center .hk-table-container {
-  .dataTables_wrapper {
-    margin-top: 10px;
-  }
-}
-
 .hk-table-alerts,
 .hk-table-clean {
 
@@ -1398,6 +1591,10 @@ td.hk-actions-two {
   left: 177px
 }
 
+td .fa-comment-o {
+  margin-left: @grid-gutter-width/8;
+}
+
 
 // Toastr Overrides
 
@@ -1433,6 +1630,14 @@ td.hk-actions-two {
   top: 16px;
   font-family: "FontAwesome";
   font-size: 20px;
+}
+
+.toast-close-button {
+  color: @gray;
+
+  &:hover {
+    color: @link-hover-color;
+  }
 }
 
 .toast-info {
@@ -1631,74 +1836,6 @@ td.hk-actions-two {
   padding-top: @grid-gutter-width/2;
 }
 
-.hk-summary {
-  clear: both;
-
-  .row {
-    margin-left: 0;
-    margin-right: 0;
-  }
-}
-
-.hk-summary-item {
-  border-right: 1px solid @table-border-color;
-  color: @gray;
-  display: inline-block;
-  padding: @grid-gutter-width/2 @grid-gutter-width/4*3;
-  text-align: center;
-
-  &:last-child {
-    border-right: none;
-  }
-
-  &.text-left {
-    padding-left: @grid-gutter-width/4*5;
-  }
-
-  .hk-data {
-    display: block;
-    font-size: ceil(@font-size-base * 2);
-    font-weight: 100;
-    line-height: 1.3;
-
-    span {
-      font-size: 0.75em;
-    }
-
-    .fa {
-      margin-left: 2px;
-      vertical-align: inherit;
-    }
-
-    &.spinner {
-      margin-bottom: 7px;
-      margin-top: 5px;
-    }
-  }
-
-  .hk-item {
-    display: block;
-    margin-top: 5px;
-  }
-
-  a,
-  a .hk-item {
-    color: @gray-dark;
-  }
-
-  a:hover,
-  a:hover .hk-item,
-  a:focus,
-  a:focus .hk-item {
-    color: @link-hover-color;
-    text-decoration: none;
-  }
-
-  .fa {
-    font-size: inherit;
-  }
-}
-
 .pagination {
   margin-bottom: @grid-gutter-width/4*3;
 
@@ -1861,33 +1998,48 @@ section {
 }
 
 
-// Alert Details screen
+// Application overview screen
 
-.hk-alert-center-detail {
+.hk-dashboard-block {
 
-  .hk-icon-container {
-    padding-right: 10px;
-    text-align: center;
-    width: 24px;
-  }
+  padding-bottom: @grid-gutter-width/2;
+  padding-top: @grid-gutter-width/2;
 
-  .hk-info-container span {
-    display: block;
+  .hk-data-info {
+    display: table;
+    margin-bottom: @grid-gutter-width/5;
+    width: 100%;
 
-    &.email {
-      font-weight: bold;
-      margin-bottom: 2px;
-    }
-
-    &.type {
-      margin-bottom: 5px;
+    > div {
+      display: table-cell;
+      float: none;
     }
   }
 
-  .form-actions {
-    .btn:first-child {
-      margin-left: -14px;
+  .hk-data {
+    font-size: ceil(@font-size-base * 3);
+    line-height: 1;
+    padding-right: @grid-gutter-width/4;
+    text-align: right;
+    vertical-align: bottom;
+    width: 25%;
+  }
+
+  .hk-info {
+    height: 69px; // might change in responsive
+    vertical-align: bottom;
+
+    img {
+      width: 100%; //provisional
     }
+  }
+
+  .hk-block-title {
+    margin-left: 25%;
+  }
+
+  p.card-pf-aggregate-status-notifications {
+    margin-bottom: 0;
   }
 }
 
