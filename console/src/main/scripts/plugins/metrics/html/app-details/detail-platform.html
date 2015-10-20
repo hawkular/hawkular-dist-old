@@ -127,11 +127,11 @@
 
 
       <div class="hk-resource-container"
-       ng-repeat="fs in os.fileStoreList | filter: os.filter| orderBy:'properties.name':osSortInv">
+       ng-repeat="fs in os.fileStoreList | filter: os.filter| orderBy:'name':osSortInv">
 
       <div class="panel panel-default hk-summary">
           <div class="panel-heading">
-              <span class="hk-heading pull-left">{{fs.properties.name}}</span>
+              <span class="hk-heading pull-left">{{fs.name}}</span>
           </div>
           <div class="row"></div>
       </div>
