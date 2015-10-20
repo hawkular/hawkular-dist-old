@@ -25,7 +25,7 @@ module HawkularMetrics {
 
     /// for minification only
     public static  $inject = ['$scope','$rootScope','$routeParams','$interval','$q','HawkularInventory',
-      'HawkularMetric', 'HawkularAlertsManager', '$log', '$modal'];
+      'HawkularMetric', 'HawkularAlertsManager', 'MetricsService', '$log', '$modal'];
 
     public static AVAILABLE_COLOR = '#1884c7'; /// blue
     public static IN_USE_COLOR = '#49a547'; /// green
@@ -59,6 +59,7 @@ module HawkularMetrics {
                 private HawkularInventory: any,
                 private HawkularMetric: any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
+                private MetricsService: any,
                 private $log: any,
                 private $modal: any,
                 public startTimeStamp:TimestampInMillis,
@@ -365,7 +366,7 @@ module HawkularMetrics {
       let tmpChartAvailData = {};
       let tmpChartRespData = {};
 
-      angular.forEach(this.resourceList, function(res, idx) {
+      _.forEach(this.resourceList, function(res: any, idx) {
 
         if (!this.skipChartData[res.id + '_Available Count']) {
           let dsAvailPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
