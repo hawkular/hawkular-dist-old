@@ -4,7 +4,7 @@
 
     <div class="hk-control-actions-bar pull-left">
       <div class="hk-container-separator">
-        <input type="text" class="form-control separator" ng-model="vm.filter.properties.name"
+        <input type="text" class="form-control separator" ng-model="vm.filter.name"
                placeholder="Filter by Name...">
       </div>
 
@@ -34,11 +34,11 @@
   </div>
 
   <div class="hk-resource-container"
-       ng-repeat="ds in vm.resourceList | filter:vm.filter | orderBy:'properties.name':vm.sortInv">
+       ng-repeat="ds in vm.resourceList | filter:vm.filter | orderBy:'name':vm.sortInv">
 
     <div class="panel panel-default hk-summary">
       <div class="panel-heading">
-        <span class="hk-heading">{{ds.properties.name}}</span>
+        <span class="hk-heading">{{ds.name}}</span>
         <div class="btn-group pull-right" dropdown auto-close="always">
           <button id="ds-actions" class="btn btn-link" type="button" dropdown-toggle aria-haspopup="true"
                   aria-expanded="true">

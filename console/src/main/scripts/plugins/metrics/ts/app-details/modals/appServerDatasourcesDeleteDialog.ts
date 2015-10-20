@@ -40,7 +40,7 @@ module HawkularMetrics {
       });
 
       $scope.$on('DatasourceRemoveError', (event, data) => {
-        this.NotificationsService.error('The Datasource ' + this.datasource.properties.name +
+        this.NotificationsService.error('The Datasource ' + this.datasource.name +
           ' failed to be deleted.');
       });
     }
