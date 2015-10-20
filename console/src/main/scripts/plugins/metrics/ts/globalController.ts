@@ -22,27 +22,27 @@ module HawkularMetrics {
 
   export class GlobalController {
 
-    public static  $inject = ['$scope', '$log', '$rootScope', '$routeParams', '$location'];
-
-    /**
-     * Enable for experimental features.
-     * Should be able to access anywhere by 'global.isExperimental()'
-     */
-    public isExperimental = false;
+    public static  $inject = ['$scope', '$log', '$rootScope'];
 
     constructor(private $scope:any,
                 private $log:ng.ILogService,
-                private $rootScope:IHawkularRootScope,
-                private $routeParams:any,
-                private $location:ng.ILocationService) {
+                private $rootScope:IHawkularRootScope
+    ) {
       $scope.global = this;
 
     }
 
+    /**
+     * Turn on experimentalMode which allows for features that are implemented but not officially part
+     * of the sanctioned build yet.
+     */
     public experimentalMode():void {
-      this.$log.info('Starting Experimental Mode');
-      this.isExperimental = true;
-      this.$rootScope.isExperimental = true;
+      this.$rootScope.isExperimental = !this.$rootScope.isExperimental;
+      if (this.$rootScope.isExperimental) {
+        this.$log.info('Starting Experimental Mode');
+      } else {
+        this.$log.info('Ending Experimental Mode');
+      }
     }
   }
 

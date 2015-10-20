@@ -29,8 +29,8 @@ module Subtab {
 
   //@todo: Change to controller class and controllerAs style
   export let SubtabController = _module.controller('Subtab.SubtabController',
-    ['$scope', '$rootScope', '$location', 'HawkularNav', 'HawkularInventory', ($scope, $rootScope, $location,
-                                                                               HawkularNav, HawkularInventory) => {
+    ['$scope', '$rootScope', '$location', 'HawkularNav', 'HawkularInventory',
+      ($scope, $rootScope, $location, HawkularNav, HawkularInventory) => {
 
       $scope.isAlertsPage = () => {
         return $location.path().indexOf('/hawkular-ui/alerts-center') === 0;

@@ -30,8 +30,8 @@ module HawkularMetrics {
   export class AppServerJvmDetailsController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'MetricsService',
-      'ErrorsManager', '$q', 'md5'];
+      '$modal', '$window', 'HawkularInventory', 'HawkularMetric','HawkularNav', 'HawkularAlertsManager',
+      'MetricsService', 'ErrorsManager', '$q', ];
 
     public static USED_COLOR = '#1884c7'; /// blue
     public static MAXIMUM_COLOR = '#f57f20'; /// orange
@@ -62,11 +62,11 @@ module HawkularMetrics {
                 private $window:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
+                private HawkularNav:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private MetricsService:IMetricsService,
                 private ErrorsManager:IErrorsManager,
-                private $q:ng.IQService,
-                private md5:any) {
+                private $q:ng.IQService ) {
       $scope.vm = this;
 
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
@@ -82,6 +82,15 @@ module HawkularMetrics {
           (currentPersona) => currentPersona && this.getJvmData());
       }
 
+      // handle drag ranges on charts to change the time range
+      this.$scope.$on('ChartTimeRangeChanged', (event, data) => {
+        this.$log.info('Received ChartTimeRangeChanged: ' + data[0] + ' - ' + data[1]);
+        this.startTimeStamp = data[0];
+        this.endTimeStamp = data[1];
+        //this.HawkularNav.setTimestamp(this.endTimeStamp - this.endTimeStamp);
+        this.refresh();
+      });
+
       this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
 
       this.autoRefresh(20);
@@ -89,35 +98,41 @@ module HawkularMetrics {
 
     private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       let pheapArray:any, nheapArray:any, garbaArray:any;
-      let pheapPromise = this.HawkularAlertsManager.queryAlerts({statuses:'OPEN',
-        triggerIds: metricIdPrefix + '_jvm_pheap', startTime: startTime, endTime: endTime}).then((pheapData)=> {
-          _.forEach(pheapData.alertList, (item) => {
-            item['alertType'] = 'PHEAP';
-          });
-          pheapArray = pheapData.alertList;
-        }, (error) => {
-          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      let pheapPromise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        triggerIds: metricIdPrefix + '_jvm_pheap', startTime: startTime, endTime: endTime
+      }).then((pheapData)=> {
+        _.forEach(pheapData.alertList, (item) => {
+          item['alertType'] = 'PHEAP';
         });
+        pheapArray = pheapData.alertList;
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      });
 
-      let nheapPromise = this.HawkularAlertsManager.queryAlerts({statuses:'OPEN',
-        triggerIds: metricIdPrefix + '_jvm_nheap', startTime: startTime, endTime: endTime}).then((nheapData)=> {
-          _.forEach(nheapData.alertList, (item) => {
-            item['alertType'] = 'NHEAP';
-          });
-          nheapArray = nheapData.alertList;
-        }, (error) => {
-          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      let nheapPromise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        triggerIds: metricIdPrefix + '_jvm_nheap', startTime: startTime, endTime: endTime
+      }).then((nheapData)=> {
+        _.forEach(nheapData.alertList, (item) => {
+          item['alertType'] = 'NHEAP';
         });
+        nheapArray = nheapData.alertList;
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      });
 
-      let garbaPromise = this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN',
-        triggerIds: metricIdPrefix + '_jvm_garba', startTime: startTime, endTime: endTime}).then((garbaData)=> {
-          _.forEach(garbaData.alertList, (item) => {
-            item['alertType'] = 'GARBA';
-          });
-          garbaArray = garbaData.alertList;
-        }, (error) => {
-          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      let garbaPromise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        triggerIds: metricIdPrefix + '_jvm_garba', startTime: startTime, endTime: endTime
+      }).then((garbaData)=> {
+        _.forEach(garbaData.alertList, (item) => {
+          item['alertType'] = 'GARBA';
         });
+        garbaArray = garbaData.alertList;
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      });
 
       this.$q.all([pheapPromise, nheapPromise, garbaPromise]).finally(()=> {
         this.alertList = [].concat(pheapArray, nheapArray, garbaArray);
@@ -128,14 +143,17 @@ module HawkularMetrics {
 
     private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(() => {
-        this.getJvmData();
-        this.getJvmChartData();
-        this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
+       this.refresh();
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
         this.$interval.cancel(this.autoRefreshPromise);
       });
+    }
+
+    public refresh():void {
+      this.getJvmData();
+      this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
     }
 
     public getJvmData():void {
@@ -259,7 +277,7 @@ module HawkularMetrics {
         });
     }
 
-    public toggleChartData(name): void {
+    public toggleChartData(name):void {
       this.skipChartData[name] = !this.skipChartData[name];
       this.getJvmChartData();
     }
