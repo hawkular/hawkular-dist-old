@@ -34,13 +34,12 @@
       <div class="hk-table-container">
         <div class="hk-actions-table">
           <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-              Change State
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="act.enableSelected()" ng-disabled="!act.hasDisabledSelectedItems || act.isWorking">Enable</a></li>
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="act.disableSelected()" ng-disabled="act.hasEnabledselectedItems || act.isWorking">Disable</a></li>
+            <a href="#" class="btn btn-default" dropdown-toggle>
+              Change State <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="#" ng-click="act.enableSelected()" ng-disabled="!act.hasDisabledSelectedItems || act.isWorking">Enable</a></li>
+              <li><a href="#" ng-click="act.disableSelected()" ng-disabled="!act.hasEnabledSelectedItems || act.isWorking">Disable</a></li>
             </ul>
           </div>
         </div>
