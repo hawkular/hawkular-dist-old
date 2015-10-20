@@ -102,7 +102,7 @@ module HawkularMetrics {
             environmentId: globalEnvironmentId,
             feedId: feedId,
             resourcePath: res.id}, (resource) => {
-              res['properties']['resourceConfiguration'] = resource;
+              res['resourceConfiguration'] = resource;
           }).$promise);
           this.lastUpdateTimestamp = new Date();
         }, this);
