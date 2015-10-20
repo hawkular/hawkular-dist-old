@@ -12,17 +12,17 @@
       </div>
       <div class="col-sm-3 hk-summary-item">
         <span class="hk-data" ng-show="os.memoryAvail">{{ os.memoryAvail.avg / 1024 / 1024 | number : 0 }} MB</span>
-        <span class="hk-data" ng-hide="os.memoryAvail">n/a</span>
-        <span class="hk-item">Average Memory Usage</span>
+        <span class="hk-data" ng-hide="os.memoryAvail">Loading...</span>
+        <span class="hk-item">Average Memory Available</span>
       </div>
       <div class="col-sm-3 hk-summary-item">
         <span class="hk-data" ng-show="os.cpuUsage">{{ os.cpuUsage.avg * 100 | number : 1 }} %</span>
-        <span class="hk-data" ng-hide="os.cpuUsage">n/a</span>
+        <span class="hk-data" ng-hide="os.cpuUsage">Loading...</span>
         <span class="hk-item">CPU Usage</span>
       </div>
       <div class="col-sm-3 hk-summary-item">
         <span class="hk-data" ng-show="os.cpuUsage">{{ os.cpuUsage.max * 100 | number : 1 }} %</span>
-        <span class="hk-data" ng-hide="os.cpuUsage">n/a</span>
+        <span class="hk-data" ng-hide="os.cpuUsage">Loading...</span>
         <span class="hk-item">Maximum CPU Usage</span>
       </div>
     </div>
@@ -73,8 +73,9 @@
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <hawkular-chart
           data="os.chartMemoryUsageData"
-          chart-type="hawkularmetric"
-          y-axis-units="Usage (MB)"
+          chart-type="area"
+          hide-high-low-values="false"
+          y-axis-units="Available (MB)"
           chart-height="250">
       </hawkular-chart>
     </div>
@@ -95,6 +96,7 @@
     </div>
 
       <!-- mini charts per cpu -->
+      <!-- TODO we should show them as rows of 2 mini-charts ->
     <div ng-if="os.resolvedCPUData">
       <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
       <div class="panel panel-default hk-summary">
