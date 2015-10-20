@@ -62,9 +62,27 @@ module HawkularMetrics {
                         startTime?:TimestampInMillis,
                         endTime?:TimestampInMillis,
                         buckets?:number):ng.IPromise<IChartDataPoint[]>;
+    retrieveCounterMetrics(personaId:PersonaId, metricId:MetricId,
+                          startTime?:TimestampInMillis,
+                          endTime?:TimestampInMillis,
+                          buckets?:number):ng.IPromise<IChartDataPoint[]>;
+    retrieveCounterRateMetrics(personaId:PersonaId,
+                               metricId:MetricId,
+                               startTime?:TimestampInMillis,
+                               endTime?:TimestampInMillis,
+                               buckets?:number):ng.IPromise<IChartDataPoint[]>;
+    retrieveAvailabilityMetrics(personaId:PersonaId,
+                                metricId:MetricId,
+                                startTime?:TimestampInMillis,
+                                endTime?:TimestampInMillis,
+                                buckets?:number):ng.IPromise<IChartDataPoint[]>;
   }
 
   export class MetricsService implements IMetricsService {
+
+    private static AVAILABILITY_TYPE = 'Availability';
+    private static COUNTER_TYPE = 'Counter';
+    private static GAUGE_TYPE = 'Gauge';
 
     public static $inject = ['$log', 'HawkularMetric', 'NotificationsService'];
 
@@ -80,10 +98,8 @@ module HawkularMetrics {
      * @param multiplier Value to multiply the original value with. Eg. 100 for double -> % or (1/1024) for byte->kb
      * @returns IChartDataPoint[]
      */
-    public static formatBucketedChartOutput(response,multiplier?: number):IChartDataPoint[] {
-      if (!multiplier) {
-          multiplier =1;
-      }
+    public static formatBucketedChartOutput(response, multiplier?: number):IChartDataPoint[] {
+      multiplier = multiplier || 1;
       //  The schema is different for bucketed output
       return _.map(response, (point:IChartDataPoint) => {
         return {
@@ -115,6 +131,71 @@ module HawkularMetrics {
                                endTime?:TimestampInMillis,
                                buckets = 120):ng.IPromise<IChartDataPoint[]> {
 
+      return this.retrieveMetrics(MetricsService.GAUGE_TYPE, personaId, metricId, startTime, endTime, buckets);
+    }
+
+    /**
+     * RetrieveCounterMetrics
+     * @param personaId
+     * @param metricId
+     * @param startTime
+     * @param endTime
+     * @param buckets
+     * @returns ng.IPromise<IChartDataPoint[]>
+     */
+    public retrieveCounterMetrics(personaId:PersonaId,
+                                  metricId:MetricId,
+                                  startTime?:TimestampInMillis,
+                                  endTime?:TimestampInMillis,
+                                  buckets = 120):ng.IPromise<IChartDataPoint[]> {
+
+      return this.retrieveMetrics(MetricsService.COUNTER_TYPE, personaId, metricId, startTime, endTime, buckets);
+    }
+
+    /**
+     * RetrieveCounterMetrics
+     * @param personaId
+     * @param metricId
+     * @param startTime
+     * @param endTime
+     * @param buckets
+     * @returns ng.IPromise<IChartDataPoint[]>
+     */
+    public retrieveCounterRateMetrics(personaId:PersonaId,
+                                      metricId:MetricId,
+                                      startTime?:TimestampInMillis,
+                                      endTime?:TimestampInMillis,
+                                      buckets = 120):ng.IPromise<IChartDataPoint[]> {
+
+      return this.retrieveMetrics(MetricsService.COUNTER_TYPE, personaId, metricId, startTime, endTime, buckets, true);
+    }
+
+    /**
+     * RetrieveCounterMetrics
+     * @param personaId
+     * @param metricId
+     * @param startTime
+     * @param endTime
+     * @param buckets
+     * @returns ng.IPromise<IChartDataPoint[]>
+     */
+    public retrieveAvailabilityMetrics(personaId:PersonaId,
+                                       metricId:MetricId,
+                                       startTime?:TimestampInMillis,
+                                       endTime?:TimestampInMillis,
+                                       buckets = 120):ng.IPromise<IChartDataPoint[]> {
+
+      return this.retrieveMetrics(MetricsService.AVAILABILITY_TYPE, personaId, metricId, startTime, endTime, buckets);
+    }
+
+    private retrieveMetrics(metricType:string,
+                            personaId:PersonaId,
+                            metricId:MetricId,
+                            startTime?:TimestampInMillis,
+                            endTime?:TimestampInMillis,
+                            buckets = 120,
+                            isRate?):ng.IPromise<IChartDataPoint[]> {
+
       // calling refreshChartData without params use the model values
       if (!endTime) {
         endTime = Date.now();
@@ -123,15 +204,18 @@ module HawkularMetrics {
         startTime = Date.now() - (8 * 60 * 60 * 1000);
       }
 
-      return this.HawkularMetric.GaugeMetricData(personaId).queryMetrics({
-        gaugeId: metricId,
+      let querySuffix = metricType === MetricsService.AVAILABILITY_TYPE ? '' : 'Metrics';
+      let dataType = isRate ? 'Rate' : 'Data';
+
+      return this.HawkularMetric[`${metricType}Metric${dataType}`](personaId)[`query${querySuffix}`]({
+        gaugeId: (metricType === MetricsService.GAUGE_TYPE ? metricId : undefined),
+        counterId: (metricType === MetricsService.COUNTER_TYPE ? metricId : undefined),
+        availabilityId: (metricType === MetricsService.AVAILABILITY_TYPE ? metricId : undefined),
         start: startTime,
         end: endTime,
         buckets: buckets
       }).$promise;
-
     }
-
 
   }
 
