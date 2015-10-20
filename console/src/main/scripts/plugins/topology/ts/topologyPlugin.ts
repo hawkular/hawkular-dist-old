@@ -152,7 +152,7 @@ module HawkularTopology {
               kind: typeToKind[res.type.id],
               id: res.id,
               metadata: {
-                name: res.properties.name
+                name: res.name
               }
             };
             if (newItem.kind !== 'Server') {
