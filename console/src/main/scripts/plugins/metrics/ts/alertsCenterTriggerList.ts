@@ -118,12 +118,13 @@ module HawkularMetrics {
       let isError = false;
       // Check if email action exists
 
-      console.log('Start!');
       let updateTriggersPromises = this.updateSelected(true, errorCallback);
 
       this.$q.all(updateTriggersPromises).finally(()=> {
         this.isWorking = false;
-        console.log('Done!');
+        this.resetAllUnselected();
+        this.getTriggers();
+
         if (!isError) {
           // notify success ?
         }
@@ -146,6 +147,8 @@ module HawkularMetrics {
 
       this.$q.all(updateTriggersPromises).finally(()=> {
         this.isWorking = false;
+        this.resetAllUnselected();
+        this.getTriggers();
 
         if (!isError) {
           // notify success ?
@@ -161,12 +164,11 @@ module HawkularMetrics {
 
       this.triggersList.forEach((triggerItem:IAlertTrigger) => {
         if (triggerItem.selected && (triggerItem.enabled !== enabled)) {
-          console.log("Setting " + enabled.toString());
           triggerDefinition['trigger'] = angular.copy(triggerItem);
-          triggerBackup['trigger'] = angular.copy(triggerItem);
+          delete triggerDefinition['trigger'].selected;
+          triggerBackup['trigger'] = angular.copy(triggerDefinition['trigger']);
           triggerDefinition['trigger'].enabled = enabled;
           promises.push(this.HawkularAlertsManager.updateTrigger(triggerDefinition, errorCallback, triggerBackup));
-          console.log("Called Server!");
         }
       });
 
@@ -188,9 +190,6 @@ module HawkularMetrics {
       this.selectCount = this.selectedItems.length;
       this.hasEnabledSelectedItems = _.some(this.selectedItems,{'enabled': true});
       this.hasDisabledSelectedItems = _.some(this.selectedItems,{'enabled': false});
-      console.log("selectedItems:" + this.selectedItems.length);
-      console.log("hasEnabled:" + this.hasEnabledSelectedItems);
-      console.log("hasDisabled:" + this.hasDisabledSelectedItems);
     }
 
     private resetAllUnselected() {

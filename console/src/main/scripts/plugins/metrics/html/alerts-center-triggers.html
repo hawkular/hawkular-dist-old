@@ -67,8 +67,8 @@
           <tr ng-repeat="trigger in act.triggersList | filter:act.search" ng-class="{'hk-selected': act.selected}"
               ng-click="act.selectItem(trigger)">
             <td><input type="checkbox" ng-checked="trigger.selected"/></td>
-            <td>{{trigger.name|firstUpper}}</td>
-            <td>{{trigger.description|firstUpper}}</td>
+            <td>{{trigger.name}}</td>
+            <td>{{trigger.description}}</td>
             <td>{{trigger.context.resourceName|truncate: 30}}</td>
             <td>{{trigger.severity|firstUpper}}</td>
             <td>{{trigger.enabled ? "True" : "False"}}</td>
