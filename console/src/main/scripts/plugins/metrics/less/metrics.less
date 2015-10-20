@@ -64,7 +64,7 @@ body {
     width: calc(~"100% - 40px");
   }
 
-  @media (min-width: 1401px) {
+  @media (min-width: 1441px) {
     width: 1400px;
   }
 }
@@ -251,7 +251,7 @@ a:hover {
 .btn-link, a {
 
   .fa {
-    color: @link-color;
+    color: @gray;
     vertical-align: text-bottom;
   }
 
@@ -739,6 +739,10 @@ p + .form-horizontal {
   margin-left: @grid-gutter-width/8;
 }
 
+.form-actions {
+  text-align: right;
+}
+
 
 // Icons
 
@@ -967,6 +971,39 @@ a:hover .fa-spinner {
 .hk-form-editable {
   .hk-read-only {
     display: none;
+  }
+}
+
+
+// Lists
+
+.hk-comment-list {
+  padding-left: 0;
+
+  li {
+    border-top: 1px solid @list-group-border;
+    list-style: none;
+    padding: @grid-gutter-width/4;
+    padding-bottom: 0;
+
+    .pficon {
+      color: @gray-light;
+      font-size: ceil(@font-size-base + 2);
+      padding-right: 5px;
+    }
+
+    .hk-author {
+      font-weight: bold;
+      padding-right: 5px;
+    }
+
+    .hk-date {
+      color: @gray-light;
+    }
+
+    p {
+      padding: 10px 0;
+    }
   }
 }
 
@@ -1533,7 +1570,7 @@ a:hover .fa-spinner {
 
   &.table > thead > tr > th,
   &.table > tbody > tr > td {
-    padding: @grid-gutter-width/3 @grid-gutter-width/2;
+    padding: @grid-gutter-width/3 @grid-gutter-width/4;
   }
 
   .fa-flag {

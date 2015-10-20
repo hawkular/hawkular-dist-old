@@ -44,3 +44,13 @@
     padding-top: 1px;
   }
 }
+
+// fix dropdown color
+
+.dropdown-menu > {
+  li:not(.active) > a:hover {
+    &:active {
+      background-color: @link-color;
+    }
+  }
+}
