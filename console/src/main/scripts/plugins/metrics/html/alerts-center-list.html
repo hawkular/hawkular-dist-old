@@ -42,7 +42,7 @@
             <a href="#" class="btn btn-default" dropdown-toggle>
               Change State <b class="caret"></b>
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu dropdown-menu-right">
               <li><a href="#" ng-click="ac.ackSelected()" ng-disabled="!ac.hasOpenSelectedItems || ac.isWorking">Acknowledge</a></li>
               <li><a href="#" ng-click="ac.resolveSelected()" ng-disabled="ac.selectCount < 1 || ac.isWorking || ac.hasResolvedItems()">Resolve</a></li>
             </ul>
@@ -77,9 +77,9 @@
           <tr ng-repeat="alert in ac.alertsList | filter:ac.search" ng-class="{'hk-selected': ac.selected}"
               ng-click="ac.selectItem(alert)">
             <td><input type="checkbox" ng-checked="alert.selected"/></td>
-            <td ng-class="{'hk-bold': alert.status === 'OPEN'}">{{alert.status|firstUpper}} <i ng-show="(alert.notes.length > 0)" class="fa fa-comment-o"></i></td>
+            <td ng-class="{'hk-bold': alert.status === 'OPEN'}" class="text-nowrap">{{alert.status|firstUpper}} <i ng-show="(alert.notes.length > 0)" class="fa fa-comment-o" tooltip="With comments" tooltip-trigger tooltip-placement="top"></i></td>
             <td>{{alert.severity|firstUpper}}</td>
-            <td>{{alert.trigger.description| characters: 35}}</td>
+            <td>{{alert.trigger.description| characters: 50}}</td>
             <td>{{alert.ctime | date:'d MMM yyyy, HH:mm'}}</td>
             <td>{{alert.context.resourcePath | truncate: 30}}</td>
             <td><a class="btn btn-link"><i class="fa fa-chevron-circle-right fa-lg"
