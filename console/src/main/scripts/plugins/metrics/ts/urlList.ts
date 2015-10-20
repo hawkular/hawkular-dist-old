@@ -48,7 +48,7 @@ module HawkularMetrics {
   export class UrlListController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
-      'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager', '$q',
+      'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager', '$q', 'MetricsService',
       'md5', 'HkHeaderParser', 'NotificationsService'];
 
     private autoRefreshPromise:ng.IPromise<number>;
@@ -76,6 +76,7 @@ module HawkularMetrics {
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
+                private MetricsService: any,
                 private md5:any,
                 private HkHeaderParser:IHkHeaderParser,
                 private NotificationsService:INotificationsService,
@@ -380,16 +381,14 @@ module HawkularMetrics {
               resource.reverse(); // FIXME: HAWKULAR-366
               res['isUp'] = (resource[0] && resource[0].value === 'up');
             }).$promise);
-            promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
-              availabilityId: res.id,
-              start: 1,
-              end: moment().valueOf(),
-              buckets: 1
-            }, (resource) => {
+            let availPromise = this.MetricsService.retrieveAvailabilityMetrics(this.$rootScope.currentPersona.id,
+              res.id, 1, moment().valueOf(), 1);
+            promises.push(availPromise);
+            availPromise.then((resource) => {
               res['availability'] = resource[0].uptimeRatio * 100;
               res['downtimeDuration'] = Math.round(resource[0].downtimeDuration / 1000 / 60);
               res['lastDowntime'] = resource[0].lastDowntime;
-            }).$promise);
+            });
             this.lastUpdateTimestamp = new Date();
           }, this);
           this.$q.all(promises).then(() => {

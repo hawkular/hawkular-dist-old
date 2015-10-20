@@ -368,46 +368,46 @@ module HawkularMetrics {
       angular.forEach(this.resourceList, function(res, idx) {
 
         if (!this.skipChartData[res.id + '_Available Count']) {
-          availPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
-            start: this.startTimeStamp,
-            end: this.endTimeStamp, buckets: 60
-          }, (data) => {
+          let dsAvailPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
+            'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
+            this.startTimeStamp, this.endTimeStamp, 60);
+          availPromises.push(dsAvailPromise);
+          dsAvailPromise.then((data) => {
             tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
             tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
               key: 'Available Count',
               color: AppServerDatasourcesDetailsController.AVAILABLE_COLOR,
               values: MetricsService.formatBucketedChartOutput(data)
             };
-          }, this).$promise);
+          });
         }
         if (!this.skipChartData[res.id + '_In Use Count']) {
-          availPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
-            start: this.startTimeStamp,
-            end: this.endTimeStamp, buckets: 60
-          }, (data) => {
+          let dsInUsePromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
+            'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
+            this.startTimeStamp, this.endTimeStamp, 60);
+          availPromises.push(dsInUsePromise);
+          dsInUsePromise.then((data) => {
             tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
             tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
               key: 'In Use',
               color: AppServerDatasourcesDetailsController.IN_USE_COLOR,
               values: MetricsService.formatBucketedChartOutput(data)
             };
-          }, this).$promise);
+          });
         }
         if (!this.skipChartData[res.id + '_Timed Out']) {
-          availPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Timed Out',
-            start: this.startTimeStamp,
-            end: this.endTimeStamp, buckets: 60
-          }, (data) => {
+          let dsTimedPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
+            'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Timed Out',
+            this.startTimeStamp, this.endTimeStamp, 60);
+          availPromises.push(dsTimedPromise);
+          dsTimedPromise.then((data) => {
             tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
             tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
               key: 'Timed Out',
               color: AppServerDatasourcesDetailsController.TIMED_OUT_COLOR,
               values: MetricsService.formatBucketedChartOutput(data)
             };
-          }, this).$promise);
+          });
         }
         this.$q.all(availPromises).finally(()=> {
           this.chartAvailData[res.id] = tmpChartAvailData[res.id] || [];
@@ -415,32 +415,32 @@ module HawkularMetrics {
         });
 
         if (!this.skipChartData[res.id + '_Average Get Time']) {
-          respPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Get Time',
-            start: this.startTimeStamp,
-            end: this.endTimeStamp, buckets: 60
-          }, (data) => {
+          let dsWTimePromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
+            'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Get Time',
+            this.startTimeStamp, this.endTimeStamp, 60);
+          respPromises.push(dsWTimePromise);
+          dsWTimePromise.then((data) => {
             tmpChartRespData[res.id] = tmpChartRespData[res.id] || [];
             tmpChartRespData[res.id][tmpChartRespData[res.id].length] = {
               key: 'Wait Time (Avg.)',
               color: AppServerDatasourcesDetailsController.WAIT_COLOR,
               values: MetricsService.formatBucketedChartOutput(data)
             };
-          }, this).$promise);
+          });
         }
         if (!this.skipChartData[res.id + '_Average Creation Time']) {
-          respPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-            gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Creation Time',
-            start: this.startTimeStamp,
-            end: this.endTimeStamp, buckets: 60
-          }, (data) => {
+          let dsCTimePromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
+            'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Creation Time',
+            this.startTimeStamp, this.endTimeStamp, 60);
+          respPromises.push(dsCTimePromise);
+          dsCTimePromise.then((data) => {
             tmpChartRespData[res.id] = tmpChartRespData[res.id] || [];
             tmpChartRespData[res.id][tmpChartRespData[res.id].length] = {
               key: 'Creation Time (Avg.)',
               color: AppServerDatasourcesDetailsController.CREATION_COLOR,
               values: MetricsService.formatBucketedChartOutput(data)
             };
-          }, this).$promise);
+          });
         }
         this.$q.all(respPromises).finally(()=> {
           this.chartRespData[res.id] = tmpChartRespData[res.id] || [];

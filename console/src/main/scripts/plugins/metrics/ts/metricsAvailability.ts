@@ -37,7 +37,7 @@ module HawkularMetrics {
   export class MetricsAvailabilityController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric',
-      '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
+      'MetricsService', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
       'ErrorsManager', 'NotificationsService', '$modal'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
@@ -61,6 +61,7 @@ module HawkularMetrics {
                 private $window:any,
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
+                private MetricsService:any,
                 private $routeParams:any,
                 private $filter:ng.IFilterService,
                 private $moment:any,
@@ -168,13 +169,9 @@ module HawkularMetrics {
                                           endTime:TimestampInMillis):void {
 
       if (metricId) {
-        this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
-          availabilityId: metricId,
-          start: startTime,
-          end: endTime,
-          buckets: 1
-        }).$promise
-          .then((availResponse:IAvailabilitySummary[]) => {
+        this.MetricsService.retrieveAvailabilityMetrics(this.$rootScope.currentPersona.id,
+          metricId, startTime, endTime, 1).
+          then((availResponse:IAvailabilitySummary[]) => {
 
             if (availResponse && !_.last(availResponse).empty) {
 
