@@ -85,7 +85,7 @@ module HawkularMetrics {
 
         let fullTrigger = {
           trigger: {
-            name: resourceId,
+            name: 'Active Web Sessions',
             id: triggerId,
             description: 'Active Web Sessions for ' + resourceId,
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
@@ -145,7 +145,7 @@ module HawkularMetrics {
 
           let fullTrigger = {
             trigger: {
-              name: resourceId,
+              name: 'Expired Web Sessions',
               id: triggerId,
               description: 'Expired Web Sessions for ' + resourceId,
               autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
@@ -203,7 +203,7 @@ module HawkularMetrics {
 
           let fullTrigger = {
             trigger: {
-              name: resourceId,
+              name: 'Rejected Web Sessions',
               id: triggerId,
               description: 'Rejected Web Sessions for ' + resourceId,
               autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue

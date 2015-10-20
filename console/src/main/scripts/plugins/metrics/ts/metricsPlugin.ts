@@ -160,6 +160,11 @@ module HawkularMetrics {
         controller: 'AlertsCenterDetailsController',
         controllerAs: 'acd'
       }).
+      when('/hawkular-ui/alerts-center-triggers', {
+        templateUrl: 'plugins/metrics/html/alerts-center-triggers.html',
+        controller: 'AlertsCenterTriggerController',
+        controllerAs: 'act'
+      }).
       otherwise({redirectTo: '/hawkular-ui/app/app-list'});
   }]);
 
