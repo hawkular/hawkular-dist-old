@@ -96,27 +96,23 @@
     </div>
 
       <!-- mini charts per cpu -->
-      <!-- TODO we should show them as rows of 2 mini-charts ->
-    <div ng-if="os.resolvedCPUData">
-      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-      <div class="panel panel-default hk-summary">
-        <div class="row">
 
-          <div class="hk-resource-container" ng-repeat="cpu in os.processorList">
-            <div class="hk-graph-container hk-graph-metrics">
-              <span class="hk-data" ng-show="os.chartCpuDataMulti[cpu]">
-                <hawkular-chart
-                  data="os.chartCpuDataMulti[cpu]"
-                  chart-type="rhqbar"
-                  hide-high-low-values="false"
-                  y-axis-units="Usage (%)"
-                  chart-height="150">
-                 </hawkular-chart>
-               </span>
-               <span class="hk-data" ng-show="!os.chartCpuDataMulti[cpu]">Loading ...</span>
-              <span class="hk-item">{{os.processorListNames[cpu]}}</span>
-            </div>
-          </div>
+      <div class="panel panel-default hk-graph" ng-if="os.resolvedCPUData">
+        <div class="row">
+          <!-- TODO we should show them as rows of 2 mini-charts -->
+        <div class="hk-graph-container hk-graph-metrics"  ng-repeat="cpu in os.processorList">
+          <span ng-show="os.chartCpuDataMulti[cpu]">
+              <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+            <hawkular-chart
+              data="os.chartCpuDataMulti[cpu]"
+              chart-type="rhqbar"
+              hide-high-low-values="false"
+              y-axis-units="Usage (%)"
+              chart-height="150">
+             </hawkular-chart>
+           </span>
+           <span class="hk-data" ng-show="!os.chartCpuDataMulti[cpu]">Loading ...</span>
+          <span class="hk-item">{{os.processorListNames[cpu]}}</span>
         </div>
       </div>
     </div>
@@ -127,11 +123,11 @@
 
 
       <div class="hk-resource-container"
-       ng-repeat="fs in os.fileStoreList | filter: os.filter| orderBy:'properties.name':osSortInv">
+       ng-repeat="fs in os.fileStoreList | filter: os.filter| orderBy:'name':osSortInv">
 
       <div class="panel panel-default hk-summary">
           <div class="panel-heading">
-              <span class="hk-heading pull-left">{{fs.properties.name}}</span>
+              <span class="hk-heading pull-left">{{fs.name}}</span>
           </div>
           <div class="row"></div>
       </div>

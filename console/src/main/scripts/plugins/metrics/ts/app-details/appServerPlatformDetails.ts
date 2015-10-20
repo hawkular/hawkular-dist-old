@@ -318,7 +318,8 @@ this.$log.log('getFSChartData');
           metrics: this.processorList,
           start: this.startTimeStamp,
           end: this.endTimeStamp,
-          buckets: 60
+          buckets: 60,
+          stacked: true
         }, (resource) => {
           if (resource.length) {
             this.chartCpuData = MetricsService.formatBucketedChartOutput(resource, 100);
