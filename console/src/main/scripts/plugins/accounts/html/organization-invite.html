@@ -7,7 +7,7 @@
 
 <div class="modal-body">
   <form role="form" name="form" class="form-horizontal">
-    <div class="form-group">
+    <div class="form-group" ng-class="{'has-error': form.emails.$error.emails}">
       <label for="emails" class="col-md-4 control-label">Invite via email</label>
       <div class="col-md-6">
         <input type="text"
