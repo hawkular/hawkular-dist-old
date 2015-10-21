@@ -987,7 +987,7 @@
       </subsystem>
       <subsystem xmlns="urn:jboss:domain:keycloak:1.1">
         <realm name="hawkular">
-          <auth-server-url>/auth</auth-server-url>
+          <auth-server-url>http://localhost:8080/auth</auth-server-url>
           <ssl-required>none</ssl-required>
         </realm>
         <secure-deployment name="hawkular-accounts.war">
