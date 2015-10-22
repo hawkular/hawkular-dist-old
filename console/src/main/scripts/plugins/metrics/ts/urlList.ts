@@ -463,8 +463,6 @@ module HawkularMetrics {
         this.HawkularAlertsManager.deleteTrigger(triggerIds[1])])
         .then(removeResource)
         .then((res) => {
-          this.NotificationsService.success('The URL ' + this.resource.properties.url +
-            ' is no longer being monitored.');
           this.$modalInstance.close(res);
         });
     }

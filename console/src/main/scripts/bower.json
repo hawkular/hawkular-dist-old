@@ -12,6 +12,7 @@
     "plugins"
   ],
   "dependencies": {
+    "angular-animate": "~1.4.4",
     "angular-bootstrap": "0.11.0",
     "angular-md5": "0.1.7",
     "angular-momentjs": "0.1.9",
@@ -19,13 +20,14 @@
     "angular-scroll": "0.6.5",
     "angular-ui-select": "0.11.2",
     "angular-toastr": "1.4.1",
+    "animate.css": "3.0.0",
     "ngInfiniteScroll": "1.2.1",
     "bootstrap-select": "1.6",
     "hawkular-charts": "hawkular/hawkular-charts#master",
     "hawkular-ui-services": "hawkular/hawkular-ui-services#master",
     "hawtio-core-navigation": "2.0.51",
     "hawtio-core": "2.0.18",
-    "hawtio-template-cache": "2.0.3",
+    "hawtio-template-cache": "2.0.4",
     "hawtio-utilities": "2.0.22",
     "hawtio-extension-service": "2.0.2",
     "hawtio-oauth": "2.0.29",
