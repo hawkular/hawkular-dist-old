@@ -28,7 +28,7 @@ USER root
 RUN unzip -qq -d /opt /opt/hawkular.zip;\
     rm /opt/hawkular.zip;\
     mkdir /opt/data;
-#    /opt/hawkular-1.0.0.Alpha6-SNAPSHOT/bin/add-user.sh hawkularadmin hawkularadmin --silent
+#    /opt/hawkular-1.0.0.Alpha7-SNAPSHOT/bin/add-user.sh hawkularadmin hawkularadmin --silent
 
 # env variable controlling which Cassandra to use. Choose 'embeded_cassandra' or 'cassandra'
 env HAWKULAR_BACKEND=embedded_cassandra
@@ -42,4 +42,4 @@ VOLUME /opt/data
 # Internal ports visible to the outside
 EXPOSE 8080 8443
 
-CMD ["/opt/hawkular-1.0.0.Alpha6-SNAPSHOT/bin/standalone.sh","-b","0.0.0.0","-bmanagement","0.0.0.0","-Djboss.server.data.dir=/opt/data"]
+CMD ["/opt/hawkular-1.0.0.Alpha7-SNAPSHOT/bin/standalone.sh","-b","0.0.0.0","-bmanagement","0.0.0.0","-Djboss.server.data.dir=/opt/data"]
