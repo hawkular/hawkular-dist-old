@@ -21,11 +21,12 @@
 
 module HawkularMetrics {
 
-  export class AppServerWebDetailsController {
+  export class AppServerWebDetailsController implements IRefreshable {
 
     /// this is for minification purposes
     public static $inject = ['$scope', '$rootScope', '$interval', '$log', '$routeParams',
-      'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager', '$q', 'MetricsService'];
+      'HawkularInventory', 'HawkularMetric', 'HawkularNav', 'HawkularAlertsManager', 'ErrorsManager',
+      '$q', 'MetricsService'];
 
     public static MAX_ACTIVE_COLOR = '#1884c7'; /// blue
     public static EXPIRED_COLOR = '#f57f20'; /// orange
@@ -55,6 +56,7 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
+                private HawkularNav:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
@@ -74,6 +76,14 @@ module HawkularMetrics {
         this.getWebChartData();
       }
 
+      // handle drag ranges on charts to change the time range
+      this.$scope.$on('ChartTimeRangeChanged', (event, data:Date[]) => {
+        this.startTimeStamp = data[0].getTime();
+        this.endTimeStamp = data[1].getTime();
+        this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
+        this.refresh();
+      });
+
       this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
 
       this.autoRefresh(20);
@@ -88,21 +98,23 @@ module HawkularMetrics {
       let triggerIds = activeSessionsTriggerId + ',' + expiredSessionsTriggerId + ',' + rejectedSessionsTriggerId;
 
       let sessionsArray:any;
-      let sessionsPromise = this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN', triggerIds: triggerIds,
-        startTime: startTime, endTime: endTime}).then((sessionsData)=> {
-          _.forEach(sessionsData.alertList, (item) => {
-            if (item['triggerId'] === activeSessionsTriggerId) {
-              item['alertType'] = 'ACTIVE_SESSIONS';
-            } else if (item['triggerId'] === expiredSessionsTriggerId) {
-              item['alertType'] = 'EXPIRED_SESSIONS';
-            } else if (item['triggerId'] === rejectedSessionsTriggerId) {
-              item['alertType'] = 'REJECTED_SESSIONS';
-            }
-          });
-          sessionsArray = sessionsData.alertList;
-        }, (error) => {
-          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      let sessionsPromise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN', triggerIds: triggerIds,
+        startTime: startTime, endTime: endTime
+      }).then((sessionsData)=> {
+        _.forEach(sessionsData.alertList, (item) => {
+          if (item['triggerId'] === activeSessionsTriggerId) {
+            item['alertType'] = 'ACTIVE_SESSIONS';
+          } else if (item['triggerId'] === expiredSessionsTriggerId) {
+            item['alertType'] = 'EXPIRED_SESSIONS';
+          } else if (item['triggerId'] === rejectedSessionsTriggerId) {
+            item['alertType'] = 'REJECTED_SESSIONS';
+          }
         });
+        sessionsArray = sessionsData.alertList;
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      });
 
       this.$q.all([sessionsPromise]).finally(()=> {
         this.alertList = [].concat(sessionsArray);
@@ -113,13 +125,17 @@ module HawkularMetrics {
 
     private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(() => {
-        this.getWebData();
-        this.getWebChartData();
+        this.refresh();
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
         this.$interval.cancel(this.autoRefreshPromise);
       });
+    }
+
+    public refresh():void {
+      this.getWebData();
+      this.getWebChartData();
     }
 
     public getWebData():void {
@@ -130,17 +146,17 @@ module HawkularMetrics {
         `MI~R~[${this.$routeParams.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions`,
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
           this.activeWebSessions = resource[0].avg;
-      });
+        });
       this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
         `MI~R~[${this.$routeParams.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time`,
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
           this.requestTime = resource[0].max - resource[0].min;
-      });
+        });
       this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
         `MI~R~[${this.$routeParams.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count`,
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
           this.requestCount = resource[0].max - resource[0].min;
-      });
+        });
     }
 
     public getWebChartData():void {
@@ -224,7 +240,7 @@ module HawkularMetrics {
       });
     }
 
-    public toggleChartData(name): void {
+    public toggleChartData(name):void {
       this.skipChartData[name] = !this.skipChartData[name];
       this.getWebChartData();
     }

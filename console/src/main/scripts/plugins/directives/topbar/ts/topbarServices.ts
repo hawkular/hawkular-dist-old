@@ -32,9 +32,9 @@ module Topbar {
       $rootScope.hkParams = $routeParams || [];
 
       // default time period set to 24 hours
-      var defaultOffset = 1 * 60 * 60 * 1000;
+      let defaultOffset = 60 * 60 * 1000;
 
-      var init = (tenantId:string) => {
+      let init = (tenantId?:string) => {
         HawkularInventory.Resource.query({environmentId: globalEnvironmentId}, (resourceList) => {
           $rootScope.hkResources = resourceList;
           for (var i = 0; i < resourceList.length; i++) {
@@ -45,19 +45,19 @@ module Topbar {
         });
 
         $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
-        $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
+        $rootScope.hkEndTimestamp = $routeParams.endTimestamp || +moment();
         $rootScope.hkStartTimestamp = moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
-        $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
+        $rootScope.$on('$routeChangeSuccess', (event, current, previous) => {
           $rootScope.hkParams = current.params;
 
           $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
-          $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
+          $rootScope.hkEndTimestamp = $routeParams.endTimestamp || +moment();
           $rootScope.hkStartTimestamp = moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
         }, this);
       };
-      var tenantId = this.$rootScope.currentPersona && this.$rootScope.currentPersona.id;
+      let tenantId = this.$rootScope.currentPersona && this.$rootScope.currentPersona.id;
       if (tenantId) {
         init(tenantId);
       } else {
@@ -66,8 +66,20 @@ module Topbar {
       }
     }
 
-    public setTimestamp(offset, end) {
+    public setTimestamp(offset:number, end ?:number) {
       this.$route.updateParams({timeOffset: offset, endTime: end});
+      this.$rootScope.hkParams.timeOffset = offset;
+      this.$rootScope.hkEndTimestamp = end;
+      this.$rootScope.hkStartTimestamp = moment().subtract(this.$rootScope.hkParams.timeOffset,
+        'milliseconds').valueOf();
+    }
+
+    public setTimestampStartEnd(start:number, end:number) {
+      let offset = end - start;
+      this.$route.updateParams({timeOffset: offset, endTime: end});
+      this.$rootScope.hkParams.timeOffset = offset;
+      this.$rootScope.hkEndTimestamp = end;
+      this.$rootScope.hkStartTimestamp = start;
     }
   }
 

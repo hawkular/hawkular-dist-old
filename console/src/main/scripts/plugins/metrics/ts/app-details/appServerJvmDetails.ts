@@ -27,10 +27,10 @@ module HawkularMetrics {
     values: IChartDataPoint[];
   }
 
-  export class AppServerJvmDetailsController {
+  export class AppServerJvmDetailsController implements IRefreshable {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', '$window', 'HawkularInventory', 'HawkularMetric','HawkularNav', 'HawkularAlertsManager',
+      '$modal', 'HawkularInventory', 'HawkularMetric','HawkularNav', 'HawkularAlertsManager',
       'MetricsService', 'ErrorsManager', '$q', ];
 
     public static USED_COLOR = '#1884c7'; /// blue
@@ -40,7 +40,7 @@ module HawkularMetrics {
     public static MAX_HEAP = 1024 * 1024 * 1024;
     public static BYTES2MB = 1 / 1024 / 1024;
 
-    public math = this.$window.Math;
+    public math = Math;
 
     public alertList;
     public chartHeapData:IMultiDataPoint[];
@@ -59,7 +59,6 @@ module HawkularMetrics {
                 private $filter:ng.IFilterService,
                 private $routeParams:any,
                 private $modal:any,
-                private $window:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
                 private HawkularNav:any,
@@ -83,11 +82,10 @@ module HawkularMetrics {
       }
 
       // handle drag ranges on charts to change the time range
-      this.$scope.$on('ChartTimeRangeChanged', (event, data) => {
-        this.$log.info('Received ChartTimeRangeChanged: ' + data[0] + ' - ' + data[1]);
-        this.startTimeStamp = data[0];
-        this.endTimeStamp = data[1];
-        //this.HawkularNav.setTimestamp(this.endTimeStamp - this.endTimeStamp);
+      this.$scope.$on('ChartTimeRangeChanged', (event, data:Date[]) => {
+        this.startTimeStamp = data[0].getTime();
+        this.endTimeStamp = data[1].getTime();
+        this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
         this.refresh();
       });
 
