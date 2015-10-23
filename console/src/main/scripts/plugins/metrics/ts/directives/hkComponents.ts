@@ -123,4 +123,41 @@ module HawkularMetrics {
   }
 
   _module.directive('hkTimeInput', HawkularMetrics.HkTimeInput.Factory());
+
+  export class HkAutofocus {
+
+    public link:(scope:any, element:any[], attrs:any) => void;
+
+    public restrict = 'A';
+
+    constructor($timeout: any) {
+      this.link = (scope:any, element:any, attrs:any) => {
+        scope.$watch( () => { return element.is(':visible'); },
+            (value) => {
+              if(value) {
+                $timeout(() => {
+                  element[0].focus();
+                  if (element[0].select) {
+                    element[0].select();
+                  }
+                });
+              }
+            }
+        );
+      };
+    }
+
+    public static Factory() {
+      let directive = ($timeout: any) => {
+        return new HkAutofocus($timeout);
+      };
+
+      directive['$inject'] = ['$timeout'];
+
+      return directive;
+    }
+  }
+
+  _module.directive('hkAutofocus', HawkularMetrics.HkAutofocus.Factory());
+
 }
