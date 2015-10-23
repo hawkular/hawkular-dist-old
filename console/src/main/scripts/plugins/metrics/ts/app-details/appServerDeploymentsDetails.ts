@@ -22,7 +22,7 @@
 module HawkularMetrics {
 
 
-  export class AppServerDeploymentsDetailsController {
+  export class AppServerDeploymentsDetailsController implements IRefreshable {
     /// this is for minification purposes
     public static $inject = ['$scope', '$rootScope', '$interval', '$log', '$routeParams', '$filter',
       '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularOps', 'HawkularAlertsManager',
@@ -103,8 +103,11 @@ module HawkularMetrics {
       });
     }
 
+    public refresh(): void {
+      this.getResourceList();
+    }
 
-    public getResourceList(currentTenantId?:TenantId):any {
+    public getResourceList(currentTenantId?:TenantId):void {
       this.alertList = []; // FIXME: when we have alerts for app server
       let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       let idParts = this.$routeParams.resourceId.split('~');

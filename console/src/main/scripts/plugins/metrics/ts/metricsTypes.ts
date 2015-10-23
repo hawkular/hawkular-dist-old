@@ -71,7 +71,8 @@ module HawkularMetrics {
     username:string;
   }
 
-  export enum PersistenceState {PERSISTING, SUCCESS, ERROR};
+  export enum PersistenceState {PERSISTING, SUCCESS, ERROR}
+  ;
 
   export interface IhkParams {
     timeOffset:number;
@@ -88,6 +89,12 @@ module HawkularMetrics {
     hkParams:IhkParams;
     resourcePath:ResourcePath;
     isExperimental:boolean;
+  }
+
+  export interface IRefreshable {
+    startTimeStamp:TimestampInMillis;
+    endTimeStamp:TimestampInMillis;
+    refresh():void;
   }
 
   export interface IResourceProperties {

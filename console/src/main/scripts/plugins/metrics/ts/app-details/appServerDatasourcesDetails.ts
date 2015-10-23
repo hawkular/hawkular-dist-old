@@ -21,11 +21,11 @@
 
 module HawkularMetrics {
 
-  export class AppServerDatasourcesDetailsController {
+  export class AppServerDatasourcesDetailsController implements IRefreshable {
 
     /// for minification only
-    public static  $inject = ['$scope','$rootScope','$routeParams','$interval','$q','HawkularInventory',
-      'HawkularMetric', 'HawkularAlertsManager', 'MetricsService', '$log', '$modal'];
+    public static  $inject = ['$scope', '$rootScope', '$routeParams', '$interval', '$q', 'HawkularInventory',
+      'HawkularMetric', 'HawkularNav', 'HawkularAlertsManager', 'MetricsService', '$log', '$modal'];
 
     public static AVAILABLE_COLOR = '#1884c7'; /// blue
     public static IN_USE_COLOR = '#49a547'; /// green
@@ -37,7 +37,7 @@ module HawkularMetrics {
     public static DEFAULT_WAIT_THRESHOLD = 200; // > 200 ms average wait time
     public static DEFAULT_CREA_THRESHOLD = 200; // > 200 ms average creatiion time
 
-    private autoRefreshPromise: ng.IPromise<number>;
+    private autoRefreshPromise:ng.IPromise<number>;
     private resourceList;
     ///private expandedList;
     public alertList;
@@ -49,21 +49,23 @@ module HawkularMetrics {
     public resolvedAvailData = {};
     public resolvedRespData = {};
 
-    public defaultEmail: string;
+    public defaultEmail:string;
 
-    constructor(private $scope: any,
-                private $rootScope: any,
-                private $routeParams: any,
-                private $interval: ng.IIntervalService,
-                private $q: ng.IQService,
-                private HawkularInventory: any,
-                private HawkularMetric: any,
-                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private MetricsService: any,
-                private $log: any,
-                private $modal: any,
-                public startTimeStamp:TimestampInMillis,
-                public endTimeStamp:TimestampInMillis) {
+    public startTimeStamp:TimestampInMillis;
+    public endTimeStamp:TimestampInMillis;
+
+    constructor(private $scope:any,
+                private $rootScope:IHawkularRootScope,
+                private $routeParams:any,
+                private $interval:ng.IIntervalService,
+                private $q:ng.IQService,
+                private HawkularInventory:any,
+                private HawkularMetric:any,
+                private HawkularNav:any,
+                private HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
+                private MetricsService:IMetricsService,
+                private $log:ng.ILogService,
+                private $modal:any) {
       $scope.vm = this;
 
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
@@ -72,6 +74,15 @@ module HawkularMetrics {
       this.chartRespData = {};
 
       this.defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+
+
+      // handle drag ranges on charts to change the time range
+      this.$scope.$on('ChartTimeRangeChanged', (event, data:Date[]) => {
+        this.startTimeStamp = data[0].getTime();
+        this.endTimeStamp = data[1].getTime();
+        this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
+        this.refresh();
+      });
 
       if ($rootScope.currentPersona) {
         this.getDatasources(this.$rootScope.currentPersona.id);
@@ -85,28 +96,32 @@ module HawkularMetrics {
     }
 
     private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis, res:any):void {
-      let connArray: any, respArray: any;
-      let connPromise = this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN',
-        triggerIds: metricIdPrefix + '_ds_conn', startTime: startTime, endTime: endTime}).then((connData)=> {
-          _.forEach(connData.alertList, (item) => {
-            item['alertType']='DSCONN';
-            item['condition']=item['dataId'].substr(item['dataId'].lastIndexOf('~')+1);
-          });
-          connArray = connData.alertList;
-        }, (error) => {
-          //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      let connArray:any, respArray:any;
+      let connPromise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        triggerIds: metricIdPrefix + '_ds_conn', startTime: startTime, endTime: endTime
+      }).then((connData)=> {
+        _.forEach(connData.alertList, (item) => {
+          item['alertType'] = 'DSCONN';
+          item['condition'] = item['dataId'].substr(item['dataId'].lastIndexOf('~') + 1);
         });
+        connArray = connData.alertList;
+      }, (error) => {
+        //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      });
 
-      let respPromise = this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN',
-        triggerIds: metricIdPrefix + '_ds_resp', startTime: startTime, endTime: endTime}).then((respData)=> {
-          _.forEach(respData.alertList, (item) => {
-            item['alertType']='DSRESP';
-            item['condition']=item['dataId'].substr(item['dataId'].lastIndexOf('~')+1);
-          });
-          respArray = respData.alertList;
-        }, (error) => {
-          //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      let respPromise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        triggerIds: metricIdPrefix + '_ds_resp', startTime: startTime, endTime: endTime
+      }).then((respData)=> {
+        _.forEach(respData.alertList, (item) => {
+          item['alertType'] = 'DSRESP';
+          item['condition'] = item['dataId'].substr(item['dataId'].lastIndexOf('~') + 1);
         });
+        respArray = respData.alertList;
+      }, (error) => {
+        //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      });
 
 
       this.$q.all([connPromise, respPromise]).finally(()=> {
@@ -282,7 +297,7 @@ module HawkularMetrics {
       });
     }
 
-    public deleteDatasource(datasource: any): void {
+    public deleteDatasource(datasource:any):void {
       /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
       let datasourceDeleteDialog = this.$modal.open({
         templateUrl: 'plugins/metrics/html/app-details/modals/detail-datasources-delete.html',
@@ -299,7 +314,11 @@ module HawkularMetrics {
       });
     }
 
-    public autoRefresh(intervalInSeconds: number): void {
+    public refresh():void {
+      this.getDatasources();
+    }
+
+    public autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getDatasources();
       }, intervalInSeconds * 1000);
@@ -309,7 +328,7 @@ module HawkularMetrics {
       });
     }
 
-    public getDatasources(currentTenantId?: TenantId): any {
+    public getDatasources(currentTenantId?:TenantId):void {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
@@ -318,47 +337,50 @@ module HawkularMetrics {
       let feedId = idParts[0];
 
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
-        environmentId: globalEnvironmentId,
-        feedId: feedId,
-        resourceTypeId: 'Datasource'}, (aResourceList, getResponseHeaders) => {
-        let promises = [];
-        let tmpResourceList = [];
-        angular.forEach(aResourceList, (res:any) => {
-          if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
-            tmpResourceList.push(res);
-            promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-              gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
-              distinct: true}, (data) => {
-              res.availableCount = data[0];
-            }).$promise);
-            promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-              gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
-              distinct: true}, (data) => {
-              res.inUseCount = data[0];
-            }).$promise);
-            this.getAlerts(res.id, this.startTimeStamp, this.endTimeStamp, res);
+          environmentId: globalEnvironmentId,
+          feedId: feedId,
+          resourceTypeId: 'Datasource'
+        }, (aResourceList, getResponseHeaders) => {
+          let promises = [];
+          let tmpResourceList = [];
+          angular.forEach(aResourceList, (res:any) => {
+            if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
+              tmpResourceList.push(res);
+              promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+                gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
+                distinct: true
+              }, (data) => {
+                res.availableCount = data[0];
+              }).$promise);
+              promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+                gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
+                distinct: true
+              }, (data) => {
+                res.inUseCount = data[0];
+              }).$promise);
+              this.getAlerts(res.id, this.startTimeStamp, this.endTimeStamp, res);
+            }
+          }, this);
+          this.$q.all(promises).then(() => {
+            this.resourceList = tmpResourceList;
+            this.resourceList.$resolved = true;
+            this.getDatasourceChartData();
+          });
+        },
+        () => { // error
+          if (!this.resourceList) {
+            this.resourceList = [];
+            this.resourceList.$resolved = true;
+            this['lastUpdateTimestamp'] = new Date();
           }
-        }, this);
-        this.$q.all(promises).then(() => {
-          this.resourceList = tmpResourceList;
-          this.resourceList.$resolved = true;
-          this.getDatasourceChartData();
         });
-      },
-      () => { // error
-        if (!this.resourceList) {
-          this.resourceList = [];
-          this.resourceList.$resolved = true;
-          this['lastUpdateTimestamp'] = new Date();
-        }
-      });
     }
 
-    public getDatasourceChartData(currentTenantId?: TenantId): any {
+    public getDatasourceChartData(currentTenantId?:TenantId):void {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
-      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      //let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
 
       let availPromises = [];
       let respPromises = [];
@@ -366,7 +388,7 @@ module HawkularMetrics {
       let tmpChartAvailData = {};
       let tmpChartRespData = {};
 
-      _.forEach(this.resourceList, function(res: any, idx) {
+      _.forEach(this.resourceList, function (res:any) {
 
         if (!this.skipChartData[res.id + '_Available Count']) {
           let dsAvailPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
@@ -450,7 +472,7 @@ module HawkularMetrics {
       }, this);
     }
 
-    public toggleChartData(name): void {
+    public toggleChartData(name):void {
       this.skipChartData[name] = !this.skipChartData[name];
       this.getDatasourceChartData();
     }
