@@ -1,40 +1,24 @@
-<div class="hk-organization-memberships" ng-controller="HawkularAccounts.OrganizationMembershipController as controller">
+<div class="hk-organization-memberships row" ng-controller="HawkularAccounts.OrganizationMembershipController as controller">
+  <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
 
-  <div ng-show="!controller.isOrganization">
-    <div class="text-center hk-spinner-container-alone" ng-show="controller.loading">
-      <div class="spinner spinner-lg"></div>
-      <p class="hk-spinner-legend-below">Loading...</p>
-    </div>
+    <div ng-show="!controller.isOrganization">
+      <div class="text-center hk-spinner-container-alone" ng-show="controller.loading">
+        <div class="spinner spinner-lg"></div>
+        <p class="hk-spinner-legend-below">Loading...</p>
+      </div>
 
-    <div class="hk-screen-top-nav">
-      <div class="row hk-top-row" >
-        <div class="col-xs-6" ng-show="!controller.loading">
-          <a data-ng-href="/hawkular-ui/organizations">&laquo; All organizations</a>
+      <div class="hk-screen-top-nav">
+        <div class="row hk-top-row" >
+          <div class="col-xs-6" ng-show="!controller.loading">
+            <a data-ng-href="/hawkular-ui/organizations">&laquo; All organizations</a>
+          </div>
+        </div>
+        <div class="hk-heading">
+          <h1 ng-show="!controller.loading">{{controller.organization.name}} Members</h1>
         </div>
       </div>
-      <div class="hk-heading">
-        <h1 ng-show="!controller.loading">{{controller.organization.name}} Members</h1>
-      </div>
-    </div>
 
-    <div class="text-right" ng-show="controller.memberships.length && !controller.loading && controller.foundOrganization">
-      <button
-        class="btn btn-primary"
-        type="button"
-        role="button"
-        ng-click="controller.showInviteModal()"
-        ng-show="controller.isAllowedToInvite">
-        Invite People
-      </button>
-    </div>
-
-    <div ng-show="!controller.loading && controller.foundOrganization">
-      <div class="blank-slate-pf" ng-show="!controller.memberships.length">
-        <div class="blank-slate-pf-icon">
-          <i class="fa fa-users"></i>
-        </div>
-        <!--         <h2>No members for this organization (not even you?). Found organization: {{controller.foundOrganization}}</h2> -->
-        <h1>No members.</h1>
+      <div class="text-right" ng-show="controller.memberships.length && !controller.loading && controller.foundOrganization">
         <button
           class="btn btn-primary"
           type="button"
@@ -44,76 +28,93 @@
           Invite People
         </button>
       </div>
+
+      <div ng-show="!controller.loading && controller.foundOrganization">
+        <div class="blank-slate-pf" ng-show="!controller.memberships.length">
+          <div class="blank-slate-pf-icon">
+            <i class="fa fa-users"></i>
+          </div>
+          <!--         <h2>No members for this organization (not even you?). Found organization: {{controller.foundOrganization}}</h2> -->
+          <h1>No members.</h1>
+          <button
+            class="btn btn-primary"
+            type="button"
+            role="button"
+            ng-click="controller.showInviteModal()"
+            ng-show="controller.isAllowedToInvite">
+            Invite People
+          </button>
+        </div>
+      </div>
+
+      <div class="hk-table-container" ng-show="controller.memberships.length">
+        <table class="table table-bordered hk-table-clean">
+          <thead>
+          <tr>
+            <th>Name</th>
+            <th>Role</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="membership in controller.memberships">
+            <td>{{membership.member.name}}</td>
+            <td>
+              <span ng-show="membership.member.id === controller.organization.owner.id">Owner</span>
+
+            <span ng-show="membership.member.id !== controller.organization.owner.id">
+              <span ng-show="controller.isAllowedToChangeRoleOfMembers">
+                <select
+                  ng-model="membership.role"
+                  ng-change="controller.changeRole(membership)"
+                  ng-options="role.name for role in controller.possibleRoles track by role.name"
+                  >
+                </select>
+              </span>
+
+              <span ng-show="!controller.isAllowedToChangeRoleOfMembers">
+                {{membership.role.name}}
+              </span>
+
+              <span ng-show="controller.membershipsToUpdate[membership.id] === PersistenceState.PERSISTING">
+                <i class="fa fa-spinner fa-spin"></i>
+              </span>
+              <span ng-show="controller.membershipsToUpdate[membership.id] === PersistenceState.SUCCESS">
+                <i class="fa fa-check"></i>
+              </span>
+              <span ng-show="controller.membershipsToUpdate[membership.id] === PersistenceState.ERROR">
+                <i class="fa fa-exclamation"></i>
+              </span>
+            </span>
+            </td>
+          </tr>
+          <tr ng-repeat="invitation in controller.pending" ng-show="controller.isAllowedToListPending">
+            <td>{{invitation.email}} <span class="label label-default">INVITED</span></td>
+            <td>{{invitation.role.name}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="blank-slate-pf" ng-show="!controller.loading && !controller.foundOrganization">
+        <div class="blank-slate-pf-icon">
+          <i class="fa fa-building-o"></i>
+        </div>
+        <h1>Organization not found.</h1>
+        <p>
+          The requested organization could not be found. You can try to find it in the <a href="#">organizations list</a>.
+        </p>
+      </div>
     </div>
 
-    <div class="hk-table-container" ng-show="controller.memberships.length">
-      <table class="table table-bordered hk-table-clean">
-        <thead>
-        <tr>
-          <th>Name</th>
-          <th>Role</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="membership in controller.memberships">
-          <td>{{membership.member.name}}</td>
-          <td>
-            <span ng-show="membership.member.id === controller.organization.owner.id">Owner</span>
-
-          <span ng-show="membership.member.id !== controller.organization.owner.id">
-            <span ng-show="controller.isAllowedToChangeRoleOfMembers">
-              <select
-                ng-model="membership.role"
-                ng-change="controller.changeRole(membership)"
-                ng-options="role.name for role in controller.possibleRoles track by role.name"
-                >
-              </select>
-            </span>
-
-            <span ng-show="!controller.isAllowedToChangeRoleOfMembers">
-              {{membership.role.name}}
-            </span>
-
-            <span ng-show="controller.membershipsToUpdate[membership.id] === PersistenceState.PERSISTING">
-              <i class="fa fa-spinner fa-spin"></i>
-            </span>
-            <span ng-show="controller.membershipsToUpdate[membership.id] === PersistenceState.SUCCESS">
-              <i class="fa fa-check"></i>
-            </span>
-            <span ng-show="controller.membershipsToUpdate[membership.id] === PersistenceState.ERROR">
-              <i class="fa fa-exclamation"></i>
-            </span>
-          </span>
-          </td>
-        </tr>
-        <tr ng-repeat="invitation in controller.pending" ng-show="controller.isAllowedToListPending">
-          <td>{{invitation.email}} <span class="label label-default">INVITED</span></td>
-          <td>{{invitation.role.name}}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="blank-slate-pf" ng-show="!controller.loading && !controller.foundOrganization">
+    <div class="blank-slate-pf" ng-show="controller.isOrganization">
       <div class="blank-slate-pf-icon">
         <i class="fa fa-building-o"></i>
       </div>
-      <h1>Organization not found.</h1>
+      <h1>Organization management can be done only by users.</h1>
       <p>
-        The requested organization could not be found. You can try to find it in the <a href="#">organizations list</a>.
+        To manage organizations, switch to your user account.
       </p>
     </div>
+  <!-- /col -->
   </div>
-
-  <div class="blank-slate-pf" ng-show="controller.isOrganization">
-    <div class="blank-slate-pf-icon">
-      <i class="fa fa-building-o"></i>
-    </div>
-    <h1>Organization management can be done only by users.</h1>
-    <p>
-      To manage this organization, switch from the current organization to your main user account. You can do that
-      by selecting your user at the account switcher, on the top-right corner of the screen.
-    </p>
-  </div>
-<!-- /col -->
 </div>
