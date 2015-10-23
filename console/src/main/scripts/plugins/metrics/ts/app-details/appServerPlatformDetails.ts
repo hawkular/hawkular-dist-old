@@ -339,7 +339,7 @@ module HawkularMetrics {
 
         let cpuPromises = [];
 
-        _.forEach(this.processorList, (res:string) =>{
+        _.forEach(this.processorList, (res:string) => {
 
           cpuPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
             gaugeId: res,
