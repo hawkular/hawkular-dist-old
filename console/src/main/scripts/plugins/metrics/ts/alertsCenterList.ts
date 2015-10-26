@@ -147,7 +147,7 @@ module HawkularMetrics {
         let resolvedAlerts = {
           alertIds: resolveIdList,
           resolvedBy: this.$rootScope.currentPersona.name,
-          resolvedNotes: 'Manually resolved '
+          resolvedNotes: 'Manually resolved'
         };
 
         this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then(() => {
@@ -174,7 +174,7 @@ module HawkularMetrics {
         let ackAlerts = {
           alertIds: ackIdList,
           ackBy: this.$rootScope.currentPersona.name,
-          ackNotes: 'Manually acknowledged '
+          ackNotes: 'Manually acknowledged'
         };
 
         this.HawkularAlertsManager.ackAlerts(ackAlerts).then(() => {

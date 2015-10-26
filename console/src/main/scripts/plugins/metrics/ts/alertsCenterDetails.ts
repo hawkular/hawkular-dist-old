@@ -145,6 +145,10 @@ module HawkularMetrics {
         resolvedNotes: this.comments
       };
 
+      if (!resolvedAlerts.resolvedNotes || resolvedAlerts.resolvedNotes.length === 0) {
+        resolvedAlerts.resolvedNotes = 'Manually resolved';
+      }
+
       this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then(() => {
         this.isWorking = false;
         this.getAlert(this._alertId);
@@ -161,6 +165,10 @@ module HawkularMetrics {
         ackBy: this.$rootScope.currentPersona.name,
         ackNotes: this.comments
       };
+
+      if (!ackAlerts.ackNotes || ackAlerts.ackNotes.length === 0) {
+        ackAlerts.ackNotes = 'Manually acknowledged ';
+      }
 
       this.HawkularAlertsManager.ackAlerts(ackAlerts).then(() => {
         this.isWorking = false;
