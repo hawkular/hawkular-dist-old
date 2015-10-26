@@ -82,6 +82,7 @@ module HawkularMetrics {
         let triggerId:string = this.resourceId + '_jvm_pheap';
         let resourceId:string = triggerId.slice(0, -10);
         let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
+        let heapMaxId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max';
 
         let fullTrigger = {
           trigger: {
@@ -97,7 +98,9 @@ module HawkularMetrics {
               description: 'JVM Heap Used for ' + resourceId, // Workaround for sorting
               resourceType: 'App Server',
               resourceName: resourceId,
-              resourcePath: this.$rootScope.resourcePath
+              resourcePath: this.$rootScope.resourcePath,
+              triggerType: 'RangeByPercent',
+              triggerTypeProperty1:  heapMaxId
             }
           },
           dampenings: [
@@ -142,6 +145,8 @@ module HawkularMetrics {
         let triggerId:string = this.resourceId + '_jvm_nheap';
         let resourceId:string = triggerId.slice(0, -10);
         let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used';
+        let heapMaxId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max';
+
         let fullTrigger = {
           trigger: {
             name: 'JVM Non Heap Used',
@@ -156,7 +161,9 @@ module HawkularMetrics {
               description: 'JVM Non Heap Used for ' + resourceId, // Workaround for sorting
               resourceType: 'App Server',
               resourceName: resourceId,
-              resourcePath: this.$rootScope.resourcePath
+              resourcePath: this.$rootScope.resourcePath,
+              triggerType: 'RangeByPercent',
+              triggerTypeProperty1:  heapMaxId
             }
           },
           dampenings: [
@@ -198,6 +205,7 @@ module HawkularMetrics {
         let triggerId:string = this.resourceId + '_jvm_garba';
         let resourceId:string = triggerId.slice(0, -10);
         let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration';
+
         let fullTrigger = {
           trigger: {
             name: 'Accumulated GC Duration',
@@ -212,7 +220,8 @@ module HawkularMetrics {
               description: 'Accumulated GC Duration for ' + resourceId, // Workaround for sorting
               resourceType: 'App Server',
               resourceName: resourceId,
-              resourcePath: this.$rootScope.resourcePath
+              resourcePath: this.$rootScope.resourcePath,
+              triggerType: 'Threshold'
             }
           },
           dampenings: [

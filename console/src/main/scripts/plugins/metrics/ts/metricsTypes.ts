@@ -142,12 +142,17 @@ module HawkularMetrics {
     //@todo: not needed yet
   }
 
+  export interface ITriggerContext {
+    triggerType: string;
+  }
+
   export interface IAlertTrigger {
     autoDisable: boolean;
     autoEnable: boolean;
     autoResolve: boolean;
     autoResolveAlerts: boolean;
     autoResolveMatch: string; /// @todo: change to enum
+    context: ITriggerContext;
     description: string;
     enabled: boolean;
     firingMatch: string; /// @todo: change to enum

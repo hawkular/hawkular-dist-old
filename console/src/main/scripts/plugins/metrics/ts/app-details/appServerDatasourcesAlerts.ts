@@ -121,7 +121,8 @@ module HawkularMetrics {
             operator: 'GT',
             context: {
               description: 'Average Get Time',
-              unit: 'ms'
+              unit: 'ms',
+              triggerType: 'Threshold'
             }
           }
         ];
@@ -135,7 +136,8 @@ module HawkularMetrics {
             operator: 'GT',
             context: {
               description: 'Average Creation Time',
-              unit: 'ms'
+              unit: 'ms',
+              triggerType: 'Threshold'
             }
           }
         ];
@@ -149,7 +151,8 @@ module HawkularMetrics {
             operator: 'GT',
             context: {
               description: 'Average Get Time',
-              unit: 'ms'
+              unit: 'ms',
+              triggerType: 'Threshold'
             }
           },
           {
@@ -160,7 +163,8 @@ module HawkularMetrics {
             operator: 'GT',
             context: {
               description: 'Average Creation Time',
-              unit: 'ms'
+              unit: 'ms',
+              triggerType: 'Threshold'
             }
           }
         ];
