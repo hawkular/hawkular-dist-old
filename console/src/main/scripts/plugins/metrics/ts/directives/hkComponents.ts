@@ -137,7 +137,7 @@ module HawkularMetrics {
               if(value) {
                 $timeout(() => {
                   element[0].focus();
-                  if (element[0].select) {
+                  if (attrs.hkAutofocus === 'select' && element[0].select) {
                     element[0].select();
                   }
                 });
