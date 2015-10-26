@@ -41,45 +41,38 @@ module HawkularMetrics {
         });
 
 
-      let respTriggerId = this.resourceId + '_ds_resp';
+      let waitTriggerId = this.resourceId + '_ds_wait';
 
-      let respTriggerPromise = this.HawkularAlertsManager.getTrigger(respTriggerId)
+      let waitTriggerPromise = this.HawkularAlertsManager.getTrigger(waitTriggerId)
         .then((triggerData) => {
 
-          this.$log.debug('triggerData', 'resp', triggerData);
-          this.triggerDefinition['resp'] = triggerData;
+          this.$log.debug('triggerData', 'wait', triggerData);
+          this.triggerDefinition['wait'] = triggerData;
 
-          this.adm['resp'] = {};
-          this.adm.resp['email'] = triggerData.trigger.actions.email[0];
-          this.adm.resp['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm['wait'] = {};
+          this.adm.wait['email'] = triggerData.trigger.actions.email[0];
+          this.adm.wait['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.wait['conditionThreshold'] = triggerData.conditions[0].threshold;
+          this.adm.wait['conditionEnabled'] = triggerData.trigger.enabled;
+        });
 
-          if (triggerData.conditions.length > 0) {
-            let idCreation = 0,
-              idWait = 1;
+      let createTriggerId = this.resourceId + '_ds_create';
 
-            if (triggerData.conditions[0].dataId.indexOf('Creation') === -1) {
-              idCreation = 1;
-              idWait = 0;
-            }
+      let createTriggerPromise = this.HawkularAlertsManager.getTrigger(createTriggerId)
+        .then((triggerData) => {
 
-            if (triggerData.conditions[idWait]) {
-              this.adm.resp['waitTimeThreshold'] = triggerData.conditions[idWait].threshold;
-              this.adm.resp['waitTimeEnabled'] = !!triggerData.conditions[idWait].threshold;
-            }
-            if (triggerData.conditions[idCreation]) {
-              this.adm.resp['creationTimeThreshold'] = triggerData.conditions[idCreation].threshold;
-              this.adm.resp['creationTimeEnabled'] = !!triggerData.conditions[idCreation].threshold;
-            }
-          }
+          this.$log.debug('triggerData', 'create', triggerData);
+          this.triggerDefinition['create'] = triggerData;
 
-          this.adm.resp['waitTimeThreshold'] = this.adm.resp['waitTimeThreshold'] ||
-            AppServerDatasourcesDetailsController.DEFAULT_WAIT_THRESHOLD;
-          this.adm.resp['creationTimeThreshold'] = this.adm.resp['creationTimeThreshold'] ||
-            AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD;
+          this.adm['create'] = {};
+          this.adm.create['email'] = triggerData.trigger.actions.email[0];
+          this.adm.create['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.create['conditionThreshold'] = triggerData.conditions[0].threshold;
+          this.adm.create['conditionEnabled'] = triggerData.trigger.enabled;
         });
 
 
-      return [connTriggerPromise, respTriggerPromise];
+      return [connTriggerPromise, waitTriggerPromise, createTriggerPromise];
     }
 
     saveTriggers(errorCallback):Array<ng.IPromise<any>> {
@@ -97,84 +90,32 @@ module HawkularMetrics {
         errorCallback, this.triggerDefinition.conn);
 
       // Responsiveness part
-      let respTrigger = angular.copy(this.triggerDefinition.resp);
+      let waitTrigger = angular.copy(this.triggerDefinition.wait);
+      waitTrigger.trigger.enabled = this.adm.wait.conditionEnabled;
 
-      respTrigger.trigger.actions.email[0] = this.adm.resp.email;
-      respTrigger.dampenings[0].evalTimeSetting = this.adm.resp.responseDuration;
-
-      let respTriggerId = respTrigger.trigger.id;
-
-      // Handle changes in conditions
-      let resId = respTriggerId.slice(0,-8);
-      let dataId1:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Get Time';
-      let dataId2:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time';
-
-      let respUpdateConditions = [];
-
-      if (this.adm.resp.waitTimeEnabled && !this.adm.resp.creationTimeEnabled) {
-        respUpdateConditions = [
-          {
-            triggerId: respTriggerId,
-            type: 'THRESHOLD',
-            dataId: dataId1,
-            threshold: this.adm.resp.waitTimeThreshold,
-            operator: 'GT',
-            context: {
-              description: 'Average Get Time',
-              unit: 'ms',
-              triggerType: 'Threshold'
-            }
-          }
-        ];
-      } else if (!this.adm.resp.waitTimeEnabled && this.adm.resp.creationTimeEnabled) {
-        respUpdateConditions = [
-          {
-            triggerId: respTriggerId,
-            type: 'THRESHOLD',
-            dataId: dataId2,
-            threshold: this.adm.resp.creationTimeThreshold,
-            operator: 'GT',
-            context: {
-              description: 'Average Creation Time',
-              unit: 'ms',
-              triggerType: 'Threshold'
-            }
-          }
-        ];
-      } else if (this.adm.resp.waitTimeEnabled && this.adm.resp.creationTimeEnabled) {
-        respUpdateConditions = [
-          {
-            triggerId: respTriggerId,
-            type: 'THRESHOLD',
-            dataId: dataId1,
-            threshold: this.adm.resp.waitTimeThreshold,
-            operator: 'GT',
-            context: {
-              description: 'Average Get Time',
-              unit: 'ms',
-              triggerType: 'Threshold'
-            }
-          },
-          {
-            triggerId: respTriggerId,
-            type: 'THRESHOLD',
-            dataId: dataId2,
-            threshold: this.adm.resp.creationTimeThreshold,
-            operator: 'GT',
-            context: {
-              description: 'Average Creation Time',
-              unit: 'ms',
-              triggerType: 'Threshold'
-            }
-          }
-        ];
+      if (this.adm.wait.conditionEnabled) {
+        waitTrigger.trigger.actions.email[0] = this.adm.wait.email;
+        waitTrigger.dampenings[0].evalTimeSetting = this.adm.wait.responseDuration;
+        waitTrigger.conditions[0].threshold = this.adm.wait.conditionThreshold;
       }
 
-      let respSavePromise = this.HawkularAlertsManager.updateTrigger(respTrigger,
-        errorCallback, this.triggerDefinition.resp);
+      let waitSavePromise = this.HawkularAlertsManager.updateTrigger(waitTrigger,
+        errorCallback, this.triggerDefinition.wait);
 
-      console.log('@PROMISES', connSavePromise, respSavePromise);
-      return [connSavePromise, respSavePromise];
+      let createTrigger = angular.copy(this.triggerDefinition.create);
+      createTrigger.trigger.enabled = this.adm.create.conditionEnabled;
+
+      if (this.adm.create.conditionEnabled) {
+        createTrigger.trigger.actions.email[0] = this.adm.create.email;
+        createTrigger.dampenings[0].evalTimeSetting = this.adm.create.responseDuration;
+        createTrigger.conditions[0].threshold = this.adm.create.conditionThreshold;
+      }
+
+      let createSavePromise = this.HawkularAlertsManager.updateTrigger(createTrigger,
+        errorCallback, this.triggerDefinition.create);
+
+      console.log('@PROMISES', connSavePromise, waitSavePromise, createSavePromise);
+      return [connSavePromise, waitSavePromise, createSavePromise];
     }
   }
 
