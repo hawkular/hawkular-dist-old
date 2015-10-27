@@ -214,7 +214,7 @@ module HawkularMetrics {
           let fullTrigger = {
             trigger: {
               id: triggerId,
-              name: url,
+              name: 'URL Response [' + url + ']',
               description: 'Response Time for URL ' + url,
               severity: 'HIGH',
               actions: {email: [defaultEmail]},
@@ -222,7 +222,8 @@ module HawkularMetrics {
                 description: 'Response Time for URL ' + url, // Workaround for sorting
                 resourceType: 'URL',
                 resourceName: url,
-                resourcePath: resourcePath
+                resourcePath: resourcePath,
+                triggerType: 'Threshold'
               }
             },
             dampenings: [
@@ -278,7 +279,7 @@ module HawkularMetrics {
           let fullTrigger = {
             trigger: {
               id: triggerId,
-              name: url,
+              name: 'URL Down [' + url + ']',
               description: 'Availability for URL ' + url,
               severity: 'CRITICAL',
               actions: {email: [defaultEmail]},
@@ -286,7 +287,8 @@ module HawkularMetrics {
                 description: 'Availability for URL ' + url, // Workaround for sorting
                 resourceType: 'URL',
                 resourceName: url,
-                resourcePath: resourcePath
+                resourcePath: resourcePath,
+                triggerType: 'Availability'
               }
             },
             dampenings: [

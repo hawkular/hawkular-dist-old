@@ -185,6 +185,9 @@ module HawkularMetrics {
       } else if( 'Range' === trigger.context.triggerType) {
         controller = 'RangeTriggerSetupController as tc';
         html = 'plugins/metrics/html/modals/trigger-range-setup.html';
+      } else if( 'Availability' === trigger.context.triggerType) {
+        controller = 'AvailabilityTriggerSetupController as tc';
+        html = 'plugins/metrics/html/modals/trigger-availability-setup.html';
       } else {
         controller = 'ThresholdTriggerSetupController as tc';
         html = 'plugins/metrics/html/modals/trigger-threshold-setup.html';

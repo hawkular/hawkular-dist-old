@@ -22,7 +22,7 @@
 
 module HawkularMetrics {
 
-  export class ThresholdTriggerSetupController extends TriggerSetupController {
+  export class AvailabilityTriggerSetupController extends TriggerSetupController {
 
     loadTrigger(triggerId:string):Array<ng.IPromise<any>> {
 
@@ -36,7 +36,6 @@ module HawkularMetrics {
           this.adm.trigger['email'] = triggerData.trigger.actions.email[0];
           this.adm.trigger['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
           this.adm.trigger['conditionEnabled'] = triggerData.trigger.enabled;
-          this.adm.trigger['conditionThreshold'] = triggerData.conditions[0].threshold;
         });
 
       return [triggerPromise];
@@ -55,13 +54,6 @@ module HawkularMetrics {
         updatedFullTrigger.dampenings.forEach((dampening:any) => {
           dampening.evalTimeSetting = this.adm.trigger.evalTimeSetting;
         });
-
-        // When using AutoResolve the settings are implicit. We use the same setting as for Firing mode,
-        // the only difference is the operation (LTE for AR, GT for Firing). So, update both the firing and,
-        // if it exists, AR condition.
-        updatedFullTrigger.conditions.forEach((condition:any) => {
-          condition.threshold = this.adm.trigger.conditionEnabled ? this.adm.trigger.conditionThreshold : 0;
-        });
       }
 
       let triggerSavePromise = this.HawkularAlertsManager.updateTrigger(updatedFullTrigger, errorCallback,
@@ -71,5 +63,5 @@ module HawkularMetrics {
     }
   }
 
-  _module.controller('ThresholdTriggerSetupController', ThresholdTriggerSetupController);
+  _module.controller('AvailabilityTriggerSetupController', AvailabilityTriggerSetupController);
 }

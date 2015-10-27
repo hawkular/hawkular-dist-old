@@ -2,7 +2,7 @@
   <button type="button" class="close" ng-click="tc.cancel()">
     <span class="pficon pficon-close"></span>
   </button>
-  <h4 class="modal-title">Threshold Alert Settings</h4>
+  <h4 class="modal-title">Availability Alert Settings</h4>
 </div>
 <div class="modal-body hk-alert-settings">
   <tabset>
@@ -11,27 +11,11 @@
         <p>Configure conditions settings for alerts and notifications.</p>
 
         <form class="form-horizontal">
-          <fieldset>
-            <legend>Threshold</legend>
-            <div class="form-group">
-              <label class="col-sm-3 control-label" for="usage-greater">Greater than</label>
-
-              <div class="col-sm-5">
-                <div class="input-group hk-input-small">
-                  <input type="number" ng-model="tc.adm.trigger.conditionThreshold" class="form-control" id="usage-garba"
-                         ng-disabled="!tc.adm.trigger.conditionEnabled">
-
-                  <div class="input-group-addon">ms</div>
-                </div>
-              </div>
-              <div class="col-sm-4">
-                <hk-switch hk-model="tc.adm.trigger.conditionEnabled"
-                           id="usage-garba-switch" class="pull-right"></hk-switch>
-              </div>
-            </div>
-          </fieldset>
           <hk-fieldset-dampening hk-duration="tc.adm.trigger.evalTimeSetting"
-                                 hk-disabled="!tc.adm.trigger.conditionEnabled"></hk-fieldset-dampening>
+                                 hk-title="Downtime"
+                                 hk-switch="tc.adm.trigger.conditionEnabled"
+                                 hk-title-met="Every time it goes down."
+                                 hk-title-unmet="Only when it is down for more than:"></hk-fieldset-dampening>
 
           <hk-fieldset-notification hk-alert-email="tc.adm.trigger.email"
                                     hk-disabled="!tc.adm.trigger.conditionEnabled"></hk-fieldset-notification>
