@@ -17,7 +17,6 @@
     "gulp-replace": "0.5.4",
     "gulp-size": "1.2.0",
     "gulp-sourcemaps": "1.5.2",
-    "gulp-tsd": "0.0.4",
     "gulp-tslint": "3.3.0",
     "gulp-typescript": "2.9.0",
     "gulp-watch": "4.3.5",

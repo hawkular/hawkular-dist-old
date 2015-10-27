@@ -16,4 +16,4 @@
 ///
 
 // Console code placeholder
-/// <reference path="../typings/tsd.d.ts"/>
+/// <reference path="../d.ts/moment/moment.d.ts"/>
