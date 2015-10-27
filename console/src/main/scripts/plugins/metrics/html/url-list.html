@@ -13,7 +13,7 @@
           <div class="input-group input-group-lg">
             <input type="url" class="form-control" name="resourceUrl" ng-model="vm.resourceUrl"
                    ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Enter a website URL (e.g.: http://www.website.com)" required>
+                   placeholder="Enter a website URL (e.g.: http://www.website.com)" required hk-autofocus>
             <span class="input-group-btn">
               <button class="btn btn-primary" type="submit" ng-disabled="addUrlForm.$invalid || vm.addProgress">
                <div ng-show="vm.addProgress" class="spinner spinner-sm"></div>

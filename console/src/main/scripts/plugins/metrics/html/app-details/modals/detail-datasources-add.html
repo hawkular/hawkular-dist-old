@@ -59,7 +59,7 @@
             <label class="col-sm-3 control-label" for="name">Name</label>
             <div class="col-sm-6">
               <input type="text" id="name" class="form-control" ng-model="dac.dsData.datasourceName"
-                     ng-change="dac.onDSNameChange()">
+                     ng-change="dac.onDSNameChange()" hk-autofocus>
             </div>
           </div>
           <div class="form-group">
@@ -143,7 +143,8 @@
             <label class="col-sm-3 control-label" for="xaDSClass"><span class="hk-required">*</span> XA Datasource Class
             </label>
             <div class="col-sm-6">
-              <input type="text" id="xaDSClass" class="form-control" ng-model="dac.dsData.xaDatasourceClass">
+              <input type="text" id="xaDSClass" class="form-control" ng-model="dac.dsData.xaDatasourceClass"
+                     hk-autofocus>
             </div>
           </div>
         </fieldset>
@@ -152,7 +153,7 @@
             <label class="col-sm-3 control-label" for="dsClass"><span class="hk-required">*</span> Datasource Class
             </label>
             <div class="col-sm-6">
-              <input type="text" id="dsClass" class="form-control" ng-model="dac.dsData.datasourceClass">
+              <input type="text" id="dsClass" class="form-control" ng-model="dac.dsData.datasourceClass" hk-autofocus>
             </div>
           </div>
           <div class="form-group">
@@ -213,7 +214,7 @@
           </tr>
           <tr ng-repeat="dsProp in dac.tmpDSProperties">
             <td>
-              <input type="text" class="form-control" ng-model="dsProp.name">
+              <input type="text" class="form-control" ng-model="dsProp.name" hk-autofocus>
             </td>
             <td>
               <input type="text" class="form-control" ng-model="dsProp.value">
@@ -258,7 +259,7 @@
           <div class="form-group">
             <label class="col-sm-3 control-label" for="un">User  Name</label>
             <div class="col-sm-6">
-              <input type="text" id="un" class="form-control" ng-model="dac.dsData.conn.username">
+              <input type="text" id="un" class="form-control" ng-model="dac.dsData.conn.username" hk-autofocus>
             </div>
           </div>
           <div class="form-group">
