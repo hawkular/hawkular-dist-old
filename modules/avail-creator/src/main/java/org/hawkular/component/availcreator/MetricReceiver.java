@@ -16,18 +16,21 @@
  */
 package org.hawkular.component.availcreator;
 
+import static javax.ejb.TransactionAttributeType.NOT_SUPPORTED;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
-import javax.jms.ConnectionFactory;
+import javax.ejb.TransactionAttribute;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -51,13 +54,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "HawkularMetricData")
 })
+@TransactionAttribute(value = NOT_SUPPORTED)
 public class MetricReceiver implements MessageListener {
 
-    @javax.annotation.Resource(lookup = "java:/topic/HawkularAvailData")
-    javax.jms.Topic topic;
-
-    @javax.annotation.Resource(lookup = "java:/HawkularBusConnectionFactory")
-    ConnectionFactory connectionFactory;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @EJB
     AvailPublisher availPublisher;
@@ -67,23 +67,24 @@ public class MetricReceiver implements MessageListener {
 
         try {
             String payload = ((TextMessage) message).getText();
-            Map map = new ObjectMapper().readValue(payload, Map.class);
+            JsonNode rootNode = objectMapper.readTree(payload);
 
-            Map metricDataMap = (Map) map.get("metricData");
+            JsonNode metricData = rootNode.get("metricData");
             // Get <rid>.status.code  metrics
-            String tenant = (String) metricDataMap.get("tenantId");
-            List<Map<String, Object>> inputList = (List<Map<String, Object>>) metricDataMap.get("data");
+            String tenant = metricData.get("tenantId").textValue();
+            JsonNode data = metricData.get("data");
             List<SingleAvail> outer = new ArrayList<>();
 
-            for (Map<String, Object> item : inputList) {
+            Iterator<JsonNode> items = data.elements();
+            while (items.hasNext()) {
+                JsonNode item = items.next();
 
-                String source = (String) item.get("source");
+                String source = item.get("source").textValue();
                 if (source.endsWith(".status.code")) {
-                    double codeD = (double) item.get("value");
-                    int code = (int) codeD;
+                    int code = item.get("value").intValue();
 
                     String id = source.substring(0, source.indexOf("."));
-                    long timestamp = (long) item.get("timestamp");
+                    long timestamp = item.get("timestamp").longValue();
 
                     String avail = computeAvail(code);
 
@@ -91,7 +92,9 @@ public class MetricReceiver implements MessageListener {
                     outer.add(ar);
                 }
             }
-            availPublisher.sendToMetricsViaRest(outer);
+            if (!outer.isEmpty()) {
+                availPublisher.sendToMetricsViaRest(outer);
+            }
 
         } catch (Exception e) {
             Log.LOG.eCouldNotHandleBusMessage(e);

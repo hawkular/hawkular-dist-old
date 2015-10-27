@@ -16,13 +16,15 @@
  */
 package org.hawkular.component.availcreator;
 
+import static javax.ejb.TransactionAttributeType.NOT_SUPPORTED;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -40,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Heiko W. Rupp
  */
 @Stateless
+@TransactionAttribute(NOT_SUPPORTED)
 public class AvailPublisher {
 
     private static final String METRICS_BASE_URI;
@@ -49,11 +52,7 @@ public class AvailPublisher {
         METRICS_BASE_URI = "http://"+ host + ":"+ port + "/hawkular/metrics";
     }
 
-    // Avoid concurrent Asynchronous calls to REST services. There seems to be a serious issue with undertow and
-    // concurrent async calls, which hangs the thread.  (note - this is a pooled MDB, not a singleton)
-    //@Asynchronous
-    // I don't think we need to propagate the Tx here, just make the rest call outside of a Tx.
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    @Asynchronous
     public void sendToMetricsViaRest(List<SingleAvail> availabilities) {
         // Send it to metrics via rest
 
