@@ -83,12 +83,12 @@
     <version.com.google.guava>16.0.1</version.com.google.guava>
     <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
-    <version.org.hawkular.accounts>1.0.16.Final</version.org.hawkular.accounts>
-    <version.org.hawkular.agent>0.11.1.Final</version.org.hawkular.agent>
+    <version.org.hawkular.accounts>1.0.17.Final-SRC-revision-11f18166ce41b211fd54314a8720e27cda80185f</version.org.hawkular.accounts>
+    <version.org.hawkular.agent>0.11.2.Final-SRC-revision-59b912b9ba203d510b35177bde1bde9fc7975a1d</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.5.0.Final</version.org.hawkular.alerts>
     <version.org.hawkular.bus>0.7.1.Final</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.2.2.Final</version.org.hawkular.commons>
-    <version.org.hawkular.cmdgw>0.10.1.Final</version.org.hawkular.cmdgw>
+    <version.org.hawkular.cmdgw>0.10.2.Final-SRC-revision-06aa579bd1b9658cf82af6cfedef6365ecf03e8c</version.org.hawkular.cmdgw>
     <version.org.hawkular.metrics>0.9.0.Final-SRC-revision-9080fcfbe40a66ce8143c477b5d6f8fbadeecf3a</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.7.0.Final</version.org.hawkular.inventory>
     <version.org.hawkular.nest>${version.org.hawkular.bus}</version.org.hawkular.nest>

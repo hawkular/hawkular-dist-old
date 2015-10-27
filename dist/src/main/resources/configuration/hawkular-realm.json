@@ -65,8 +65,8 @@
       "enabled": true,
       "bearerOnly" : false,
       "publicClient": false,
-      "redirectUris": ["/*", "http://localhost:2772/*"],
-      "webOrigins": ["http://localhost:2772"],
+      "redirectUris": ["/*", "http://localhost:8080/*", "http://127.0.0.1:8080/*"],
+      "webOrigins": ["http://localhost:2772", "http://localhost:8080", "http://127.0.0.1:8080"],
       "secret" : "${uuid.hawkular.accounts.backend}"
     },
     {
@@ -76,8 +76,8 @@
       "publicClient": true,
       "secret": "${uuid.hawkular.ui}",
       "fullScopeAllowed" : false,
-      "redirectUris": ["/*"],
-      "webOrigins": [],
+      "redirectUris": ["/*", "http://localhost:8080/*", "http://127.0.0.1:8080/*"],
+      "webOrigins": ["http://localhost:2772", "http://localhost:8080", "http://127.0.0.1:8080"],
       "claims": {
         "username": true,
         "name": true,
