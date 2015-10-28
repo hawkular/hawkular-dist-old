@@ -1,0 +1,80 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="tc.cancel()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Range Alert Settings</h4>
+</div>
+<div class="modal-body hk-alert-settings">
+  <tabset>
+    <tab heading="{{tc.adm.trigger.name}}">
+
+      <div id="hk-trigger" class="hk-tab-content">
+        <p>Configure conditions settings for alerts and notifications.</p>
+
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>Range</legend>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Maximum</label>
+
+              <div class="col-sm-6">
+                <span class="hk-input-text">{{tc.ceiling / 1024 / 1024 | number : 2}} MB</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="usage-greater">Usage greater than</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="100" ng-model="tc.adm.trigger.conditionGtPercent" class="form-control"
+                         id="usage-greater" ng-disabled="!tc.adm.trigger.conditionGtEnabled">
+
+                  <div class="input-group-addon">%</div>
+                </div>
+                <span class="input-detail">({{tc.adm.trigger.conditionGtEnabled && tc.adm.trigger.conditionGtPercent ? (tc.ceiling * tc.adm.trigger.conditionGtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
+              </div>
+              <div class="col-sm-4">
+                  <hk-switch hk-model="tc.adm.trigger.conditionGtEnabled"
+                             id="usage-greater-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="usage-less">Usage less than</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="100" ng-model="tc.adm.trigger.conditionLtPercent" class="form-control"
+                         id="usage-less" ng-disabled="!tc.adm.trigger.conditionLtEnabled">
+
+                  <div class="input-group-addon">%</div>
+                </div>
+                <span class="input-detail">({{tc.adm.trigger.conditionLtEnabled && tc.adm.trigger.conditionLtPercent ? (tc.ceiling * tc.adm.trigger.conditionLtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
+              </div>
+              <div class="col-sm-4">
+                <hk-switch hk-model="tc.adm.trigger.conditionLtEnabled"
+                           id="usage-less-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+          </fieldset>
+          <hk-fieldset-dampening hk-duration="tc.adm.trigger.evalTimeSetting"
+                                 hk-disabled="!tc.adm.trigger.conditionLtEnabled && !tc.adm.trigger.conditionGtEnabled">
+          </hk-fieldset-dampening>
+
+          <hk-fieldset-notification hk-alert-email="tc.adm.trigger.email"
+                                    hk-disabled="!tc.adm.trigger.conditionLtEnabled && !tc.adm.trigger.conditionGtEnabled">
+          </hk-fieldset-notification>
+        </form>
+      </div>
+    </tab>
+  </tabset>
+
+
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="tc.cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" ng-click="tc.save()"
+          ng-disabled="tc.saveProgress || !tc.isSettingChange">
+    <div ng-show="tc.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>
+    Save
+  </button>
+</div>

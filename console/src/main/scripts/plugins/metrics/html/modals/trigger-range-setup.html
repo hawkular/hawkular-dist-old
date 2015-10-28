@@ -1,0 +1,69 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="tc.cancel()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Range Alert Settings</h4>
+</div>
+<div class="modal-body hk-alert-settings">
+  <tabset>
+    <tab heading="{{tc.adm.trigger.name}}">
+
+      <div id="hk-trigger" class="hk-tab-content">
+        <p>Configure conditions settings for alerts and notifications.</p>
+
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>Range</legend>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="min">Minimun</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="10000" ng-model="tc.adm.trigger.minThreshold" class="form-control"
+                         id="min" ng-disabled="!tc.adm.trigger.minEnabled">
+
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <hk-switch hk-model="tc.adm.trigger.minEnabled"
+                           id="min-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="max">Maximun</label>
+
+              <div class="col-sm-5">
+                <div class="input-group hk-input-small">
+                  <input type="number" min="0" max="10000" ng-model="tc.adm.trigger.maxThreshold"
+                         class="form-control" id="max" ng-disabled="!tc.adm.trigger.maxEnabled">
+
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <hk-switch hk-model="tc.adm.trigger.maxEnabled"
+                           id="max-switch" class="pull-right"></hk-switch>
+              </div>
+            </div>
+          </fieldset>
+          <hk-fieldset-dampening hk-duration="tc.adm.trigger.evalTimeSetting"
+                                 hk-disabled="!tc.adm.trigger.minEnabled && !tc.adm.trigger.maxEnabled">
+          </hk-fieldset-dampening>
+
+          <hk-fieldset-notification hk-alert-email="tc.adm.trigger.email"
+                                    hk-disabled="!tc.adm.trigger.minEnabled && !tc.adm.trigger.maxEnabled">
+          </hk-fieldset-notification>
+        </form>
+      </div>
+    </tab>
+  </tabset>
+
+
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="tc.cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" ng-click="tc.save()"
+          ng-disabled="tc.saveProgress || !tc.isSettingChange">
+    <div ng-show="tc.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>
+    Save
+  </button>
+</div>

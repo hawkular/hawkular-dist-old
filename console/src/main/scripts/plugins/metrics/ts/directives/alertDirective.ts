@@ -229,7 +229,9 @@ module HawkularMetrics {
       hkDuration: '=',
       hkSwitch: '=',
       hkDisabled: '=',
-      hkTitle: '@'
+      hkTitle: '@',
+      hkTitleMet: '@',
+      hkTitleUnmet: '@'
     };
     public templateUrl = 'plugins/metrics/html/directives/fieldset-dampening.html';
 

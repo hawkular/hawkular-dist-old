@@ -34,16 +34,16 @@ module HawkularMetrics {
     public saveProgress:boolean = false;
     public isSettingChange:boolean = false;
 
-    constructor(public $scope:any,
-                public HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
-                public ErrorsManager:HawkularMetrics.IErrorsManager,
-                public NotificationsService:INotificationsService,
-                public $log:ng.ILogService,
-                public $q:ng.IQService,
-                public $rootScope:any,
-                public $routeParams:any,
-                public $modalInstance:any,
-                public resourceId) {
+    constructor(protected $scope:any,
+                protected HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
+                protected ErrorsManager:HawkularMetrics.IErrorsManager,
+                protected NotificationsService:INotificationsService,
+                protected $log:ng.ILogService,
+                protected $q:ng.IQService,
+                protected $rootScope:any,
+                protected $routeParams:any,
+                protected $modalInstance:any,
+                protected resourceId) {
       // TODO - update the pfly notification service to support more and category based notifications containers.
       this.$rootScope.hkNotifications = {alerts: []};
 
@@ -110,6 +110,94 @@ module HawkularMetrics {
     }
   }
 
+  export class TriggerSetupController {
+
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService',
+      '$log', '$q', '$rootScope', '$routeParams', '$modalInstance', 'MetricsService', 'triggerId'];
+
+    public fullTrigger:any = {};
+
+    public adm:any = {};
+    public admBak:any = {};
+    public saveProgress:boolean = false;
+    public isSettingChange:boolean = false;
+
+    constructor(protected $scope:any,
+                protected HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
+                protected ErrorsManager:HawkularMetrics.IErrorsManager,
+                protected NotificationsService:INotificationsService,
+                protected $log:ng.ILogService,
+                protected $q:ng.IQService,
+                protected $rootScope:any,
+                protected $routeParams:any,
+                protected $modalInstance:any,
+                protected MetricsService:IMetricsService,
+                protected triggerId) {
+      // TODO - update the pfly notification service to support more and category based notifications containers.
+      this.$rootScope.hkNotifications = {alerts: []};
+
+      let triggerPromise = this.loadTrigger(triggerId);
+
+      this.$q.all(triggerPromise).then(() => {
+        this.admBak = angular.copy(this.adm);
+        this.isSettingChange = false;
+      });
+
+      this.$scope.$watch(angular.bind(this, () => {
+        return this.adm;
+      }), () => {
+        this.isSettingChange = !angular.equals(this.adm, this.admBak);
+      }, true);
+    }
+
+    public save():void {
+      this.$log.debug('Saving Settings');
+
+      // Clear alerts notifications on save (discard previous success/error list)
+      this.$rootScope.hkNotifications.alerts = [];
+
+      // Error notification done with callback function on error
+      let errorCallback = (error:any, msg:string) => {
+        this.$rootScope.hkNotifications.alerts.push({
+          type: 'error',
+          message: msg
+        });
+      };
+
+      this.saveProgress = true;
+      let isError = false;
+      // Check if email action exists
+
+      let saveTriggerPromise = this.saveTrigger(errorCallback);
+
+      this.$q.all(saveTriggerPromise).finally(()=> {
+        this.saveProgress = false;
+
+        if (!isError) {
+          // notify success
+          this.NotificationsService.alertSettingsSaved();
+          this.$rootScope.hkNotifications.alerts.push({
+            type: 'success',
+            message: 'Changes saved successfully.'
+          });
+        }
+
+        this.cancel();
+      });
+    }
+
+    public cancel():void {
+      this.$modalInstance.dismiss('cancel');
+    }
+
+    loadTrigger(triggerId:string):Array<ng.IPromise<any>> {
+      throw new Error('This method is abstract');
+    }
+
+    saveTrigger(errorCallback):Array<ng.IPromise<any>> {
+      throw new Error('This method is abstract');
+    }
+  }
 
   export class MetricsAlertController {
     public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService','$log', '$q',

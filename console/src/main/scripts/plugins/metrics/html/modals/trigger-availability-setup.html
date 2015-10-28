@@ -1,0 +1,36 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="tc.cancel()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Availability Alert Settings</h4>
+</div>
+<div class="modal-body hk-alert-settings">
+  <tabset>
+    <tab heading="{{tc.adm.trigger.name}}">
+      <div id="hk-gc" class="hk-tab-content">
+        <p>Configure conditions settings for alerts and notifications.</p>
+
+        <form class="form-horizontal">
+          <hk-fieldset-dampening hk-duration="tc.adm.trigger.evalTimeSetting"
+                                 hk-title="Downtime"
+                                 hk-switch="tc.adm.trigger.conditionEnabled"
+                                 hk-title-met="Every time it goes down."
+                                 hk-title-unmet="Only when it is down for more than:"></hk-fieldset-dampening>
+
+          <hk-fieldset-notification hk-alert-email="tc.adm.trigger.email"
+                                    hk-disabled="!tc.adm.trigger.conditionEnabled"></hk-fieldset-notification>
+        </form>
+      </div>
+    </tab>
+  </tabset>
+
+
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="tc.cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" ng-click="tc.save()"
+          ng-disabled="tc.saveProgress || !tc.isSettingChange">
+    <div ng-show="tc.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>
+    Save
+  </button>
+</div>

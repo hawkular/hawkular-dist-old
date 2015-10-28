@@ -26,7 +26,7 @@ module HawkularMetrics {
 
     public static  $inject = ['$scope', 'HawkularAlertsManager',
       'ErrorsManager', '$log', '$q', '$rootScope', '$interval', '$routeParams',
-      'HkHeaderParser', '$location'];
+      'HkHeaderParser', '$location', '$modal'];
 
     public isWorking = false;
     public lastUpdateDate:Date = new Date();
@@ -55,7 +55,8 @@ module HawkularMetrics {
                 private $interval:ng.IIntervalService,
                 private $routeParams:any,
                 private HkHeaderParser:any,
-                private $location:ng.ILocationService) {
+                private $location:ng.ILocationService,
+                private $modal:any) {
       $scope.ac = this;
 
       this.autoRefresh(120);
@@ -175,8 +176,36 @@ module HawkularMetrics {
       return promises;
     }
 
-    public showDetailPage(triggerId:TriggerId):void {
-      this.$location.url(`/hawkular-ui/alerts-center-trigger-detail/${triggerId}`);
+    public showDetailPage(trigger:IAlertTrigger):void {
+      let controller;
+      let html;
+      if( 'RangeByPercent' === trigger.context.triggerType) {
+        controller = 'RangeByPercentTriggerSetupController as tc';
+        html = 'plugins/metrics/html/modals/trigger-range-percent-setup.html';
+      } else if( 'Range' === trigger.context.triggerType) {
+        controller = 'RangeTriggerSetupController as tc';
+        html = 'plugins/metrics/html/modals/trigger-range-setup.html';
+      } else if( 'Availability' === trigger.context.triggerType) {
+        controller = 'AvailabilityTriggerSetupController as tc';
+        html = 'plugins/metrics/html/modals/trigger-availability-setup.html';
+      } else {
+        controller = 'ThresholdTriggerSetupController as tc';
+        html = 'plugins/metrics/html/modals/trigger-threshold-setup.html';
+      }
+      let modalInstance = this.$modal.open({
+        templateUrl: html,
+        controller: controller,
+        resolve: {
+          triggerId: () => {
+            return trigger.id;
+          }
+        }
+      });
+
+      modalInstance.result.then(angular.noop, () => {
+        this.$log.info('Alert Setup modal dismissed at: ' + new Date());
+        this.getTriggers();
+      });
     }
 
     public setPage(page:number):void {

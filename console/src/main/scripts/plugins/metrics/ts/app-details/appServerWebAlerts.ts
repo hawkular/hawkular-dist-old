@@ -97,7 +97,8 @@ module HawkularMetrics {
               description: 'Active Web Sessions for ' + resourceId, // Workaround for sorting
               resourceType: 'App Server',
               resourceName: resourceId,
-              resourcePath: this.$rootScope.resourcePath
+              resourcePath: this.$rootScope.resourcePath,
+              triggerType: 'Range'
             }
           },
           dampenings: [
@@ -157,7 +158,8 @@ module HawkularMetrics {
                 description: 'Expired Web Sessions for ' + resourceId, // Workaround for sorting
                 resourceType: 'App Server',
                 resourceName: resourceId,
-                resourcePath: this.$rootScope.resourcePath
+                resourcePath: this.$rootScope.resourcePath,
+                triggerType: 'Threshold'
               }
             },
             dampenings: [
@@ -215,7 +217,8 @@ module HawkularMetrics {
                 description: 'Rejected Web Sessions for ' + resourceId, // Workaround for sorting
                 resourceType: 'App Server',
                 resourceName: resourceId,
-                resourcePath: this.$rootScope.resourcePath
+                resourcePath: this.$rootScope.resourcePath,
+                triggerType: 'Threshold'
               }
             },
             dampenings: [
