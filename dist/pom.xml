@@ -126,6 +126,11 @@
       <type>war</type>
     </dependency>
     <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-secret-store</artifactId>
+      <type>war</type>
+    </dependency>
+    <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-redhat-access-integration-backend</artifactId>
       <version>1.0.0.Alpha7-SNAPSHOT</version>
