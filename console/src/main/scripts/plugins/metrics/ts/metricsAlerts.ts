@@ -34,16 +34,16 @@ module HawkularMetrics {
     public saveProgress:boolean = false;
     public isSettingChange:boolean = false;
 
-    constructor(public $scope:any,
-                public HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
-                public ErrorsManager:HawkularMetrics.IErrorsManager,
-                public NotificationsService:INotificationsService,
-                public $log:ng.ILogService,
-                public $q:ng.IQService,
-                public $rootScope:any,
-                public $routeParams:any,
-                public $modalInstance:any,
-                public resourceId) {
+    constructor(protected $scope:any,
+                protected HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
+                protected ErrorsManager:HawkularMetrics.IErrorsManager,
+                protected NotificationsService:INotificationsService,
+                protected $log:ng.ILogService,
+                protected $q:ng.IQService,
+                protected $rootScope:any,
+                protected $routeParams:any,
+                protected $modalInstance:any,
+                protected resourceId) {
       // TODO - update the pfly notification service to support more and category based notifications containers.
       this.$rootScope.hkNotifications = {alerts: []};
 
@@ -122,17 +122,17 @@ module HawkularMetrics {
     public saveProgress:boolean = false;
     public isSettingChange:boolean = false;
 
-    constructor(public $scope:any,
-                public HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
-                public ErrorsManager:HawkularMetrics.IErrorsManager,
-                public NotificationsService:INotificationsService,
-                public $log:ng.ILogService,
-                public $q:ng.IQService,
-                public $rootScope:any,
-                public $routeParams:any,
-                public $modalInstance:any,
-                public MetricsService:IMetricsService,
-                public triggerId) {
+    constructor(protected $scope:any,
+                protected HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
+                protected ErrorsManager:HawkularMetrics.IErrorsManager,
+                protected NotificationsService:INotificationsService,
+                protected $log:ng.ILogService,
+                protected $q:ng.IQService,
+                protected $rootScope:any,
+                protected $routeParams:any,
+                protected $modalInstance:any,
+                protected MetricsService:IMetricsService,
+                protected triggerId) {
       // TODO - update the pfly notification service to support more and category based notifications containers.
       this.$rootScope.hkNotifications = {alerts: []};
 

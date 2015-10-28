@@ -14,11 +14,14 @@
           <fieldset>
             <legend>Threshold</legend>
             <div class="form-group">
-              <label class="col-sm-3 control-label" for="usage-greater">Greater than</label>
+              <label class="col-sm-3 control-label"
+                     ng-if="tc.adm.trigger.conditionOperator === 'LT'">Less than</label>
+              <label class="col-sm-3 control-label"
+                     ng-if="tc.adm.trigger.conditionOperator != 'LT'">Greater than</label>
 
               <div class="col-sm-5">
                 <div class="input-group hk-input-small">
-                  <input type="number" ng-model="tc.adm.trigger.conditionThreshold" class="form-control" id="usage-garba"
+                  <input type="number" ng-model="tc.adm.trigger.conditionThreshold" class="form-control" id="usage"
                          ng-disabled="!tc.adm.trigger.conditionEnabled">
 
                   <div class="input-group-addon">ms</div>
@@ -26,7 +29,7 @@
               </div>
               <div class="col-sm-4">
                 <hk-switch hk-model="tc.adm.trigger.conditionEnabled"
-                           id="usage-garba-switch" class="pull-right"></hk-switch>
+                           id="usage-switch" class="pull-right"></hk-switch>
               </div>
             </div>
           </fieldset>

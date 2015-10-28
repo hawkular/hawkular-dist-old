@@ -37,6 +37,7 @@ module HawkularMetrics {
           this.adm.trigger['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
           this.adm.trigger['conditionEnabled'] = triggerData.trigger.enabled;
           this.adm.trigger['conditionThreshold'] = triggerData.conditions[0].threshold;
+          this.adm.trigger['conditionOperator'] = triggerData.conditions[0].operator;
         });
 
       return [triggerPromise];
