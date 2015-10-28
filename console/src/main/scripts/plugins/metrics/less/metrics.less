@@ -2024,11 +2024,17 @@ section {
   max-height: 1320px;
   overflow: hidden;
   -webkit-transition: max-height 0.3s ease;
-	-moz-transition: max-height 0.3s ease;
-	transition: max-height 0.3s ease;
+  -moz-transition: max-height 0.3s ease;
+  transition: max-height 0.3s ease;
 
-  &.hide {
+  &.ng-enter,
+  &.ng-leave.ng-leave-active {
     max-height: 0;
+  }
+
+  &.ng-leave,
+  &.ng-enter.ng-enter-active {
+    max-height: 1320px;
   }
 
   .hk-info-top {
