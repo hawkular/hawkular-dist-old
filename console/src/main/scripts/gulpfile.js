@@ -26,7 +26,6 @@ var gulp = require('gulp'),
     size = require('gulp-size'),
     s = require('underscore.string'),
     tslint = require('gulp-tslint'),
-    tsd = require('gulp-tsd'),
     jsString;
 
 // CONSTANTS
@@ -91,14 +90,9 @@ gulp.task('bower', function () {
         .pipe(gulp.dest('.'));
 });
 
-gulp.task('tsd', function (callback) {
-    tsd({
-        command: 'reinstall',
-        config: './tsd.json'
-    }, callback);
-});
 
-/** Adjust the reference path of any typescript-built plugin this project depends on */
+/** Adjust the reference path of any typescript-built plugin this project depends on
+ * the hawt.io projects need this */
 gulp.task('path-adjust', function () {
     gulp.src('libs/**/includes.d.ts')
         .pipe(map(function (buf, filename) {

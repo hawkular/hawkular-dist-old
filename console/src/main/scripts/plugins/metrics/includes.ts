@@ -15,4 +15,4 @@
 /// limitations under the License.
 ///
 
-/// <reference path="../includes.ts"/>
+// Console code placeholder
