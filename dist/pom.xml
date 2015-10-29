@@ -61,6 +61,13 @@
       <type>zip</type>
     </dependency>
     <dependency>
+      <groupId>org.hawkular.bus</groupId>
+      <artifactId>cassandra-driver-wf-module</artifactId>
+      <version>${version.org.hawkular.bus}</version>
+      <classifier>module</classifier>
+      <type>zip</type>
+    </dependency>
+    <dependency>
       <groupId>org.hawkular.nest</groupId>
       <artifactId>hawkular-nest-wf-extension</artifactId>
       <version>${version.org.hawkular.bus}</version>
