@@ -42,7 +42,7 @@
   <dependencies>
     <dependency>
       <groupId>org.hawkular.agent</groupId>
-      <artifactId>hawkular-monitor-module-dist</artifactId>
+      <artifactId>hawkular-monitor-wf-extension</artifactId>
       <type>zip</type>
     </dependency>
     <dependency>
@@ -242,6 +242,7 @@
               <includeArtifactIds>
                 hawkular-nest-wf-extension,
                 hawkular-bus-broker-wf-extension,
+                hawkular-monitor-wf-extension,
               </includeArtifactIds>
               <stripVersion>true</stripVersion>
               <stripClassifier>true</stripClassifier>
@@ -299,6 +300,44 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- use the agent installer to install the agent extension module -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>install-agent-module</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <includePluginDependencies>true</includePluginDependencies>
+              <mainClass>org.hawkular.wildfly.monitor.installer.AgentInstaller</mainClass>
+              <arguments>
+                <argument>--wildfly-home=${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}</argument>
+                <argument>--module=${project.build.directory}/hawkular-modules/hawkular-monitor-wf-extension.zip</argument>
+                <argument>--hawkular-server-url=http://localhost:8080</argument>
+                <argument>--hawkular-username=jdoe</argument>
+                <argument>--hawkular-password=password</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.hawkular.agent</groupId>
+            <artifactId>hawkular-wildfly-monitor-installer</artifactId>
+            <version>${version.org.hawkular.agent}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.hawkular.agent</groupId>
+            <artifactId>wildfly-module-installer</artifactId>
+            <version>${version.org.hawkular.agent}</version>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <!-- further customize standalone.xml -->
