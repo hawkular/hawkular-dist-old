@@ -42,8 +42,7 @@
   <dependencies>
     <dependency>
       <groupId>org.hawkular.agent</groupId>
-      <artifactId>hawkular-monitor</artifactId>
-      <classifier>module</classifier>
+      <artifactId>hawkular-monitor-module-dist</artifactId>
       <type>zip</type>
     </dependency>
     <dependency>
