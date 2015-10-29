@@ -90,7 +90,7 @@
     <version.org.hawkular.commons>0.2.2.Final</version.org.hawkular.commons>
     <version.org.hawkular.cmdgw>0.10.2.Final-SRC-revision-06aa579bd1b9658cf82af6cfedef6365ecf03e8c</version.org.hawkular.cmdgw>
     <version.org.hawkular.metrics>0.9.0.Final-SRC-revision-9080fcfbe40a66ce8143c477b5d6f8fbadeecf3a</version.org.hawkular.metrics>
-    <version.org.hawkular.inventory>0.8.0-SRC-revision-98d1bfc3bf5dce82de2b176f0dddbde7c0026356</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>0.8.0-SRC-revision-4edf8c4a87181f41dd12fac9b59f803615bd0e79</version.org.hawkular.inventory>
     <version.org.hawkular.nest>${version.org.hawkular.bus}</version.org.hawkular.nest>
     <version.org.keycloak>1.6.1.Final</version.org.keycloak>
     <version.org.testng>6.5.2</version.org.testng>
