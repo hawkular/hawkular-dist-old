@@ -41,36 +41,16 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.hawkular.nest</groupId>
+      <artifactId>hawkular-nest-distro</artifactId>
+      <version>1.0.0.Alpha7-SNAPSHOT</version>
+      <classifier>distribution</classifier>
+      <type>zip</type>
+    </dependency>
+
+    <dependency>
       <groupId>org.hawkular.agent</groupId>
       <artifactId>hawkular-monitor</artifactId>
-      <classifier>module</classifier>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-bus-broker-wf-extension</artifactId>
-      <version>${version.org.hawkular.bus}</version>
-      <classifier>module</classifier>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-bus-ra-wf-module</artifactId>
-      <version>${version.org.hawkular.bus}</version>
-      <classifier>module</classifier>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>cassandra-driver-wf-module</artifactId>
-      <version>${version.org.hawkular.bus}</version>
-      <classifier>module</classifier>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.nest</groupId>
-      <artifactId>hawkular-nest-wf-extension</artifactId>
-      <version>${version.org.hawkular.bus}</version>
       <classifier>module</classifier>
       <type>zip</type>
     </dependency>
@@ -143,21 +123,6 @@
       <version>1.0.0.Alpha7-SNAPSHOT</version>
       <type>war</type>
     </dependency>
-    <dependency>
-      <groupId>org.wildfly</groupId>
-      <artifactId>wildfly-dist</artifactId>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>jaxen</groupId>
-          <artifactId>jaxen</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.transaction</groupId>
-          <artifactId>jta</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
 
     <!-- Keycloak-related dependencies -->
     <dependency>
@@ -189,7 +154,6 @@
   </dependencies>
 
   <build>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -227,76 +191,9 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}/wildfly</outputDirectory>
-              <includeArtifactIds>wildfly-dist</includeArtifactIds>
+              <includeArtifactIds>hawkular-nest-distro</includeArtifactIds>
               <!-- In */domain, we remove everything except for /configuration/*.properties that are need because of HAWKULAR-430 -->
               <excludes>*/appclient/**,*/docs/**,*/domain/data/**,*/domain/tmp/**,*/domain/configuration/*.xml</excludes>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-hawkular-modules</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/hawkular-modules</outputDirectory>
-              <includeArtifactIds>
-                hawkular-nest-wf-extension,
-                hawkular-bus-broker-wf-extension,
-              </includeArtifactIds>
-              <stripVersion>true</stripVersion>
-              <stripClassifier>true</stripClassifier>
-              <overWriteIfNew>true</overWriteIfNew>
-              <excludeTransitive>true</excludeTransitive>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- install our hawkular extension modules and customize standalone.xml -->
-      <plugin>
-        <groupId>org.wildfly.plugins</groupId>
-        <artifactId>wildfly-extension-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>install-bus-broker-module</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>deploy</goal>
-            </goals>
-            <configuration>
-              <jbossHome>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}</jbossHome>
-              <serverConfig>standalone/configuration/standalone.xml</serverConfig>
-              <!-- we do not care about this backup, so put it somewhere so it won't overwrite first backup -->
-              <serverConfigBackup>${project.build.directory}/standalone.xml.out</serverConfigBackup>
-              <modulesHome>modules</modulesHome>
-              <moduleZip>${project.build.directory}/hawkular-modules/hawkular-bus-broker-wf-extension.zip</moduleZip>
-              <subsystem>${basedir}/src/main/resources/wildfly/snippets/subsystem-hawkular-bus-broker-wf-extension.xml</subsystem>
-              <socketBinding>${basedir}/src/main/resources/wildfly/snippets/socketbinding-hawkular-bus-broker-wf-extension.xml</socketBinding>
-              <edit>
-                <insert>
-                  <select>/server/socket-binding-group[@name='standard-sockets']</select>
-                  <xml><![CDATA[<socket-binding name="org.hawkular.bus.broker.discovery" port="0" multicast-address="224.0.0.4" multicast-port="63636" />]]></xml>
-                  <attribute>name</attribute>
-                </insert>
-              </edit>
-            </configuration>
-          </execution>
-          <execution>
-            <id>install-nest-module</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>deploy</goal>
-            </goals>
-            <configuration>
-              <jbossHome>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}</jbossHome>
-              <serverConfig>standalone/configuration/standalone.xml</serverConfig>
-              <!-- we do not care about this backup, so put it somewhere so it won't overwrite first backup -->
-              <serverConfigBackup>${project.build.directory}/standalone.xml.out</serverConfigBackup>
-              <modulesHome>modules</modulesHome>
-              <moduleZip>${project.build.directory}/hawkular-modules/hawkular-nest-wf-extension.zip</moduleZip>
-              <subsystem>${basedir}/src/main/resources/wildfly/snippets/subsystem-hawkular-nest-wf-extension.xml</subsystem>
-              <socketBinding>${basedir}/src/main/resources/wildfly/snippets/socketbinding-hawkular-bus-broker-wf-extension.xml</socketBinding>
             </configuration>
           </execution>
         </executions>

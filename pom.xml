@@ -58,6 +58,7 @@
     <module>modules/redhat-access-integration-backend</module>
     <module>dist</module>
     <module>modules/end-to-end-test</module>
+    <module>modules/nest</module>
   </modules>
 
   <scm>
@@ -91,7 +92,6 @@
     <version.org.hawkular.cmdgw>0.10.2.Final-SRC-revision-06aa579bd1b9658cf82af6cfedef6365ecf03e8c</version.org.hawkular.cmdgw>
     <version.org.hawkular.metrics>0.9.0.Final-SRC-revision-9080fcfbe40a66ce8143c477b5d6f8fbadeecf3a</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.7.0.Final</version.org.hawkular.inventory>
-    <version.org.hawkular.nest>${version.org.hawkular.bus}</version.org.hawkular.nest>
     <version.org.keycloak>1.6.1.Final</version.org.keycloak>
     <version.org.testng>6.5.2</version.org.testng>
   </properties>
