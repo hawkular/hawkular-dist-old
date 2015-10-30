@@ -2,28 +2,39 @@
   <button type="button" class="close" ng-click="tc.cancel()">
     <span class="pficon pficon-close"></span>
   </button>
-  <h4 class="modal-title">Availability Alert Settings</h4>
+  <h2 class="modal-title">Alert Definition Details</h2>
 </div>
+
 <div class="modal-body hk-alert-settings">
-  <tabset>
-    <tab heading="{{tc.adm.trigger.name}}">
-      <div id="hk-gc" class="hk-tab-content">
-        <p>Configure conditions settings for alerts and notifications.</p>
+  <div class="row">
+    <div class="col-lg-9 col-md-8">
+      <div class="panel panel-default clearfix">
+        <div class="panel-heading">
+          <h2>{{tc.adm.trigger.name}}</h2>
+        </div>
+        <div class="panel-body">
+          <form class="form-horizontal">
+            <div ng-include="'plugins/metrics/html/partials/trigger-general-setup.html'"></div>
 
-        <form class="form-horizontal">
-          <hk-fieldset-dampening hk-duration="tc.adm.trigger.evalTimeSetting"
-                                 hk-title="Downtime"
-                                 hk-switch="tc.adm.trigger.conditionEnabled"
-                                 hk-title-met="Every time it goes down."
-                                 hk-title-unmet="Only when it is down for more than:"></hk-fieldset-dampening>
+            <h3>Alert Settings</h3>
 
-          <hk-fieldset-notification hk-alert-email="tc.adm.trigger.email"
-                                    hk-disabled="!tc.adm.trigger.conditionEnabled"></hk-fieldset-notification>
-        </form>
+            <fieldset>
+              <legend>{{tc.adm.trigger.conditionContext.description !== '' ?
+                tc.adm.trigger.conditionContext.description : "Downtime"}}
+              </legend>
+            </fieldset>
+            <hk-fieldset-dampening hk-duration="tc.adm.trigger.evalTimeSetting"
+                                   hk-title="Downtime"
+                                   hk-title-met="Every time it goes down."
+                                   hk-title-unmet="Only when it is down for more than:"></hk-fieldset-dampening>
+
+            <hk-fieldset-notification hk-alert-email="tc.adm.trigger.email"></hk-fieldset-notification>
+          </form>
+        </div>
       </div>
-    </tab>
-  </tabset>
-
+    </div>
+  </div>
+</div>
 
 </div>
 <div class="modal-footer">

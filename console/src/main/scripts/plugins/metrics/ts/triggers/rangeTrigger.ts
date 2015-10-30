@@ -24,9 +24,6 @@ module HawkularMetrics {
 
   export class RangeTriggerSetupController extends TriggerSetupController {
 
-    public static MAX_DISABLED = 2010101010;
-    public static MIN_DISABLED = -1010101010;
-
     loadTrigger(triggerId:string):Array<ng.IPromise<any>> {
 
       let triggerPromise = this.HawkularAlertsManager.getTrigger(triggerId).then(
@@ -35,16 +32,21 @@ module HawkularMetrics {
           this.fullTrigger = triggerData;
 
           this.adm.trigger = {};
+          // updateable
+          this.adm.trigger['description'] = triggerData.trigger.description;
+          this.adm.trigger['enabled'] = triggerData.trigger.enabled;
           this.adm.trigger['name'] = triggerData.trigger.name;
+          this.adm.trigger['severity'] = triggerData.trigger.severity;
+
+          this.adm.trigger['maxThreshold'] = triggerData.conditions[0].thresholdHigh;
+          this.adm.trigger['minThreshold'] = triggerData.conditions[0].thresholdLow;
+
           this.adm.trigger['email'] = triggerData.trigger.actions.email[0];
           this.adm.trigger['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
 
-          this.adm.trigger['maxEnabled'] =
-            triggerData.conditions[0].thresholdHigh !== RangeTriggerSetupController.MAX_DISABLED;
-          this.adm.trigger['maxThreshold'] = triggerData.conditions[0].thresholdHigh;
-          this.adm.trigger['minEnabled'] =
-            triggerData.conditions[0].thresholdLow !== RangeTriggerSetupController.MIN_DISABLED;
-          this.adm.trigger['minThreshold'] = triggerData.conditions[0].thresholdLow;
+          // presentation
+          this.adm.trigger['context'] = triggerData.trigger.context;
+          this.adm.trigger['conditionContext'] = triggerData.conditions[0].context;
         });
 
       return [triggerPromise];
@@ -53,16 +55,16 @@ module HawkularMetrics {
     saveTrigger(errorCallback):Array<ng.IPromise<any>> {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);
-      updatedFullTrigger.trigger.enabled = this.adm.trigger.conditionEnabled;
+      updatedFullTrigger.trigger.enabled = this.adm.trigger.enabled;
+      updatedFullTrigger.trigger.name = this.adm.trigger.name;
+      updatedFullTrigger.trigger.description = this.adm.trigger.description;
+      updatedFullTrigger.trigger.severity = this.adm.trigger.severity;
 
-      if (this.adm.trigger.conditionEnabled) {
-        updatedFullTrigger.actions.email[0] = this.adm.trigger.email;
-        updatedFullTrigger.dampenings[0].evalTimeSetting = this.adm.trigger.evalTimeSetting;
-        updatedFullTrigger.conditions[0].thresholdHigh = this.adm.trigger.maxEnabled ?
-          this.adm.trigger.maxThreshold : RangeTriggerSetupController.MAX_DISABLED;
-        updatedFullTrigger.conditions[0].thresholdLow = this.adm.trigger.minEnabled ?
-          this.adm.trigger.minThreshold : RangeTriggerSetupController.MIN_DISABLED;
-      }
+      updatedFullTrigger.conditions[0].thresholdHigh = this.adm.trigger.maxThreshold;
+      updatedFullTrigger.conditions[0].thresholdLow = this.adm.trigger.minThreshold;
+
+      updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
+      updatedFullTrigger.dampenings[0].evalTimeSetting = this.adm.trigger.evalTimeSetting;
 
       let triggerSavePromise = this.HawkularAlertsManager.updateTrigger(updatedFullTrigger, errorCallback,
         this.fullTrigger);
