@@ -1,0 +1,83 @@
+<!--
+
+    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans classpath:spring-beans-2.0.xsd
+                           http://activemq.apache.org/schema/core classpath:activemq.xsd">
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+
+  <broker xmlns="http://activemq.apache.org/schema/core"
+          brokerName="${org-hawkular-bus-broker-name}"
+          persistent="${org-hawkular-bus-broker-persistent}"
+          useJmx="${org-hawkular-bus-broker-use-jmx}"
+          dataDirectory="${jboss.server.data.dir}/broker"
+          useShutdownHook="false">
+
+    <transportConnectors>
+      <transportConnector name="${org-hawkular-bus-broker-connector-name}"
+                          uri="${org-hawkular-bus-broker-connector-protocol}://${org-hawkular-bus-broker-connector-address}:${org-hawkular-bus-broker-connector-port}"
+                          updateClusterClients="true"
+                          updateClusterClientsOnRemove="true"
+                          rebalanceClusterClients="true"
+                          discoveryUri="multicast://${org-hawkular-bus-broker-discovery-address}:${org-hawkular-bus-broker-discovery-port}?group=hawkular" />
+    </transportConnectors>
+
+    <!-- Define the Network of Brokers (aka clustering).
+         The "uri" attribute can be a static list of brokers:
+             static:(tcp://hostname1:port1,tcp://hostname2:port2,...)
+         or, if multicasting is enabled on the network and you want auto-discovery of brokers:
+             multicast://hostname:port
+    -->
+    <networkConnectors>
+      <networkConnector
+        uri="multicast://${org-hawkular-bus-broker-discovery-address}:${org-hawkular-bus-broker-discovery-port}?group=hawkular" />
+    </networkConnectors>
+
+    <persistenceAdapter>
+      <kahaDB directory="${jboss.server.data.dir}/broker/kaha" />
+    </persistenceAdapter>
+
+<!--
+        <plugins>
+          <simpleAuthenticationPlugin>
+            <users>
+              <authenticationUser username="system" password="alohomora" groups="users,admins" />
+            </users>
+          </simpleAuthenticationPlugin>
+
+          <authorizationPlugin>
+            <map>
+              <authorizationMap>
+                <authorizationEntries>
+                  <authorizationEntry queue=">" read="admins" write="admins" admin="admins" />
+                  <authorizationEntry topic="ActiveMQ.Advisory.>" read="admins" write="admins" admin="admins" />
+                </authorizationEntries>
+
+                <tempDestinationAuthorizationEntry>
+                  <tempDestinationAuthorizationEntry read="admins" write="admins" admin="admins" />
+                </tempDestinationAuthorizationEntry>
+              </authorizationMap>
+            </map>
+          </authorizationPlugin>
+
+        </plugins>
+-->
+
+  </broker>
+</beans>

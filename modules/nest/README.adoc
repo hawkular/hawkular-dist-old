@@ -1,0 +1,4 @@
+= hawkular-nest
+:source-language: java
+
+A container that can deploy Hawkular components and provides the Hawkular messaging framework to those components.
