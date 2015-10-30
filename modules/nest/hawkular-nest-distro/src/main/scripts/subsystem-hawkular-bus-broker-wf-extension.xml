@@ -1,0 +1,19 @@
+<subsystem xmlns="urn:org.hawkular.bus:broker:1.0"
+           enabled="true"
+           configuration-file="default-broker.xml">
+
+  <org-hawkular-bus-broker-name>org.hawkular.bus.broker.${jboss.node.name}</org-hawkular-bus-broker-name>
+  <org-hawkular-bus-broker-persistent>false</org-hawkular-bus-broker-persistent>
+  <org-hawkular-bus-broker-use-jmx>false</org-hawkular-bus-broker-use-jmx>
+
+  <connector socket-binding="org.hawkular.bus.broker"
+             org-hawkular-bus-broker-connector-name="openwire"
+             org-hawkular-bus-broker-connector-protocol="tcp" />
+
+  <discovery-socket-binding>org.hawkular.bus.broker.discovery</discovery-socket-binding>
+
+  <custom-configuration>
+    <property name="custom-prop" value="custom-prop-val"/>
+  </custom-configuration>
+
+</subsystem>

@@ -75,11 +75,6 @@
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.alerts:INFO}</xsl:text></xsl:attribute>
       </level>
     </logger>
-    <logger category="org.hawkular.bus">
-      <level>
-        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.bus:INFO}</xsl:text></xsl:attribute>
-      </level>
-    </logger>
     <logger category="org.hawkular.cmdgw">
       <level>
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.cmdgw:INFO}</xsl:text></xsl:attribute>
@@ -108,11 +103,6 @@
     <logger category="org.hawkular.metrics">
       <level>
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.metrics:INFO}</xsl:text></xsl:attribute>
-      </level>
-    </logger>
-    <logger category="org.hawkular.nest">
-      <level>
-        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.nest:INFO}</xsl:text></xsl:attribute>
       </level>
     </logger>
 
@@ -148,77 +138,6 @@
   <!-- set the console log level -->
   <xsl:template match="logging:console-handler[@name='CONSOLE']/logging:level">
     <xsl:if test="$kettle.build.type='production'"><level name="INFO"/></xsl:if>
-  </xsl:template>
-
-  <!-- add bus resource adapter -->
-  <xsl:template name="resource-adapters">
-    <resource-adapters>
-      <resource-adapter id="activemq-rar" statistics-enabled="true">
-        <module slot="main" id="org.apache.activemq.ra" />
-        <transaction-support>XATransaction</transaction-support>
-        <config-property name="UseInboundSession">false</config-property>
-        <xsl:comment><![CDATA[
-          <config-property name="Password">
-            defaultPassword
-          </config-property>
-          <config-property name="UserName">
-            defaultUser
-          </config-property>
-        ]]></xsl:comment>
-        <config-property name="ServerUrl">vm://org.hawkular.bus.broker.${jboss.node.name}?create=false&amp;jms.blobTransferPolicy.uploadUrl=file:${org.hawkular.data.dir:${jboss.server.data.dir}}/hawkular-bus-blobs</config-property>
-        <connection-definitions>
-          <connection-definition class-name="org.apache.activemq.ra.ActiveMQManagedConnectionFactory"
-                                 jndi-name="java:/HawkularBusConnectionFactory"
-                                 enabled="true"
-                                 use-java-context="true"
-                                 pool-name="HawkularBusConnectionFactory">
-            <xa-pool>
-              <min-pool-size>1</min-pool-size>
-              <max-pool-size>20</max-pool-size>
-              <prefill>false</prefill>
-              <is-same-rm-override>false</is-same-rm-override>
-            </xa-pool>
-          </connection-definition>
-        </connection-definitions>
-        <admin-objects>
-          <admin-object use-java-context="true" enabled="true" class-name="org.apache.activemq.command.ActiveMQTopic" jndi-name="java:/topic/HawkularInventoryChanges" pool-name="HawkularInventoryChanges">
-             <config-property name="PhysicalName">HawkularInventoryChanges</config-property>
-          </admin-object>
-          <admin-object use-java-context="true" enabled="true" class-name="org.apache.activemq.command.ActiveMQTopic" jndi-name="java:/topic/HawkularMetricData" pool-name="HawkularMetricData">
-             <config-property name="PhysicalName">HawkularMetricData</config-property>
-          </admin-object>
-          <admin-object use-java-context="true" enabled="true" class-name="org.apache.activemq.command.ActiveMQTopic" jndi-name="java:/topic/HawkularAvailData" pool-name="HawkularAvailData">
-             <config-property name="PhysicalName">HawkularAvailData</config-property>
-          </admin-object>
-          <admin-object use-java-context="true" enabled="true" class-name="org.apache.activemq.command.ActiveMQTopic" jndi-name="java:/topic/HawkularAccountsEvents" pool-name="HawkularAccountsEvents">
-             <config-property name="PhysicalName">HawkularAccountsEvents</config-property>
-          </admin-object>
-        </admin-objects>
-      </resource-adapter>
-    </resource-adapters>
-  </xsl:template>
-
-  <xsl:template match="ra:subsystem">
-    <xsl:copy>
-      <xsl:apply-templates select="node()|@*"/>
-      <xsl:call-template name="resource-adapters"/>
-    </xsl:copy>
-  </xsl:template>
-
-  <!-- add MDB definition -->
-  <xsl:template name="mdb">
-    <mdb>
-      <resource-adapter-ref resource-adapter-name="activemq-rar"/>
-      <bean-instance-pool-ref pool-name="mdb-strict-max-pool"/>
-    </mdb>
-  </xsl:template>
-
-  <xsl:template match="ejb3:subsystem">
-    <xsl:copy>
-      <xsl:call-template name="mdb"/>
-      <statistics enabled="true"/>
-      <xsl:apply-templates select="node()|@*"/>
-    </xsl:copy>
   </xsl:template>
 
   <xsl:template match="undertow:subsystem">
@@ -285,11 +204,6 @@
 
   <xsl:template match="@datasource[.='java:jboss/datasources/ExampleDS']">
     <xsl:attribute name="datasource">java:jboss/datasources/HawkularDS</xsl:attribute>
-  </xsl:template>
-
-  <!-- Tweak EE bindings -->
-  <xsl:template match="@jms-connection-factory[.='java:jboss/DefaultJMSConnectionFactory']">
-    <xsl:attribute name="jms-connection-factory">java:/HawkularBusConnectionFactory</xsl:attribute>
   </xsl:template>
 
   <!-- add system properties -->

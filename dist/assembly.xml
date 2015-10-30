@@ -140,8 +140,6 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.agent:hawkular-monitor:zip:module</include>
-        <include>org.hawkular.bus:hawkular-bus-ra-wf-module:zip:module</include>
-        <include>org.hawkular.bus:cassandra-driver-wf-module:zip:module</include>
         <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-rest:zip:module</include>
         <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-jms:zip:module</include>
       </includes>
