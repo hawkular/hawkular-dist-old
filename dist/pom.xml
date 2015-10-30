@@ -50,10 +50,17 @@
 
     <dependency>
       <groupId>org.hawkular.agent</groupId>
-      <artifactId>hawkular-monitor</artifactId>
-      <classifier>module</classifier>
+      <artifactId>hawkular-monitor-wf-extension</artifactId>
       <type>zip</type>
+      <!-- for some reason, the assembly plugin barfs if we don't exclude this -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.hawkular.agent</groupId>
+          <artifactId>hawkular-monitor-feature-pack</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
       <artifactId>hawkular-inventory-dist</artifactId>
@@ -196,7 +203,73 @@
               <excludes>*/appclient/**,*/docs/**,*/domain/data/**,*/domain/tmp/**,*/domain/configuration/*.xml</excludes>
             </configuration>
           </execution>
+          <!-- copies any extension modules we want to later add to the kettle -->
+          <execution>
+            <id>copy-hawkular-modules</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/hawkular-modules</outputDirectory>
+              <includeArtifactIds>
+                hawkular-monitor-wf-extension
+              </includeArtifactIds>
+              <stripVersion>true</stripVersion>
+              <stripClassifier>true</stripClassifier>
+              <overWriteIfNew>true</overWriteIfNew>
+              <excludeTransitive>true</excludeTransitive>
+            </configuration>
+          </execution>
         </executions>
+      </plugin>
+
+      <!-- use the agent installer to install the agent extension module -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>install-agent-module</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <includePluginDependencies>true</includePluginDependencies>
+              <mainClass>org.hawkular.wildfly.monitor.installer.AgentInstaller</mainClass>
+              <arguments>
+                <argument>--wildfly-home=${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}</argument>
+                <argument>--module=${project.build.directory}/hawkular-modules/hawkular-monitor-wf-extension.zip</argument>
+                <argument>--hawkular-server-url=http://localhost:8080</argument>
+                <argument>--hawkular-username=jdoe</argument>
+                <argument>--hawkular-password=password</argument>
+              </arguments>
+              <systemProperties>
+                <systemProperty>
+                  <key>log4j.configuration</key>
+                  <value>file:${basedir}/log4j.xml</value>
+                </systemProperty>
+                <systemProperty>
+                  <key>org.hawkular.wildfly.monitor.installer.throw-exception-on-error</key>
+                  <value>true</value>
+                </systemProperty>
+              </systemProperties>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.hawkular.agent</groupId>
+            <artifactId>hawkular-wildfly-monitor-installer</artifactId>
+            <version>${version.org.hawkular.agent}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.hawkular.agent</groupId>
+            <artifactId>wildfly-module-installer</artifactId>
+            <version>${version.org.hawkular.agent}</version>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <!-- further customize standalone.xml -->
