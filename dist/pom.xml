@@ -52,6 +52,13 @@
       <groupId>org.hawkular.agent</groupId>
       <artifactId>hawkular-monitor-wf-extension</artifactId>
       <type>zip</type>
+      <!-- for some reason, the assembly plugin barfs if we don't exclude this -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.hawkular.agent</groupId>
+          <artifactId>hawkular-monitor-feature-pack</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
