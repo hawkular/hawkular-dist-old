@@ -245,6 +245,16 @@
                 <argument>--hawkular-username=jdoe</argument>
                 <argument>--hawkular-password=password</argument>
               </arguments>
+              <systemProperties>
+                <systemProperty>
+                  <key>log4j.configuration</key>
+                  <value>file:${basedir}/log4j.xml</value>
+                </systemProperty>
+                <systemProperty>
+                  <key>org.hawkular.wildfly.monitor.installer.throw-exception-on-error</key>
+                  <value>true</value>
+                </systemProperty>
+              </systemProperties>
             </configuration>
           </execution>
         </executions>

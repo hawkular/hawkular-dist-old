@@ -139,6 +139,7 @@
       <outputDirectory>${hawkular.dist.zip.root.dir}/modules</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
+        <include>org.hawkular.agent:hawkular-monitor-wf-extension:zip:</include>
         <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-rest:zip:module</include>
         <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-jms:zip:module</include>
       </includes>
