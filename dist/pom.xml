@@ -73,6 +73,12 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-wildfly-agent-download</artifactId>
+      <version>1.0.0.Alpha7-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
       <artifactId>hawkular-pinger</artifactId>
       <version>1.0.0.Alpha7-SNAPSHOT</version>
       <type>war</type>

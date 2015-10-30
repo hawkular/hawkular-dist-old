@@ -106,6 +106,7 @@
         <include>org.hawkular.inventory:hawkular-inventory-dist</include>
         <include>org.hawkular.cmdgw:hawkular-command-gateway-war</include>
         <include>org.hawkular:hawkular-pinger</include>
+        <include>org.hawkular:hawkular-wildfly-agent-download</include>
         <include>org.hawkular:hawkular-avail-creator</include>
         <include>org.hawkular:hawkular-redhat-access-integration-backend</include>
         <include>org.hawkular.accounts:hawkular-accounts:war</include>
