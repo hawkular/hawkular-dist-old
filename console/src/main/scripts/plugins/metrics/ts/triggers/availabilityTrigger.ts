@@ -32,10 +32,17 @@ module HawkularMetrics {
           this.fullTrigger = triggerData;
 
           this.adm.trigger = {};
+          // updateable
+          this.adm.trigger['description'] = triggerData.trigger.description;
+          this.adm.trigger['enabled'] = triggerData.trigger.enabled;
           this.adm.trigger['name'] = triggerData.trigger.name;
+          this.adm.trigger['severity'] = triggerData.trigger.severity;
+
           this.adm.trigger['email'] = triggerData.trigger.actions.email[0];
           this.adm.trigger['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
-          this.adm.trigger['conditionEnabled'] = triggerData.trigger.enabled;
+
+          // presentation
+          this.adm.trigger['context'] = triggerData.trigger.context;
         });
 
       return [triggerPromise];
@@ -44,17 +51,18 @@ module HawkularMetrics {
     saveTrigger(errorCallback):Array<ng.IPromise<any>> {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);
-      updatedFullTrigger.trigger.enabled = this.adm.trigger.conditionEnabled;
+      updatedFullTrigger.trigger.enabled = this.adm.trigger.enabled;
+      updatedFullTrigger.trigger.name = this.adm.trigger.name;
+      updatedFullTrigger.trigger.description = this.adm.trigger.description;
+      updatedFullTrigger.trigger.severity = this.adm.trigger.severity;
 
-      if (this.adm.trigger.conditionEnabled) {
-        updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
+      updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
 
-        // When using AutoResolve the settings are implicit. We use the same dampening as for Firing mode.
-        // So, update both the firing and, if it exists, AR dampening.
-        updatedFullTrigger.dampenings.forEach((dampening:any) => {
-          dampening.evalTimeSetting = this.adm.trigger.evalTimeSetting;
-        });
-      }
+      // When using AutoResolve the settings are implicit. We use the same dampening as for Firing mode.
+      // So, update both the firing and, if it exists, AR dampening.
+      updatedFullTrigger.dampenings.forEach((dampening:any) => {
+        dampening.evalTimeSetting = this.adm.trigger.evalTimeSetting;
+      });
 
       let triggerSavePromise = this.HawkularAlertsManager.updateTrigger(updatedFullTrigger, errorCallback,
         this.fullTrigger);

@@ -54,15 +54,26 @@ module HawkularMetrics {
 
           let triggerData = this.fullTrigger;
           this.adm.trigger = {};
+          // updateable
+          this.adm.trigger['description'] = triggerData.trigger.description;
+          this.adm.trigger['enabled'] = triggerData.trigger.enabled;
           this.adm.trigger['name'] = triggerData.trigger.name;
+          this.adm.trigger['severity'] = triggerData.trigger.severity;
+
+          //this.adm.trigger['maxThreshold'] = triggerData.conditions[0].thresholdHigh;
+          //this.adm.trigger['minThreshold'] = triggerData.conditions[0].thresholdLow;
+
           this.adm.trigger['email'] = triggerData.trigger.actions.email[0];
           this.adm.trigger['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
-          this.adm.trigger['conditionGtEnabled'] = triggerData.conditions[0].thresholdHigh < this.ceiling;
+
           this.adm.trigger['conditionGtPercent'] = triggerData.conditions[0].thresholdHigh > 0 ?
             floor2Dec(triggerData.conditions[0].thresholdHigh * 100 / this.ceiling) : 0;
-          this.adm.trigger['conditionLtEnabled'] = triggerData.conditions[0].thresholdLow > 0;
           this.adm.trigger['conditionLtPercent'] = triggerData.conditions[0].thresholdLow > 0 ?
             floor2Dec(triggerData.conditions[0].thresholdLow * 100 / this.ceiling) : 0;
+
+          // presentation
+          this.adm.trigger['context'] = triggerData.trigger.context;
+          this.adm.trigger['conditionContext'] = triggerData.conditions[0].context;
         });
 
       return [triggerPromise];
@@ -71,16 +82,16 @@ module HawkularMetrics {
     saveTrigger(errorCallback):Array<ng.IPromise<any>> {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);
-      updatedFullTrigger.trigger.enabled = this.adm.trigger.conditionEnabled;
+      updatedFullTrigger.trigger.enabled = this.adm.trigger.enabled;
+      updatedFullTrigger.trigger.name = this.adm.trigger.name;
+      updatedFullTrigger.trigger.description = this.adm.trigger.description;
+      updatedFullTrigger.trigger.severity = this.adm.trigger.severity;
 
-      if (this.adm.trigger.conditionEnabled) {
-        updatedFullTrigger.actions.email[0] = this.adm.trigger.email;
-        updatedFullTrigger.dampenings[0].evalTimeSetting = this.adm.trigger.evalTimeSetting;
-        updatedFullTrigger.conditions[0].thresholdHigh = this.adm.trigger.conditionGtEnabled ?
-        this.ceiling * this.adm.trigger.conditionGtPercent / 100 : this.ceiling;
-        updatedFullTrigger.conditions[0].thresholdLow = this.adm.trigger.conditionLtEnabled ?
-        this.ceiling * this.adm.trigger.conditionLtPercent / 100 : 0;
-      }
+      updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
+      updatedFullTrigger.dampenings[0].evalTimeSetting = this.adm.trigger.evalTimeSetting;
+
+      updatedFullTrigger.conditions[0].thresholdHigh = this.ceiling * this.adm.trigger.conditionGtPercent / 100;
+      updatedFullTrigger.conditions[0].thresholdLow = this.ceiling * this.adm.trigger.conditionLtPercent / 100;
 
       let triggerSavePromise = this.HawkularAlertsManager.updateTrigger(updatedFullTrigger, errorCallback,
         this.fullTrigger);
