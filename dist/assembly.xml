@@ -123,6 +123,19 @@
       <directoryMode>0755</directoryMode>
     </dependencySet>
 
+    <!-- put the agent wf extension in the distro so it can be downloaded by clients and installers -->
+    <dependencySet>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/standalone/configuration</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.agent:hawkular-wildfly-agent-wf-extension:zip</include>
+      </includes>
+      <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}</outputFileNameMapping>
+      <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+
     <!-- TODO Make the unpacking conditional == only for the dev profile -->
     <dependencySet>
       <outputDirectory>${hawkular.dist.zip.root.dir}/modules/org/hawkular/nest/main/deployments/${artifact.artifactId}.war</outputDirectory>

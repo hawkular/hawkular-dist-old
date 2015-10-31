@@ -86,7 +86,7 @@
     <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.hawkular.accounts>1.1.0.Final-SRC-revision-7c7b7e76a9ffcb254a11c45eedb393c0068f69d1</version.org.hawkular.accounts>
-    <version.org.hawkular.agent>0.12.0.Final-SRC-revision-22f567f0b2f1e35395aa1e2e05c40bdb7ce91a60</version.org.hawkular.agent>
+    <version.org.hawkular.agent>0.12.0.Final-SRC-revision-859f1c7072dee660245c247814245a5ca3b0daab</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.5.0.Final</version.org.hawkular.alerts>
     <version.org.hawkular.bus>0.7.2.Final-SRC-revision-51939085c81845b21841503921d48442dde6f32b</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.2.2.Final</version.org.hawkular.commons>
@@ -145,7 +145,7 @@
 
       <dependency>
         <groupId>org.hawkular.agent</groupId>
-        <artifactId>hawkular-monitor-wf-extension</artifactId>
+        <artifactId>hawkular-wildfly-agent-wf-extension</artifactId>
         <version>${version.org.hawkular.agent}</version>
         <type>zip</type>
       </dependency>
