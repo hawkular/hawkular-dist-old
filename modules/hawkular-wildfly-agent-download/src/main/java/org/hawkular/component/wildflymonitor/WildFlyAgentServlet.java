@@ -40,7 +40,7 @@ public class WildFlyAgentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // the system property that defines how many concurrent downloads we will allow (0 == disable)
-    private static String SYSPROP_AGENT_DOWNLOADS_LIMIT = "hawkular-wildfly-agent-downloads-limit";
+    private static String SYSPROP_AGENT_DOWNLOADS_LIMIT = "hawkular.wildfly.agent.downloads.limit";
 
     // if the system property is not set or invalid, this is the default limit for number of concurrent downloads
     private static int DEFAULT_AGENT_DOWNLOADS_LIMIT = 100;
@@ -182,7 +182,7 @@ public class WildFlyAgentServlet extends HttpServlet {
 
         File configDir = new File(System.getProperty("jboss.server.config.dir"));
         for (File file : configDir.listFiles()) {
-            if (file.getName().startsWith("hawkular-monitor-wf-extension") && file.getName().endsWith(".zip")) {
+            if (file.getName().startsWith("hawkular-wildfly-agent-wf-extension") && file.getName().endsWith(".zip")) {
                 downloadFile = file;
                 return downloadFile;
             }
