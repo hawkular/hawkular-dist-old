@@ -50,13 +50,13 @@
 
     <dependency>
       <groupId>org.hawkular.agent</groupId>
-      <artifactId>hawkular-monitor-wf-extension</artifactId>
+      <artifactId>hawkular-wildfly-agent-wf-extension</artifactId>
       <type>zip</type>
       <!-- for some reason, the assembly plugin barfs if we don't exclude this -->
       <exclusions>
         <exclusion>
           <groupId>org.hawkular.agent</groupId>
-          <artifactId>hawkular-monitor-feature-pack</artifactId>
+          <artifactId>hawkular-wildfly-agent-feature-pack</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -69,6 +69,12 @@
     <dependency>
       <groupId>org.hawkular.cmdgw</groupId>
       <artifactId>hawkular-command-gateway-war</artifactId>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-wildfly-agent-download</artifactId>
+      <version>1.0.0.Alpha7-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
@@ -213,7 +219,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/hawkular-modules</outputDirectory>
               <includeArtifactIds>
-                hawkular-monitor-wf-extension
+                hawkular-wildfly-agent-wf-extension
               </includeArtifactIds>
               <stripVersion>true</stripVersion>
               <stripClassifier>true</stripClassifier>
@@ -237,10 +243,10 @@
             </goals>
             <configuration>
               <includePluginDependencies>true</includePluginDependencies>
-              <mainClass>org.hawkular.wildfly.monitor.installer.AgentInstaller</mainClass>
+              <mainClass>org.hawkular.wildfly.agent.installer.AgentInstaller</mainClass>
               <arguments>
                 <argument>--wildfly-home=${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}</argument>
-                <argument>--module=${project.build.directory}/hawkular-modules/hawkular-monitor-wf-extension.zip</argument>
+                <argument>--module=${project.build.directory}/hawkular-modules/hawkular-wildfly-agent-wf-extension.zip</argument>
                 <argument>--hawkular-server-url=http://localhost:8080</argument>
                 <argument>--hawkular-username=jdoe</argument>
                 <argument>--hawkular-password=password</argument>
@@ -251,7 +257,7 @@
                   <value>file:${basedir}/log4j.xml</value>
                 </systemProperty>
                 <systemProperty>
-                  <key>org.hawkular.wildfly.monitor.installer.throw-exception-on-error</key>
+                  <key>org.hawkular.wildfly.agent.installer.throw-exception-on-error</key>
                   <value>true</value>
                 </systemProperty>
               </systemProperties>
@@ -261,7 +267,7 @@
         <dependencies>
           <dependency>
             <groupId>org.hawkular.agent</groupId>
-            <artifactId>hawkular-wildfly-monitor-installer</artifactId>
+            <artifactId>hawkular-wildfly-agent-installer</artifactId>
             <version>${version.org.hawkular.agent}</version>
           </dependency>
           <dependency>

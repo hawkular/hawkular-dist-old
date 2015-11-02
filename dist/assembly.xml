@@ -106,6 +106,7 @@
         <include>org.hawkular.inventory:hawkular-inventory-dist</include>
         <include>org.hawkular.cmdgw:hawkular-command-gateway-war</include>
         <include>org.hawkular:hawkular-pinger</include>
+        <include>org.hawkular:hawkular-wildfly-agent-download</include>
         <include>org.hawkular:hawkular-avail-creator</include>
         <include>org.hawkular:hawkular-redhat-access-integration-backend</include>
         <include>org.hawkular.accounts:hawkular-accounts:war</include>
@@ -117,6 +118,19 @@
         <include>org.hawkular.accounts:hawkular-accounts-secret-store:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+      <unpack>false</unpack>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+
+    <!-- put the agent wf extension in the distro so it can be downloaded by clients and installers -->
+    <dependencySet>
+      <outputDirectory>${hawkular.dist.zip.root.dir}/standalone/configuration</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>org.hawkular.agent:hawkular-wildfly-agent-wf-extension:zip</include>
+      </includes>
+      <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
