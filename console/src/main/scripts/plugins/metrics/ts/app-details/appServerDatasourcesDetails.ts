@@ -45,6 +45,7 @@ module HawkularMetrics {
     public chartRespData;
     // will contain in the format: 'metric name' : true | false
     public skipChartData = {};
+    public driversList;
 
     public resolvedAvailData = {};
     public resolvedRespData = {};
@@ -348,6 +349,17 @@ module HawkularMetrics {
       });
     }
 
+    public deleteDriver(driver:any):void {
+      /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
+      let driverDeleteDialog = this.$modal.open({
+        templateUrl: 'plugins/metrics/html/app-details/modals/detail-datasources-driver-delete.html',
+        controller: 'AppServerDatasourcesDriverDeleteDialogController as mvm',
+        resolve: {
+          driver: () => driver
+        }
+      });
+    }
+
     public refresh():void {
       this.getDatasources();
     }
@@ -408,6 +420,19 @@ module HawkularMetrics {
             this['lastUpdateTimestamp'] = new Date();
           }
         });
+      this.getDrivers();
+    }
+
+    public getDrivers(currentTenantId?: TenantId): void {
+      this.HawkularInventory.ResourceOfTypeUnderFeed.query({
+        environmentId: globalEnvironmentId, feedId: this.$routeParams.resourceId.split('~')[0],
+        resourceTypeId: 'JDBC Driver'}, (aResourceList, getResponseHeaders) => {
+        this.driversList = aResourceList;
+        _.forEach(this.driversList, function(item: any) {
+          item.name = item.id.split('jdbc-driver=')[1];
+        }, this);
+      });
+
     }
 
     public getDatasourceChartData(currentTenantId?:TenantId):void {

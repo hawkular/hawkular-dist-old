@@ -10,15 +10,29 @@
 
       <div class="hk-container-separator">
         <div class="btn-group" dropdown auto-close="always">
-          <button id="simple-btn-keyboard-nav" type="button" class="btn btn-default" dropdown-toggle>
+          <button id="datasource-sort-dropdown" type="button" class="btn btn-default" dropdown-toggle>
             Sort {{vm.sortInv ? 'Z - A' : 'A - Z'}}  <span class="caret"></span>
           </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="simple-btn-keyboard-nav">
+          <ul class="dropdown-menu" role="menu" aria-labelledby="datasource-sort-dropdown">
             <li ng-class="{'active': !vm.sortInv}">
               <a href="" ng-click="vm.sortInv = false" dropdown-toggle>Sort A - Z</a>
             </li>
             <li ng-class="{'active': vm.sortInv}">
               <a href="" ng-click="vm.sortInv = true" dropdown-toggle>Sort Z - A</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hk-container-separator">
+        <div class="btn-group" dropdown auto-close="always">
+          <button id="datasource-jdbc-drivers" type="button" class="btn btn-default" dropdown-toggle>
+            JDBC Drivers  <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="datasource-jdbc-drivers">
+            <li ng-repeat="driver in vm.driversList">
+              <a href="" ng-click="vm.deleteDriver(driver)" dropdown-toggle>{{driver.name}}
+                <span class="pull-right"><i class="fa fa-trash-o"></i></span></a>
             </li>
           </ul>
         </div>
