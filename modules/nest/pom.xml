@@ -25,7 +25,6 @@
     <artifactId>hawkular</artifactId>
     <relativePath>../../pom.xml</relativePath>
     <version>1.0.0.Alpha7-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <groupId>org.hawkular.nest</groupId>
