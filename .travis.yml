@@ -14,7 +14,7 @@ install:
 - df -h
 - du -sh $HOME/.m2/repository
 script:
-- mvn -fae -s .travis.maven.settings.xml -Pitest clean install
+- mvn -fae -s .travis.maven.settings.xml -Pitest,dozip clean install
 - df -h
 - du -sh $HOME/.m2/repository
 notifications:
