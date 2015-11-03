@@ -23,6 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular</artifactId>
+    <relativePath>../../pom.xml</relativePath>
     <version>1.0.0.Alpha7-SNAPSHOT</version>
   </parent>
 
@@ -35,11 +36,17 @@
   <modules>
     <module>hawkular-nest-wf-extension</module>
     <module>hawkular-nest-distro</module>
-    <module>cassandra-driver-wf-module</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.hawkular.commons</groupId>
+        <artifactId>cassandra-driver-wf-module</artifactId>
+        <version>${version.org.hawkular.commons}</version>
+        <classifier>module</classifier>
+        <type>zip</type>
+      </dependency>
 
       <!-- Hawkular Bus Dependencies -->
       <dependency>

@@ -48,9 +48,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.nest</groupId>
+      <groupId>org.hawkular.commons</groupId>
       <artifactId>cassandra-driver-wf-module</artifactId>
-      <version>1.0.0.Alpha7-SNAPSHOT</version>
       <classifier>module</classifier>
       <type>zip</type>
     </dependency>
