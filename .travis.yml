@@ -14,7 +14,15 @@ install:
 - df -h
 - du -sh $HOME/.m2/repository
 script:
-- mvn -fae -s .travis.maven.settings.xml -Pitest clean install
+- PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
+- if [[ "${PROJECT_VERSION}" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
+  then
+   echo "Building with deployment" ;
+   mvn -fae -s .travis.maven.settings.xml -Pitest clean install deploy -DdeployAtEnd=true ;
+  else
+   echo "Building without deployment" ;
+   mvn -fae -s .travis.maven.settings.xml -Pitest clean install ;
+  fi
 - df -h
 - du -sh $HOME/.m2/repository
 notifications:
@@ -35,6 +43,5 @@ after_success:
 - echo ${PROJECT_VERSION} == ${TRAVIS_BRANCH}  == ${TRAVIS_PULL_REQUEST}
 - if [[ "${PROJECT_VERSION}" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
   then
-   mvn  -s .travis.maven.settings.xml deploy -DskipTests ;
    curl -X GET http://${DEPLOYMENT_JENKINS}/job/Build-Hawkular-Image/build?token=${DEPLOYMENT_JENKINS_TOKEN} ;
   fi
