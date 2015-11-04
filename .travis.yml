@@ -18,7 +18,7 @@ script:
 - if [[ "${PROJECT_VERSION}" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
   then
    echo "Building with deployment" ;
-   mvn -fae -s .travis.maven.settings.xml -Pitest clean install deploy -DdeployAtEnd=true ;
+   mvn -fae -s .travis.maven.settings.xml -Pitest clean deploy -DdeployAtEnd=true ;
   else
    echo "Building without deployment" ;
    mvn -fae -s .travis.maven.settings.xml -Pitest clean install ;
