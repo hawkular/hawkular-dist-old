@@ -65,211 +65,211 @@ module HawkularMetrics {
     }
 
     public openSetup():void {
-      // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
-
-      let defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
-
-      let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
-
-      let activeSessionsTriggerPromise = this.HawkularAlertsManager
-        .existTrigger(this.resourceId + '_web_active_sessions').then(() => {
-        // Active Web Sessions trigger exists, nothing to do
-        this.$log.debug('Active Web Sessions trigger exists, nothing to do');
-      }, () => {
-        // Active Web Sessions trigger doesn't exist, need to create one
-
-        let triggerId:string = this.resourceId + '_web_active_sessions';
-        let resourceId:string = triggerId.slice(0, -20);
-        let dataId:string = 'MI~R~[' + resourceId +
-          '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions';
-
-        let fullTrigger = {
-          trigger: {
-            name: 'Active Web Sessions',
-            id: triggerId,
-            description: 'Active Web Sessions for ' + resourceId,
-            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
-            autoEnable: true, // Enable trigger once an alert is resolved
-            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-            severity: 'MEDIUM',
-            actions: {email: [this.defaultEmail]},
-            context: {
-              description: 'Active Web Sessions for ' + resourceId, // Workaround for sorting
-              resourceType: 'App Server',
-              resourceName: resourceId,
-              resourcePath: this.$rootScope.resourcePath,
-              triggerType: 'Range'
-            }
-          },
-          dampenings: [
-            {
-              triggerId: triggerId,
-              evalTimeSetting: 7 * 60000,
-              triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
-            }
-          ],
-          conditions: [
-            {
-              triggerId: triggerId,
-              type: 'RANGE',
-              dataId: dataId,
-              operatorLow: 'INCLUSIVE',
-              operatorHigh: 'INCLUSIVE',
-              thresholdLow: AppServerWebDetailsController.DEFAULT_MIN_SESSIONS,
-              thresholdHigh: AppServerWebDetailsController.DEFAULT_MAX_SESSIONS,
-              inRange: false,
-              context: {
-                description: 'Active Web Sessions',
-                unit: 'sessions'
-              }
-            }
-          ]
-        };
-
-        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-          this.$log.error('Error on Trigger creation for ' + triggerId);
-        });
-      });
-
-      let expiredSessionsTriggerPromise = this.HawkularAlertsManager
-        .existTrigger(this.resourceId + '_web_expired_sessions').then(() => {
-          // Expired Web Sessions trigger exists, nothing to do
-          this.$log.debug('Expired Web Sessions trigger exists, nothing to do');
-        }, () => {
-          // Active Web Sessions trigger doesn't exist, need to create one
-
-          let triggerId:string = this.resourceId + '_web_expired_sessions';
-          let resourceId:string = triggerId.slice(0, -21);
-          let dataId:string = 'MI~R~[' + resourceId +
-            '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions';
-
-          let fullTrigger = {
-            trigger: {
-              name: 'Expired Web Sessions',
-              id: triggerId,
-              description: 'Expired Web Sessions for ' + resourceId,
-              autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
-              autoEnable: true, // Enable trigger once an alert is resolved
-              autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-              severity: 'LOW',
-              actions: {email: [this.defaultEmail]},
-              context: {
-                description: 'Expired Web Sessions for ' + resourceId, // Workaround for sorting
-                resourceType: 'App Server',
-                resourceName: resourceId,
-                resourcePath: this.$rootScope.resourcePath,
-                triggerType: 'Threshold'
-              }
-            },
-            dampenings: [
-              {
-                triggerId: triggerId,
-                evalTimeSetting: 7 * 60000,
-                triggerMode: 'FIRING',
-                type: 'STRICT_TIME'
-              }
-            ],
-            conditions: [
-              {
-                triggerId: triggerId,
-                type: 'THRESHOLD',
-                dataId: dataId,
-                threshold: AppServerWebDetailsController.DEFAULT_EXPIRED_SESSIONS_THRESHOLD,
-                operator: 'GT',
-                context: {
-                  description: 'Expired Web Sessions',
-                  unit: 'sessions'
-                }
-              }
-            ]
-          };
-
-          return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-            this.$log.error('Error on Trigger creation for ' + triggerId);
-          });
-        });
-
-
-      let rejectedSessionsTriggerPromise = this.HawkularAlertsManager
-        .existTrigger(this.resourceId + '_web_rejected_sessions').then(() => {
-          // Web Sessions trigger exists, nothing to do
-          this.$log.debug('Rejected Web Sessions trigger exists, nothing to do');
-        }, () => {
-          // Rejected Web Sessions trigger doesn't exist, need to create one
-
-          let triggerId:string = this.resourceId + '_web_rejected_sessions';
-          let resourceId:string = triggerId.slice(0, -22);
-          let dataId:string = 'MI~R~[' + resourceId +
-            '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions';
-
-          let fullTrigger = {
-            trigger: {
-              name: 'Rejected Web Sessions',
-              id: triggerId,
-              description: 'Rejected Web Sessions for ' + resourceId,
-              autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
-              autoEnable: true, // Enable trigger once an alert is resolved
-              autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-              severity: 'LOW',
-              actions: {email: [this.defaultEmail]},
-              context: {
-                description: 'Rejected Web Sessions for ' + resourceId, // Workaround for sorting
-                resourceType: 'App Server',
-                resourceName: resourceId,
-                resourcePath: this.$rootScope.resourcePath,
-                triggerType: 'Threshold'
-              }
-            },
-            dampenings: [
-              {
-                triggerId: triggerId,
-                evalTimeSetting: 7 * 60000,
-                triggerMode: 'FIRING',
-                type: 'STRICT_TIME'
-              }
-            ],
-            conditions: [
-              {
-                triggerId: triggerId,
-                type: 'THRESHOLD',
-                dataId: dataId,
-                threshold: AppServerWebDetailsController.DEFAULT_REJECTED_SESSIONS_THRESHOLD,
-                operator: 'GT',
-                context: {
-                  description: 'Rejected Web Sessions',
-                  unit: 'sessions'
-                }
-              }
-            ]
-          };
-
-          return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-            this.$log.error('Error on Trigger creation for ' + triggerId);
-          });
-        });
-
-      let log = this.$log;
-
-      this.$q.all([defaultEmailPromise, activeSessionsTriggerPromise, expiredSessionsTriggerPromise,
-        rejectedSessionsTriggerPromise]).then(() => {
-        let modalInstance = this.$modal.open({
-          templateUrl: 'plugins/metrics/html/modals/alerts-web-setup.html',
-          controller: 'WebAlertSetupController as was',
-          resolve: {
-            resourceId: () => {
-              return this.resourceId;
-            }
-          }
-        });
-
-        modalInstance.result.then(angular.noop, () => {
-          log.debug('Web Alert Setup modal dismissed at: ' + new Date());
-        });
-      }, () => {
-        this.$log.error('Missing and unable to create new Web Alert triggers.');
-      });
-
+      //// Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
+      //
+      //let defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+      //
+      //let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
+      //
+      //let activeSessionsTriggerPromise = this.HawkularAlertsManager
+      //  .existTrigger(this.resourceId + '_web_active_sessions').then(() => {
+      //  // Active Web Sessions trigger exists, nothing to do
+      //  this.$log.debug('Active Web Sessions trigger exists, nothing to do');
+      //}, () => {
+      //  // Active Web Sessions trigger doesn't exist, need to create one
+      //
+      //  let triggerId:string = this.resourceId + '_web_active_sessions';
+      //  let resourceId:string = triggerId.slice(0, -20);
+      //  let dataId:string = 'MI~R~[' + resourceId +
+      //    '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions';
+      //
+      //  let fullTrigger = {
+      //    trigger: {
+      //      name: 'Active Web Sessions',
+      //      id: triggerId,
+      //      description: 'Active Web Sessions for ' + resourceId,
+      //      autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+      //      autoEnable: true, // Enable trigger once an alert is resolved
+      //      autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+      //      severity: 'MEDIUM',
+      //      actions: {email: [this.defaultEmail]},
+      //      context: {
+      //        description: 'Active Web Sessions for ' + resourceId, // Workaround for sorting
+      //        resourceType: 'App Server',
+      //        resourceName: resourceId,
+      //        resourcePath: this.$rootScope.resourcePath,
+      //        triggerType: 'Range'
+      //      }
+      //    },
+      //    dampenings: [
+      //      {
+      //        triggerId: triggerId,
+      //        evalTimeSetting: 7 * 60000,
+      //        triggerMode: 'FIRING',
+      //        type: 'STRICT_TIME'
+      //      }
+      //    ],
+      //    conditions: [
+      //      {
+      //        triggerId: triggerId,
+      //        type: 'RANGE',
+      //        dataId: dataId,
+      //        operatorLow: 'INCLUSIVE',
+      //        operatorHigh: 'INCLUSIVE',
+      //        thresholdLow: AppServerWebDetailsController.DEFAULT_MIN_SESSIONS,
+      //        thresholdHigh: AppServerWebDetailsController.DEFAULT_MAX_SESSIONS,
+      //        inRange: false,
+      //        context: {
+      //          description: 'Active Web Sessions',
+      //          unit: 'sessions'
+      //        }
+      //      }
+      //    ]
+      //  };
+      //
+      //  return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+      //    this.$log.error('Error on Trigger creation for ' + triggerId);
+      //  });
+      //});
+      //
+      //let expiredSessionsTriggerPromise = this.HawkularAlertsManager
+      //  .existTrigger(this.resourceId + '_web_expired_sessions').then(() => {
+      //    // Expired Web Sessions trigger exists, nothing to do
+      //    this.$log.debug('Expired Web Sessions trigger exists, nothing to do');
+      //  }, () => {
+      //    // Active Web Sessions trigger doesn't exist, need to create one
+      //
+      //    let triggerId:string = this.resourceId + '_web_expired_sessions';
+      //    let resourceId:string = triggerId.slice(0, -21);
+      //    let dataId:string = 'MI~R~[' + resourceId +
+      //      '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions';
+      //
+      //    let fullTrigger = {
+      //      trigger: {
+      //        name: 'Expired Web Sessions',
+      //        id: triggerId,
+      //        description: 'Expired Web Sessions for ' + resourceId,
+      //        autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+      //        autoEnable: true, // Enable trigger once an alert is resolved
+      //        autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+      //        severity: 'LOW',
+      //        actions: {email: [this.defaultEmail]},
+      //        context: {
+      //          description: 'Expired Web Sessions for ' + resourceId, // Workaround for sorting
+      //          resourceType: 'App Server',
+      //          resourceName: resourceId,
+      //          resourcePath: this.$rootScope.resourcePath,
+      //          triggerType: 'Threshold'
+      //        }
+      //      },
+      //      dampenings: [
+      //        {
+      //          triggerId: triggerId,
+      //          evalTimeSetting: 7 * 60000,
+      //          triggerMode: 'FIRING',
+      //          type: 'STRICT_TIME'
+      //        }
+      //      ],
+      //      conditions: [
+      //        {
+      //          triggerId: triggerId,
+      //          type: 'THRESHOLD',
+      //          dataId: dataId,
+      //          threshold: AppServerWebDetailsController.DEFAULT_EXPIRED_SESSIONS_THRESHOLD,
+      //          operator: 'GT',
+      //          context: {
+      //            description: 'Expired Web Sessions',
+      //            unit: 'sessions'
+      //          }
+      //        }
+      //      ]
+      //    };
+      //
+      //    return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+      //      this.$log.error('Error on Trigger creation for ' + triggerId);
+      //    });
+      //  });
+      //
+      //
+      //let rejectedSessionsTriggerPromise = this.HawkularAlertsManager
+      //  .existTrigger(this.resourceId + '_web_rejected_sessions').then(() => {
+      //    // Web Sessions trigger exists, nothing to do
+      //    this.$log.debug('Rejected Web Sessions trigger exists, nothing to do');
+      //  }, () => {
+      //    // Rejected Web Sessions trigger doesn't exist, need to create one
+      //
+      //    let triggerId:string = this.resourceId + '_web_rejected_sessions';
+      //    let resourceId:string = triggerId.slice(0, -22);
+      //    let dataId:string = 'MI~R~[' + resourceId +
+      //      '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions';
+      //
+      //    let fullTrigger = {
+      //      trigger: {
+      //        name: 'Rejected Web Sessions',
+      //        id: triggerId,
+      //        description: 'Rejected Web Sessions for ' + resourceId,
+      //        autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+      //        autoEnable: true, // Enable trigger once an alert is resolved
+      //        autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+      //        severity: 'LOW',
+      //        actions: {email: [this.defaultEmail]},
+      //        context: {
+      //          description: 'Rejected Web Sessions for ' + resourceId, // Workaround for sorting
+      //          resourceType: 'App Server',
+      //          resourceName: resourceId,
+      //          resourcePath: this.$rootScope.resourcePath,
+      //          triggerType: 'Threshold'
+      //        }
+      //      },
+      //      dampenings: [
+      //        {
+      //          triggerId: triggerId,
+      //          evalTimeSetting: 7 * 60000,
+      //          triggerMode: 'FIRING',
+      //          type: 'STRICT_TIME'
+      //        }
+      //      ],
+      //      conditions: [
+      //        {
+      //          triggerId: triggerId,
+      //          type: 'THRESHOLD',
+      //          dataId: dataId,
+      //          threshold: AppServerWebDetailsController.DEFAULT_REJECTED_SESSIONS_THRESHOLD,
+      //          operator: 'GT',
+      //          context: {
+      //            description: 'Rejected Web Sessions',
+      //            unit: 'sessions'
+      //          }
+      //        }
+      //      ]
+      //    };
+      //
+      //    return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+      //      this.$log.error('Error on Trigger creation for ' + triggerId);
+      //    });
+      //  });
+      //
+      //let log = this.$log;
+      //
+      //this.$q.all([defaultEmailPromise, activeSessionsTriggerPromise, expiredSessionsTriggerPromise,
+      //  rejectedSessionsTriggerPromise]).then(() => {
+      //  let modalInstance = this.$modal.open({
+      //    templateUrl: 'plugins/metrics/html/modals/alerts-web-setup.html',
+      //    controller: 'WebAlertSetupController as was',
+      //    resolve: {
+      //      resourceId: () => {
+      //        return this.resourceId;
+      //      }
+      //    }
+      //  });
+      //
+      //  modalInstance.result.then(angular.noop, () => {
+      //    log.debug('Web Alert Setup modal dismissed at: ' + new Date());
+      //  });
+      //}, () => {
+      //  this.$log.error('Missing and unable to create new Web Alert triggers.');
+      //});
+      //
     }
 
     private autoRefresh(intervalInSeconds:number):void {

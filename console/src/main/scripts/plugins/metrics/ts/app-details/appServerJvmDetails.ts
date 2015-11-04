@@ -43,6 +43,7 @@ module HawkularMetrics {
     public math = Math;
 
     public alertList;
+    public resourceId;
     public chartHeapData:IMultiDataPoint[];
     public chartNonHeapData:IMultiDataPoint[];
     public startTimeStamp:TimestampInMillis;
@@ -68,6 +69,7 @@ module HawkularMetrics {
                 private $q:ng.IQService ) {
       $scope.vm = this;
 
+      this.resourceId = this.$routeParams.resourceId;
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
       this.chartHeapData = [];
@@ -89,7 +91,7 @@ module HawkularMetrics {
         this.refresh();
       });
 
-      this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
+      this.getAlerts(this.resourceId, this.startTimeStamp, this.endTimeStamp);
 
       this.autoRefresh(20);
     }

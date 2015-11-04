@@ -160,7 +160,7 @@ module HawkularMetrics {
         controller: 'AlertsCenterDetailsController',
         controllerAs: 'acd'
       }).
-      when('/hawkular-ui/alerts-center-triggers', {
+      when('/hawkular-ui/alerts-center-triggers/:resourceId?', {
         templateUrl: 'plugins/metrics/html/alerts-center-triggers.html',
         controller: 'AlertsCenterTriggerController',
         controllerAs: 'act'

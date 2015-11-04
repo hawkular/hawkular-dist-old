@@ -65,213 +65,238 @@ module HawkularMetrics {
     }
 
     public openSetup():void {
-      // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
-
-      let defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
-
-      let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
-
-      let heapTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_pheap').then(() => {
-        // Jvm trigger exists, nothing to do
-        this.$log.debug('Jvm trigger exists, nothing to do');
-      }, () => {
-        // Jvm trigger doesn't exist, need to create one
-        let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
-        let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
-
-        let triggerId:string = this.resourceId + '_jvm_pheap';
-        let resourceId:string = triggerId.slice(0, -10);
-        let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
-        let heapMaxId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max';
-
-        let fullTrigger = {
-          trigger: {
-            name: 'JVM Heap Used',
-            id: triggerId,
-            description: 'JVM Heap Used for ' + resourceId,
-            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
-            autoEnable: true, // Enable trigger once an alert is resolved
-            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-            severity: 'MEDIUM',
-            actions: {email: [this.defaultEmail]},
-            context: {
-              description: 'JVM Heap Used for ' + resourceId, // Workaround for sorting
-              resourceType: 'App Server',
-              resourceName: resourceId,
-              resourcePath: this.$rootScope.resourcePath,
-              triggerType: 'RangeByPercent',
-              triggerTypeProperty1:  heapMaxId
-            }
-          },
-          dampenings: [
-            {
-              triggerId: triggerId,
-              evalTimeSetting: 7 * 60000,
-              triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
-            }
-          ],
-          conditions: [
-            {
-              triggerId: triggerId,
-              type: 'RANGE',
-              dataId: dataId,
-              operatorLow: 'INCLUSIVE',
-              operatorHigh: 'INCLUSIVE',
-              thresholdLow: low || 20.0,
-              thresholdHigh: high || 80.0,
-              inRange: false,
-              context: {
-                description: 'Heap Used',
-                unit: 'B'
-              }
-            }
-          ]
-        };
-
-        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-          this.$log.error('Error on Trigger creation for ' + triggerId);
-        });
-      });
-
-      let nonHeapTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_nheap').then(() => {
-        // Jvm trigger exists, nothing to do
-        this.$log.debug('Jvm trigger exists, nothing to do');
-      }, () => {
-        // Jvm trigger doesn't exist, need to create one
-        let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
-        let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
-
-        let triggerId:string = this.resourceId + '_jvm_nheap';
-        let resourceId:string = triggerId.slice(0, -10);
-        let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used';
-        let heapMaxId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max';
-
-        let fullTrigger = {
-          trigger: {
-            name: 'JVM Non Heap Used',
-            id: triggerId,
-            description: 'JVM Non Heap Used for ' + resourceId,
-            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
-            autoEnable: true, // Enable trigger once an alert is resolved
-            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-            severity: 'HIGH',
-            actions: {email: [this.defaultEmail]},
-            context: {
-              description: 'JVM Non Heap Used for ' + resourceId, // Workaround for sorting
-              resourceType: 'App Server',
-              resourceName: resourceId,
-              resourcePath: this.$rootScope.resourcePath,
-              triggerType: 'RangeByPercent',
-              triggerTypeProperty1:  heapMaxId
-            }
-          },
-          dampenings: [
-            {
-              triggerId: triggerId,
-              evalTimeSetting: 7 * 60000,
-              triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
-            }
-          ],
-          conditions: [
-            {
-              triggerId: triggerId,
-              type: 'RANGE',
-              dataId: dataId,
-              operatorLow: 'INCLUSIVE',
-              operatorHigh: 'INCLUSIVE',
-              thresholdLow: low || 20.0,
-              thresholdHigh: high || 80.0,
-              inRange: false,
-              context: {
-                description: 'Non Heap Used',
-                unit: 'B'
-              }
-            }
-          ]
-        };
-
-        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-          this.$log.error('Error on Trigger creation for ' + triggerId);
-        });
-      });
-
-      let garbageTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_garba').then(() => {
-        // Jvm trigger exists, nothing to do
-        this.$log.debug('Jvm trigger exists, nothing to do');
-      }, () => {
-        // Jvm trigger doesn't exist, need to create one
-        let triggerId:string = this.resourceId + '_jvm_garba';
-        let resourceId:string = triggerId.slice(0, -10);
-        let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration';
-
-        let fullTrigger = {
-          trigger: {
-            name: 'Accumulated GC Duration',
-            id: triggerId,
-            description: 'Accumulated GC Duration for ' + resourceId,
-            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
-            autoEnable: true, // Enable trigger once an alert is resolved
-            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-            severity: 'HIGH',
-            actions: {email: [this.defaultEmail]},
-            context: {
-              description: 'Accumulated GC Duration for ' + resourceId, // Workaround for sorting
-              resourceType: 'App Server',
-              resourceName: resourceId,
-              resourcePath: this.$rootScope.resourcePath,
-              triggerType: 'Threshold'
-            }
-          },
-          dampenings: [
-            {
-              triggerId: triggerId,
-              evalTimeSetting: 7 * 60000,
-              triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
-            }
-          ],
-          conditions: [
-            {
-              triggerId: triggerId,
-              type: 'THRESHOLD',
-              dataId: dataId,
-              threshold: 200,
-              operator: 'GT',
-              context: {
-                description: 'GC Duration',
-                unit: 'ms'
-              }
-            }
-          ]
-        };
-
-        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-          this.$log.error('Error on Trigger creation for ' + triggerId);
-        });
-      });
-
-      let log = this.$log;
-
-      this.$q.all([defaultEmailPromise, heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise]).then(() => {
-        let modalInstance = this.$modal.open({
-          templateUrl: 'plugins/metrics/html/modals/alerts-jvm-setup.html',
-          controller: 'JvmAlertSetupController as jas',
-          resolve: {
-            resourceId: () => {
-              return this.resourceId;
-            }
-          }
-        });
-
-        modalInstance.result.then(angular.noop, () => {
-          log.info('Jvm Alert Setup modal dismissed at: ' + new Date());
-        });
-      }, () => {
-        this.$log.error('Missing and unable to create new JVM Alert triggers.');
-      });
-
+    //  // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
+    //
+    //  let defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+    //
+    //  let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
+    //
+    //  let heapTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_pheap').then(() => {
+    //    // Jvm trigger exists, nothing to do
+    //    this.$log.debug('Jvm trigger exists, nothing to do');
+    //  }, () => {
+    //    // Jvm trigger doesn't exist, need to create one
+    //    let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
+    //    let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
+    //
+    //    let triggerId:string = this.resourceId + '_jvm_pheap';
+    //    let resourceId:string = triggerId.slice(0, -10);
+    //    let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
+    //    let heapMaxId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max';
+    //
+    //    let fullTrigger = {
+    //      trigger: {
+    //        name: 'JVM Heap Used',
+    //        id: triggerId,
+    //        description: 'JVM Heap Used for ' + resourceId,
+    //        autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+    //        autoEnable: true, // Enable trigger once an alert is resolved
+    //        autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+    //        severity: 'MEDIUM',
+    //        actions: {email: [this.defaultEmail]},
+    //        firingMatch: 'ANY',
+    //        context: {
+    //          description: 'JVM Heap Used for ' + resourceId, // Workaround for sorting
+    //          resourceType: 'App Server',
+    //          resourceName: resourceId,
+    //          resourcePath: this.$rootScope.resourcePath,
+    //          triggerType: 'RangeByPercent',
+    //          triggerTypeProperty1: heapMaxId,
+    //          triggerTypeProperty2: 'Heap Max'
+    //        }
+    //      },
+    //      dampenings: [
+    //        {
+    //          triggerId: triggerId,
+    //          evalTimeSetting: 7 * 60000,
+    //          triggerMode: 'FIRING',
+    //          type: 'STRICT_TIME'
+    //        }
+    //      ],
+    //      conditions: [
+    //        {
+    //          triggerId: triggerId,
+    //          type: 'COMPARE',
+    //          dataId: dataId,
+    //          data2Id: heapMaxId,
+    //          operator: 'GT',
+    //          data2Multiplier: 0.80, // 80%
+    //          context: {
+    //            description: 'Heap Used',
+    //            unit: 'B'
+    //          }
+    //        },
+    //        {
+    //          triggerId: triggerId,
+    //          type: 'COMPARE',
+    //          dataId: dataId,
+    //          data2Id: heapMaxId,
+    //          operator: 'LT',
+    //          data2Multiplier: 0.20, // 20%
+    //          context: {
+    //            description: 'Heap Used',
+    //            unit: 'B'
+    //          }
+    //        }
+    //      ]
+    //    };
+    //
+    //    return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+    //      this.$log.error('Error on Trigger creation for ' + triggerId);
+    //    });
+    //  });
+    //
+    //  let nonHeapTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_nheap').then(() => {
+    //    // Jvm trigger exists, nothing to do
+    //    this.$log.debug('Jvm trigger exists, nothing to do');
+    //  }, () => {
+    //    // Jvm trigger doesn't exist, need to create one
+    //    let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
+    //    let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
+    //
+    //    let triggerId:string = this.resourceId + '_jvm_nheap';
+    //    let resourceId:string = triggerId.slice(0, -10);
+    //    let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used';
+    //    let heapMaxId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max';
+    //
+    //    let fullTrigger = {
+    //      trigger: {
+    //        name: 'JVM Non Heap Used',
+    //        id: triggerId,
+    //        description: 'JVM Non Heap Used for ' + resourceId,
+    //        autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+    //        autoEnable: true, // Enable trigger once an alert is resolved
+    //        autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+    //        severity: 'HIGH',
+    //        actions: {email: [this.defaultEmail]},
+    //        firingMatch: 'ANY',
+    //        context: {
+    //          description: 'JVM Non Heap Used for ' + resourceId, // Workaround for sorting
+    //          resourceType: 'App Server',
+    //          resourceName: resourceId,
+    //          resourcePath: this.$rootScope.resourcePath,
+    //          triggerType: 'RangeByPercent',
+    //          triggerTypeProperty1: heapMaxId,
+    //          triggerTypeProperty2: 'Heap Max'
+    //        }
+    //      },
+    //      dampenings: [
+    //        {
+    //          triggerId: triggerId,
+    //          evalTimeSetting: 7 * 60000,
+    //          triggerMode: 'FIRING',
+    //          type: 'STRICT_TIME'
+    //        }
+    //      ],
+    //      conditions: [
+    //        {
+    //          triggerId: triggerId,
+    //          type: 'COMPARE',
+    //          dataId: dataId,
+    //          data2Id: heapMaxId,
+    //          operator: 'GT',
+    //          data2Multiplier: 0.80,  // 80%
+    //          context: {
+    //            description: 'Non Heap Used',
+    //            unit: 'B'
+    //          }
+    //        },
+    //        {
+    //          triggerId: triggerId,
+    //          type: 'COMPARE',
+    //          dataId: dataId,
+    //          data2Id: heapMaxId,
+    //          operator: 'LT',
+    //          data2Multiplier: 0.20, // 20%
+    //          context: {
+    //            description: 'Non Heap Used',
+    //            unit: 'B'
+    //          }
+    //        }
+    //      ]
+    //    };
+    //
+    //    return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+    //      this.$log.error('Error on Trigger creation for ' + triggerId);
+    //    });
+    //  });
+    //
+    //  let garbageTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_garba').then(() => {
+    //    // Jvm trigger exists, nothing to do
+    //    this.$log.debug('Jvm trigger exists, nothing to do');
+    //  }, () => {
+    //    // Jvm trigger doesn't exist, need to create one
+    //    let triggerId:string = this.resourceId + '_jvm_garba';
+    //    let resourceId:string = triggerId.slice(0, -10);
+    //    let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration';
+    //
+    //    let fullTrigger = {
+    //      trigger: {
+    //        name: 'Accumulated GC Duration',
+    //        id: triggerId,
+    //        description: 'Accumulated GC Duration for ' + resourceId,
+    //        autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+    //        autoEnable: true, // Enable trigger once an alert is resolved
+    //        autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+    //        severity: 'HIGH',
+    //        actions: {email: [this.defaultEmail]},
+    //        context: {
+    //          description: 'Accumulated GC Duration for ' + resourceId, // Workaround for sorting
+    //          resourceType: 'App Server',
+    //          resourceName: resourceId,
+    //          resourcePath: this.$rootScope.resourcePath,
+    //          triggerType: 'Threshold'
+    //        }
+    //      },
+    //      dampenings: [
+    //        {
+    //          triggerId: triggerId,
+    //          evalTimeSetting: 7 * 60000,
+    //          triggerMode: 'FIRING',
+    //          type: 'STRICT_TIME'
+    //        }
+    //      ],
+    //      conditions: [
+    //        {
+    //          triggerId: triggerId,
+    //          type: 'THRESHOLD',
+    //          dataId: dataId,
+    //          threshold: 200,
+    //          operator: 'GT',
+    //          context: {
+    //            description: 'GC Duration',
+    //            unit: 'ms'
+    //          }
+    //        }
+    //      ]
+    //    };
+    //
+    //    return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+    //      this.$log.error('Error on Trigger creation for ' + triggerId);
+    //    });
+    //  });
+    //
+    //  let log = this.$log;
+    //
+    //  this.$q.all([defaultEmailPromise, heapTriggerPromise, nonHeapTriggerPromise,
+    //               garbageTriggerPromise]).then(() => {
+    //    let modalInstance = this.$modal.open({
+    //      templateUrl: 'plugins/metrics/html/modals/alerts-jvm-setup.html',
+    //      controller: 'JvmAlertSetupController as jas',
+    //      resolve: {
+    //        resourceId: () => {
+    //          return this.resourceId;
+    //        }
+    //      }
+    //    });
+    //
+    //    modalInstance.result.then(angular.noop, () => {
+    //      log.info('Jvm Alert Setup modal dismissed at: ' + new Date());
+    //    });
+    //  }, () => {
+    //    this.$log.error('Missing and unable to create new JVM Alert triggers.');
+    //  });
+    //
     }
 
     private autoRefresh(intervalInSeconds:number):void {
@@ -337,23 +362,34 @@ module HawkularMetrics {
         return Math.floor(doubleValue * 100) / 100;
       }
 
-      this.maxUsage = AppServerJvmDetailsController.MAX_HEAP;
-
       let heapTriggerId:string = this.$routeParams.resourceId + '_jvm_pheap';
 
       let heapTriggerPromise = this.HawkularAlertsManager.getTrigger(heapTriggerId).then(
         (triggerData) => {
           this.triggerDefinition['heap'] = triggerData;
 
+          //let triggerData = this.fullTrigger;
           this.adm.heap = {};
+          // updateable
+          this.adm.heap['description'] = triggerData.trigger.description;
+          this.adm.heap['enabled'] = triggerData.trigger.enabled;
+          this.adm.heap['name'] = triggerData.trigger.name;
+          this.adm.heap['severity'] = triggerData.trigger.severity;
+
           this.adm.heap['email'] = triggerData.trigger.actions.email[0];
-          this.adm.heap['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
-          this.adm.heap['conditionGtEnabled'] = triggerData.conditions[0].thresholdHigh < this.maxUsage;
-          this.adm.heap['conditionGtPercent'] = triggerData.conditions[0].thresholdHigh > 0 ?
-            floor2Dec(triggerData.conditions[0].thresholdHigh * 100 / this.maxUsage) : 0;
-          this.adm.heap['conditionLtEnabled'] = triggerData.conditions[0].thresholdLow > 0;
-          this.adm.heap['conditionLtPercent'] = triggerData.conditions[0].thresholdLow > 0 ?
-            floor2Dec(triggerData.conditions[0].thresholdLow * 100 / this.maxUsage) : 0;
+          this.adm.heap['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
+
+          if (triggerData.conditions[0].operator === 'GT') {
+            this.adm.heap['conditionGtPercent'] = triggerData.conditions[0].data2Multiplier * 100;
+            this.adm.heap['conditionLtPercent'] = triggerData.conditions[1].data2Multiplier * 100;
+          } else {
+            this.adm.heap['conditionGtPercent'] = triggerData.conditions[1].data2Multiplier * 100;
+            this.adm.heap['conditionLtPercent'] = triggerData.conditions[0].data2multiplier * 100;
+          }
+
+          // presentation
+          this.adm.heap['context'] = triggerData.trigger.context;
+          this.adm.heap['conditionContext'] = triggerData.conditions[0].context;
         });
 
       // Non-Heap Usage trigger definition
@@ -361,17 +397,30 @@ module HawkularMetrics {
 
       let nheapTriggerPromise = this.HawkularAlertsManager.getTrigger(nheapTriggerId).then(
         (triggerData) => {
-          this.triggerDefinition['nheap'] = triggerData;
+          this.triggerDefinition['heap'] = triggerData;
 
+          //let triggerData = this.fullTrigger;
           this.adm.nheap = {};
+          // updateable
+          this.adm.nheap['description'] = triggerData.trigger.description;
+          this.adm.nheap['enabled'] = triggerData.trigger.enabled;
+          this.adm.nheap['name'] = triggerData.trigger.name;
+          this.adm.nheap['severity'] = triggerData.trigger.severity;
+
           this.adm.nheap['email'] = triggerData.trigger.actions.email[0];
-          this.adm.nheap['responseDuration'] = triggerData.dampenings[0].evalTimeSetting;
-          this.adm.nheap['conditionGtEnabled'] = triggerData.conditions[0].thresholdHigh < this.maxUsage;
-          this.adm.nheap['conditionGtPercent'] = triggerData.conditions[0].thresholdHigh > 0 ?
-            floor2Dec(triggerData.conditions[0].thresholdHigh * 100 / this.maxUsage) : 0;
-          this.adm.nheap['conditionLtEnabled'] = triggerData.conditions[0].thresholdLow > 0;
-          this.adm.nheap['conditionLtPercent'] = triggerData.conditions[0].thresholdLow > 0 ?
-            floor2Dec(triggerData.conditions[0].thresholdLow * 100 / this.maxUsage) : 0;
+          this.adm.nheap['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
+
+          if (triggerData.conditions[0].operator === 'GT') {
+            this.adm.nheap['conditionGtPercent'] = triggerData.conditions[0].data2Multiplier * 100;
+            this.adm.nheap['conditionLtPercent'] = triggerData.conditions[1].data2Multiplier * 100;
+          } else {
+            this.adm.nheap['conditionGtPercent'] = triggerData.conditions[1].data2Multiplier * 100;
+            this.adm.nheap['conditionLtPercent'] = triggerData.conditions[0].data2multiplier * 100;
+          }
+
+          // presentation
+          this.adm.nheap['context'] = triggerData.trigger.context;
+          this.adm.nheap['conditionContext'] = triggerData.conditions[0].context;
         });
 
       // Garbage Collection trigger definition

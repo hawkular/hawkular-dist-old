@@ -474,7 +474,7 @@ module HawkularMetrics {
     }
 
     public getTrigger(triggerId:TriggerId):any {
-      let deffered = this.$q.defer();
+      let deferred = this.$q.defer();
       let trigger = {};
 
       this.HawkularAlert.Trigger.get({triggerId: triggerId}).$promise.then((triggerData) => {
@@ -485,10 +485,10 @@ module HawkularMetrics {
         return this.HawkularAlert.Conditions.query({triggerId: triggerId}).$promise;
       }).then((conditionData)=> {
         trigger['conditions'] = conditionData;
-        deffered.resolve(trigger);
+        deferred.resolve(trigger);
       });
 
-      return deffered.promise;
+      return deferred.promise;
     }
 
     public getTriggerConditions(triggerId:TriggerId):ng.IPromise<any> {

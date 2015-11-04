@@ -23,37 +23,35 @@
                 tc.adm.trigger.conditionContext.description : "Range"}}
               </legend>
 
+              <!--
               <div class="form-group">
-                <label class="col-sm-3 control-label">Maximum</label>
+                <label class="col-sm-3 control-label">Current {{tc.adm.trigger.context.triggerTypeProperty2}}</label>
 
                 <div class="col-sm-6">
-                  <span class="hk-input-text">{{tc.ceiling / 1024 / 1024 | number : 2}} MB</span>
+                  <span class="hk-input-text">{{tc.ceiling | number : 2}} {{tc.adm.trigger.conditionContext.unit}}</span>
                 </div>
               </div>
+              -->
               <div class="form-group">
-                <label class="col-sm-3 control-label" for="usage-greater">Usage greater than</label>
+                <label class="col-sm-3 control-label" for="usage-greater">Greater than</label>
 
                 <div class="col-sm-5">
-                  <div class="input-group hk-input-small">
+                  <div class="input-group">
                     <input type="number" min="0" max="100" ng-model="tc.adm.trigger.conditionGtPercent"
                            class="form-control" id="usage-greater">
-
-                    <div class="input-group-addon">%</div>
+                    <div class="input-group-addon">% {{tc.adm.trigger.context.triggerTypeProperty2}}</div>
                   </div>
-                  <span class="input-detail">({{tc.adm.trigger.conditionGtPercent ? (tc.ceiling * tc.adm.trigger.conditionGtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-3 control-label" for="usage-less">Usage less than</label>
+                <label class="col-sm-3 control-label" for="usage-less">or Less than</label>
 
                 <div class="col-sm-5">
-                  <div class="input-group hk-input-small">
+                  <div class="input-group">
                     <input type="number" min="0" max="100" ng-model="tc.adm.trigger.conditionLtPercent"
                            class="form-control" id="usage-less">
-
-                    <div class="input-group-addon">%</div>
+                    <div class="input-group-addon">% {{tc.adm.trigger.context.triggerTypeProperty2}}</div>
                   </div>
-                  <span class="input-detail">({{tc.adm.trigger.conditionLtPercent ? (tc.ceiling * tc.adm.trigger.conditionLtPercent / 100/1024/1024 | number:2) : '-'}} MB)</span>
                 </div>
               </div>
             </fieldset>

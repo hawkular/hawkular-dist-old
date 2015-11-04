@@ -27,32 +27,32 @@ module HawkularMetrics {
     public ceiling:number;
 
     loadTrigger(triggerId:string):Array<ng.IPromise<any>> {
-      function floor2Dec(doubleValue) {
-        return Math.floor(doubleValue * 100) / 100;
-      }
+      //function floor2Dec(doubleValue) {
+      //  return Math.floor(doubleValue * 100) / 100;
+      //}
 
       let triggerPromise = this.HawkularAlertsManager.getTrigger(triggerId).then(
         (triggerData) => {
 
           this.fullTrigger = triggerData;
 
-          let startTimeStamp = +moment().subtract((this.$routeParams.timeOffset || 3600000), 'milliseconds');
-          let endTimeStamp = +moment();
-          let percentOfMetricId = triggerData.trigger.context.triggerTypeProperty1;
+          //let startTimeStamp = +moment().subtract((this.$routeParams.timeOffset || 3600000), 'milliseconds');
+          //let endTimeStamp = +moment();
+          //let percentOfMetricId = triggerData.trigger.context.triggerTypeProperty1;
 
-          return this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id, percentOfMetricId,
-            startTimeStamp, endTimeStamp, 1);
+          //return this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id, percentOfMetricId,
+          //  startTimeStamp, endTimeStamp, 1);
 
-        }).then((dataPoints) => {
+          //}).then((dataPoints) => {
 
-          if (dataPoints.length > 0) {
-            this.ceiling = dataPoints[0].max;
-          }
-          if (this.ceiling <= 0) {
-            this.ceiling = 1024; // this should maybe be an error situation because a valid number is unknown.
-          }
+          //if (dataPoints.length > 0) {
+          //  this.ceiling = dataPoints[0].max;
+          //}
+          //if (this.ceiling <= 0) {
+          //  this.ceiling = 1024; // this should maybe be an error situation because a valid number is unknown.
+          //}
 
-          let triggerData = this.fullTrigger;
+          //let triggerData = this.fullTrigger;
           this.adm.trigger = {};
           // updateable
           this.adm.trigger['description'] = triggerData.trigger.description;
@@ -63,13 +63,17 @@ module HawkularMetrics {
           //this.adm.trigger['maxThreshold'] = triggerData.conditions[0].thresholdHigh;
           //this.adm.trigger['minThreshold'] = triggerData.conditions[0].thresholdLow;
 
+
           this.adm.trigger['email'] = triggerData.trigger.actions.email[0];
           this.adm.trigger['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
 
-          this.adm.trigger['conditionGtPercent'] = triggerData.conditions[0].thresholdHigh > 0 ?
-            floor2Dec(triggerData.conditions[0].thresholdHigh * 100 / this.ceiling) : 0;
-          this.adm.trigger['conditionLtPercent'] = triggerData.conditions[0].thresholdLow > 0 ?
-            floor2Dec(triggerData.conditions[0].thresholdLow * 100 / this.ceiling) : 0;
+          if (triggerData.conditions[0].operator === 'GT') {
+            this.adm.trigger['conditionGtPercent'] = triggerData.conditions[0].data2Multiplier * 100;
+            this.adm.trigger['conditionLtPercent'] = triggerData.conditions[1].data2Multiplier * 100;
+          } else {
+            this.adm.trigger['conditionGtPercent'] = triggerData.conditions[1].data2Multiplier * 100;
+            this.adm.trigger['conditionLtPercent'] = triggerData.conditions[0].data2multiplier * 100;
+          }
 
           // presentation
           this.adm.trigger['context'] = triggerData.trigger.context;
@@ -90,8 +94,13 @@ module HawkularMetrics {
       updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
       updatedFullTrigger.dampenings[0].evalTimeSetting = this.adm.trigger.evalTimeSetting;
 
-      updatedFullTrigger.conditions[0].thresholdHigh = this.ceiling * this.adm.trigger.conditionGtPercent / 100;
-      updatedFullTrigger.conditions[0].thresholdLow = this.ceiling * this.adm.trigger.conditionLtPercent / 100;
+      if (updatedFullTrigger.conditions[0].operator === 'GT') {
+        updatedFullTrigger.conditions[0].data2Multiplier = this.adm.trigger.conditionGtPercent / 100;
+        updatedFullTrigger.conditions[1].data2Multiplier = this.adm.trigger.conditionLtPercent / 100;
+      } else {
+        updatedFullTrigger.conditions[1].data2Multiplier = this.adm.trigger.conditionGtPercent / 100;
+        updatedFullTrigger.conditions[0].data2Multiplier = this.adm.trigger.conditionLtPercent / 100;
+      }
 
       let triggerSavePromise = this.HawkularAlertsManager.updateTrigger(updatedFullTrigger, errorCallback,
         this.fullTrigger);
