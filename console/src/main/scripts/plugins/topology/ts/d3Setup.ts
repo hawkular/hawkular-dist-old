@@ -20,7 +20,8 @@
 
 module HawkularTopology {
 
-    _module.run(($rootScope, $location) => {
+    _module.run(['$rootScope', '$location',
+      ($rootScope, $location) => {
 
         /* A cache to prevent jumping when rapidly toggling views */
         var cache = {};
@@ -293,5 +294,5 @@ module HawkularTopology {
             };
         };
         HawkularTopology.initGraph = initGraph;
-    });
+    }]);
 }
