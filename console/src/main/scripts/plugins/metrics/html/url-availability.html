@@ -47,9 +47,18 @@
       <div class="col-md-3">
         <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
           <h2 class="card-pf-title">
-            <span class="card-pf-aggregate-status-count" ng-hide="vm.lastDowntime.valueOf() === 0 || (vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down')" am-time-ago="vm.lastDowntime" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1000" tooltip="{{ vm.lastDowntime | date:'d MMM yyyy, HH:mm:ss' }}"></span>
-            <span class="card-pf-aggregate-status-count" ng-show="vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down'">Always Down</span>
-            <span class="card-pf-aggregate-status-count" ng-show="!vm.lastDowntime || vm.lastDowntime.valueOf() === 0">Always Up</span>
+            <span class="card-pf-aggregate-status-count" ng-hide="vm.lastDowntime.valueOf() === 0 ||
+              (vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down')"
+                  am-time-ago="vm.lastDowntime" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1000"
+                  tooltip="{{ vm.lastDowntime | date:'d MMM yyyy, HH:mm:ss' }}">
+            </span>
+            <span class="card-pf-aggregate-status-count"
+                  ng-show="vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down'">
+              Always Down
+            </span>
+            <span class="card-pf-aggregate-status-count" ng-show="!vm.lastDowntime || vm.lastDowntime.valueOf() === 0">
+              Always Up
+            </span>
             Last Downtime
           </h2>
         </div>
@@ -66,10 +75,13 @@
     <!-- Alerts -->
     <div class="hk-info-top clearfix">
       <h3 class="pull-left" data-toggle="tooltip" data-placement="top" title="" data-original-title="Expand/collapse">
-        <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts"><i class="fa"
-                                                                                             ng-show="vm.alertList.length > 0"
-                                                                                             ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>
-          Availability Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : MetricsAvailabilityController.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span>
+        <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts">
+          <i ng-show="vm.alertList.length" ng-class="showAllAlerts ? 'fa fa-minus-square-o':'fa fa-plus-square-o'"></i>
+          Availability Alerts
+          <span ng-show="vm.alertList.length">
+            ({{showAllAlerts ? vm.alertList.length : MetricsAvailabilityController.min(vm.alertList.length, 3)}} of
+            {{vm.alertList.length}})
+          </span>
         </button>
       </h3>
       <span class="hk-settings pull-left">
@@ -94,7 +106,9 @@
 
       <div class="hk-update pull-right">
         <button ng-click="vm.refreshAvailPageNow(vm.getResourceId())" class="btn btn-link hk-chart-update"
-                tooltip-trigger tooltip-placement="top" tooltip="Update chart"><i class="fa fa-refresh"></i></button>
+                tooltip-trigger tooltip-placement="top" tooltip-append-to-body="true" tooltip="Update chart">
+          <i class="fa fa-refresh"></i>
+        </button>
       </div>
     </div>
 
