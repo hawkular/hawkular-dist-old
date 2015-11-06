@@ -1,16 +1,20 @@
 <div class="hk-screen-top-nav">
   <div>
     <div class="row hk-top-row">
-      <div class="col-xs-6">
+      <div class="col-xs-7">
         <a ng-show="isAppServerPage()" href="/hawkular-ui/app/app-list" class="back">« All Application Servers</a>
         <a ng-hide="isUrlPage()" href="/hawkular-ui/url/url-list" class="back">« All URLs</a>
         <a ng-show="isAlertsCenterDetailPage()" href="/hawkular-ui/alerts-center-detail" class="back">« All Alerts</a>
       </div>
-      <div class="col-xs-6">
+      <div class="col-xs-5">
         <div class="hk-date-range dropdown">
-          <i class="fa fa-calendar" dropdown-toggle></i>
-          <div class="hk-input" dropdown-toggle>
-            <span ng-show="false">{{offsetName}}</span> {{getFormattedDate()}}
+          <div class="input-group" dropdown-toggle>
+            <div class="hk-input">
+              <span ng-show="false">{{offsetName}}</span> {{getFormattedDate()}}
+            </div>
+            <span class="input-group-addon">
+              <i class="fa fa-calendar"></i>
+            </span>
           </div>
           <div class="dropdown-menu infotip bottom-right">
             <div class="arrow"></div>

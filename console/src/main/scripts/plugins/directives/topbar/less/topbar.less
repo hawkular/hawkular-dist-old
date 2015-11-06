@@ -20,8 +20,6 @@
 
 .hk-screen-top-nav {
 
-  margin-bottom: @grid-gutter-width/2;
-
   .hk-back {
     display: inline-block;
     font-size: @font-size-base + 1;
@@ -34,8 +32,13 @@
     margin-top: @grid-gutter-width/4;
   }
 
+  .hk-update {
+    margin-top: 10px;
+  }
+
   .hk-nav-tabs-container {
     border-bottom: 1px solid @table-border-color;
+    margin-bottom: @grid-gutter-width/2;
     text-align: center;
   }
 
@@ -63,18 +66,25 @@
   }
 }
 
+
 // date range
 
 .hk-date-range {
 
-  text-align: right;
+  .input-group {
+    float: right;
+    width: 210px;
 
-  .fa {
-    margin-right: @grid-gutter-width/4;
+    &:hover {
+      cursor: pointer;
+    }
+
+    @media (max-width: @screen-sm-max) {
+      display: table;
+    }
   }
 
   .hk-input {
-
     padding: 2px 6px;
     line-height: 1.66666667;
     background-color: white;
@@ -95,7 +105,6 @@
     }
 
     &:hover {
-      cursor: pointer;
       border-color:#7bb2dd
     }
 
@@ -105,15 +114,24 @@
     }
   }
 
+  .input-group-addon {
+
+    .fa {
+      color: @gray;
+      font-size: 14px;
+      margin-right: 0;
+    }
+  }
+
   &.open .hk-input {
     border-color: @brand-primary;
   }
 
   .dropdown-menu {
     left: auto;
-    margin-top: @grid-gutter-width/4;
     min-width: 305px;
     right: 0;
+    top: 39px;
   }
 
   .dropdown-menu-content {
