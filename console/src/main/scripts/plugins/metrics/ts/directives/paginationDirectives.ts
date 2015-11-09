@@ -72,7 +72,7 @@ module HawkularMetrics {
   };
 
   class HkPagination {
-    public controller:($scope:any) => void;
+    public link:($scope:any) => void;
     public templateUrl = 'plugins/metrics/html/url-pagination.html';
     public $scope = {
       resourceList: '=',
@@ -85,7 +85,7 @@ module HawkularMetrics {
     public replace = 'true';
 
     constructor() {
-      this.controller = paginationLink;
+      this.link = paginationLink;
     }
 
     public static Factory() {
