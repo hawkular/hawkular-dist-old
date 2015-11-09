@@ -301,12 +301,5 @@ gulp.task('copy-kettle-css', ['less-live','set-server-path'] , function() {
     .pipe(gulp.dest(config.serverPath));
 });
 
-gulp.task('uglify', function() {
-  gulp.src(['dist/hawkular-console.js'])
-    .pipe(plugins.uglify())
-    .pipe(plugins.concat('hawkular-console.js'))
-    .pipe(gulp.dest('dist'));
-});
-
-gulp.task('build', ['bower', 'path-adjust', 'tslint', 'tsc', 'less', 'template', 'concat', 'copy-vendor-js', 'copy-vendor-css', 'copy-vendor-fonts', 'uglify', 'clean']);
+gulp.task('build', ['bower', 'path-adjust', 'tslint', 'tsc', 'less', 'template', 'concat', 'copy-vendor-js', 'copy-vendor-css', 'copy-vendor-fonts', 'clean']);
 gulp.task('build-live', ['copy-sources', 'bower', 'path-adjust', 'tslint-watch', 'tsc-live', 'less-live', 'template-live', 'concat-live', 'copy-vendor-js', 'copy-vendor-css', 'copy-vendor-fonts']);
