@@ -60,7 +60,8 @@ module HawkularMetrics {
       $scope.ac = this;
 
       this.autoRefresh(120);
-      this.resourceId = $routeParams.resourceId;
+      this.resourceId = $routeParams.resourceId ?
+        this.decodeResourceId($routeParams.resourceId) : '';
 
       if ($rootScope.currentPersona) {
         this.getTriggers();
@@ -69,7 +70,16 @@ module HawkularMetrics {
         $rootScope.$watch('currentPersona', (currentPersona) =>
         currentPersona && this.getTriggers());
       }
+    }
 
+    private decodeResourceId(encodedResourceId:string):string {
+      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
+      //let decoded = decodeURIComponent(encodedResourceId);
+      let decoded = encodedResourceId;
+      while (decoded.indexOf('$') > -1) {
+        decoded = decoded.replace('$', '/');
+      }
+      return decoded;
     }
 
     private autoRefresh(intervalInSeconds:number):void {
@@ -90,26 +100,26 @@ module HawkularMetrics {
         ordering = 'desc';
       }
 
-      let tagValue =  this.resourceId ? this.resourceId : '*';
+      let tagValue = this.resourceId ? this.resourceId : '*';
       this.HawkularAlertsManager.queryTriggers({
         tags: 'resourceId|' + tagValue,
         currentPage: this.triggersCurPage,
         perPage: this.triggersPerPage,
         sort: this.sortField,
         order: ordering
-        })
+      })
         .then((queriedTriggers) => {
           this.headerLinks = this.HkHeaderParser.parse(queriedTriggers.headers);
           this.triggersList = queriedTriggers.triggerList;
           this.lastUpdateDate = new Date();
           console.dir(this.headerLinks);
-      }, (error) => {
-        this.$log.warn(error);
-      }).catch((error) => {
-        this.$log.error('Error:' + error);
-      }).finally(() => {
-        this.lastUpdateDate = new Date();
-      });
+        }, (error) => {
+          this.$log.warn(error);
+        }).catch((error) => {
+          this.$log.error('Error:' + error);
+        }).finally(() => {
+          this.lastUpdateDate = new Date();
+        });
     }
 
     public enableSelected():void {
@@ -184,13 +194,13 @@ module HawkularMetrics {
     public showDetailPage(trigger:IAlertTrigger):void {
       let controller;
       let html;
-      if( 'RangeByPercent' === trigger.context.triggerType) {
+      if ('RangeByPercent' === trigger.context.triggerType) {
         controller = 'RangeByPercentTriggerSetupController as tc';
         html = 'plugins/metrics/html/modals/trigger-range-percent-setup.html';
-      } else if( 'Range' === trigger.context.triggerType) {
+      } else if ('Range' === trigger.context.triggerType) {
         controller = 'RangeTriggerSetupController as tc';
         html = 'plugins/metrics/html/modals/trigger-range-setup.html';
-      } else if( 'Availability' === trigger.context.triggerType) {
+      } else if ('Availability' === trigger.context.triggerType) {
         controller = 'AvailabilityTriggerSetupController as tc';
         html = 'plugins/metrics/html/modals/trigger-availability-setup.html';
       } else {
@@ -220,10 +230,10 @@ module HawkularMetrics {
 
     public selectItem(item:IAlertTrigger):void {
       item.selected = !item.selected;
-      this.selectedItems  = _.filter(this.triggersList, 'selected');
+      this.selectedItems = _.filter(this.triggersList, 'selected');
       this.selectCount = this.selectedItems.length;
-      this.hasEnabledSelectedItems = _.some(this.selectedItems,{'enabled': true});
-      this.hasDisabledSelectedItems = _.some(this.selectedItems,{'enabled': false});
+      this.hasEnabledSelectedItems = _.some(this.selectedItems, {'enabled': true});
+      this.hasDisabledSelectedItems = _.some(this.selectedItems, {'enabled': false});
     }
 
     private resetAllUnselected() {

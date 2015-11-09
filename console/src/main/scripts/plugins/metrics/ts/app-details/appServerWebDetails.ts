@@ -39,6 +39,7 @@ module HawkularMetrics {
     public static DEFAULT_REJECTED_SESSIONS_THRESHOLD = 15;
 
     public alertList;
+    public resourceId;
     public activeWebSessions:number = 0;
     public requestTime:number = 0;
     public requestCount:number = 0;
@@ -63,6 +64,7 @@ module HawkularMetrics {
                 private MetricsService:IMetricsService) {
       $scope.vm = this;
 
+      this.resourceId = this.$routeParams.resourceId;
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
 

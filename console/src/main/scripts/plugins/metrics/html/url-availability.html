@@ -36,7 +36,8 @@
         <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
           <h2 class="card-pf-title">
             <span class="card-pf-aggregate-status-count" ng-hide="vm.downtimeDuration">Always Up</span>
-            <span class="card-pf-aggregate-status-count" ng-show="vm.downtimeDuration" tooltip-trigger tooltip-placement="top"
+            <span class="card-pf-aggregate-status-count" ng-show="vm.downtimeDuration" tooltip-trigger
+                  tooltip-placement="top"
                   tooltip-popup-delay="1000"
                   tooltip="{{ vm.downtimeDuration | duration:'d\'d \'h\'h \'m\'min \'s\' s\'' }}"><ph
               ng-repeat="val in vm.downtimeDurationJson">{{val.value}}<span> {{val.unit}} </span></ph></span>
@@ -70,7 +71,8 @@
           </h2>
         </div>
       </div>
-    </div><!-- /row -->
+    </div>
+    <!-- /row -->
 
     <!-- Alerts -->
     <div class="hk-info-top clearfix">
@@ -85,7 +87,9 @@
         </button>
       </h3>
       <span class="hk-settings pull-left">
-        <a href="#" ng-click="vm.openAvailabilitySetup()"><i class="fa fa-cog"></i>Alert Settings</a>
+          <a ng-href="/hawkular-ui/alerts-center-triggers/{{vm.resourceId}}">
+            <i class="fa fa-cog"></i>Alert Settings
+          </a>
       </span>
     </div>
 
@@ -114,11 +118,12 @@
 
     <div class="panel panel-default hk-graph">
       <h2>Availability</h2>
+
       <div class="hk-graph-container hk-graph-availability">
         <availability-chart
           start-timestamp="{{vm.startTimeStamp}}"
           end-timestamp="{{vm.endTimeStamp}}"
-          data="vm.availabilityDataPoints" >
+          data="vm.availabilityDataPoints">
         </availability-chart>
       </div>
       <div class="hk-legend text-left hk-legend-availability">

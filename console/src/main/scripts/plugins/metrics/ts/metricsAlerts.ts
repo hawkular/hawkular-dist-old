@@ -241,26 +241,6 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    public openResponseSetup() {
-      let modalInstance = this.$modal.open({
-        templateUrl: 'plugins/metrics/html/modals/alerts-url-response-setup.html',
-        controller: 'AlertUrlResponseSetupController as mas',
-        resolve: {
-          resourceId: function () {
-            return this.resourceId;
-          }
-        }
-      });
-
-      let logger = this.$log;
-
-      modalInstance.result.then(function (selectedItem) {
-        this.selected = selectedItem;
-      }, () => {
-        logger.info('Modal dismissed at: ' + new Date());
-      });
-    }
-
     private autoRefresh(intervalInSeconds:number):void {
       let autoRefreshPromise = this.$interval(()  => {
         this.getAlerts();

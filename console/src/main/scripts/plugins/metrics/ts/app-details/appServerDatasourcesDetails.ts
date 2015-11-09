@@ -128,176 +128,24 @@ module HawkularMetrics {
       this.$q.all([connPromise, respPromise]).finally(()=> {
         res.alertList = [].concat(connArray, respArray);
       });
-    }
 
-    public openSetup(resId):void {
-      // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
-
-      let connTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_conn').then(() => {
-        // Datasource connection trigger exists, nothing to do
-        this.$log.debug('Datasource connection trigger exists, nothing to do');
-      }, () => {
-        /// Datasource connection trigger doesn't exist, need to create one
-
-        let triggerId:string = resId + '_ds_conn';
-        let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Available Count';
-        let fullTrigger = {
-          trigger: {
-            name: 'Datasource Available Connections',
-            id: triggerId,
-            description: 'Available Connection Count for Datasource ' + resId,
-            actions: {email: [this.defaultEmail]},
-            context: {
-              resourceType: 'DataSource',
-              resourceName: resId,
-              resourcePath: this.$rootScope.resourcePath,
-              triggerType: 'Threshold'
-            }
-          },
-          dampenings: [
-            {
-              triggerId: triggerId,
-              evalTimeSetting: 7 * 60000,
-              triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
-            }
-          ],
-          conditions: [
-            {
-              triggerId: triggerId,
-              type: 'THRESHOLD',
-              dataId: dataId,
-              threshold: AppServerDatasourcesDetailsController.DEFAULT_CONN_THRESHOLD,
-              operator: 'LT',
-              context: {
-                description: 'Available Count',
-                unit: 'connections'
-              }
-            }
-          ]
-        };
-
-        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-          this.$log.error('Error on Trigger creation for ' + triggerId);
+      let respPromise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        triggerIds: metricIdPrefix + '_ds_resp', startTime: startTime, endTime: endTime
+      }).then((respData)=> {
+        _.forEach(respData.alertList, (item) => {
+          item['alertType'] = 'DSRESP';
+          item['condition'] = item['dataId'].substr(item['dataId'].lastIndexOf('~') + 1);
         });
+        respArray = respData.alertList;
+      }, (error) => {
+        //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
       });
 
-      let waitTimeTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_wait').then(() => {
-        /// Datasource wait time trigger exists, nothing to do
-        this.$log.debug('Datasource Wait Time trigger exists, nothing to do');
-      }, () => {
-        /// trigger doesn't exist, need to create one
-        let triggerId:string = resId + '_ds_wait';
-        let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Wait Time';
 
-        let fullTrigger = {
-          trigger: {
-            name: 'Datasource Pool Wait Time',
-            id: triggerId,
-            description: 'Pool Wait Time Responsiveness for DS ' + resId,
-            actions: {email: [this.defaultEmail]},
-            context: {
-              resourceType: 'DataSource',
-              resourceName: resId,
-              triggerType: 'Threshold'
-            }
-          },
-          dampenings: [
-            {
-              triggerId: triggerId,
-              evalTimeSetting: 7 * 60000,
-              triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
-            }
-          ],
-          conditions: [
-            {
-              triggerId: triggerId,
-              type: 'THRESHOLD',
-              dataId: dataId,
-              threshold: AppServerDatasourcesDetailsController.DEFAULT_WAIT_THRESHOLD,
-              operator: 'GT',
-              context: {
-                description: 'Average Wait Time',
-                unit: 'ms'
-              }
-            }
-          ]
-        };
-
-        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-          this.$log.error('Error on Trigger creation for ' + triggerId);
-        });
+      this.$q.all([connPromise, respPromise]).finally(()=> {
+        res.alertList = [].concat(connArray, respArray);
       });
-
-      let createTimeTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_create').then(() => {
-        /// Datasource create time trigger exists, nothing to do
-        this.$log.debug('Datasource create time trigger exists, nothing to do');
-      }, () => {
-        /// trigger doesn't exist, need to create one
-        let triggerId:string = resId + '_ds_create';
-        let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time';
-        let fullTrigger = {
-          trigger: {
-            name: 'Datasource Pool Create Time',
-            id: triggerId,
-            description: 'Pool Create Time Responsiveness for DS ' + resId,
-            actions: {email: [this.defaultEmail]},
-            context: {
-              resourceType: 'DataSource',
-              resourceName: resId,
-              triggerType: 'Threshold'
-            }
-          },
-          dampenings: [
-            {
-              triggerId: triggerId,
-              evalTimeSetting: 7 * 60000,
-              triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
-            }
-          ],
-          conditions: [
-            {
-              triggerId: triggerId,
-              type: 'THRESHOLD',
-              dataId: dataId,
-              threshold: AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD,
-              operator: 'GT',
-              context: {
-                description: 'Average Creation Time',
-                unit: 'ms'
-              }
-            }
-          ]
-        };
-
-        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-          this.$log.error('Error on Trigger creation for ' + triggerId);
-        });
-
-      });
-
-      let log = this.$log;
-
-      this.$q.all([connTriggerPromise, waitTimeTriggerPromise, createTimeTriggerPromise]).then(() => {
-        let modalInstance = this.$modal.open({
-          templateUrl: 'plugins/metrics/html/modals/alerts-ds-setup.html',
-          controller: 'DatasourcesAlertSetupController as das',
-          resolve: {
-            resourceId: () => {
-              return resId;
-            }
-          }
-        });
-
-        modalInstance.result.then(angular.noop, () => {
-          log.debug('Datasource Alert Setup modal dismissed at: ' + new Date());
-        });
-      }, () => {
-        this.$log.error('Missing and unable to create new Datasource Alert triggers.');
-      });
-
     }
 
     public showDriverAddDialog():void {
@@ -411,6 +259,7 @@ module HawkularMetrics {
             this.resourceList = tmpResourceList;
             this.resourceList.$resolved = true;
             this.getDatasourceChartData();
+            this.loadTriggers();
           });
         },
         () => { // error
@@ -536,7 +385,194 @@ module HawkularMetrics {
       this.getDatasourceChartData();
     }
 
+    public loadTriggers(currentTenantId?:TenantId):any {
+      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+
+      _.forEach(this.resourceList, function (res:any, idx) {
+
+        this.loadDatasourceTriggers(res.id);
+
+      }, this);
+    }
+
+    private loadDatasourceTriggers(resId):void {
+      // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
+
+      let connTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_conn').then(() => {
+        this.$log.debug('Datasource connection trigger exists, nothing to do');
+      }, () => {
+        /// Datasource connection trigger doesn't exist, need to create one
+
+        let triggerId:string = resId + '_ds_conn';
+        let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Available Count';
+        let fullTrigger = {
+          trigger: {
+            name: 'Datasource Available Connections',
+            id: triggerId,
+            description: 'Available Connection Count for Datasource ' + resId,
+            actions: {email: [this.defaultEmail]},
+            tags: {
+              resourceId: resId
+            },
+            context: {
+              resourceType: 'DataSource',
+              resourceName: resId,
+              resourcePath: this.$rootScope.resourcePath,
+              triggerType: 'Threshold'
+            }
+          },
+          dampenings: [
+            {
+              triggerId: triggerId,
+              evalTimeSetting: 7 * 60000,
+              triggerMode: 'FIRING',
+              type: 'STRICT_TIME'
+            }
+          ],
+          conditions: [
+            {
+              triggerId: triggerId,
+              type: 'THRESHOLD',
+              dataId: dataId,
+              threshold: AppServerDatasourcesDetailsController.DEFAULT_CONN_THRESHOLD,
+              operator: 'LT',
+              context: {
+                description: 'Available Count',
+                unit: 'connections'
+              }
+            }
+          ]
+        };
+
+        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+          this.$log.error('Error on Trigger creation for ' + triggerId);
+        });
+      });
+
+      let waitTimeTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_wait').then(() => {
+        /// Datasource wait time trigger exists, nothing to do
+        this.$log.debug('Datasource Wait Time trigger exists, nothing to do');
+      }, () => {
+        /// trigger doesn't exist, need to create one
+        let triggerId:string = resId + '_ds_wait';
+        let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Wait Time';
+
+        let fullTrigger = {
+          trigger: {
+            name: 'Datasource Pool Wait Time',
+            id: triggerId,
+            description: 'Pool Wait Time Responsiveness for DS ' + resId,
+            actions: {email: [this.defaultEmail]},
+            tags: {
+              resourceId: resId
+            },
+            context: {
+              resourceType: 'DataSource',
+              resourceName: resId,
+              triggerType: 'Threshold'
+            }
+          },
+          dampenings: [
+            {
+              triggerId: triggerId,
+              evalTimeSetting: 7 * 60000,
+              triggerMode: 'FIRING',
+              type: 'STRICT_TIME'
+            }
+          ],
+          conditions: [
+            {
+              triggerId: triggerId,
+              type: 'THRESHOLD',
+              dataId: dataId,
+              threshold: AppServerDatasourcesDetailsController.DEFAULT_WAIT_THRESHOLD,
+              operator: 'GT',
+              context: {
+                description: 'Average Wait Time',
+                unit: 'ms'
+              }
+            }
+          ]
+        };
+
+        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+          this.$log.error('Error on Trigger creation for ' + triggerId);
+        });
+      });
+
+      let createTimeTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_create').then(() => {
+        /// Datasource create time trigger exists, nothing to do
+        this.$log.debug('Datasource create time trigger exists, nothing to do');
+      }, () => {
+        /// trigger doesn't exist, need to create one
+        let triggerId:string = resId + '_ds_create';
+        let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time';
+        let fullTrigger = {
+          trigger: {
+            name: 'Datasource Pool Create Time',
+            id: triggerId,
+            description: 'Pool Create Time Responsiveness for DS ' + resId,
+            actions: {email: [this.defaultEmail]},
+            tags: {
+              resourceId: resId
+            },
+            context: {
+              resourceType: 'DataSource',
+              resourceName: resId,
+              triggerType: 'Threshold'
+            }
+          },
+          dampenings: [
+            {
+              triggerId: triggerId,
+              evalTimeSetting: 7 * 60000,
+              triggerMode: 'FIRING',
+              type: 'STRICT_TIME'
+            }
+          ],
+          conditions: [
+            {
+              triggerId: triggerId,
+              type: 'THRESHOLD',
+              dataId: dataId,
+              threshold: AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD,
+              operator: 'GT',
+              context: {
+                description: 'Average Creation Time',
+                unit: 'ms'
+              }
+            }
+          ]
+        };
+
+        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+          this.$log.error('Error on Trigger creation for ' + triggerId);
+        });
+
+      });
+
+      let log = this.$log;
+
+      this.$q.all([connTriggerPromise, waitTimeTriggerPromise, createTimeTriggerPromise]).then(() => {
+        // do nothing
+      }, () => {
+        this.$log.error('Missing and unable to create new Datasource Alert triggers.');
+      });
+
+    }
+
+    public encodeResourceId(resourceId:string):string {
+      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
+      //let encoded = encodeURIComponent(resourceId);
+      let encoded = resourceId;
+      while (encoded.indexOf('/') > -1) {
+        encoded = encoded.replace('/', '$');
+      }
+      return encoded;
+    }
+
   }
 
   _module.controller('AppServerDatasourcesDetailsController', AppServerDatasourcesDetailsController);
 }
+

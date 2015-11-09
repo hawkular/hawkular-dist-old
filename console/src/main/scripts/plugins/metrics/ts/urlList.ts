@@ -219,6 +219,9 @@ module HawkularMetrics {
               description: 'Response Time for URL ' + url,
               severity: 'HIGH',
               actions: {email: [defaultEmail]},
+              tags: {
+                resourceId: resourceId
+              },
               context: {
                 description: 'Response Time for URL ' + url, // Workaround for sorting
                 resourceType: 'URL',
@@ -284,6 +287,9 @@ module HawkularMetrics {
               description: 'Availability for URL ' + url,
               severity: 'CRITICAL',
               actions: {email: [defaultEmail]},
+              tags: {
+                resourceId: resourceId
+              },
               context: {
                 description: 'Availability for URL ' + url, // Workaround for sorting
                 resourceType: 'URL',
