@@ -61,8 +61,8 @@ body {
       padding-left: 0;
     }
 
-    > .col-md-4:first-child {
-      padding-right: 0;
+    > .col-md-4 + .col-md-8 {
+      padding-left: 0;
     }
   }
 
@@ -129,11 +129,6 @@ h3 {
     margin-right: @grid-gutter-width/4;
     margin-top: @grid-gutter-width/4;
   }
-}
-
-h3 {
-  font-size: ceil(@font-size-base * 1.5);
-  font-weight: 100;
 }
 
 h1, h2 {
@@ -889,6 +884,20 @@ a .fa-spinner,
 a:hover .fa-spinner,
 .card-pf-aggregate-status .card-pf-title .fa-spinner {
   color: @gray-light;
+}
+
+.fa-chain-broken,
+a .fa-chain-broken,
+a:hover .fa-chain-broken,
+.card-pf-aggregate-status .card-pf-title .fa-chain-broken {
+  color: @gray-light;
+}
+
+.fa-times-circle-o,
+a .fa-times-circle-o,
+a:hover .fa-times-circle-o,
+.card-pf-aggregate-status .card-pf-title .fa-times-circle-o {
+  color: @brand-danger;
 }
 
 &.fa-check-circle-o {
