@@ -20,39 +20,27 @@
 
 module HawkularTopology {
 
-  _module.config([
-    '$routeProvider', 'HawtioNavBuilderProvider',
-    ($routeProvider, builder:HawtioMainNav.BuilderFactory) => {
+  _module.config(
+    ($routeProvider, HawtioNavBuilderProvider:HawtioMainNav.BuilderFactory) => {
 
       $routeProvider
       .when(
         '/hawkular-ui/topology/view',
-        { templateUrl: builder.join(HawkularTopology.templatePath, 'index.html') }
+        { templateUrl: HawtioNavBuilderProvider.join(HawkularTopology.templatePath, 'index.html') }
         );
-    }]);
+    });
 
   export class TopologyController {
-    public static $inject = ['$rootScope', '$scope', '$interval', '$log', '$routeParams', '$modal', '$q',
-    'HawkularAccount', 'HawkularInventory', /*'NotificationsApp',*/ 'userDetails'];
     private data: any;
     private index = 0;
-    private partialData: any;
     private kinds: any;
     private autoRefreshPromise: ng.IPromise<any>;
 
     constructor(private $rootScope:any,
       private $scope: any,
-      // private $log:ng.ILogApp,
       private $interval: ng.IIntervalService,
-      private $log:any,
-      private $routeParams:any,
-      private $modal:any,
-      // private $q: ng.IQApp,
       private $q: any,
-      private HawkularAccount:any,
-      private HawkularInventory:any,
-      // private NotificationsApp:INotificationsApp,
-      private userDetails:any) {
+      private HawkularInventory:any) {
 
 
       var datasets = [];
