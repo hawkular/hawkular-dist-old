@@ -187,7 +187,8 @@ module HawkularMetrics {
             this.HawkularInventory.MetricOfResource.save({
               environmentId: globalEnvironmentId,
               resourcePath: resourceId
-            }, ['../' + metricsIds[0], '../' + metricsIds[1]]).$promise;
+            }, ['/e;' + globalEnvironmentId + '/m;' + metricsIds[0], '/e;' + globalEnvironmentId + '/m;' +
+               metricsIds[1]]).$promise;
 
           /// For right now we will just Register a couple of metrics automatically
           return this.$q.all([createMetric(metrics[0]), createMetric(metrics[1])])

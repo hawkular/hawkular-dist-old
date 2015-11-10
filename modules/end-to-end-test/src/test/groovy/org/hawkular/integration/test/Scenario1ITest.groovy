@@ -108,8 +108,8 @@ class Scenario1ITest extends AbstractTestBase {
         /* assign metrics to the resource */
         response = client.post(path: "/hawkular/inventory/$environmentId/resources/$resourceId/metrics",
         body: [
-                "../$statusCodeId".toString(),  // relative path
-                "/test/$durationId".toString()] // canonical path, just for the fun of it
+                "/e;$environmentId/m;$statusCodeId".toString(),
+                "/e;$environmentId/m;$durationId".toString()]
         )
         assertResponseOk(response.status)
 
