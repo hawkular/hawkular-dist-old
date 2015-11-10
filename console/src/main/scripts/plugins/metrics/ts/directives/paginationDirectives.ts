@@ -20,7 +20,8 @@
 
 module HawkularMetrics {
 /// TODO: use ControllerAs syntax
-  let paginationController = ($scope:any) => {
+
+  let paginationLink = ($scope:any) => {
 
     $scope.currentPageView = $scope.currentPage + 1;
     $scope.pagesNumber = getPagesNumber();
@@ -71,9 +72,9 @@ module HawkularMetrics {
   };
 
   class HkPagination {
-    public controller:($scope:any) => void;
+    public link:($scope:any) => void;
     public templateUrl = 'plugins/metrics/html/url-pagination.html';
-    public scope = {
+    public $scope = {
       resourceList: '=',
       currentPage: '=',
       linkHeader: '=',
@@ -84,7 +85,7 @@ module HawkularMetrics {
     public replace = 'true';
 
     constructor() {
-      this.controller = paginationController;
+      this.link = paginationLink;
     }
 
     public static Factory() {
@@ -101,9 +102,9 @@ module HawkularMetrics {
   _module.directive('hkPagination', HkPagination.Factory());
 
   class HkDataPagination {
-    public controller:(scope:ng.IScope) => void;
+    public link:($scope:ng.IScope) => void;
     public templateUrl = 'plugins/metrics/html/data-pagination.html';
-    public scope = {
+    public $scope = {
       resourceList: '=',
       currentPage: '=',
       linkHeader: '=',
@@ -114,7 +115,7 @@ module HawkularMetrics {
     public replace = 'true';
 
     constructor() {
-      this.controller = paginationController;
+      this.link = paginationLink;
     }
 
     public static Factory() {

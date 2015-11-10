@@ -222,9 +222,11 @@ var gulpConcat = function() {
   var gZipSize = size(gZippedSizeOptions);
 
   return gulp.src(['compiled.js', 'templates.js', 'version.js'])
+    .pipe(plugins.ngAnnotate())
     .pipe(plugins.sourcemaps.init({loadMaps: true}))
     .pipe(plugins.concat(config.js))
     .pipe(plugins.sourcemaps.write())
+    .pipe(plugins.uglify())
     .pipe(gulp.dest(config.dist))
     .pipe(size(normalSizeOptions))
     .pipe(gZipSize);

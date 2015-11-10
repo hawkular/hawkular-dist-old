@@ -22,7 +22,7 @@ module HawkularAccounts {
   _module.config(['$httpProvider', 'HawtioNavBuilderProvider', '$routeProvider',
     ($httpProvider:ng.IHttpProvider, builder:HawtioMainNav.BuilderFactory, $routeProvider) => {
 
-      $httpProvider.interceptors.push(PersonaInterceptorService.Factory);
+      $httpProvider.interceptors.push(['$q',PersonaInterceptorService.Factory]);
 
       $routeProvider
         .when(
