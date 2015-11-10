@@ -2,13 +2,15 @@
 
   <h3 class="pull-left">JVM Status</h3>
 
-  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+    <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+  </span>
 
   <div class="row row-cards-pf">
     <div class="col-md-3">
       <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
         <h2 class="card-pf-title">
-          <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i>
+          <i class="fa fa-flag" ng-show="vm.alertList.length"></i>
           <span class="card-pf-aggregate-status-count">{{vm.alertList.length}}</span> JVM Alerts
         </h2>
       </div>
@@ -35,7 +37,7 @@
       <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
         <h2 class="card-pf-title">
           <span class="card-pf-aggregate-status-count" ng-show="vm.heapMax">{{ vm.heapMax.max / 1024 / 1024 | number : 0 }} MB</span>
-          <span class="card-pf-aggregate-status-count" ng-hide="vm.heapUsage">n/a</span>
+          <span class="card-pf-aggregate-status-count" ng-hide="vm.heapMax">n/a</span>
           Maximum Heap Usage
         </h2>
       </div>
@@ -46,9 +48,9 @@
     <h3 class="pull-left">
       <button class="btn btn-link hk-trigger" ng-click="vm.showAllAlerts = !vm.showAllAlerts" tooltip-trigger
               tooltip-placement="top" tooltip="Expand/collapse">
-        <i class="fa" ng-show="vm.alertList.length > 0"
+        <i class="fa" ng-show="vm.alertList.length"
            ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> JVM Alerts
-        <span ng-show="vm.alertList.length > 0">
+        <span ng-show="vm.alertList.length">
           ({{vm.showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})
         </span>
       </button>
@@ -74,7 +76,9 @@
   <div class="hk-info-top clearfix">
     <h3 class="pull-left">Metrics</h3>
     <div class="hk-update pull-right">
-      <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart" ng-click="vm.getJvmChartData()"><i class="fa fa-refresh"></i></button>
+      <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip-append-to-body="true"
+              tooltip="Update chart" ng-click="vm.getJvmChartData()">
+        <i class="fa fa-refresh"></i></button>
     </div>
   </div>
 

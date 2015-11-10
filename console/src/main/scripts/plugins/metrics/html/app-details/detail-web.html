@@ -1,13 +1,15 @@
 <section id="hk-web" class="hk-tab-content">
 
   <h3 class="pull-left">Web Status</h3>
-  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+    <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+  </span>
 
   <div class="row row-cards-pf">
     <div class="col-md-3">
       <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
         <h2 class="card-pf-title">
-          <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i>
+          <i class="fa fa-flag" ng-show="vm.alertList.length"></i>
           <span class="card-pf-aggregate-status-count">{{vm.alertList.length}}</span> Web Alerts
         </h2>
       </div>
@@ -38,7 +40,14 @@
   <!-- Alerts -->
   <div class="hk-info-top clearfix">
     <h3 class="pull-left">
-      <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts" tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse"><i class="fa" ng-show="vm.alertList.length > 0" ng-class="showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Web Alerts <span ng-show="vm.alertList.length > 0">({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})</span></button>
+      <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts"
+              tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse">
+        <i ng-show="vm.alertList.length" ng-class="showAllAlerts ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"></i>
+        Web Alerts
+        <span ng-show="vm.alertList.length">
+          ({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})
+        </span>
+      </button>
     </h3>
     <span class="hk-settings pull-left">
       <a href="#" ng-controller="WebAlertController as wac" ng-click="wac.openSetup()">
@@ -62,7 +71,8 @@
   <div class="hk-info-top clearfix">
     <h3 class="pull-left">Metrics</h3>
     <div class="hk-update pull-right">
-      <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart" ng-click="vm.getWebChartData()"><i class="fa fa-refresh"></i></button>
+      <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip-append-to-body="true"
+              tooltip="Update chart" ng-click="vm.getWebChartData()"><i class="fa fa-refresh"></i></button>
     </div>
   </div>
 
@@ -98,6 +108,5 @@
       </div>
     </div>
   </div>
-
 
 </section>
