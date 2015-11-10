@@ -2,26 +2,38 @@
 
   <h3 class="pull-left">Web Status</h3>
   <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
-  <div class="panel panel-default hk-summary">
-    <div class="row">
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data">{{vm.alertList.length}} <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i></span>
-        <span class="hk-item">Web Alerts</span>
-      </div>
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data">{{ vm.activeWebSessions | number:0 }}</span>
-        <span class="hk-item">Active Sessions (Average)</span>
-      </div>
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data">{{ vm.requestTime / vm.requestCount | number:0 }} ms</span>
-        <span class="hk-item">Response Time (Average)</span>
-      </div>
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data">{{ vm.requestCount }}</span>
-        <span class="hk-item">Request Count</span>
+
+  <div class="row row-cards-pf">
+    <div class="col-md-3">
+      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+        <h2 class="card-pf-title">
+          <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i>
+          <span class="card-pf-aggregate-status-count">{{vm.alertList.length}}</span> Web Alerts
+        </h2>
       </div>
     </div>
-  </div>
+    <div class="col-md-3">
+      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+        <h2 class="card-pf-title">
+          <span class="card-pf-aggregate-status-count">{{ vm.activeWebSessions | number:0 }}</span> Active Sessions (Average)
+        </h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+        <h2 class="card-pf-title">
+          <span class="card-pf-aggregate-status-count">{{ vm.requestTime / vm.requestCount | number:0 }} ms</span> Response Time (Average)
+        </h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+        <h2 class="card-pf-title">
+          <span class="card-pf-aggregate-status-count">{{ vm.requestCount }}</span> Request Count
+        </h2>
+      </div>
+    </div>
+  </div><!-- /row -->
 
   <!-- Alerts -->
   <div class="hk-info-top clearfix">

@@ -11,47 +11,52 @@
     <h3 class="pull-left">Current Status</h3>
     <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.lastUpdateTimestamp | date:'HH:mm:ss'}}</span>
 
-    <div class="panel panel-default hk-summary">
-      <div class="row">
-        <!--
-        <div class="col-sm-2 hk-summary-item">
-          <span class="hk-data">0 <i class="fa fa-flag" ng-show="alertsNumTBD > 0"></i></span>
-          <span class="hk-item">Alerts</span>
+    <div class="row row-cards-pf">
+      <div class="col-lg-2 col-md-4">
+        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+          <h2 class="card-pf-title">
+            <span class="card-pf-aggregate-status-count">{{vm.resourceList.length}}</span> Servers
+          </h2>
         </div>
-        -->
-        <div class="col-sm-2 hk-summary-item">
-          <span class="hk-data">{{vm.resourceList.length}}</span>
-          <span class="hk-item">Servers</span>
+      </div>
+      <div class="col-lg-2 col-md-4">
+        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+          <h2 class="card-pf-title">
+            <i class="fa fa-arrow-up"></i>
+            <span class="card-pf-aggregate-status-count">{{(vm.resourceList|filter:{state: 'up'}:true).length}}</span> Up
+          </h2>
         </div>
-        <div class="col-sm-2 hk-summary-item">
-          <a href="#">
-            <span class="hk-data">{{(vm.resourceList|filter:{state: 'up'}:true).length}} <i class="fa fa-arrow-up"></i></span>
-            <span class="hk-item">Up</span>
-          </a>
+      </div>
+      <div class="col-lg-2 col-md-4">
+        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+          <h2 class="card-pf-title">
+            <i class="fa fa-arrow-down"></i>
+            <span class="card-pf-aggregate-status-count">{{(vm.resourceList|filter:{state: 'down'}:true).length}}</span> Down
+          </h2>
         </div>
-        <div class="col-sm-2 hk-summary-item">
-          <a href="#">
-            <span class="hk-data">{{(vm.resourceList|filter:{state: 'down'}:true).length}} <i class="fa fa-arrow-down"></i></span>
-            <span class="hk-item">Down</span>
-          </a>
+      </div>
+      <div class="col-lg-2 col-md-4">
+        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+          <h2 class="card-pf-title">
+            <i class="fa fa-chain-broken"></i>
+            <span class="card-pf-aggregate-status-count">{{(vm.resourceList|filter:{state: 'unknown'}:true).length}}</span> Unknown
+          </h2>
         </div>
-        <div class="col-sm-2 hk-summary-item">
-          <a href="#">
-            <span class="hk-data">{{(vm.resourceList|filter:{state: 'unknown'}:true).length}} <i class="fa fa-chain-broken"></i></span>
-            <span class="hk-item">Unknown</span>
-          </a>
+      </div>
+      <div class="col-lg-2 col-md-4">
+        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+          <h2 class="card-pf-title">
+            <i class="fa fa-spinner"></i>
+            <span class="card-pf-aggregate-status-count">{{(vm.resourceList|filter:{state: 'starting'}:true).length}}</span> Starting
+          </h2>
         </div>
-        <div class="col-sm-2 hk-summary-item">
-          <a href="#">
-            <span class="hk-data">{{(vm.resourceList|filter:{state: 'starting'}:true).length}} <i class="fa fa-spinner"></i></span>
-            <span class="hk-item">Starting</span>
-          </a>
-        </div>
-        <div class="col-sm-2 hk-summary-item">
-          <a href="#">
-            <span class="hk-data">{{(vm.resourceList|filter:{state: 'restart required'}:true).length}} <i class="fa fa-repeat"></i></span>
-            <span class="hk-item">Restart Required</span>
-          </a>
+      </div>
+      <div class="col-lg-2 col-md-4">
+        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+          <h2 class="card-pf-title">
+            <i class="fa fa-repeat"></i>
+            <span class="card-pf-aggregate-status-count">{{(vm.resourceList|filter:{state: 'restart required'}:true).length}}</span> Restart Required
+          </h2>
         </div>
       </div>
     </div>

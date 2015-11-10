@@ -17,25 +17,36 @@
     <!-- Summary -->
     <h3 class="pull-left">Response Time Status</h3>
     <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
-    <div class="panel panel-default hk-summary">
-      <div class="row">
-        <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data" ng-show="vm.average >= 0">{{vm.average}} <span>ms</span></span>
-          <span class="hk-data" ng-hide="vm.average >= 0">n/a</span>
-          <span class="hk-item">Average</span>
-        </div>
-        <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data" ng-show="vm.median >= 0">{{vm.median}} <span>ms</span></span>
-          <span class="hk-data" ng-hide="vm.median >= 0">n/a</span>
-          <span class="hk-item">Median</span>
-        </div>
-        <div class="col-sm-4 hk-summary-item">
-          <span class="hk-data" ng-show="vm.percentile95th >= 0">{{vm.percentile95th}} <span>ms</span></span>
-          <span class="hk-data" ng-hide="vm.percentile95th >= 0">n/a</span>
-          <span class="hk-item">95th percentile</span>
+
+    <div class="row row-cards-pf">
+      <div class="col-md-4">
+        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+          <h2 class="card-pf-title">
+            <span class="card-pf-aggregate-status-count" ng-show="vm.average >= 0">{{vm.average}} ms</span>
+            <span class="card-pf-aggregate-status-count" ng-hide="vm.average >= 0">n/a</span>
+            Average
+          </h2>
         </div>
       </div>
-    </div>
+      <div class="col-md-4">
+        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+          <h2 class="card-pf-title">
+            <span class="card-pf-aggregate-status-count" ng-show="vm.median >= 0">{{vm.median}} ms</span>
+            <span class="card-pf-aggregate-status-count" ng-hide="vm.median >= 0">n/a</span>
+            Median
+          </h2>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+          <h2 class="card-pf-title">
+            <span class="card-pf-aggregate-status-count" ng-show="vm.percentile95th >= 0">{{vm.percentile95th}} ms</span>
+            <span class="card-pf-aggregate-status-count" ng-hide="vm.percentile95th >= 0">n/a</span>
+            95th percentile
+          </h2>
+        </div>
+      </div>
+    </div><!-- /row -->
 
     <!-- Alerts -->
     <div class="hk-info-top clearfix">

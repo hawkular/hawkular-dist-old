@@ -3,29 +3,44 @@
   <h3 class="pull-left">JVM Status</h3>
 
   <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
-  <div class="panel panel-default hk-summary">
-    <div class="row">
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data">{{vm.alertList.length}} <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i></span>
-        <span class="hk-item">JVM Alerts</span>
-      </div>
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data" ng-show="vm.heapUsage">{{ vm.heapUsage.avg / 1024 / 1024 | number : 0 }} MB</span>
-        <span class="hk-data" ng-hide="vm.heapUsage">n/a</span>
-        <span class="hk-item">Average Heap Usage</span>
-      </div>
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data" ng-show="vm.accGCDuration">{{ vm.accGCDuration }} ms</span>
-        <span class="hk-data" ng-hide="vm.accGCDuration">n/a</span>
-        <span class="hk-item">GC Duration</span>
-      </div>
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data" ng-show="vm.heapMax">{{ vm.heapMax.max / 1024 / 1024 | number : 0 }} MB</span>
-        <span class="hk-data" ng-hide="vm.heapUsage">n/a</span>
-        <span class="hk-item">Maximum Heap Usage</span>
+
+  <div class="row row-cards-pf">
+    <div class="col-md-3">
+      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+        <h2 class="card-pf-title">
+          <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i>
+          <span class="card-pf-aggregate-status-count">{{vm.alertList.length}}</span> JVM Alerts
+        </h2>
       </div>
     </div>
-  </div>
+    <div class="col-md-3">
+      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+        <h2 class="card-pf-title">
+          <span class="card-pf-aggregate-status-count" ng-show="vm.heapUsage">{{ vm.heapUsage.avg / 1024 / 1024 | number : 0 }} MB</span>
+          <span class="card-pf-aggregate-status-count" ng-hide="vm.heapUsage">n/a</span>
+          Average Heap Usage
+        </h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+        <h2 class="card-pf-title">
+          <span class="card-pf-aggregate-status-count" ng-show="vm.accGCDuration">{{ vm.accGCDuration }} ms</span>
+          <span class="card-pf-aggregate-status-count" ng-hide="vm.accGCDuration">n/a</span>
+          GC Duration
+        </h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+        <h2 class="card-pf-title">
+          <span class="card-pf-aggregate-status-count" ng-show="vm.heapMax">{{ vm.heapMax.max / 1024 / 1024 | number : 0 }} MB</span>
+          <span class="card-pf-aggregate-status-count" ng-hide="vm.heapUsage">n/a</span>
+          Maximum Heap Usage
+        </h2>
+      </div>
+    </div>
+  </div><!-- /row -->
 
   <div class="hk-info-top clearfix">
     <h3 class="pull-left">
