@@ -38,6 +38,7 @@ module HawkularTopology {
             /* Graph information */
             var width;
             var height;
+            var radius = 20;
             var timeout;
             var nodes = [];
             var links = [];
@@ -70,7 +71,9 @@ module HawkularTopology {
                     .attr('x2', (d) => d.target.x)
                     .attr('y2', (d) => d.target.y);
 
-                vertices.attr('transform', (d) => 'translate(' + d.x + ',' + d.y + ')');
+              vertices.attr('cx', (d) => d.x = d.fixed ? d.x : Math.max(radius, Math.min(width - radius, d.x)))
+                .attr('cy', (d) => d.y = d.fixed ? d.y : Math.max(radius, Math.min(height - radius, d.y)))
+                .attr('transform', (d) => 'translate(' + d.x + ',' + d.y + ')');
             });
 
             let tip = d3.tip()
@@ -154,7 +157,7 @@ module HawkularTopology {
                 edges.attr('class', (d) => d.kinds);
 
                 vertices = svg.selectAll('g')
-                    .data(nodes, (d) => d.id).attr('class', 'foo');
+                    .data(nodes, (d) => d.id);
 
                 vertices.exit().remove();
 
