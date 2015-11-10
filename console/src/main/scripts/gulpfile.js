@@ -227,8 +227,6 @@ gulp.task('less-live', ['copy-sources'], function(done){
 var gulpConcat = function() {
   var gZipSize = size(gZippedSizeOptions);
 
-  console.log(argv.production);
-
   return gulp.src(['compiled.js', 'templates.js', 'version.js'])
     .pipe(plugins.ngAnnotate())
     .pipe(plugins.sourcemaps.init({loadMaps: true}))
