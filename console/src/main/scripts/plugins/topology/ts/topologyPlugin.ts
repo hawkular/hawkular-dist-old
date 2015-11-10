@@ -62,10 +62,10 @@ module HawkularTopology {
       }
 
       this.kinds = {
-        Server: '#vertex-Server',
-        DataSource: '#vertex-DataSource',
+        Server: '',
+        DataSource: '',
         Database: '#vertex-Database',
-        App: '#vertex-App'
+        App: ''
       };
 
       $rootScope.$on('select', (ev, item) => {
