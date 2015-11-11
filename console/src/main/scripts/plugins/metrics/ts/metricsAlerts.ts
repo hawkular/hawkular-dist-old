@@ -208,6 +208,14 @@ module HawkularMetrics {
         });
     }
 
+    public getAlertRoute(alertId:AlertId):string {
+      let route = 'unknown-trigger-type';
+      let encodedId = this.encodeResourceId(alertId);
+      route = '/hawkular-ui/alerts-center-detail/' + encodedId;
+
+      return route;
+    }
+
     loadTrigger(triggerId:string):Array<ng.IPromise<any>> {
       throw new Error('This method is abstract');
     }

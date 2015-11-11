@@ -182,7 +182,7 @@ module HawkularMetrics {
   }
 
   export interface IAlert {
-    alertId: string;
+    id: string;
     ackBy: string;
     ackNotes: string;
     ackTime: TimestampInMillis;

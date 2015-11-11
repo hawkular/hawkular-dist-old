@@ -108,6 +108,7 @@ module HawkularMetrics {
         statuses: this.alertsStatuses,
         startTime: this.alertsTimeStart,
         endTime: this.alertsTimeEnd,
+        thin: true,
         currentPage: this.alertsCurPage,
         perPage: this.alertsPerPage,
         sort: this.sortField,
@@ -138,7 +139,7 @@ module HawkularMetrics {
       let resolveIdList = '';
       this.alertsList.forEach((alertItem:IAlert) => {
         if (alertItem.selected) {
-          resolveIdList = resolveIdList + alertItem.alertId + ',';
+          resolveIdList = resolveIdList + alertItem.id + ',';
         }
       });
       resolveIdList = resolveIdList.slice(0, -1);
@@ -165,7 +166,7 @@ module HawkularMetrics {
       let ackIdList = '';
       this.alertsList.forEach((alertItem:IAlert) => {
         if (alertItem.selected && (alertItem.status !== 'ACKNOWLEDGED' || alertItem.status !== 'RESOLVED')) {
-          ackIdList = ackIdList + alertItem.alertId + ',';
+          ackIdList = ackIdList + alertItem.id + ',';
         }
       });
       ackIdList = ackIdList.slice(0, -1);

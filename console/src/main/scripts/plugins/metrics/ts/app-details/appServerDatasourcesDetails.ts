@@ -128,24 +128,6 @@ module HawkularMetrics {
       this.$q.all([connPromise, respPromise]).finally(()=> {
         res.alertList = [].concat(connArray, respArray);
       });
-
-      let respPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        triggerIds: metricIdPrefix + '_ds_resp', startTime: startTime, endTime: endTime
-      }).then((respData)=> {
-        _.forEach(respData.alertList, (item) => {
-          item['alertType'] = 'DSRESP';
-          item['condition'] = item['dataId'].substr(item['dataId'].lastIndexOf('~') + 1);
-        });
-        respArray = respData.alertList;
-      }, (error) => {
-        //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
-      });
-
-
-      this.$q.all([connPromise, respPromise]).finally(()=> {
-        res.alertList = [].concat(connArray, respArray);
-      });
     }
 
     public showDriverAddDialog():void {

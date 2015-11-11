@@ -16,7 +16,7 @@
               <p class="hk-info-info">{{alert.ctime | date:'d MMM yyyy, HH:mm'}}</p>
             </div>
             <div class="hk-icon-container">
-              <a href="alert-center-detail.html" class="btn btn-link" data-toggle="tooltip" data-placement="top"
+              <a ng-href="{{tc.getAlertRoute(alert.id)}}" class="btn btn-link" data-toggle="tooltip" data-placement="top"
                  data-original-title="View Details"><i class="fa fa-chevron-circle-right"></i></a>
             </div>
           </div>

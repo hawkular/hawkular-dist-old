@@ -328,7 +328,7 @@ module HawkularMetrics {
           let serverAlert = serverAlerts[i];
           let consoleAlert:any = serverAlert;
 
-          consoleAlert.id = serverAlert.alertId;
+          consoleAlert.id = serverAlert.id;
 
           consoleAlert.triggerId = serverAlert.triggerId;
 
