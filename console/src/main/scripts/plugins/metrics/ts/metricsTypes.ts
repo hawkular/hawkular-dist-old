@@ -89,6 +89,7 @@ module HawkularMetrics {
     hkParams:IhkParams;
     resourcePath:ResourcePath;
     isExperimental:boolean;
+    prevLocation:string; // not guaranteed to be set, use as needed.
   }
 
   export interface IRefreshable {
@@ -150,6 +151,9 @@ module HawkularMetrics {
   }
 
   export interface ITriggerContext {
+    resourceName: string;
+    resourcePath: string;
+    resourceType: string;
     triggerType: string;
   }
 

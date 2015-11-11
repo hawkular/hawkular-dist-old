@@ -40,7 +40,7 @@ module HawkularMetrics {
     public hasEnabledSelectedItems:boolean = false;
     public hasDisabledSelectedItems:boolean = false;
     public sortField:string = 'name';
-    public sortAsc:boolean = false;
+    public sortAsc:boolean = true;
     public resourceId;
 
     public loadingMoreItems:boolean = false;
@@ -59,6 +59,9 @@ module HawkularMetrics {
                 private $modal:any) {
       $scope.ac = this;
 
+      // store this route so we can come back to it when canceling out of trigger detail
+      this.$rootScope.prevLocation = $location.url();
+
       this.autoRefresh(120);
       this.resourceId = $routeParams.resourceId ?
         this.decodeResourceId($routeParams.resourceId) : '';
@@ -70,16 +73,6 @@ module HawkularMetrics {
         $rootScope.$watch('currentPersona', (currentPersona) =>
         currentPersona && this.getTriggers());
       }
-    }
-
-    private decodeResourceId(encodedResourceId:string):string {
-      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
-      //let decoded = decodeURIComponent(encodedResourceId);
-      let decoded = encodedResourceId;
-      while (decoded.indexOf('$') > -1) {
-        decoded = decoded.replace('$', '/');
-      }
-      return decoded;
     }
 
     private autoRefresh(intervalInSeconds:number):void {
@@ -191,36 +184,38 @@ module HawkularMetrics {
       return promises;
     }
 
-    public showDetailPage(trigger:IAlertTrigger):void {
-      let controller;
-      let html;
-      if ('RangeByPercent' === trigger.context.triggerType) {
-        controller = 'RangeByPercentTriggerSetupController as tc';
-        html = 'plugins/metrics/html/modals/trigger-range-percent-setup.html';
-      } else if ('Range' === trigger.context.triggerType) {
-        controller = 'RangeTriggerSetupController as tc';
-        html = 'plugins/metrics/html/modals/trigger-range-setup.html';
-      } else if ('Availability' === trigger.context.triggerType) {
-        controller = 'AvailabilityTriggerSetupController as tc';
-        html = 'plugins/metrics/html/modals/trigger-availability-setup.html';
-      } else {
-        controller = 'ThresholdTriggerSetupController as tc';
-        html = 'plugins/metrics/html/modals/trigger-threshold-setup.html';
-      }
-      let modalInstance = this.$modal.open({
-        templateUrl: html,
-        controller: controller,
-        resolve: {
-          triggerId: () => {
-            return trigger.id;
-          }
-        }
-      });
+    public getDetailRoute(trigger:IAlertTrigger):string {
+      let route = 'unknown-trigger-type';
+      let encodedId = this.encodeResourceId(trigger.id);
 
-      modalInstance.result.then(angular.noop, () => {
-        this.$log.info('Alert Setup modal dismissed at: ' + new Date());
-        this.getTriggers();
-      });
+      if ('Availability' === trigger.context.triggerType) {
+        route = '/hawkular-ui/alerts-center-triggers/availability/' + encodedId;
+      } else if ('Range' === trigger.context.triggerType) {
+        route = '/hawkular-ui/alerts-center-triggers/range/' + encodedId;
+      } else if ('RangeByPercent' === trigger.context.triggerType) {
+        route = '/hawkular-ui/alerts-center-triggers/range-percent/' + encodedId;
+      } else if ('Threshold' === trigger.context.triggerType) {
+        route = '/hawkular-ui/alerts-center-triggers/threshold/' + encodedId;
+      }
+      return route;
+    }
+
+    public getResourceRoute(trigger:IAlertTrigger):string {
+      let route = 'unknown-resource-type';
+      let encodedId = this.encodeResourceId(trigger.id);
+
+      if ('App Server' === trigger.context.resourceType) {
+        route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/jvm';
+      } else if ('DataSource' === trigger.context.resourceType) {
+        let resIdPart = trigger.context.resourceName.split('~/')[0];
+        route = '/hawkular-ui/app/app-details/' + resIdPart + '/datasources';
+      } else if ('URL' === trigger.context.resourceType) {
+        let parts = trigger.id.split('_trigger_');
+        let resourceId = parts[0];
+        let segment = ( parts[1] === 'thres' ) ? 'response-time' : 'availability';
+        route = '/hawkular-ui/url/' + segment + '/' + trigger.id.split('_trigger_')[0];
+      }
+      return route;
     }
 
     public setPage(page:number):void {
@@ -258,6 +253,26 @@ module HawkularMetrics {
       this.sortAsc = !this.sortAsc;
       this.getTriggers();
       this.$log.debug('Sorting by ' + field + ' ascending ' + this.sortAsc + ' ' + new Date());
+    }
+
+    private encodeResourceId(resourceId:string):string {
+      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
+      //let encoded = encodeURIComponent(resourceId);
+      let encoded = resourceId;
+      while (encoded.indexOf('/') > -1) {
+        encoded = encoded.replace('/', '$');
+      }
+      return encoded;
+    }
+
+    private decodeResourceId(encodedResourceId:string):string {
+      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
+      //let decoded = decodeURIComponent(encodedResourceId);
+      let decoded = encodedResourceId;
+      while (decoded.indexOf('$') > -1) {
+        decoded = decoded.replace('$', '/');
+      }
+      return decoded;
     }
 
   }

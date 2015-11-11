@@ -1,0 +1,27 @@
+<div class="col-lg-3 col-md-4">
+  <div class="panel panel-default clearfix">
+    <div class="panel-heading clearfix">
+      <h2 class="pull-left">Alerts</h2>
+      <span class="label label-default pull-right">{{tc.alertList.length}}</span>
+    </div>
+    <div class="panel-body">
+      <div ng-show="tc.alertList.length > 0">
+        <div class="hk-box-v-item" ng-repeat="alert in tc.alertList">
+          <div class="hk-display-table">
+            <div class="hk-icon-container">
+              <i class="fa fa-exclamation-triangle hk-warning"></i>
+            </div>
+            <div class="hk-info-container">
+              <div class="hk-info-heading">{{alert.trigger.description}}</div>
+              <p class="hk-info-info">{{alert.ctime | date:'d MMM yyyy, HH:mm'}}</p>
+            </div>
+            <div class="hk-icon-container">
+              <a href="alert-center-detail.html" class="btn btn-link" data-toggle="tooltip" data-placement="top"
+                 data-original-title="View Details"><i class="fa fa-chevron-circle-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,62 @@
+<div class="hk-alert-center-detail">
+
+  <div class="hk-screen-top-nav">
+    <div class="container">
+      <div class="row hk-top-row">
+        <div class="col-xs-6">
+          <a href="/hawkular-ui/alerts-center-triggers" class="back">&laquo; All Definitions</a>
+        </div>
+      </div>
+      <div class="hk-heading">
+        <h1 class="offset-panels">Alert Definition Details</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="row">
+      <div class="col-lg-9 col-md-8">
+        <div class="panel panel-default clearfix">
+          <div class="panel-heading">
+            <h2>{{tc.adm.trigger.name}}</h2>
+          </div>
+          <div class="panel-body">
+            <form class="form-horizontal">
+              <div ng-include="'plugins/metrics/html/partials/trigger-general-setup.html'"></div>
+
+              <h3>Alert Settings</h3>
+
+              <fieldset>
+                {{tc.adm.trigger.conditionContext.description !== '' ?
+                  tc.adm.trigger.conditionContext.description : "Downtime"}}
+              </fieldset>
+
+              <hk-fieldset-dampening hk-duration="tc.adm.trigger.evalTimeSetting"
+                                     hk-title="Downtime"
+                                     hk-title-met="Every time it goes down."
+                                     hk-title-unmet="Only when it is down for more than:"></hk-fieldset-dampening>
+
+              <hk-fieldset-notification hk-alert-email="tc.adm.trigger.email"></hk-fieldset-notification>
+            </form>
+
+            <div class="form-actions hk-form-actions-separator text-right">
+              <a type="button" class="btn btn-default" ng-href="{{tc.cancel()}}" class="button">Cancel</a>
+              <button type="button" class="btn btn-primary" ng-click="tc.save()"
+                      ng-disabled="tc.saveProgress || !tc.isSettingChange">
+                <div ng-show="tc.saveProgress" class="spinner spinner-xs hk-modal-spinner"></div>
+                Save
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div ng-include="'plugins/metrics/html/partials/trigger-alerts-sidebar.html'"></div>
+
+    </div> <!-- row -->
+
+  </div> <!-- container -->
+
+</div>
