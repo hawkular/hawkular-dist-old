@@ -1,9 +1,16 @@
 <div class="hk-application-servers" data-ng-controller="HawkularTopology.TopologyController as vm">
 
-  <div class="text-center hk-urls-list hk-spinner-container hawkular-topology-spinner" ng-hide="vm.data.relations.length">
+  <div class="text-center hk-urls-list hk-spinner-container hawkular-topology-spinner"
+    ng-hide="vm.data.relations.length || !vm.requestPending">
     <div class="spinner spinner-lg"></div>
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
+
+  <div class="text-center hk-urls-list hk-spinner-container hawkular-topology-spinner"
+    ng-hide="vm.data.relations.length || vm.requestPending">
+    <p class="hk-spinner-legend-below">No Data</p>
+  </div>
+
   <div ng-class="{'hk-fade-in': vm.data.relations.length}">
 
     <hawkular-topology-graph items="vm.data.items" relations="vm.data.relations" kinds="vm.kinds">

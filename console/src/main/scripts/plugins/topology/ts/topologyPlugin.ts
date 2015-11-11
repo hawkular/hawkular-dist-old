@@ -32,6 +32,7 @@ module HawkularTopology {
 
   export class TopologyController {
     private data: any;
+    private requestPending: boolean;
     private index = 0;
     private kinds: any;
     private autoRefreshPromise: ng.IPromise<any>;
@@ -113,6 +114,7 @@ module HawkularTopology {
     }
 
     public getData(): any {
+      this.requestPending = true;
       let typeToKind = {
         'WildFly Server': 'Server',
         'Datasource': 'DataSource',
@@ -122,6 +124,7 @@ module HawkularTopology {
 
       this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId}, (aFeedList) => {
         if (!aFeedList.length) {
+          this.requestPending = false;
           return;
         }
         let promises = [];
@@ -135,6 +138,10 @@ module HawkularTopology {
             relations: {}
           };
           let flatResources = _.flatten(aResourceList, true);
+          if (!flatResources.length) {
+            this.requestPending = false;
+            return;
+          }
           angular.forEach(flatResources, (res) => {
             let newItem = {
               kind: typeToKind[res.type.id],
@@ -156,6 +163,7 @@ module HawkularTopology {
             });
           newData.relations = newRelations;
           this.data = newData;
+          this.requestPending = false;
         });
       });
     }
