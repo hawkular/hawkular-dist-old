@@ -172,7 +172,6 @@ module HawkularMetrics {
           }
         }, (error) => {
           this.$log.error('Error Loading Threshold data');
-          toastr.error('Error Loading Threshold Data: ' + error);
         });
     }
 

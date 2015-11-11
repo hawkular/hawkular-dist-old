@@ -20,39 +20,28 @@
 
 module HawkularTopology {
 
-  _module.config([
-    '$routeProvider', 'HawtioNavBuilderProvider',
-    ($routeProvider, builder:HawtioMainNav.BuilderFactory) => {
+  _module.config(
+    ($routeProvider, HawtioNavBuilderProvider:HawtioMainNav.BuilderFactory) => {
 
       $routeProvider
       .when(
         '/hawkular-ui/topology/view',
-        { templateUrl: builder.join(HawkularTopology.templatePath, 'index.html') }
+        { templateUrl: HawtioNavBuilderProvider.join(HawkularTopology.templatePath, 'index.html') }
         );
-    }]);
+    });
 
   export class TopologyController {
-    public static $inject = ['$rootScope', '$scope', '$interval', '$log', '$routeParams', '$modal', '$q',
-    'HawkularAccount', 'HawkularInventory', /*'NotificationsApp',*/ 'userDetails'];
     private data: any;
+    private requestPending: boolean;
     private index = 0;
-    private partialData: any;
     private kinds: any;
     private autoRefreshPromise: ng.IPromise<any>;
 
     constructor(private $rootScope:any,
       private $scope: any,
-      // private $log:ng.ILogApp,
       private $interval: ng.IIntervalService,
-      private $log:any,
-      private $routeParams:any,
-      private $modal:any,
-      // private $q: ng.IQApp,
       private $q: any,
-      private HawkularAccount:any,
-      private HawkularInventory:any,
-      // private NotificationsApp:INotificationsApp,
-      private userDetails:any) {
+      private HawkularInventory:any) {
 
 
       var datasets = [];
@@ -62,10 +51,10 @@ module HawkularTopology {
       }
 
       this.kinds = {
-        Server: '#vertex-Server',
-        DataSource: '#vertex-DataSource',
+        Server: '',
+        DataSource: '',
         Database: '#vertex-Database',
-        App: '#vertex-App'
+        App: ''
       };
 
       $rootScope.$on('select', (ev, item) => {
@@ -125,6 +114,7 @@ module HawkularTopology {
     }
 
     public getData(): any {
+      this.requestPending = true;
       let typeToKind = {
         'WildFly Server': 'Server',
         'Datasource': 'DataSource',
@@ -134,6 +124,7 @@ module HawkularTopology {
 
       this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId}, (aFeedList) => {
         if (!aFeedList.length) {
+          this.requestPending = false;
           return;
         }
         let promises = [];
@@ -147,6 +138,10 @@ module HawkularTopology {
             relations: {}
           };
           let flatResources = _.flatten(aResourceList, true);
+          if (!flatResources.length) {
+            this.requestPending = false;
+            return;
+          }
           angular.forEach(flatResources, (res) => {
             let newItem = {
               kind: typeToKind[res.type.id],
@@ -168,6 +163,7 @@ module HawkularTopology {
             });
           newData.relations = newRelations;
           this.data = newData;
+          this.requestPending = false;
         });
       });
     }

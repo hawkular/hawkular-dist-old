@@ -65,7 +65,8 @@ module HawkularTopology {
             var event = $scope.$emit('render', vertices, added);
             if (!event.defaultPrevented) {
               added.attr('class', (d) => d.item.kind);
-              added.append('use').attr('xlink:href', icon);
+              added.append('circle').attr('r', 15);
+              added.append('text').attr('y', 6).attr('x', 0.5).text((d) => $scope.kinds[d.item.kind]);
               added.append('title');
               vertices.selectAll('title')
               .text((d) => d.item.metadata.name);
