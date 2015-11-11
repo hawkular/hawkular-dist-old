@@ -26,6 +26,7 @@ var gulp = require('gulp'),
     size = require('gulp-size'),
     s = require('underscore.string'),
     tslint = require('gulp-tslint'),
+    argv = require('yargs').argv,
     jsString;
 
 // CONSTANTS
@@ -34,7 +35,12 @@ var POM_MAIN_PATH = '../../../pom.xml';
 var DIST_TARGET_PATH = '../../../dist/target/';
 var WF_CONSOLE_PATH = 'modules/org/hawkular/nest/main/deployments/hawkular-console.war/dist/';
 
-var plugins = gulpLoadPlugins({});
+var plugins = gulpLoadPlugins({
+  rename: {
+    'gulp-if-else': 'gulpif'
+  }
+});
+
 var pkg = require('./package.json');
 var normalSizeOptions = {
     showFiles: true
@@ -226,7 +232,7 @@ var gulpConcat = function() {
     .pipe(plugins.sourcemaps.init({loadMaps: true}))
     .pipe(plugins.concat(config.js))
     .pipe(plugins.sourcemaps.write())
-    .pipe(plugins.uglify())
+    .pipe(plugins.gulpif(argv.production, plugins.uglify))
     .pipe(gulp.dest(config.dist))
     .pipe(size(normalSizeOptions))
     .pipe(gZipSize);
