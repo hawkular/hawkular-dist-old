@@ -87,7 +87,7 @@
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.hawkular.accounts>1.1.1.Final-SRC-revision-3583f50aa1ae524dae320462a75ef9006b2d1fb3</version.org.hawkular.accounts>
     <version.org.hawkular.agent>0.12.0.Final</version.org.hawkular.agent>
-    <version.org.hawkular.alerts>0.6.0.Final-SRC-revision-2773f8af452e4f94f72d09b95fd1ec8c1b5f32eb</version.org.hawkular.alerts>
+    <version.org.hawkular.alerts>0.6.0.Final-SRC-revision-53dafd419c5165f6fe4620d8d09ec64a6d068cbf</version.org.hawkular.alerts>
     <version.org.hawkular.bus>0.7.2.Final-SRC-revision-51939085c81845b21841503921d48442dde6f32b</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.2.3.Final-SRC-revision-dc2c2fc6cd725df4b120458590208fcc52dd6080</version.org.hawkular.commons>
     <version.org.hawkular.cmdgw>0.10.2.Final-SRC-revision-70128f2962949da23ba3e71a985871c2f9f509b3</version.org.hawkular.cmdgw>
