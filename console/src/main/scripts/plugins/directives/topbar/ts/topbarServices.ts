@@ -31,8 +31,8 @@ module Topbar {
                 private HawkularInventory:any) {
       $rootScope.hkParams = $routeParams || [];
 
-      // default time period set to 24 hours
-      let defaultOffset = 60 * 60 * 1000;
+      // default time period set to 12 hours
+      let defaultOffset = 12 * 60 * 60 * 1000;
 
       let init = (tenantId?:string) => {
         HawkularInventory.Resource.query({environmentId: globalEnvironmentId}, (resourceList) => {
