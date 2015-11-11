@@ -160,10 +160,30 @@ module HawkularMetrics {
         controller: 'AlertsCenterDetailsController',
         controllerAs: 'acd'
       }).
-      when('/hawkular-ui/alerts-center-triggers', {
+      when('/hawkular-ui/alerts-center-triggers/:resourceId?', {
         templateUrl: 'plugins/metrics/html/alerts-center-triggers.html',
         controller: 'AlertsCenterTriggerController',
         controllerAs: 'act'
+      }).
+      when('/hawkular-ui/alerts-center-triggers/availability/:triggerId', {
+        templateUrl: 'plugins/metrics/html/triggers/availability.html',
+        controller: 'AvailabilityTriggerSetupController',
+        controllerAs: 'tc'
+      }).
+      when('/hawkular-ui/alerts-center-triggers/range/:triggerId', {
+        templateUrl: 'plugins/metrics/html/triggers/range.html',
+        controller: 'RangeTriggerSetupController',
+        controllerAs: 'tc'
+      }).
+      when('/hawkular-ui/alerts-center-triggers/range-percent/:triggerId', {
+        templateUrl: 'plugins/metrics/html/triggers/range-percent.html',
+        controller: 'RangeByPercentTriggerSetupController',
+        controllerAs: 'tc'
+      }).
+      when('/hawkular-ui/alerts-center-triggers/threshold/:triggerId', {
+        templateUrl: 'plugins/metrics/html/triggers/threshold.html',
+        controller: 'ThresholdTriggerSetupController',
+        controllerAs: 'tc'
       }).
       otherwise({redirectTo: '/hawkular-ui/app/app-list'});
   }]);

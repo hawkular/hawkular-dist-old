@@ -52,7 +52,6 @@ module HawkularMetrics {
       return [triggerPromise];
     }
 
-
     saveTrigger(errorCallback):Array<ng.IPromise<any>> {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);

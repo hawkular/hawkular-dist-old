@@ -66,7 +66,6 @@ module HawkularMetrics {
       this.statuses = [];
       this.getAlert(this._alertId);
       this.getActions(this._alertId);
-
     }
 
     public getAlert(alertId:AlertId) {

@@ -47,13 +47,15 @@
       <div class="col-md-4">
         <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
           <h2 class="card-pf-title">
-            <span class="card-pf-aggregate-status-count" ng-show="vm.percentile95th >= 0">{{vm.percentile95th}} ms</span>
+            <span class="card-pf-aggregate-status-count"
+                  ng-show="vm.percentile95th >= 0">{{vm.percentile95th}} ms</span>
             <span class="card-pf-aggregate-status-count" ng-hide="vm.percentile95th >= 0">n/a</span>
             95th percentile
           </h2>
         </div>
       </div>
-    </div><!-- /row -->
+    </div>
+    <!-- /row -->
 
     <!-- Alerts -->
     <div class="hk-info-top clearfix">
@@ -87,9 +89,11 @@
     <!-- Response Time Graph -->
     <div class="hk-info-top clearfix">
       <h3 class="pull-left">Metrics</h3>
+
       <div class="hk-update pull-right">
         <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top"
-                tooltip-append-to-body="true"tooltip="Update chart" ng-click="vm.refreshChartDataNow(vm.getMetricId())">
+                tooltip-append-to-body="true" tooltip="Update chart"
+                ng-click="vm.refreshChartDataNow(vm.getMetricId())">
           <i class="fa fa-refresh"></i>
         </button>
       </div>
@@ -123,6 +127,7 @@
 
     <div class="panel panel-default hk-graph" ng-if="vm.average < 0">
       <h2>Response Time</h2>
+
       <div class="blank-slate-pf">
         <div class="blank-slate-pf-icon">
           <i class="fa fa-line-chart"></i>

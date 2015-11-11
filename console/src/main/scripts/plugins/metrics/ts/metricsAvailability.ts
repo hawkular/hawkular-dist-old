@@ -42,8 +42,8 @@ module HawkularMetrics {
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
-    private resourceId:ResourceId;
 
+    public resourceId:ResourceId;
     public uptimeRatio = 0;
     public downtimeDuration = 0;
     public downtimeDurationJson;
@@ -97,25 +97,6 @@ module HawkularMetrics {
 
       $scope.$on(EventNames.REFRESH_AVAIL_CHART, (/*event*/) => {
         this.refreshAvailPageNow(this.getResourceId());
-      });
-    }
-
-    public openAvailabilitySetup(): void {
-
-      let modalInstance = this.$modal.open({
-        templateUrl: 'plugins/metrics/html/modals/alerts-url-availability-setup.html',
-        controller: 'AlertUrlAvailabilitySetupController as mas',
-        resolve: {
-          resourceId: () => {
-            return this.resourceId;
-          }
-        }
-
-      });
-
-      let logger = this.$log;
-      modalInstance.result.then(null, () => {
-        logger.debug('Modal dismissed at: ' + new Date());
       });
     }
 

@@ -113,7 +113,7 @@ module HawkularMetrics {
   export class TriggerSetupController {
 
     public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService',
-      '$log', '$q', '$rootScope', '$routeParams', '$modalInstance', 'MetricsService', 'triggerId'];
+      '$log', '$q', '$rootScope', '$routeParams', 'MetricsService'];
 
     public fullTrigger:any = {};
 
@@ -121,6 +121,8 @@ module HawkularMetrics {
     public admBak:any = {};
     public saveProgress:boolean = false;
     public isSettingChange:boolean = false;
+
+    public alertList:any = [];
 
     constructor(protected $scope:any,
                 protected HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
@@ -130,17 +132,18 @@ module HawkularMetrics {
                 protected $q:ng.IQService,
                 protected $rootScope:any,
                 protected $routeParams:any,
-                protected $modalInstance:any,
-                protected MetricsService:IMetricsService,
-                protected triggerId) {
+                protected MetricsService:IMetricsService) {
       // TODO - update the pfly notification service to support more and category based notifications containers.
       this.$rootScope.hkNotifications = {alerts: []};
 
+      let triggerId = this.decodeResourceId(this.$routeParams.triggerId);
       let triggerPromise = this.loadTrigger(triggerId);
 
       this.$q.all(triggerPromise).then(() => {
         this.admBak = angular.copy(this.adm);
         this.isSettingChange = false;
+
+        this.getAlerts(triggerId);
       });
 
       this.$scope.$watch(angular.bind(this, () => {
@@ -148,6 +151,14 @@ module HawkularMetrics {
       }), () => {
         this.isSettingChange = !angular.equals(this.adm, this.admBak);
       }, true);
+    }
+
+    public cancel():string {
+      if (this.$rootScope.prevLocation) {
+        return this.$rootScope.prevLocation;
+      }
+
+      return '/hawkular-ui/alerts-center-triggers';
     }
 
     public save():void {
@@ -182,12 +193,27 @@ module HawkularMetrics {
           });
         }
 
-        this.cancel();
       });
     }
 
-    public cancel():void {
-      this.$modalInstance.dismiss('cancel');
+    public getAlerts(triggerId:string):void {
+      this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN,ACKNOWLEDGED', triggerIds: triggerId,
+        currentPage: 0, perPage: 10, thin: true
+      })  // just the top 10
+        .then((queriedAlerts)=> {
+          this.alertList = queriedAlerts.alertList;
+        }, (error) => {
+          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts for trigger:' + triggerId);
+        });
+    }
+
+    public getAlertRoute(alertId:AlertId):string {
+      let route = 'unknown-trigger-type';
+      let encodedId = this.encodeResourceId(alertId);
+      route = '/hawkular-ui/alerts-center-detail/' + encodedId;
+
+      return route;
     }
 
     loadTrigger(triggerId:string):Array<ng.IPromise<any>> {
@@ -197,36 +223,57 @@ module HawkularMetrics {
     saveTrigger(errorCallback):Array<ng.IPromise<any>> {
       throw new Error('This method is abstract');
     }
+
+    protected encodeResourceId(resourceId:string):string {
+      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
+      //let encoded = encodeURIComponent(resourceId);
+      let encoded = resourceId;
+      while (encoded.indexOf('/') > -1) {
+        encoded = encoded.replace('/', '$');
+      }
+      return encoded;
+    }
+
+    protected decodeResourceId(encodedResourceId:string):string {
+      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
+      //let decoded = decodeURIComponent(encodedResourceId);
+      let decoded = encodedResourceId;
+      while (decoded.indexOf('$') > -1) {
+        decoded = decoded.replace('$', '/');
+      }
+      return decoded;
+    }
+
   }
 
   export class MetricsAlertController {
-    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService','$log', '$q',
+    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService', '$log', '$q',
       '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
 
-    private resourceId: ResourceId;
-    public alertList: any  = [];
-    public openSetup: any;
-    public isResolvingAll: boolean = false;
+    private resourceId:ResourceId;
+    public alertList:any = [];
+    public openSetup:any;
+    public isResolvingAll:boolean = false;
 
-    public alertsTimeStart: TimestampInMillis;
-    public alertsTimeEnd: TimestampInMillis;
-    public alertsTimeOffset: TimestampInMillis;
+    public alertsTimeStart:TimestampInMillis;
+    public alertsTimeEnd:TimestampInMillis;
+    public alertsTimeOffset:TimestampInMillis;
 
-    public resCurPage: number = 0;
-    public resPerPage: number = 5;
-    public headerLinks: any;
+    public resCurPage:number = 0;
+    public resPerPage:number = 5;
+    public headerLinks:any;
 
     constructor(private $scope:any,
-                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private ErrorsManager: HawkularMetrics.IErrorsManager,
+                private HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
+                private ErrorsManager:HawkularMetrics.IErrorsManager,
                 private NotificationsService:INotificationsService,
-                private $log: ng.ILogService,
-                private $q: ng.IQService,
-                private $rootScope: IHawkularRootScope,
-                private $routeParams: any,
-                private $modal: any,
-                private $interval: ng.IIntervalService,
-                private HkHeaderParser: any) {
+                private $log:ng.ILogService,
+                private $q:ng.IQService,
+                private $rootScope:IHawkularRootScope,
+                private $routeParams:any,
+                private $modal:any,
+                private $interval:ng.IIntervalService,
+                private HkHeaderParser:any) {
 
       this.$log.debug('querying data');
       this.$log.debug('$routeParams', $routeParams);
@@ -239,26 +286,6 @@ module HawkularMetrics {
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
       this.getAlerts();
       this.autoRefresh(20);
-    }
-
-    public openResponseSetup() {
-      let modalInstance = this.$modal.open({
-        templateUrl: 'plugins/metrics/html/modals/alerts-url-response-setup.html',
-        controller: 'AlertUrlResponseSetupController as mas',
-        resolve: {
-          resourceId: function () {
-            return this.resourceId;
-          }
-        }
-      });
-
-      let logger = this.$log;
-
-      modalInstance.result.then(function (selectedItem) {
-        this.selected = selectedItem;
-      }, () => {
-        logger.info('Modal dismissed at: ' + new Date());
-      });
     }
 
     private autoRefresh(intervalInSeconds:number):void {
@@ -277,19 +304,23 @@ module HawkularMetrics {
 
       let triggerIds = this.resourceId + '_trigger_avail,' + this.resourceId + '_trigger_thres';
 
-      this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN', triggerIds: triggerIds, startTime: this.alertsTimeStart,
-        endTime: this.alertsTimeEnd, currentPage: this.resCurPage, perPage: this.resPerPage}).then((queriedAlerts)=> {
-          this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
-          _.forEach(queriedAlerts.alertList, (item) => {
-            if (item['type'] === 'THRESHOLD') {
-              item['alertType'] = 'PINGRESPONSE';
-            } else if (item['type'] === 'AVAILABILITY') {
-              item['alertType'] = 'PINGAVAIL';
-            }
-          });
-          this.alertList = queriedAlerts.alertList;
-          this.alertList.$resolved = true; // FIXME
-        }, (error) => { return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.'); });
+      this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN', triggerIds: triggerIds, startTime: this.alertsTimeStart,
+        endTime: this.alertsTimeEnd, currentPage: this.resCurPage, perPage: this.resPerPage
+      }).then((queriedAlerts)=> {
+        this.headerLinks = this.HkHeaderParser.parse(queriedAlerts.headers);
+        _.forEach(queriedAlerts.alertList, (item) => {
+          if (item['type'] === 'THRESHOLD') {
+            item['alertType'] = 'PINGRESPONSE';
+          } else if (item['type'] === 'AVAILABILITY') {
+            item['alertType'] = 'PINGAVAIL';
+          }
+        });
+        this.alertList = queriedAlerts.alertList;
+        this.alertList.$resolved = true; // FIXME
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+      });
     }
 
     public setPage(page:number):void {
@@ -297,14 +328,13 @@ module HawkularMetrics {
       this.getAlerts();
     }
 
-
-    public resolveAll(): void {
+    public resolveAll():void {
       this.isResolvingAll = true;
       let alertIdList = '';
       for (let i = 0; i < this.alertList.length; i++) {
         alertIdList = alertIdList + this.alertList[i].id + ',';
       }
-      alertIdList = alertIdList.slice(0, - 1);
+      alertIdList = alertIdList.slice(0, -1);
 
       let resolvedAlerts = {
         alertIds: alertIdList,
@@ -312,7 +342,7 @@ module HawkularMetrics {
         resolvedNotes: 'Manually resolved'
       };
 
-      this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then( () => {
+      this.HawkularAlertsManager.resolveAlerts(resolvedAlerts).then(() => {
         this.alertList.length = 0;
         this.isResolvingAll = false;
       });
@@ -405,17 +435,17 @@ module HawkularMetrics {
   }
 
   export class HkClearNotifications {
-    public link: (scope: IHkClearNotifications, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+    public link:(scope:IHkClearNotifications, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
     public scope = {
       hkClearNotifications: '='
     };
 
     constructor() {
-      this.link = (scope: IHkClearNotifications, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+      this.link = (scope:IHkClearNotifications, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
         angular.element('html').on('click', () => {
           if (scope.hkClearNotifications &&
-              scope.hkClearNotifications.length &&
-              scope.hkClearNotifications.length > 0 ) {
+            scope.hkClearNotifications.length &&
+            scope.hkClearNotifications.length > 0) {
             scope.$apply(()=> {
               scope.hkClearNotifications = [];
             });
