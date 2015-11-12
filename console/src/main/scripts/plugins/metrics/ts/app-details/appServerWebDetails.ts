@@ -105,11 +105,11 @@ module HawkularMetrics {
         startTime: startTime, endTime: endTime
       }).then((sessionsData)=> {
         _.forEach(sessionsData.alertList, (item) => {
-          if (item['triggerId'] === activeSessionsTriggerId) {
+          if (item.trigger.id === activeSessionsTriggerId) {
             item['alertType'] = 'ACTIVE_SESSIONS';
-          } else if (item['triggerId'] === expiredSessionsTriggerId) {
+          } else if (item.trigger.id === expiredSessionsTriggerId) {
             item['alertType'] = 'EXPIRED_SESSIONS';
-          } else if (item['triggerId'] === rejectedSessionsTriggerId) {
+          } else if (item.trigger.id === rejectedSessionsTriggerId) {
             item['alertType'] = 'REJECTED_SESSIONS';
           }
         });
