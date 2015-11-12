@@ -25,7 +25,7 @@ module HawkularMetrics {
   export class MetricsViewController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$log',
-      '$routeParams', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService', 'MetricsService'];
+      '$routeParams', 'HawkularAlertsManager', 'ErrorsManager', '$q', 'NotificationsService', 'MetricsService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
@@ -48,6 +48,7 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
+                private $q:ng.IQService,
                 private NotificationsService:INotificationsService,
                 private MetricsService:IMetricsService) {
       $scope.vm = this;
@@ -82,15 +83,29 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private getAlerts(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      let triggerIds = metricId + '_trigger_thres';
-      this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN', triggerIds: triggerIds, startTime: startTime,
-        endTime: endTime}).then((responseAlertData)=> {
-          _.forEach(responseAlertData.alertList, (item) => { item['alertType']='PINGRESPONSE';});
-          this.alertList = responseAlertData.alertList;
-        }, (error) => {
-          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+    private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      let alertsArray:IAlert[];
+      let promise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        tags: 'resourceId|' + resourceId, startTime: startTime, endTime: endTime
+      }).then((data)=> {
+        _.remove(data.alertList, (item) => {
+          switch (item.context.alertType) {
+            case 'PINGRESPONSE' :
+              item['alertType'] = item.context.alertType;
+              return false;
+            default :
+              return true; // ignore non-response-time alert
+          }
         });
+        alertsArray = data.alertList;
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching url RT alerts.');
+      });
+
+      this.$q.all([promise]).finally(()=> {
+        this.alertList = alertsArray;
+      });
     }
 
     private autoRefresh(intervalInSeconds:IntervalInSeconds):void {

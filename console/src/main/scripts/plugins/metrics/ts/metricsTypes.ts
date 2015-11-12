@@ -141,9 +141,10 @@ module HawkularMetrics {
 
   // Alerts
   export  interface IAlertContext {
+    alertType: string;
     resourceName: string;
-    resourceType: string;
     resourcePath: ResourcePath;
+    resourceType: string;
   }
 
   export interface IAlertAction {

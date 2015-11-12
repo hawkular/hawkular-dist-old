@@ -25,7 +25,7 @@ module HawkularMetrics {
 
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$routeParams', '$interval', '$q', 'HawkularInventory',
-      'HawkularMetric', 'HawkularNav', 'HawkularAlertsManager', 'MetricsService', '$log', '$modal'];
+      'HawkularMetric', 'HawkularNav', 'HawkularAlertsManager', 'ErrorsManager', 'MetricsService', '$log', '$modal'];
 
     public static AVAILABLE_COLOR = '#1884c7'; /// blue
     public static IN_USE_COLOR = '#49a547'; /// green
@@ -64,6 +64,7 @@ module HawkularMetrics {
                 private HawkularMetric:any,
                 private HawkularNav:any,
                 private HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
+                private ErrorsManager:IErrorsManager,
                 private MetricsService:IMetricsService,
                 private $log:ng.ILogService,
                 private $modal:any) {
@@ -96,37 +97,22 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis, res:any):void {
-      let connArray:any, respArray:any;
-      let connPromise = this.HawkularAlertsManager.queryAlerts({
+    private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis, res:any):void {
+      let dsArray:IAlert[];
+      let promise = this.HawkularAlertsManager.queryAlerts({
         statuses: 'OPEN',
-        triggerIds: metricIdPrefix + '_ds_conn', startTime: startTime, endTime: endTime
-      }).then((connData)=> {
-        _.forEach(connData.alertList, (item) => {
-          item['alertType'] = 'DSCONN';
-          item['condition'] = item['dataId'].substr(item['dataId'].lastIndexOf('~') + 1);
+        tags: 'resourceId|' + resourceId, startTime: startTime, endTime: endTime
+      }).then((data)=> {
+        _.forEach(data.alertList, (item) => {
+          item['alertType'] = item.context.alertType;
         });
-        connArray = connData.alertList;
+        dsArray = data.alertList;
       }, (error) => {
-        //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+        return this.ErrorsManager.errorHandler(error, 'Error fetching DS alerts.');
       });
 
-      let respPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        triggerIds: metricIdPrefix + '_ds_resp', startTime: startTime, endTime: endTime
-      }).then((respData)=> {
-        _.forEach(respData.alertList, (item) => {
-          item['alertType'] = 'DSRESP';
-          item['condition'] = item['dataId'].substr(item['dataId'].lastIndexOf('~') + 1);
-        });
-        respArray = respData.alertList;
-      }, (error) => {
-        //return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
-      });
-
-
-      this.$q.all([connPromise, respPromise]).finally(()=> {
-        res.alertList = [].concat(connArray, respArray);
+      this.$q.all([promise]).finally(()=> {
+        res.alertList = dsArray;
       });
     }
 
@@ -254,12 +240,13 @@ module HawkularMetrics {
       this.getDrivers();
     }
 
-    public getDrivers(currentTenantId?: TenantId): void {
+    public getDrivers(currentTenantId?:TenantId):void {
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         environmentId: globalEnvironmentId, feedId: this.$routeParams.resourceId.split('~')[0],
-        resourceTypeId: 'JDBC Driver'}, (aResourceList, getResponseHeaders) => {
+        resourceTypeId: 'JDBC Driver'
+      }, (aResourceList, getResponseHeaders) => {
         this.driversList = aResourceList;
-        _.forEach(this.driversList, function(item: any) {
+        _.forEach(this.driversList, function (item:any) {
           item.name = item.id.split('jdbc-driver=')[1];
         }, this);
       });
@@ -392,11 +379,15 @@ module HawkularMetrics {
             name: 'Datasource Available Connections',
             id: triggerId,
             description: 'Available Connection Count for Datasource ' + resId,
+            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+            autoEnable: true, // Enable trigger once an alert is resolved
+            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             actions: {email: [this.defaultEmail]},
             tags: {
               resourceId: resId
             },
             context: {
+              alertType: 'DSCONN',
               resourceType: 'DataSource',
               resourceName: resId,
               resourcePath: this.$rootScope.resourcePath,
@@ -444,11 +435,15 @@ module HawkularMetrics {
             name: 'Datasource Pool Wait Time',
             id: triggerId,
             description: 'Pool Wait Time Responsiveness for DS ' + resId,
+            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+            autoEnable: true, // Enable trigger once an alert is resolved
+            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             actions: {email: [this.defaultEmail]},
             tags: {
               resourceId: resId
             },
             context: {
+              alertType: 'DSRESP',
               resourceType: 'DataSource',
               resourceName: resId,
               triggerType: 'Threshold'
@@ -494,11 +489,15 @@ module HawkularMetrics {
             name: 'Datasource Pool Create Time',
             id: triggerId,
             description: 'Pool Create Time Responsiveness for DS ' + resId,
+            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+            autoEnable: true, // Enable trigger once an alert is resolved
+            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             actions: {email: [this.defaultEmail]},
             tags: {
               resourceId: resId
             },
             context: {
+              alertType: 'DSCREATE',
               resourceType: 'DataSource',
               resourceName: resId,
               triggerType: 'Threshold'

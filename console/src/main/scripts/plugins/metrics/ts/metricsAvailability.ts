@@ -38,7 +38,7 @@ module HawkularMetrics {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric',
       'MetricsService', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
-      'ErrorsManager', 'NotificationsService', '$modal'];
+      'ErrorsManager', '$q', 'NotificationsService'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
@@ -67,8 +67,8 @@ module HawkularMetrics {
                 private $moment:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
-                private NotificationsService:INotificationsService,
-                private $modal: any) {
+                private $q:ng.IQService,
+                private NotificationsService:INotificationsService) {
       $scope.vm = this;
 
       this.startTimeStamp = +$moment().subtract(1, 'hours');
@@ -100,15 +100,29 @@ module HawkularMetrics {
       });
     }
 
-    private getAlerts(metricId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      let triggerIds = metricId + '_trigger_avail';
-      this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN', triggerIds: triggerIds, startTime: startTime,
-        endTime: endTime}).then((alertAvailData)=> {
-          _.forEach(alertAvailData.alertList, (item) => { item['alertType']='PINGAVAIL';});
-          this.alertList = alertAvailData.alertList;
-        }, (error) => {
-          return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+    private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      let alertsArray:IAlert[];
+      let promise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        tags: 'resourceId|' + resourceId, startTime: startTime, endTime: endTime
+      }).then((data)=> {
+        _.remove(data.alertList, (item) => {
+          switch (item.context.alertType) {
+            case 'PINGAVAIL' :
+              item['alertType'] = item.context.alertType;
+              return false;
+            default :
+              return true; // ignore non-response-time alert
+          }
         });
+        alertsArray = data.alertList;
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching url RT alerts.');
+      });
+
+      this.$q.all([promise]).finally(()=> {
+        this.alertList = alertsArray;
+      });
     }
 
     public static min(a:number, b:number):number {
