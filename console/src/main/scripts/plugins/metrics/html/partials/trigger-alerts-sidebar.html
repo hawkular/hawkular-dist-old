@@ -12,7 +12,7 @@
               <i class="fa fa-exclamation-triangle hk-warning"></i>
             </div>
             <div class="hk-info-container">
-              <div class="hk-info-heading">{{alert.trigger.description}}</div>
+              <div class="hk-info-heading">{{alert.trigger.description | characters: 50 }}</div>
               <p class="hk-info-info">{{alert.ctime | date:'d MMM yyyy, HH:mm'}}</p>
             </div>
             <div class="hk-icon-container">

@@ -70,7 +70,7 @@
             <td>{{trigger.description}}</td>
             <td><a ng-href="{{act.getResourceRoute(trigger)}}">{{trigger.context.resourceName|truncate: 30}}</a></td>
             <td>{{trigger.severity|firstUpper}}</td>
-            <td>{{trigger.enabled ? "True" : "False"}}</td>
+            <td>{{trigger.enabled ? "Enabled" : "Disabled"}}</td>
             <td>{{trigger.actions.email.length}} <i class="fa fa-envelope"></i></td>
             <td><a ng-href="{{act.getDetailRoute(trigger)}}" class="btn btn-link"><i class="fa fa-chevron-circle-right fa-lg"
                                            tooltip="View Details" tooltip-trigger tooltip-placement="top">

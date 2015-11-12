@@ -100,39 +100,31 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-
-      let activeSessionsTriggerId = metricIdPrefix + '_web_active_sessions';
-      let expiredSessionsTriggerId = metricIdPrefix + '_web_expired_sessions';
-      let rejectedSessionsTriggerId = metricIdPrefix + '_web_rejected_sessions';
-
-      let triggerIds = activeSessionsTriggerId + ',' + expiredSessionsTriggerId + ',' + rejectedSessionsTriggerId;
-
-      let sessionsArray:any;
-      let sessionsPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN', triggerIds: triggerIds,
-        startTime: startTime, endTime: endTime
-      }).then((sessionsData)=> {
-        _.forEach(sessionsData.alertList, (item) => {
-          if (item.triggerId === undefined) {
-            let itemId = item.id;
-            item.triggerId = itemId.substr(0, itemId.lastIndexOf('-'));
-          }
-          if (item.triggerId === activeSessionsTriggerId) {
-            item['alertType'] = WebAlertType.ACTIVE_SESSIONS;
-          } else if (item.triggerId === expiredSessionsTriggerId) {
-            item['alertType'] = WebAlertType.EXPIRED_SESSIONS;
-          } else if (item.triggerId === rejectedSessionsTriggerId) {
-            item['alertType'] = WebAlertType.REJECTED_SESSIONS;
+    private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      let webArray: IAlert[];
+      let webPromise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        tags: 'resourceId|' + resourceId,
+        startTime: startTime,
+        endTime: endTime
+      }).then((webData)=> {
+        _.remove(webData.alertList, (item) => {
+          switch( item.context.alertType ) {
+            case 'ACTIVE_SESSIONS' :
+            case 'EXPIRED_SESSIONS' :
+            case 'REJECTED_SESSIONS' :
+              item['alertType'] = item.context.alertType;
+              return false;
+            default : return true; // ignore non-web alert
           }
         });
-        sessionsArray = sessionsData.alertList;
+        webArray = webData.alertList;
       }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+        return this.ErrorsManager.errorHandler(error, 'Error fetching web alerts.');
       });
 
-      this.$q.all([sessionsPromise]).finally(()=> {
-        this.alertList = [].concat(sessionsArray);
+      this.$q.all([webPromise]).finally(()=> {
+        this.alertList = webArray;
       });
     }
 

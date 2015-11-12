@@ -98,46 +98,31 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      let pheapArray:any, nheapArray:any, garbaArray:any;
-      let pheapPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: AppServerJvmDetailsController.STATUSES,
-        triggerIds: metricIdPrefix + '_jvm_pheap', startTime: startTime, endTime: endTime
-      }).then((pheapData)=> {
-        _.forEach(pheapData.alertList, (item) => {
-          item['alertType'] = 'PHEAP';
+    private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      let jvmArray: IAlert[];
+      let jvmPromise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        tags: 'resourceId|' + resourceId,
+        startTime: startTime,
+        endTime: endTime
+      }).then((jvmData)=> {
+        _.remove(jvmData.alertList, (item) => {
+          switch( item.context.alertType ) {
+            case 'PHEAP' :
+            case 'NHEAP' :
+            case 'GARBA' :
+              item['alertType'] = item.context.alertType;
+              return false;
+            default : return true; // ignore non-jvm alert
+          }
         });
-        pheapArray = pheapData.alertList;
+        jvmArray = jvmData.alertList;
       }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
+        return this.ErrorsManager.errorHandler(error, 'Error fetching jvm alerts.');
       });
 
-      let nheapPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: AppServerJvmDetailsController.STATUSES,
-        triggerIds: metricIdPrefix + '_jvm_nheap', startTime: startTime, endTime: endTime
-      }).then((nheapData)=> {
-        _.forEach(nheapData.alertList, (item) => {
-          item['alertType'] = 'NHEAP';
-        });
-        nheapArray = nheapData.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
-      });
-
-      let garbaPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: AppServerJvmDetailsController.STATUSES,
-        triggerIds: metricIdPrefix + '_jvm_garba', startTime: startTime, endTime: endTime
-      }).then((garbaData)=> {
-        _.forEach(garbaData.alertList, (item) => {
-          item['alertType'] = 'GARBA';
-        });
-        garbaArray = garbaData.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
-      });
-
-      this.$q.all([pheapPromise, nheapPromise, garbaPromise]).finally(()=> {
-        this.alertList = [].concat(pheapArray, nheapArray, garbaArray);
+      this.$q.all([jvmPromise]).finally(()=> {
+        this.alertList = jvmArray;
       });
     }
 

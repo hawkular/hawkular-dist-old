@@ -56,7 +56,6 @@ module HawkularMetrics {
     private resourceList;
     private resPerPage = 5;
     public resCurPage = 0;
-    public alertList;
     public lastUpdateTimestamp:Date = new Date();
     public headerLinks:any = {};
 
@@ -217,13 +216,15 @@ module HawkularMetrics {
               id: triggerId,
               name: 'URL Response [' + url + ']',
               description: 'Response Time for URL ' + url,
+              autoEnable: true, // Enable trigger once an alert is resolved
+              autoResolve: true, // We do support AUTORESOLVE mode as an inverse of the firing conditions
               severity: 'HIGH',
               actions: {email: [defaultEmail]},
               tags: {
                 resourceId: resourceId
               },
               context: {
-                description: 'Response Time for URL ' + url, // Workaround for sorting
+                alertType: 'PINGRESPONSE',
                 resourceType: 'URL',
                 resourceName: url,
                 resourcePath: resourcePath,
@@ -285,13 +286,15 @@ module HawkularMetrics {
               id: triggerId,
               name: 'URL Down [' + url + ']',
               description: 'Availability for URL ' + url,
+              autoEnable: true, // Enable trigger once an alert is resolved
+              autoResolve: true, // We do support AUTORESOLVE mode as an inverse of the firing conditions
               severity: 'CRITICAL',
               actions: {email: [defaultEmail]},
               tags: {
                 resourceId: resourceId
               },
               context: {
-                description: 'Availability for URL ' + url, // Workaround for sorting
+                alertType: 'PINGAVAIL',
                 resourceType: 'URL',
                 resourceName: url,
                 resourcePath: resourcePath,
@@ -364,9 +367,6 @@ module HawkularMetrics {
           this.headerLinks = this.HkHeaderParser.parse(getResponseHeaders());
 
           aResourceList.expanded = this.resourceList ? this.resourceList.expanded : [];
-          this.HawkularAlertsManager.queryAlerts({statuses: 'OPEN'}).then((queriedAlerts) => {
-            this.alertList = queriedAlerts.alertList;
-          });
           let promises = [];
           angular.forEach(aResourceList, function (res) {
             let traitsArray:string[] = [];

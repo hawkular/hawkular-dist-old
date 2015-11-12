@@ -171,7 +171,7 @@ module HawkularMetrics {
               resourceId: resourceId
             },
             context: {
-              description: 'JVM Heap Used for ' + resourceId, // Workaround for sorting
+              alertType: 'PHEAP',
               resourceType: 'App Server',
               resourceName: resourceId,
               resourcePath: this.$rootScope.resourcePath,
@@ -248,7 +248,7 @@ module HawkularMetrics {
               resourceId: resourceId
             },
             context: {
-              description: 'JVM Non Heap Used for ' + resourceId, // Workaround for sorting
+              alertType: 'NHEAP',
               resourceType: 'App Server',
               resourceName: resourceId,
               resourcePath: this.$rootScope.resourcePath,
@@ -308,7 +308,7 @@ module HawkularMetrics {
 
         let fullTrigger = {
           trigger: {
-            name: 'Accumulated GC Duration',
+            name: 'JVM Accumulated GC Duration',
             id: triggerId,
             description: 'Accumulated GC Duration for ' + resourceId,
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
@@ -320,7 +320,7 @@ module HawkularMetrics {
               resourceId: resourceId
             },
             context: {
-              description: 'Accumulated GC Duration for ' + resourceId, // Workaround for sorting
+              alertType: 'GARBA',
               resourceType: 'App Server',
               resourceName: resourceId,
               resourcePath: this.$rootScope.resourcePath,
@@ -370,7 +370,7 @@ module HawkularMetrics {
 
           let fullTrigger = {
             trigger: {
-              name: 'Active Web Sessions',
+              name: 'Web Sessions Active',
               id: triggerId,
               description: 'Active Web Sessions for ' + resourceId,
               autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
@@ -382,7 +382,7 @@ module HawkularMetrics {
                 resourceId: resourceId
               },
               context: {
-                description: 'Active Web Sessions for ' + resourceId, // Workaround for sorting
+                alertType: 'ACTIVE_SESSIONS',
                 resourceType: 'App Server',
                 resourceName: resourceId,
                 resourcePath: this.$rootScope.resourcePath,
@@ -433,7 +433,7 @@ module HawkularMetrics {
 
           let fullTrigger = {
             trigger: {
-              name: 'Expired Web Sessions',
+              name: 'Web Sessions Expired',
               id: triggerId,
               description: 'Expired Web Sessions for ' + resourceId,
               autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
@@ -445,7 +445,7 @@ module HawkularMetrics {
                 resourceId: resourceId
               },
               context: {
-                description: 'Expired Web Sessions for ' + resourceId, // Workaround for sorting
+                alertType: 'EXPIRED_SESSIONS',
                 resourceType: 'App Server',
                 resourceName: resourceId,
                 resourcePath: this.$rootScope.resourcePath,
@@ -494,7 +494,7 @@ module HawkularMetrics {
 
           let fullTrigger = {
             trigger: {
-              name: 'Rejected Web Sessions',
+              name: 'Web Sessions Rejected',
               id: triggerId,
               description: 'Rejected Web Sessions for ' + resourceId,
               autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
@@ -506,7 +506,7 @@ module HawkularMetrics {
                 resourceId: resourceId
               },
               context: {
-                description: 'Rejected Web Sessions for ' + resourceId, // Workaround for sorting
+                alertType: 'REJECTED_SESSIONS',
                 resourceType: 'App Server',
                 resourceName: resourceId,
                 resourcePath: this.$rootScope.resourcePath,
