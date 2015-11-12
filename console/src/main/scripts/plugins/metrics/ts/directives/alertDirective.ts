@@ -20,6 +20,28 @@
 
 module HawkularMetrics {
 
+  export class HkAlertInfo {
+    public link:(scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
+    public replace = 'true';
+    public scope = {
+      list: '=',
+      limit: '=',
+      resourceId: '=',
+      title: '@'
+    };
+    public templateUrl = 'plugins/metrics/html/directives/alert-info.html';
+
+    public static Factory() {
+      let directive = () => {
+        return new HkAlertInfo();
+      };
+
+      directive['$inject'] = [];
+
+      return directive;
+    }
+  }
+
   export class HkAlertPanel {
 
     public link:(scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
@@ -32,8 +54,16 @@ module HawkularMetrics {
     public templateUrl = 'plugins/metrics/html/directives/alert.html';
 
 
-    constructor(private HawkularAlertsManager) {
+    constructor(private HawkularAlertsManager,
+                private $location:ng.ILocationService) {
       this.link = (scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+        scope.showDetailPage = (alert:any):void => {
+          let alertId = alert.alertId || alert.id;
+          let timeOffset = (alert.timeOffSet !== undefined)?alert.timeOffSet:3600000 * 12;
+          let endTime = alert.ctime;
+          this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}/${timeOffset}/${endTime}`);
+        };
+
         scope.alertResolve = ():void => {
           let resolvedAlerts = {
             alertIds: scope.alert.id,
@@ -48,11 +78,11 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      let directive = (HawkularAlertsManager:any) => {
-        return new HkAlertPanel(HawkularAlertsManager);
+      let directive = (HawkularAlertsManager:any, $location:any) => {
+        return new HkAlertPanel(HawkularAlertsManager, $location);
       };
 
-      directive['$inject'] = ['HawkularAlertsManager'];
+      directive['$inject'] = ['HawkularAlertsManager', '$location'];
 
       return directive;
     }
@@ -144,11 +174,6 @@ module HawkularMetrics {
     }
   }
 
-  _module.service('hkTime', HawkularMetrics.HkTime);
-  _module.directive('hkAlertPanelList', HawkularMetrics.HkAlertPanelList.Factory());
-  _module.directive('hkAlertPanel', HawkularMetrics.HkAlertPanel.Factory());
-  _module.directive('hkTimeInterval', HawkularMetrics.HkTimeInterval.Factory());
-
   export class HkFieldsetNotification {
 
     public link:(scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
@@ -169,8 +194,6 @@ module HawkularMetrics {
       return directive;
     }
   }
-
-  _module.directive('hkFieldsetNotification', HawkularMetrics.HkFieldsetNotification.Factory());
 
   export class HkTimeUnit {
 
@@ -218,8 +241,6 @@ module HawkularMetrics {
       return directive;
     }
   }
-
-  _module.service('hkTimeUnit', HawkularMetrics.HkTimeUnit.Factory());
 
   export class HkFieldsetDampening {
 
@@ -280,5 +301,12 @@ module HawkularMetrics {
     }
   }
 
+  _module.service('hkTimeUnit', HawkularMetrics.HkTimeUnit.Factory());
+  _module.service('hkTime', HawkularMetrics.HkTime);
+  _module.directive('hkFieldsetNotification', HawkularMetrics.HkFieldsetNotification.Factory());
+  _module.directive('hkAlertPanelList', HawkularMetrics.HkAlertPanelList.Factory());
+  _module.directive('hkAlertPanel', HawkularMetrics.HkAlertPanel.Factory());
+  _module.directive('hkTimeInterval', HawkularMetrics.HkTimeInterval.Factory());
   _module.directive('hkFieldsetDampening', HawkularMetrics.HkFieldsetDampening.Factory());
+  _module.directive('hkAlertInfo', HawkularMetrics.HkAlertInfo.Factory());
 }

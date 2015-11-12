@@ -24,10 +24,6 @@ module HawkularMetrics {
 
   export class AlertsCenterController {
 
-    public static  $inject = ['$scope', 'HawkularAlertsManager',
-      'ErrorsManager', '$log', '$q', '$rootScope', '$interval', '$routeParams',
-      'HkHeaderParser', '$location'];
-
     public isWorking = false;
     public alertsTimeStart:TimestampInMillis;
     public alertsTimeEnd:TimestampInMillis;

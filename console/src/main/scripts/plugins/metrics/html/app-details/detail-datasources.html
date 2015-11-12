@@ -1,5 +1,4 @@
 <section id="hk-datasources" class="hk-tab-content">
-
   <div class="clearfix">
 
     <div class="hk-control-actions-bar pull-left">
@@ -97,108 +96,85 @@
     </div>
 
     <div class="hk-collapsible-area" ng-if="vm.expandedList[ds.id]">
-
-      <div class="hk-info-top clearfix">
-        <h3 class="pull-left">
-          <button class="btn btn-link hk-trigger" ng-click="vm.showAllAlerts = !vm.showAllAlerts" tooltip-trigger
-                  tooltip-placement="top" tooltip="Expand/collapse">
-            <i class="fa" ng-show="ds.alertList.length"
-               ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> Datasource Alerts
-            <span ng-show="ds.alertList.length">
-              ({{vm.showAllAlerts ? ds.alertList.length : vm.math.min(ds.alertList.length, 3)}} of
-              {{ds.alertList.length}})
-            </span>
-          </button>
-        </h3>
-        <span class="hk-settings pull-left">
-          <a ng-href="/hawkular-ui/alerts-center-triggers/{{vm.encodeResourceId(ds.id)}}">
-            <i class="fa fa-cog"></i>Alert Settings
-          </a>
-        </span>
-      </div>
-      <div class="clearfix">
-        <!-- No Alerts -->
-        <div class="panel panel-default alert alert-info" ng-show="ds.alertList.length === 0">
-          <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-          <div class="hk-event">No Alerts.</div>
-        </div>
-        <!-- Alerts exist -->
-        <hk-alert-panel-list class="clearfix" hk-alert-list="ds.alertList"
-                             hk-limit="(vm.showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
-      </div>
-
-      <div class="hk-info-top clearfix">
-        <h3 class="pull-left">Metrics</h3>
-
-        <div class="hk-update pull-right">
-          <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top"
-                  tooltip-append-to-body="true" tooltip="Update chart">
-            <i class="fa fa-refresh"></i>
-          </button>
-        </div>
-      </div>
-
-      <div class="panel panel-default hk-graph" ng-if="vm.resolvedAvailData[ds.id]">
-        <h2>Availability</h2>
-        <div class="hk-graph-container hk-graph-metrics">
-          <hawkular-chart
-              multi-data="vm.chartAvailData[ds.id]"
-              chart-type="multiline"
-              y-axis-units="Availability (#)"
-              chart-height="250">
-          </hawkular-chart>
-        </div>
-        <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
-          <div class="col-md-12">
-            <h4>Connection Availability</h4>
-            <div class="hk-graphselector hk-blue">
-              <input id="connavail_{{$index}}" type="checkbox"
-                     ng-checked="!vm.skipChartData[ds.id + '_Available Count']"
-                     ng-click="vm.toggleChartData(ds.id + '_Available Count')">
-              <label for="connavail_{{$index}}"><span>Available Connections</span></label>
+      <div class="row">
+        <div class="col-lg-9">
+          <div class="hk-info-top clearfix">
+            <h3 class="pull-left">Metrics</h3>
+            <div class="hk-update pull-right">
+              <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top"
+                      tooltip-append-to-body="true" tooltip="Update chart">
+                <i class="fa fa-refresh"></i>
+              </button>
             </div>
-            <div class="hk-graphselector hk-green">
-              <input id="conninuse_{{$index}}" type="checkbox"
-                     ng-checked="!vm.skipChartData[ds.id + '_In Use Count']"
-                     ng-click="vm.toggleChartData(ds.id + '_In Use Count')">
-              <label for="conninuse_{{$index}}"><span>Connections in Use</span></label>
+          </div>
+          <div class="panel panel-default hk-graph" ng-if="vm.resolvedAvailData[ds.id]">
+            <h2>Availability</h2>
+            <div class="hk-graph-container hk-graph-metrics">
+              <hawkular-chart
+                multi-data="vm.chartAvailData[ds.id]"
+                chart-type="multiline"
+                y-axis-units="Availability (#)"
+                chart-height="250">
+              </hawkular-chart>
             </div>
-            <div class="hk-graphselector hk-gray">
-              <input id="conntimed_{{$index}}" type="checkbox"
-                     ng-checked="!vm.skipChartData[ds.id + '_Timed Out']"
-                     ng-click="vm.toggleChartData(ds.id + '_Timed Out')">
-              <label for="conntimed_{{$index}}"><span>Timed-out Connections</span></label>
+            <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
+              <div class="col-md-12">
+                <h4>Connection Availability</h4>
+                <div class="hk-graphselector hk-blue">
+                  <input id="connavail_{{$index}}" type="checkbox"
+                         ng-checked="!vm.skipChartData[ds.id + '_Available Count']"
+                         ng-click="vm.toggleChartData(ds.id + '_Available Count')">
+                  <label for="connavail_{{$index}}"><span>Available Connections</span></label>
+                </div>
+                <div class="hk-graphselector hk-green">
+                  <input id="conninuse_{{$index}}" type="checkbox"
+                         ng-checked="!vm.skipChartData[ds.id + '_In Use Count']"
+                         ng-click="vm.toggleChartData(ds.id + '_In Use Count')">
+                  <label for="conninuse_{{$index}}"><span>Connections in Use</span></label>
+                </div>
+                <div class="hk-graphselector hk-gray">
+                  <input id="conntimed_{{$index}}" type="checkbox"
+                         ng-checked="!vm.skipChartData[ds.id + '_Timed Out']"
+                         ng-click="vm.toggleChartData(ds.id + '_Timed Out')">
+                  <label for="conntimed_{{$index}}"><span>Timed-out Connections</span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel panel-default hk-graph" ng-if="vm.resolvedRespData[ds.id]">
+            <h2>Responsiveness</h2>
+            <div class="hk-graph-container hk-graph-metrics">
+              <hawkular-chart
+                multi-data="vm.chartRespData[ds.id]"
+                chart-type="multiline"
+                y-axis-units="Responsiveness (ms)"
+                chart-height="250">
+              </hawkular-chart>
+            </div>
+            <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
+              <div class="col-md-12">
+                <h4>Responsiveness</h4>
+                <div class="hk-graphselector hk-yellow">
+                  <input id="waittime_{{$index}}" type="checkbox"
+                         ng-checked="!vm.skipChartData[ds.id + '_Average Get Time']"
+                         ng-click="vm.toggleChartData(ds.id + '_Average Get Time')">
+                  <label for="waittime_{{$index}}"><span>Wait Time (Avg.)</span></label>
+                </div>
+                <div class="hk-graphselector hk-purple">
+                  <input id="creationtime_{{$index}}" type="checkbox"
+                         ng-checked="!vm.skipChartData[ds.id + '_Average Creation Time']"
+                         ng-click="vm.toggleChartData(ds.id + '_Average Creation Time')">
+                  <label for="creationtime_{{$index}}"><span>Creation Time (Avg.)</span></label>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+        <div class="col-lg-3">
+          <hk-alert-info list="ds.alertList" limit="(vm.showAllAlerts ? 100000 : 3)" resource-id="vm.encodeResourceId(ds.id)" title="Datasource">
 
-      <div class="panel panel-default hk-graph" ng-if="vm.resolvedRespData[ds.id]">
-        <h2>Responsiveness</h2>
-        <div class="hk-graph-container hk-graph-metrics">
-          <hawkular-chart
-              multi-data="vm.chartRespData[ds.id]"
-              chart-type="multiline"
-              y-axis-units="Responsiveness (ms)"
-              chart-height="250">
-          </hawkular-chart>
-        </div>
-        <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
-          <div class="col-md-12">
-            <h4>Responsiveness</h4>
-            <div class="hk-graphselector hk-yellow">
-              <input id="waittime_{{$index}}" type="checkbox"
-                     ng-checked="!vm.skipChartData[ds.id + '_Average Get Time']"
-                     ng-click="vm.toggleChartData(ds.id + '_Average Get Time')">
-              <label for="waittime_{{$index}}"><span>Wait Time (Avg.)</span></label>
-            </div>
-            <div class="hk-graphselector hk-purple">
-              <input id="creationtime_{{$index}}" type="checkbox"
-                     ng-checked="!vm.skipChartData[ds.id + '_Average Creation Time']"
-                     ng-click="vm.toggleChartData(ds.id + '_Average Creation Time')">
-              <label for="creationtime_{{$index}}"><span>Creation Time (Avg.)</span></label>
-            </div>
-          </div>
+          </hk-alert-info>
         </div>
       </div>
     </div>

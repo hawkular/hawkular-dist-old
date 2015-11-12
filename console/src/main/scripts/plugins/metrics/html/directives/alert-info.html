@@ -1,0 +1,25 @@
+<div>
+  <div class="hk-info-top clearfix">
+    <span class="hk-settings pull-right">
+      <a href="#" ng-show="resourceId" ng-href="/hawkular-ui/alerts-center-triggers/{{resourceId}}">
+        <i class="fa fa-cog"></i>Alerts settings
+      </a>
+      <a ng-hide="resourceId">&nbsp;</a>
+    </span>
+  </div>
+  <div class="panel panel-default clearfix">
+    <div class="panel-heading clearfix">
+      <h2 class="pull-left">{{title}} Alerts</h2>
+      <span class="label label-default pull-right">{{list.length}}</span>
+    </div>
+
+    <!-- No Alerts -->
+    <div class="panel panel-default alert alert-info" ng-hide="list">
+      <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
+      <div class="hk-event">No Alerts.</div>
+    </div>
+    <!-- Alerts exist -->
+    <hk-alert-panel-list class="panel-body" hk-alert-list="list"
+                         hk-limit="hkLimit"></hk-alert-panel-list>
+  </div>
+</div>

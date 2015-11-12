@@ -1,163 +1,124 @@
 <section id="hk-jvm-metrics" class="hk-tab-content">
-
-  <h3 class="pull-left">JVM Status</h3>
-
-  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
-    <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
-  </span>
-
-  <div class="row row-cards-pf">
-    <div class="col-md-3">
-      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-        <h2 class="card-pf-title">
-          <i class="fa fa-flag" ng-show="vm.alertList.length"></i>
-          <span class="card-pf-aggregate-status-count">{{vm.alertList.length}}</span> JVM Alerts
-        </h2>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-        <h2 class="card-pf-title">
-          <span class="card-pf-aggregate-status-count" ng-show="vm.heapUsage">{{ vm.heapUsage.avg / 1024 / 1024 | number : 0 }} MB</span>
-          <span class="card-pf-aggregate-status-count" ng-hide="vm.heapUsage">n/a</span>
-          Average Heap Usage
-        </h2>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-        <h2 class="card-pf-title">
-          <span class="card-pf-aggregate-status-count" ng-show="vm.accGCDuration">{{ vm.accGCDuration }} ms</span>
-          <span class="card-pf-aggregate-status-count" ng-hide="vm.accGCDuration">n/a</span>
-          GC Duration
-        </h2>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-        <h2 class="card-pf-title">
-          <span class="card-pf-aggregate-status-count" ng-show="vm.heapMax">{{ vm.heapMax.max / 1024 / 1024 | number : 0 }} MB</span>
-          <span class="card-pf-aggregate-status-count" ng-hide="vm.heapMax">n/a</span>
-          Maximum Heap Usage
-        </h2>
-      </div>
-    </div>
-  </div><!-- /row -->
-
-  <div class="hk-info-top clearfix">
-    <h3 class="pull-left">
-      <button class="btn btn-link hk-trigger" ng-click="vm.showAllAlerts = !vm.showAllAlerts" tooltip-trigger
-              tooltip-placement="top" tooltip="Expand/collapse">
-        <i class="fa" ng-show="vm.alertList.length"
-           ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> JVM Alerts
-        <span ng-show="vm.alertList.length">
-          ({{vm.showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})
-        </span>
-      </button>
-    </h3>
-    <span class="hk-settings pull-left">
-      <a ng-href="/hawkular-ui/alerts-center-triggers/{{vm.resourceId}}">
-        <i class="fa fa-cog"></i>Alert Settings
-      </a>
-    </span>
-  </div>
-  <div class="clearfix">
-    <!-- No Alerts -->
-    <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
-      <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-      <div class="hk-event">No Alerts.</div>
-    </div>
-    <!-- Alerts exist -->
-    <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList"
-                         hk-limit="(vm.showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
-  </div>
-
-
-  <div class="hk-info-top clearfix">
-    <h3 class="pull-left">Metrics</h3>
-    <div class="hk-update pull-right">
-      <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip-append-to-body="true"
-              tooltip="Update chart" ng-click="vm.getJvmChartData()">
-        <i class="fa fa-refresh"></i></button>
+  <div class="row">
+    <div class="col-md-12">
+      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
     </div>
   </div>
+  <div class="row">
+    <div class="col-lg-9">
+      <h3 class="pull-left">JVM Status</h3>
+      <div class="panel panel-default hk-summary">
+        <div class="row">
+          <div class="col-sm-3 hk-summary-item">
+            <span class="hk-data">{{vm.alertList.length}} <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i></span>
+            <span class="hk-item">JVM Alerts</span>
+          </div>
+          <div class="col-sm-3 hk-summary-item">
+            <span class="hk-data" ng-show="vm.heapUsage">{{ vm.heapUsage.avg / 1024 / 1024 | number : 0 }} MB</span>
+            <span class="hk-data" ng-hide="vm.heapUsage">n/a</span>
+            <span class="hk-item">Average Heap Usage</span>
+          </div>
+          <div class="col-sm-3 hk-summary-item">
+            <span class="hk-data" ng-show="vm.accGCDuration">{{ vm.accGCDuration }} ms</span>
+            <span class="hk-data" ng-hide="vm.accGCDuration">n/a</span>
+            <span class="hk-item">Last Garbage Collection (Duration)</span>
+          </div>
+          <div class="col-sm-3 hk-summary-item">
+            <span class="hk-data" ng-show="vm.heapMax">{{ vm.heapMax.max / 1024 / 1024 | number : 0 }} MB</span>
+            <span class="hk-data" ng-hide="vm.heapMax">n/a</span>
+            <span class="hk-item">Maximum Heap</span>
+          </div>
+        </div><!-- /row -->
+      </div>
+      <div class="hk-info-top clearfix">
+        <h3 class="pull-left">Metrics</h3>
+        <div class="hk-update pull-right">
+          <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart" ng-click="vm.getJvmChartData()"><i class="fa fa-refresh"></i></button>
+        </div>
+      </div>
 
-  <div class="panel panel-default hk-graph" ng-if="vm.chartGCDurationData">
-    <h2>JVM Heap Usage</h2>
-    <div class="hk-graph-container hk-graph-metrics">
-      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-      <hawkular-chart
-          multi-data="vm.chartHeapData"
-          chart-type="multiline"
-          y-axis-units="Usage (MB)"
-          chart-height="250">
-      </hawkular-chart>
-    </div>
-    <div class="row hk-legend text-left hk-legend-metrics">
-      <div class="col-md-3 col-lg-2">
-        <div class="hk-graphselector hk-blue">
-          <input type="checkbox" id="h-used" checked="checked" ng-click="vm.toggleChartData('Heap Used')">
-          <label for="h-used"><span>Used</span></label>
+      <div class="panel panel-default hk-graph" ng-if="vm.chartGCDurationData">
+        <h2>JVM Heap Usage</h2>
+        <div class="hk-graph-container hk-graph-metrics">
+          <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+          <hawkular-chart
+            multi-data="vm.chartHeapData"
+            chart-type="multiline"
+            y-axis-units="Usage (MB)"
+            chart-height="250">
+          </hawkular-chart>
+        </div>
+        <div class="row hk-legend text-left hk-legend-metrics">
+          <div class="col-md-3 col-lg-2">
+            <div class="hk-graphselector hk-blue">
+              <input type="checkbox" id="h-used" checked="checked" ng-click="vm.toggleChartData('Heap Used')">
+              <label for="h-used"><span>Used</span></label>
+            </div>
+          </div>
+          <div class="col-md-3 col-lg-2">
+            <div class="hk-graphselector hk-gray">
+              <input type="checkbox" id="h-committed" checked="checked" ng-click="vm.toggleChartData('Heap Committed')">
+              <label for="h-committed"><span>Committed</span></label>
+            </div>
+          </div>
+          <div class="col-md-3 col-lg-2">
+            <div class="hk-graphselector hk-orange">
+              <input type="checkbox" id="h-maximum" checked="checked" ng-click="vm.toggleChartData('Heap Max')">
+              <label for="h-maximum"><span>Maximum</span></label>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-md-3 col-lg-2">
-        <div class="hk-graphselector hk-gray">
-          <input type="checkbox" id="h-committed" checked="checked" ng-click="vm.toggleChartData('Heap Committed')">
-          <label for="h-committed"><span>Committed</span></label>
-        </div>
-      </div>
-      <div class="col-md-3 col-lg-2">
-        <div class="hk-graphselector hk-orange">
-          <input type="checkbox" id="h-maximum" checked="checked" ng-click="vm.toggleChartData('Heap Max')">
-          <label for="h-maximum"><span>Maximum</span></label>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="panel panel-default hk-graph" ng-if="vm.chartGCDurationData">
-    <h2>Non Heap Usage</h2>
-    <div class="hk-graph-container hk-graph-metrics">
-      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-      <hawkular-chart
-          multi-data="vm.chartNonHeapData"
-          chart-type="multiline"
-          y-axis-units="Usage (MB)"
-          chart-height="250">
-      </hawkular-chart>
-    </div>
-    <div class="row hk-legend text-left hk-legend-metrics">
-      <div class="col-md-3 col-lg-2">
-        <div class="hk-graphselector hk-blue">
-          <input type="checkbox" id="nh-used" checked="checked" ng-click="vm.toggleChartData('NonHeap Used')">
-          <label for="nh-used"><span>Used</span></label>
+      <div class="panel panel-default hk-graph" ng-if="vm.chartGCDurationData">
+        <h2>Non Heap Usage</h2>
+        <div class="hk-graph-container hk-graph-metrics">
+          <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+          <hawkular-chart
+            multi-data="vm.chartNonHeapData"
+            chart-type="multiline"
+            y-axis-units="Usage (MB)"
+            chart-height="250">
+          </hawkular-chart>
+        </div>
+        <div class="row hk-legend text-left hk-legend-metrics">
+          <div class="col-md-3 col-lg-2">
+            <div class="hk-graphselector hk-blue">
+              <input type="checkbox" id="nh-used" checked="checked" ng-click="vm.toggleChartData('NonHeap Used')">
+              <label for="nh-used"><span>Used</span></label>
+            </div>
+          </div>
+          <div class="col-md-3 col-lg-2">
+            <div class="hk-graphselector hk-gray">
+              <input type="checkbox" id="nh-committed" checked="checked" ng-click="vm.toggleChartData('NonHeap Committed')">
+              <label for="nh-committed"><span>Committed</span></label>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-md-3 col-lg-2">
-        <div class="hk-graphselector hk-gray">
-          <input type="checkbox" id="nh-committed" checked="checked" ng-click="vm.toggleChartData('NonHeap Committed')">
-          <label for="nh-committed"><span>Committed</span></label>
+
+      <div class="panel panel-default hk-graph" ng-if="vm.chartGCDurationData">
+        <h2>GC Duration</h2>
+        <div class="hk-graph-container hk-graph-metrics">
+          <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+          <hawkular-chart
+            data="vm.chartGCDurationData"
+            chart-type="histogram"
+            alert-value="{{vm.threshold}}"
+            use-zero-min-value="true"
+            hide-high-low-values="true"
+            y-axis-units="GC Duration (ms)"
+            chart-height="250">
+          </hawkular-chart>
+        </div>
+        <div class="hk-legend text-left hk-legend-metrics">
         </div>
       </div>
     </div>
-  </div>
+    <div class="col-lg-3">
+      <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)" resource-id="vm.resourceId" title="JVM">
 
-  <div class="panel panel-default hk-graph" ng-if="vm.chartGCDurationData">
-    <h2>GC Duration</h2>
-    <div class="hk-graph-container hk-graph-metrics">
-      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-      <hawkular-chart
-        data="vm.chartGCDurationData"
-        chart-type="histogram"
-        alert-value="{{vm.threshold}}"
-        use-zero-min-value="true"
-        hide-high-low-values="true"
-        y-axis-units="GC Duration (ms)"
-        chart-height="250">
-      </hawkular-chart>
-    </div>
-    <div class="hk-legend text-left hk-legend-metrics">
+      </hk-alert-info>
     </div>
   </div>
-
 </section>

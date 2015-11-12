@@ -61,8 +61,8 @@ body {
       padding-left: 0;
     }
 
-    > .col-md-4 + .col-md-8 {
-      padding-left: 0;
+    > .col-md-4:first-child {
+      padding-right: 0;
     }
   }
 
@@ -129,6 +129,11 @@ h3 {
     margin-right: @grid-gutter-width/4;
     margin-top: @grid-gutter-width/4;
   }
+}
+
+h3 {
+  font-size: ceil(@font-size-base * 1.5);
+  font-weight: 100;
 }
 
 h1, h2 {
@@ -352,10 +357,6 @@ a:hover {
 
 
 // Cards
-
-.row-cards-pf {
-  clear: both;
-}
 
 .row-cards-pf + .container-cards-pf {
   margin-top: 0;
@@ -844,8 +845,7 @@ p + .form-horizontal {
 
 .fa-flag,
 a .fa-flag,
-a:hover .fa-flag,
-.card-pf-aggregate-status .card-pf-title .fa-flag {
+a:hover .fa-flag {
   color: @brand-danger;
 
   &.gray {
@@ -855,15 +855,13 @@ a:hover .fa-flag,
 
 .fa-arrow-up,
 a .fa-arrow-up,
-a:hover .fa-arrow-up,
-.card-pf-aggregate-status .card-pf-title .fa-arrow-up {
+a:hover .fa-arrow-up {
   color: @brand-success;
 }
 
 .fa-repeat,
 a .fa-repeat,
-a:hover .fa-repeat,
-.card-pf-aggregate-status .card-pf-title .fa-repeat {
+a:hover .fa-repeat {
   color: @brand-success;
 }
 
@@ -881,23 +879,8 @@ a:hover .fa-chain-broken {
 
 .fa-spinner,
 a .fa-spinner,
-a:hover .fa-spinner,
-.card-pf-aggregate-status .card-pf-title .fa-spinner {
+a:hover .fa-spinner {
   color: @gray-light;
-}
-
-.fa-chain-broken,
-a .fa-chain-broken,
-a:hover .fa-chain-broken,
-.card-pf-aggregate-status .card-pf-title .fa-chain-broken {
-  color: @gray-light;
-}
-
-.fa-times-circle-o,
-a .fa-times-circle-o,
-a:hover .fa-times-circle-o,
-.card-pf-aggregate-status .card-pf-title .fa-times-circle-o {
-  color: @brand-danger;
 }
 
 &.fa-check-circle-o {
@@ -1211,9 +1194,9 @@ a:hover .fa-times-circle-o,
 
 .onoffswitch-checkbox:disabled + .onoffswitch-label .onoffswitch-inner .onoffswitch-active,
 .onoffswitch-checkbox:disabled + .onoffswitch-label .onoffswitch-inner .onoffswitch-inactive {
-    background-image: none;
-    background-color: #e5e5e5;
-    color: #9d9fa1;
+  background-image: none;
+  background-color: #e5e5e5;
+  color: #9d9fa1;
 }
 
 
@@ -1637,7 +1620,7 @@ a:hover .fa-times-circle-o,
   z-index: 10;
   right: 5px;
 
-   > .btn:first-child {
+  > .btn:first-child {
     margin-right: 8px;
   }
 }
@@ -1686,7 +1669,7 @@ a:hover .fa-times-circle-o,
   }
 
   &.hk-alerts-contextual > tbody > tr {
-     > td {
+    > td {
       border-bottom: none;
       border-top: none;
     }
@@ -1718,8 +1701,8 @@ a:hover .fa-times-circle-o,
   border: 1px solid @table-border-color;
 
   &.table > tbody > tr {
-     > td {
-     border-top-color: @list-group-border;
+    > td {
+      border-top-color: @list-group-border;
     }
 
     &:first-child > td {
@@ -1776,13 +1759,13 @@ td .fa-comment-o {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.175);
   display: block;
   float: left;
-//   height: 290px;
+  //   height: 290px;
   margin-right: 20px;
   margin-bottom: 20px;
   padding: 10px;
   position: relative;
   text-align: center;
-//   width: 260px;
+  //   width: 260px;
 }
 
 .tiles-view-pf .tile-check-box {
@@ -1881,17 +1864,17 @@ td .fa-comment-o {
 
 .hk-tile-circle-icon {
 
-   background-color: transparent;
-   border: 2px solid;
-   height: 50px;
-   margin: 0 auto;
-   -moz-border-radius:25px;
-   -webkit-border-radius: 25px;
-   width: 50px;
+  background-color: transparent;
+  border: 2px solid;
+  height: 50px;
+  margin: 0 auto;
+  -moz-border-radius:25px;
+  -webkit-border-radius: 25px;
+  width: 50px;
 
-   &.hk-danger {
-     color: @brand-danger;
-   }
+  &.hk-danger {
+    color: @brand-danger;
+  }
 
   .fa {
     font-size: ceil(@font-size-base * 2);
@@ -2177,8 +2160,7 @@ td .fa-comment-o {
 
   .fa-arrow-down,
   a .fa-arrow-down,
-  a:hover .fa-arrow-down,
-  .card-pf-aggregate-status .card-pf-title .fa-arrow-down {
+  a:hover .fa-arrow-down {
     color: @gray-light;
   }
 }
@@ -2253,8 +2235,8 @@ section {
   text-align: center;
   padding: 2px 0 3px 0;
   -webkit-transition: background 0.3s ease;
-	-moz-transition: background 0.3s ease;
-	transition: background 0.3s ease;
+  -moz-transition: background 0.3s ease;
+  transition: background 0.3s ease;
 
   a {
     color: @gray;
@@ -2285,22 +2267,12 @@ section {
   max-height: 1320px;
   overflow: hidden;
   -webkit-transition: max-height 0.3s ease;
-	-moz-transition: max-height 0.3s ease;
-	transition: max-height 0.3s ease;
+  -moz-transition: max-height 0.3s ease;
+  transition: max-height 0.3s ease;
 
-	&.ng-enter,
-  &.ng-leave.ng-leave-active {
-    max-height: 0;
+  &:not(.hide) {
+    margin-bottom: @grid-gutter-width/2;
   }
-
-  &.ng-leave,
-  &.ng-enter.ng-enter-active {
-    max-height: 1320px;
-  }
-
-	&:not(.hide) {
-	  margin-bottom: @grid-gutter-width/2;
-	}
 
   &.hide {
     max-height: 0;
