@@ -37,6 +37,8 @@ module HawkularMetrics {
     public static MAXIMUM_COLOR = '#f57f20'; /// orange
     public static COMMITTED_COLOR = '#515252'; /// dark gray
 
+    private static STATUSES = 'OPEN';
+
     public static MAX_HEAP = 1024 * 1024 * 1024;
     public static BYTES2MB = 1 / 1024 / 1024;
 
@@ -99,7 +101,7 @@ module HawkularMetrics {
     private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
       let pheapArray:any, nheapArray:any, garbaArray:any;
       let pheapPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
+        statuses: AppServerJvmDetailsController.STATUSES,
         triggerIds: metricIdPrefix + '_jvm_pheap', startTime: startTime, endTime: endTime
       }).then((pheapData)=> {
         _.forEach(pheapData.alertList, (item) => {
@@ -111,7 +113,7 @@ module HawkularMetrics {
       });
 
       let nheapPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
+        statuses: AppServerJvmDetailsController.STATUSES,
         triggerIds: metricIdPrefix + '_jvm_nheap', startTime: startTime, endTime: endTime
       }).then((nheapData)=> {
         _.forEach(nheapData.alertList, (item) => {
@@ -123,7 +125,7 @@ module HawkularMetrics {
       });
 
       let garbaPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
+        statuses: AppServerJvmDetailsController.STATUSES,
         triggerIds: metricIdPrefix + '_jvm_garba', startTime: startTime, endTime: endTime
       }).then((garbaData)=> {
         _.forEach(garbaData.alertList, (item) => {

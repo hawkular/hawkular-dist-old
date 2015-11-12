@@ -21,12 +21,21 @@
 
 module HawkularMetrics {
 
-  export class AppServerWebDetailsController implements IRefreshable {
+  export class WebAlertType {
 
-    /// this is for minification purposes
-    public static $inject = ['$scope', '$rootScope', '$interval', '$log', '$routeParams',
-      'HawkularInventory', 'HawkularMetric', 'HawkularNav', 'HawkularAlertsManager', 'ErrorsManager',
-      '$q', 'MetricsService'];
+    constructor (public value:string) {
+    }
+
+    toString = () => {
+      return this.value;
+    };
+
+    static ACTIVE_SESSIONS = new WebAlertType('ACTIVE_SESSIONS');
+    static EXPIRED_SESSIONS = new WebAlertType('EXPIRED_SESSIONS');
+    static REJECTED_SESSIONS = new WebAlertType('REJECTED_SESSIONS');
+  }
+
+  export class AppServerWebDetailsController implements IRefreshable {
 
     public static MAX_ACTIVE_COLOR = '#1884c7'; /// blue
     public static EXPIRED_COLOR = '#f57f20'; /// orange
@@ -105,12 +114,16 @@ module HawkularMetrics {
         startTime: startTime, endTime: endTime
       }).then((sessionsData)=> {
         _.forEach(sessionsData.alertList, (item) => {
-          if (item.trigger.id === activeSessionsTriggerId) {
-            item['alertType'] = 'ACTIVE_SESSIONS';
-          } else if (item.trigger.id === expiredSessionsTriggerId) {
-            item['alertType'] = 'EXPIRED_SESSIONS';
-          } else if (item.trigger.id === rejectedSessionsTriggerId) {
-            item['alertType'] = 'REJECTED_SESSIONS';
+          if (item.triggerId === undefined) {
+            let itemId = item.id;
+            item.triggerId = itemId.substr(0, itemId.lastIndexOf('-'));
+          }
+          if (item.triggerId === activeSessionsTriggerId) {
+            item['alertType'] = WebAlertType.ACTIVE_SESSIONS;
+          } else if (item.triggerId === expiredSessionsTriggerId) {
+            item['alertType'] = WebAlertType.EXPIRED_SESSIONS;
+          } else if (item.triggerId === rejectedSessionsTriggerId) {
+            item['alertType'] = WebAlertType.REJECTED_SESSIONS;
           }
         });
         sessionsArray = sessionsData.alertList;

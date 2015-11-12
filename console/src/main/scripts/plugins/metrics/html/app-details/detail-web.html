@@ -1,111 +1,83 @@
 <section id="hk-web" class="hk-tab-content">
 
-  <h3 class="pull-left">Web Status</h3>
-  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
-    <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
-  </span>
-
-  <div class="row row-cards-pf">
-    <div class="col-md-3">
-      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-        <h2 class="card-pf-title">
-          <i class="fa fa-flag" ng-show="vm.alertList.length"></i>
-          <span class="card-pf-aggregate-status-count">{{vm.alertList.length}}</span> Web Alerts
-        </h2>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-        <h2 class="card-pf-title">
-          <span class="card-pf-aggregate-status-count">{{ vm.activeWebSessions | number:0 }}</span> Active Sessions (Average)
-        </h2>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-        <h2 class="card-pf-title">
-          <span class="card-pf-aggregate-status-count">{{ vm.requestTime / vm.requestCount | number:0 }} ms</span> Response Time (Average)
-        </h2>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-        <h2 class="card-pf-title">
-          <span class="card-pf-aggregate-status-count">{{ vm.requestCount }}</span> Request Count
-        </h2>
-      </div>
-    </div>
-  </div><!-- /row -->
-
-  <!-- Alerts -->
-  <div class="hk-info-top clearfix">
-    <h3 class="pull-left">
-      <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts"
-              tooltip-trigger tooltip-placement="top" tooltip="Expand/collapse">
-        <i ng-show="vm.alertList.length" ng-class="showAllAlerts ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"></i>
-        Web Alerts
-        <span ng-show="vm.alertList.length">
-          ({{showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})
-        </span>
-      </button>
-    </h3>
-    <span class="hk-settings pull-left">
-      <a ng-href="/hawkular-ui/alerts-center-triggers/{{vm.resourceId}}">
-        <i class="fa fa-cog"></i>Alert Settings
-      </a>
-    </span>
-  </div>
-  <div class="clearfix">
-    <!-- No Alerts -->
-    <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
-      <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-      <div>No alerts.</div>
-    </div>
-    <!-- Alerts exist -->
-    <!-- Alerts exist -->
-    <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList"
-                         hk-limit="(vm.showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
-  </div>
-
-
-  <div class="hk-info-top clearfix">
-    <h3 class="pull-left">Metrics</h3>
-    <div class="hk-update pull-right">
-      <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip-append-to-body="true"
-              tooltip="Update chart" ng-click="vm.getWebChartData()"><i class="fa fa-refresh"></i></button>
+  <div class="row">
+    <div class="col-md-12">
+      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+        <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+      </span>
     </div>
   </div>
+  <div class="row">
+    <div class="col-lg-9">
+      <h3 class="pull-left">Web Status</h3>
+      <div class="panel panel-default hk-summary">
+        <div class="row">
+          <div class="col-sm-3 hk-summary-item">
+            <span class="hk-data">{{vm.alertList.length}} <i class="fa fa-flag" ng-show="vm.alertList.length"></i></span>
+            <span class="hk-item">Alerts</span>
+          </div>
+          <div class="col-sm-3 hk-summary-item">
+            <span class="hk-data">{{ vm.activeWebSessions | number:0 }}</span>
+            <span class="hk-item">Active Sessions (Average)</span>
+          </div>
+          <div class="col-sm-3 hk-summary-item">
+            <span class="hk-data">{{ vm.requestTime / vm.requestCount | number:0 }} ms</span>
+            <span class="hk-item">Response Time (Average)</span>
+          </div>
+          <div class="col-sm-3 hk-summary-item">
+            <span class="hk-data">{{ vm.requestCount }}</span>
+            <span class="hk-item">Threads Servicing Requests (Avg.)</span>
+          </div>
+        </div>
+      </div>
+      <!-- /Web info -->
+      <!-- Web metrics -->
+      <div class="hk-info-top clearfix">
+        <h3 class="pull-left">Metrics</h3>
+        <div class="hk-update pull-right">
+          <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip-append-to-body="true"
+                  tooltip="Update chart" ng-click="vm.getWebChartData()"><i class="fa fa-refresh"></i></button>
+        </div>
+      </div>
 
-  <div class="panel panel-default hk-graph" >
-    <h2>Web Sessions</h2>
-    <div class="hk-graph-container hk-graph-metrics">
-      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-      <hawkular-chart
-        multi-data="vm.chartWebSessionData"
-        chart-type="multiline"
-        y-axis-units="Count (#)"
-        chart-height="250">
-      </hawkular-chart>
+      <div class="panel panel-default hk-graph" >
+        <h2>Web Sessions</h2>
+        <div class="hk-graph-container hk-graph-metrics">
+          <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+          <hawkular-chart
+            multi-data="vm.chartWebSessionData"
+            chart-type="multiline"
+            y-axis-units="Count (#)"
+            chart-height="250">
+          </hawkular-chart>
+        </div>
+        <div class="row hk-legend text-left hk-legend-metrics">
+          <div class="col-md-3 col-lg-2">
+            <div class="hk-graphselector hk-green">
+              <input type="checkbox" id="active" checked="checked" ng-click="vm.toggleChartData('Active Sessions')">
+              <label for="active"><span>Active Sessions</span></label>
+            </div>
+          </div>
+          <div class="col-md-3 col-lg-2">
+            <div class="hk-graphselector hk-orange">
+              <input type="checkbox" id="expired" checked="checked" ng-click="vm.toggleChartData('Expired Sessions')">
+              <label for="expired"><span>Expired Sessions</span></label>
+            </div>
+          </div>
+          <div class="col-md-3 col-lg-2">
+            <div class="hk-graphselector hk-red">
+              <input type="checkbox" id="rejected" checked="checked" ng-click="vm.toggleChartData('Rejected Sessions')">
+              <label for="rejected"><span>Rejected Sessions</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /Web metrics -->
     </div>
-    <div class="row hk-legend text-left hk-legend-metrics">
-      <div class="col-md-3 col-lg-2">
-        <div class="hk-graphselector hk-green">
-          <input type="checkbox" id="active" checked="checked" ng-click="vm.toggleChartData('Active Sessions')">
-          <label for="active"><span>Active Sessions</span></label>
-        </div>
-      </div>
-      <div class="col-md-3 col-lg-2">
-        <div class="hk-graphselector hk-orange">
-          <input type="checkbox" id="expired" checked="checked" ng-click="vm.toggleChartData('Expired Sessions')">
-          <label for="expired"><span>Expired Sessions</span></label>
-        </div>
-      </div>
-      <div class="col-md-3 col-lg-2">
-        <div class="hk-graphselector hk-red">
-          <input type="checkbox" id="rejected" checked="checked" ng-click="vm.toggleChartData('Rejected Sessions')">
-          <label for="rejected"><span>Rejected Sessions</span></label>
-        </div>
-      </div>
+    <div class="col-lg-3">
+      <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)" resource-id="vm.resourceId" title="Web">
+
+      </hk-alert-info>
     </div>
   </div>
 
