@@ -58,6 +58,8 @@ public class WildFlyAgentServlet extends HttpServlet {
     private static String AGENT_INSTALLER_PROPERTY_WILDFLY_HOME = "wildfly-home";
     private static String AGENT_INSTALLER_PROPERTY_MODULE_DIST = "module-dist";
     private static String AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER = "hawkular-server-url";
+    private static String AGENT_INSTALLER_PROPERTY_USERNAME = "hawkular-username";
+    private static String AGENT_INSTALLER_PROPERTY_PASSWORD = "hawkular-password";
 
     // the error code that will be returned if the server has been configured to disable agent updates
     private static final int ERROR_CODE_AGENT_UPDATE_DISABLED = HttpServletResponse.SC_FORBIDDEN;
@@ -138,6 +140,8 @@ public class WildFlyAgentServlet extends HttpServlet {
                     "/hawkular/wildfly-agent/download" : "http://localhost:8080/wildfly-agent/download";
             final String moduleDist = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_MODULE_DIST,
                     defaultModuleDist);
+            final String username = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_USERNAME, null);
+            final String password = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_PASSWORD, null);
 
 
             for (Enumeration<? extends ZipEntry> e = agentInstallerZip.entries(); e.hasMoreElements(); ) {
@@ -170,6 +174,10 @@ public class WildFlyAgentServlet extends HttpServlet {
                             } else if (line.contains("#hawkular-server-url=http://localhost:8080")) {
                                 line = line.replaceAll("#hawkular-server-url=http://localhost:8080",
                                         "hawkular-server-url=" + hawkularServer);
+                            } else if (username != null && line.contains("hawkular-username=")) {
+                                line = line.replaceAll("hawkular-username=", "hawkular-username=" + username);
+                            } else if (password != null && line.contains("hawkular-password=")) {
+                                line = line.replaceAll("hawkular-password=", "hawkular-password=" + password);
                             }
                             byte[] buf = (line + '\n').getBytes(StandardCharsets.UTF_8);
                             zos.write(buf);
