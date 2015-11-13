@@ -62,6 +62,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hawkular.agent</groupId>
+      <artifactId>hawkular-wildfly-agent-installer</artifactId>
+      <version>${version.org.hawkular.agent}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.hawkular.inventory</groupId>
       <artifactId>hawkular-inventory-dist</artifactId>
       <type>war</type>
