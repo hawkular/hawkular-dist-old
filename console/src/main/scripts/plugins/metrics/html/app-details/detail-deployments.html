@@ -1,49 +1,45 @@
 <section id="hk-deployments" class="hk-tab-content">
 
   <div class="row">
-    <div class="col-md-12">
-      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
-    </div>
-  </div>
-  <div class="row">
     <div class="col-lg-9">
+
       <h3 class="pull-left">Deployment Status</h3>
-      <!-- Deployments Info -->
-      <div class="panel panel-default hk-summary">
-        <div class="row">
-          <div class="col-sm-3 hk-summary-item">
-            <span class="hk-data">{{vm.alertList.length}} <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i></span>
-            <span class="hk-item">Deployment Alerts</span>
-          </div>
-          <div class="col-sm-3 hk-summary-item">
-            <span class="hk-data">{{vm.failedDeployments || 0}}</span>
-            <span class="hk-item">Failed</span>
-          </div>
-          <div class="col-sm-3 hk-summary-item">
-            <span class="hk-data">{{vm.resourceList.length || 0}} Enabled</span>
-            <span class="hk-item">Enabled</span>
-          </div>
-          <div class="col-sm-3 hk-summary-item">
-            <span class="hk-data">4 Disabled</span>
-            <span class="hk-item">Disabled</span>
+      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update">
+        <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+      </span>
+
+      <div class="row row-cards-pf">
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i>
+              <span class="card-pf-aggregate-status-count">{{vm.alertList.length}}</span> Deployment Alerts
+            </h2>
           </div>
         </div>
-      </div>
-      <!-- Deployments Table -->
-      <div ng-show="vm.resourceList.$resolved && vm.resourceList.length <= 0">
-        <div class="hk-info-top clearfix">
-          <h3>Deployments</h3>
-          <div class="blank-slate-pf">
-            <div class="blank-slate-pf-icon">
-              <i class="fa fa-cubes"></i>
-            </div>
-            <h1>No deployments.</h1>
-            <div style="padding-top: 20px;">
-              <button class="btn btn-primary btn-lg"
-                      ng-click="vm.showDeploymentAddDialog()">Add Deployment</button></div>
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <i class="fa fa-times-circle-o"></i>
+              <span class="card-pf-aggregate-status-count">{{vm.failedDeployments || 0}} Failed</span> Deployments
+            </h2>
           </div>
         </div>
-      </div>
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <span class="card-pf-aggregate-status-count">{{vm.resourceList.length || 0}} Enabled</span> Deployments
+            </h2>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <span class="card-pf-aggregate-status-count">{{vm.disabledDeployments || 0}} Disabled</span> Deployments
+            </h2>
+          </div>
+        </div>
+      </div><!-- /row -->
 
       <div ng-show="vm.resourceList.length > 0">
         <div class="hk-info-top clearfix">
@@ -52,15 +48,27 @@
             <button class="btn btn-primary add" type="button"
                     ng-click="vm.showDeploymentAddDialog()">Add Deployment</button>
             <div class="dropdown">
-              <button class="btn btn-default" type="button" id="dropdownMenu1" dropdown-toggle ng-disabled="vm.selectCount === 0">
+              <button class="btn btn-default" type="button" id="add-dep" dropdown-toggle ng-disabled="!vm.selectCount">
                 Actions
                 <span class="caret"></span>
               </button>
-              <ul class="dropdown-menu disabled" role="menu" aria-labelledby="dropdownMenu1">
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Deploy', vm.resourceList)" dropdown-toggle>Enable</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Redeploy', vm.resourceList)" dropdown-toggle>Redeploy</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Undeploy', vm.resourceList)" dropdown-toggle>Disable</a></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="vm.performOperationMulti('Remove', vm.resourceList)" dropdown-toggle>Remove</a></li>
+              <ul class="dropdown-menu disabled" role="menu" aria-labelledby="add-dep">
+                <li role="presentation">
+                  <a role="menuitem" tabindex="-1" href="#"
+                     ng-click="vm.performOperationMulti('Deploy', vm.resourceList)" dropdown-toggle>Enable</a>
+                </li>
+                <li role="presentation">
+                  <a role="menuitem" tabindex="-1" href="#"
+                     ng-click="vm.performOperationMulti('Redeploy', vm.resourceList)" dropdown-toggle>Redeploy</a>
+                </li>
+                <li role="presentation">
+                  <a role="menuitem" tabindex="-1" href="#"
+                     ng-click="vm.performOperationMulti('Undeploy', vm.resourceList)" dropdown-toggle>Disable</a>
+                </li>
+                <li role="presentation">
+                  <a role="menuitem" tabindex="-1" href="#"
+                     ng-click="vm.performOperationMulti('Remove', vm.resourceList)" dropdown-toggle>Remove</a>
+                </li>
               </ul>
             </div>
           </div>
@@ -71,29 +79,62 @@
             <div id="DataTables_Table_0_filter" class="dataTables_filter">
               <label><input type="search" ng-model="vm.search.name" aria-controls="DataTables_Table_0"></label>
             </div>
-            <div class="dataTables_info" role="status" aria-live="polite" ng-hide="vm.selectCount > 0">Showing <b>1</b> to <b>{{vm.resourceList.length}}</b> of <b>{{vm.resourceList.length}}</b> Items</div>
-            <div class="dataTables_info" role="status" aria-live="polite" ng-show="vm.selectCount > 0"><b>{{vm.selectCount}}</b> item<span ng-show="vm.selectCount > 1">s</span> selected</div>
+            <div class="dataTables_info" role="status" aria-live="polite" ng-hide="vm.selectCount > 0">
+              Showing <b>1</b> to <b>{{vm.resourceList.length}}</b> of <b>{{vm.resourceList.length}}</b> Items
+            </div>
+            <div class="dataTables_info" role="status" aria-live="polite" ng-show="vm.selectCount > 0">
+              <b>{{vm.selectCount}}</b> item<span ng-show="vm.selectCount > 1">s</span> selected
+            </div>
           </div>
           <div class="table-responsive">
-            <table class="datatable table table-striped table-bordered table-checkbox dataTable no-footer hk-table-select" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" role="grid">
+            <table class="datatable table table-striped table-bordered table-checkbox no-footer hk-table-select"
+                   id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" role="grid">
               <thead>
               <tr role="row">
-                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Select All" ng-click="vm.selectAll()"><input type="checkbox" ng-checked="vm.selectCount && vm.selectCount === filteredResList.length"></th>
-                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Current State: activate to sort column ascending">Current State</th>
-                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Deployments 10: activate to sort column ascending">Deployments <span class="label label-default label-alert pull-right" tooltip-trigger tooltip-placement="top" tooltip="Total alerts" ng-show="vm.alertList.length">{{vm.alertList.length}}</span></th>
-                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Enabled/Disabled: activate to sort column ascending">Enabled/Disabled</th>
-                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Computed Health: activate to sort column ascending">Computed Health</th>
+                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                    aria-sort="ascending" aria-label="Select All" ng-click="vm.selectAll()">
+                  <input type="checkbox" ng-checked="vm.selectCount && vm.selectCount === filteredResList.length">
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                    aria-label="Current State: activate to sort column ascending">Current State
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                    aria-label="Deployments 10: activate to sort column ascending">Deployments
+                  <span class="label label-default label-alert pull-right" tooltip-trigger tooltip-placement="top"
+                        tooltip="Total alerts" ng-show="vm.alertList.length">{{vm.alertList.length}}</span>
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                    aria-label="Enabled/Disabled: activate to sort column ascending">Enabled/Disabled
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                    aria-label="Computed Health: activate to sort column ascending">Computed Health
+                </th>
               </tr>
               </thead>
               <tbody>
-              <tr class="odd"><td valign="top" colspan="6" class="dataTables_empty" ng-show="vm.search && filteredResList.length === 0"><p>Suggestions</p><ul><li>Check the syntax of the search term.</li><li>Check that the correct menu option is chosen (token ID vs. user ID).</li><li>Use wildcards (* to match zero or more characters or ? to match a single character).</li><li>Clear the search field, then click Search to return to the 20 most recent records.</li></ul></td></tr>
-              <tr role="row" ng-repeat="res in filteredResList = (vm.resourceList | filter:vm.search)" ng-class="{'hk-selected': res.selected}" ng-click="vm.selectItem(res)">
+              <tr class="odd">
+                <td valign="top" colspan="6" class="dataTables_empty" ng-show="vm.search && !filteredResList.length">
+                  <p>Suggestions</p>
+                  <ul>
+                    <li>Check the syntax of the search term.</li>
+                    <li>Check that the correct menu option is chosen (token ID vs. user ID).</li>
+                    <li>Use wildcards (* to match zero or more characters or ? to match a single character).</li>
+                    <li>Clear the search field, then click Search to return to the 20 most recent records.</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr role="row" ng-repeat="res in filteredResList = (vm.resourceList | filter:vm.search)"
+                  ng-class="{'hk-selected': res.selected}" ng-click="vm.selectItem(res)">
                 <td><input type="checkbox" ng-checked="res.selected"></td>
                 <td class="state" ng-show="res.state === 'up'"><i class="fa fa-check-circle-o"></i> OK</td>
                 <td class="state" ng-show="res.state === 'down'"><i class="fa fa-square"></i> Stopped</td>
                 <td class="state" ng-show="res.state === 'unknown'"><i class="fa fa-times-circle-o"></i> Failed</td>
                 <td class="state" ng-hide="res.state"><i class="fa fa-chain-broken"></i> Unknown</td>
-                <td><strong>{{res.name | limitTo : (res.name.length-13) : 12}}</strong> <span ng-show="false">({{res.name | limitTo : (res.name.length-13) : 12}})</span> <span class="label label-danger label-alert pull-right" tooltip-trigger tooltip-placement="top" tooltip="Deployment alerts">{{res.alerts}}</span></td>
+                <td><strong>{{res.name | limitTo : (res.name.length-13) : 12}}</strong>
+                  <span ng-show="false">({{res.name | limitTo : (res.name.length-13) : 12}})</span>
+                  <span class="label label-danger label-alert pull-right" tooltip-trigger tooltip-placement="top"
+                        tooltip="Deployment alerts">{{res.alerts}}</span>
+                </td>
                 <td ng-show="true">Enabled</td>
                 <td ng-show="false">Disabled</td>
                 <td class="success" ng-show="true">Good</td>
@@ -122,8 +163,8 @@
       </div>
     </div>
     <div class="col-lg-3">
-      <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)" resource-id="vm.resourceId" title="Deployments">
-
+      <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)" resource-id="vm.resourceId"
+                     title="Deployments">
       </hk-alert-info>
     </div>
   </div>

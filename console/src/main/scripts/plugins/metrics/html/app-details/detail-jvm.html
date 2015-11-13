@@ -1,39 +1,58 @@
 <section id="hk-jvm-metrics" class="hk-tab-content">
-  <div class="row">
-    <div class="col-md-12">
-      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
-    </div>
-  </div>
+
   <div class="row">
     <div class="col-lg-9">
+
       <h3 class="pull-left">JVM Status</h3>
-      <div class="panel panel-default hk-summary">
-        <div class="row">
-          <div class="col-sm-3 hk-summary-item">
-            <ng-span class="hk-data">{{vm.alertList.length}} <i class="fa fa-flag" ng-show="vm.alertList.length > 0"></i></ng-span>
-            <span class="hk-item">JVM Alerts</span>
+      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+        <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+      </span>
+
+      <div class="row row-cards-pf">
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <i class="fa fa-flag" ng-show="vm.alertList.length"></i>
+              <span class="card-pf-aggregate-status-count">{{vm.alertList.length}}</span> JVM Alerts
+            </h2>
           </div>
-          <div class="col-sm-3 hk-summary-item">
-            <span class="hk-data" ng-show="vm.heapUsage">{{ vm.heapUsage.avg / 1024 / 1024 | number : 0 }} MB</span>
-            <span class="hk-data" ng-hide="vm.heapUsage">n/a</span>
-            <span class="hk-item">Average Heap Usage</span>
+        </div>
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <span class="card-pf-aggregate-status-count" ng-show="vm.heapUsage">
+                {{ vm.heapUsage.avg / 1024 / 1024 | number : 0 }} MB</span>
+              <span class="card-pf-aggregate-status-count" ng-hide="vm.heapUsage">n/a</span>
+              Average Heap Usage
+            </h2>
           </div>
-          <div class="col-sm-3 hk-summary-item">
-            <span class="hk-data" ng-show="vm.accGCDuration">{{ vm.accGCDuration }} ms</span>
-            <span class="hk-data" ng-hide="vm.accGCDuration">n/a</span>
-            <span class="hk-item">Last Garbage Collection (Duration)</span>
+        </div>
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <span class="card-pf-aggregate-status-count" ng-show="vm.accGCDuration">{{ vm.accGCDuration }} ms</span>
+              <span class="card-pf-aggregate-status-count" ng-hide="vm.accGCDuration">n/a</span>
+              GC Duration
+            </h2>
           </div>
-          <div class="col-sm-3 hk-summary-item">
-            <span class="hk-data" ng-show="vm.heapMax">{{ vm.heapMax.max / 1024 / 1024 | number : 0 }} MB</span>
-            <span class="hk-data" ng-hide="vm.heapMax">n/a</span>
-            <span class="hk-item">Maximum Heap</span>
+        </div>
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <span class="card-pf-aggregate-status-count" ng-show="vm.heapMax">
+                {{ vm.heapMax.max / 1024 / 1024 | number : 0 }} MB</span>
+              <span class="card-pf-aggregate-status-count" ng-hide="vm.heapMax">n/a</span>
+              Maximum Heap Usage
+            </h2>
           </div>
-        </div><!-- /row -->
-      </div>
+        </div>
+      </div><!-- /row -->
+
       <div class="hk-info-top clearfix">
         <h3 class="pull-left">Metrics</h3>
         <div class="hk-update pull-right">
-          <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart" ng-click="vm.getJvmChartData()"><i class="fa fa-refresh"></i></button>
+          <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart"
+                  tooltip-append-to-body="true" ng-click="vm.getJvmChartData()"><i class="fa fa-refresh"></i></button>
         </div>
       </div>
 
@@ -90,7 +109,8 @@
           </div>
           <div class="col-md-3 col-lg-2">
             <div class="hk-graphselector hk-gray">
-              <input type="checkbox" id="nh-committed" checked="checked" ng-click="vm.toggleChartData('NonHeap Committed')">
+              <input type="checkbox" id="nh-committed" checked="checked"
+                     ng-click="vm.toggleChartData('NonHeap Committed')">
               <label for="nh-committed"><span>Committed</span></label>
             </div>
           </div>
@@ -116,8 +136,8 @@
       </div>
     </div>
     <div class="col-lg-3">
-      <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)" resource-id="vm.resourceId" title="JVM">
-
+      <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)" resource-id="vm.resourceId"
+                     title="JVM">
       </hk-alert-info>
     </div>
   </div>

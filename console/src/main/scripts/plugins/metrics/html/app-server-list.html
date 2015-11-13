@@ -9,115 +9,148 @@
     <h1 class="text-center">{{userDetails.firstName}}'s application servers</h1>
 
     <h3 class="pull-left">Current Status</h3>
-    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.lastUpdateTimestamp | date:'HH:mm:ss'}}</span>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+      <i class="fa fa-clock-o"></i>{{vm.lastUpdateTimestamp | date:'HH:mm:ss'}}</span>
+
     <div class="row row-cards-pf">
-      <div class="col-md-2 col-sm-4">
+      <div class="col-lg-2 col-md-4">
         <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
           <h2 class="card-pf-title">
-            <a href="#">
-              <span class="card-pf-aggregate-status-count">{{vm.resourceList.length}}</span> Servers
-            </a>
+            <span class="card-pf-aggregate-status-count">{{vm.resourceList.length}}</span> Servers
           </h2>
         </div>
       </div>
-      <div class="col-md-2 col-sm-4">
+      <div class="col-lg-2 col-md-4">
         <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
           <h2 class="card-pf-title">
             <i class="fa fa-arrow-up"></i>
-            <a href="#">
-              <span class="card-pf-aggregate-status-count">{{(vm.resourceList|filter:{state: 'up'}:true).length}}</span> Up
-            </a>
+            <span class="card-pf-aggregate-status-count">
+              {{(vm.resourceList|filter:{state: 'up'}:true).length}}</span> Up
           </h2>
         </div>
       </div>
-      <div class="col-md-2 col-sm-4">
+      <div class="col-lg-2 col-md-4">
         <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
           <h2 class="card-pf-title">
             <i class="fa fa-arrow-down"></i>
-            <a href="#">
-              <span class="card-pf-aggregate-status-count">{{(vm.resourceList|filter:{state: 'down'}:true).length}}</span> Down
-            </a>
+            <span class="card-pf-aggregate-status-count">
+              {{(vm.resourceList|filter:{state: 'down'}:true).length}}</span> Down
           </h2>
         </div>
       </div>
-      <div class="col-md-2 col-sm-4">
+      <div class="col-lg-2 col-md-4">
         <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
           <h2 class="card-pf-title">
             <i class="fa fa-chain-broken"></i>
-            <a href="#">
-              <span class="card-pf-aggregate-status-count">{{(vm.resourceList|filter:{state: 'unknown'}:true).length}}</span> Unknown
-            </a>
+            <span class="card-pf-aggregate-status-count">
+              {{(vm.resourceList|filter:{state: 'unknown'}:true).length}}</span> Unknown
           </h2>
         </div>
       </div>
-      <div class="col-md-2 col-sm-4">
+      <div class="col-lg-2 col-md-4">
         <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
           <h2 class="card-pf-title">
             <i class="fa fa-spinner"></i>
-            <a href="#">
-              <span class="card-pf-aggregate-status-count">{{(vm.resourceList|filter:{state: 'starting'}:true).length}}</span> Starting
-            </a>
+            <span class="card-pf-aggregate-status-count">
+              {{(vm.resourceList|filter:{state: 'starting'}:true).length}}</span> Starting
           </h2>
         </div>
       </div>
-      <div class="col-md-2 col-sm-4">
+      <div class="col-lg-2 col-md-4">
         <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
           <h2 class="card-pf-title">
             <i class="fa fa-repeat"></i>
-            <a href="#">
-              <span class="card-pf-aggregate-status-count">{{(vm.resourceList|filter:{state: 'restart required'}:true).length}}</span> Restart Required
-            </a>
+            <span class="card-pf-aggregate-status-count">
+              {{(vm.resourceList|filter:{state: 'restart required'}:true).length}}</span> Restart Required
           </h2>
         </div>
       </div>
     </div>
+
     <h3>Application Servers ({{vm.resourceList.length}})</h3>
 
-    <div class="blank-slate-pf" ng-show="vm.resourceList.$resolved && vm.resourceList.length === 0">
+    <div class="blank-slate-pf" ng-show="vm.resourceList.$resolved && !vm.resourceList.length">
       <div class="blank-slate-pf-icon">
         <i class="fa fa-server"></i>
       </div>
       <h1>No application servers set up.</h1>
     </div>
 
-    <div ng-show="vm.resourceList.length > 0">
-      <div class="dataTables_header"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label><input type="search" ng-model="vm.search" aria-controls="DataTables_Table_0"></label></div>
+    <div ng-show="vm.resourceList.length">
+      <div class="dataTables_header">
+        <div id="DataTables_Table_0_filter" class="dataTables_filter">
+          <label><input type="search" ng-model="vm.search" aria-controls="DataTables_Table_0"></label>
+        </div>
 
-      <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">Showing <b>1</b> to <b>{{(vm.resourceList | filter:vm.search).length}}</b> of <b>{{vm.resourceList.length}}</b> Items</div></div>
-      <table class="datatable table table-striped table-bordered" ng-show="vm.resourceList.length > 0">
+        <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+          Showing <b>1</b> to <b>{{(vm.resourceList | filter:vm.search).length}}</b> of
+          <b>{{vm.resourceList.length}}</b> Items
+        </div>
+      </div>
+      <table class="datatable table table-striped table-bordered" ng-show="vm.resourceList.length">
         <thead>
-          <tr>
-            <th>State</th>
-            <th>Application Server Name <span class="label label-default label-alert pull-right" ng-show="alertsNumTBD > 0" tooltip-trigger tooltip-placement="top" tooltip="Total alerts">{{alertsNumTBD}}</span></th>
-            <th>Bound Address</th>
-            <th>Type</th>
-            <th>Host</th>
-            <!-- <th>Custom Tags</th> -->
-          </tr>
+        <tr>
+          <th>State</th>
+          <th>Application Server Name
+            <span class="label label-default label-alert pull-right" ng-show="alertsNumTBD" tooltip-trigger
+                  tooltip-placement="top" tooltip="Total alerts">{{alertsNumTBD}}</span>
+          </th>
+          <th>Bound Address</th>
+          <th>Type</th>
+          <th>Host</th>
+          <!-- <th>Custom Tags</th> -->
+        </tr>
         </thead>
         <tbody>
-          <tr class="odd"><td valign="top" colspan="5" class="dataTables_empty" ng-show="vm.search && (vm.resourceList | filter:vm.search).length === 0"><p>Suggestions</p><ul><li>Check the syntax of the search term.</li><li>Check that the correct menu option is chosen (token ID vs. user ID).</li><li>Use wildcards (* to match zero or more characters or ? to match a single character).</li><li>Clear the search field, then click Search to return to the 20 most recent records.</li></ul></td></tr>
-          <tr ng-repeat="res in vm.resourceList | filter:vm.search | orderBy:'properties.url':vm.reverse">
-            <td class="state">
-              <i class="fa fa-arrow-up" ng-show="res.state === 'up'"></i>
-              <i class="fa fa-arrow-down" ng-show="res.state === 'down'"></i>
-              <i class="fa fa-chain-broken" ng-show="res.state === 'unknown'"></i>
-              <i class="fa fa-spinner fa-spin" ng-show="res.state === 'starting'"></i>
-              <i class="fa fa-repeat" ng-show="res.state === 'restart required'"></i>
-              <p ng-hide="res.state"><span class="spinner spinner-sm spinner-inline"></span> <span class="fetching">Fetching state...</span></p>
-              {{res.state | firstUpper}}
-            </td>
-            <td><a href="/hawkular-ui/app/app-details/{{res.id | limitTo : res.id.length-2}}/jvm">{{res.id | limitTo : res.id.length-2}}</a> <a href="/hawkular-ui/app/app-details/{{res.id}}/jvm" class="pull-right"><span class="label label-danger label-alert" tooltip-trigger tooltip-placement="top" tooltip="Server alerts" ng-show="res.alerts.length > 0">{{res.alerts.length}}</span></a></td>
-            <td>{{ res.resourceConfiguration.value['Bound Address'] || 'n/a' }}</td>
-            <td>{{ res.resourceConfiguration.value['Product Name'] || res.type.id }} {{ res.resourceConfiguration.value['Version'] }} </td>
-            <td>{{ res.resourceConfiguration.value['Hostname'] || 'n/a'}}</td>
-            <!-- <td class="center"><span class="label label-primary" ng-repeat="tag in res.tags">{{tag}}</span><span ng-hide="res.tags.length > 0">--</span></td> -->
-          </tr>
+        <tr class="odd">
+          <td valign="top" colspan="5" class="dataTables_empty"
+              ng-show="vm.search && (vm.resourceList | filter:vm.search).length === 0">
+            <p>Suggestions</p>
+            <ul>
+              <li>Check the syntax of the search term.</li>
+              <li>Check that the correct menu option is chosen (token ID vs. user ID).</li>
+              <li>Use wildcards (* to match zero or more characters or ? to match a single character).</li>
+              <li>Clear the search field, then click Search to return to the 20 most recent records.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr ng-repeat="res in vm.resourceList | filter:vm.search | orderBy:'properties.url':vm.reverse">
+          <td class="state">
+            <i class="fa fa-arrow-up" ng-show="res.state === 'up'"></i>
+            <i class="fa fa-arrow-down" ng-show="res.state === 'down'"></i>
+            <i class="fa fa-chain-broken" ng-show="res.state === 'unknown'"></i>
+            <i class="fa fa-spinner fa-spin" ng-show="res.state === 'starting'"></i>
+            <i class="fa fa-repeat" ng-show="res.state === 'restart required'"></i>
+            <p ng-hide="res.state"><span class="spinner spinner-sm spinner-inline"></span>
+              <span class="fetching">Fetching state...</span>
+            </p>
+            {{res.state | firstUpper}}
+          </td>
+          <td>
+            <a href="/hawkular-ui/app/app-details/{{res.id | limitTo : res.id.length-2}}/jvm">
+              {{res.id | limitTo : res.id.length-2}}
+            </a>
+            <a href="/hawkular-ui/app/app-details/{{res.id}}/jvm" class="pull-right">
+              <span class="label label-danger label-alert" tooltip-trigger tooltip-placement="top"
+                    tooltip="Server alerts" ng-show="res.alerts.length">{{res.alerts.length}}</span>
+            </a>
+          </td>
+          <td>{{ res.resourceConfiguration.value['Bound Address'] || 'n/a' }}</td>
+          <td>{{ res.resourceConfiguration.value['Product Name'] || res.type.id }}
+            {{ res.resourceConfiguration.value['Version'] }} </td>
+          <td>{{ res.resourceConfiguration.value['Hostname'] || 'n/a'}}</td>
+          <!--
+          <td class="center">
+            <span class="label label-primary" ng-repeat="tag in res.tags">{{tag}}</span>
+            <span ng-hide="res.tags.length">--</span>
+          </td>
+          -->
+        </tr>
         </tbody>
       </table>
       <div class="dataTables_footer">
-        <hk-data-pagination resource-list="vm.resourceList" current-page="vm.resCurPage" page-setter="vm.setPage(pageNumber)"
-                       per-page="vm.resPerPage" headers="vm.headerLinks"></hk-data-pagination>
+        <hk-data-pagination resource-list="vm.resourceList" current-page="vm.resCurPage" headers="vm.headerLinks"
+                            page-setter="vm.setPage(pageNumber)" per-page="vm.resPerPage"></hk-data-pagination>
       </div>
     </div>
   </div>
