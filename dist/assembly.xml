@@ -136,14 +136,14 @@
       <directoryMode>0755</directoryMode>
     </dependencySet>
 
-    <!-- put the agent installer to the same directory as previous artefact from the same reason -->
+    <!-- put the agent installer to the same directory as previous artifact from the same reason -->
     <dependencySet>
       <outputDirectory>${hawkular.dist.zip.root.dir}/standalone/configuration</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.hawkular.agent:hawkular-wildfly-agent-installer:jar</include>
       </includes>
-      <outputFileNameMapping>agent-installer.${artifact.extension}</outputFileNameMapping>
+      <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
@@ -166,7 +166,6 @@
       <outputDirectory>${hawkular.dist.zip.root.dir}/modules</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.hawkular.agent:hawkular-monitor-wf-extension:zip:</include>
         <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-rest:zip:module</include>
         <include>org.hawkular.accounts:hawkular-accounts-keycloak-event-listener-jms:zip:module</include>
       </includes>
