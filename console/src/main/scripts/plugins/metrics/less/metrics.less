@@ -61,8 +61,8 @@ body {
       padding-left: 0;
     }
 
-    > .col-md-4:first-child {
-      padding-right: 0;
+    > .col-md-4 + .col-md-8 {
+      padding-left: 0;
     }
   }
 
@@ -129,11 +129,6 @@ h3 {
     margin-right: @grid-gutter-width/4;
     margin-top: @grid-gutter-width/4;
   }
-}
-
-h3 {
-  font-size: ceil(@font-size-base * 1.5);
-  font-weight: 100;
 }
 
 h1, h2 {
@@ -357,6 +352,10 @@ a:hover {
 
 
 // Cards
+
+.row-cards-pf {
+  clear: both;
+}
 
 .row-cards-pf + .container-cards-pf {
   margin-top: 0;
@@ -845,7 +844,8 @@ p + .form-horizontal {
 
 .fa-flag,
 a .fa-flag,
-a:hover .fa-flag {
+a:hover .fa-flag,
+.card-pf-aggregate-status .card-pf-title .fa-flag {
   color: @brand-danger;
 
   &.gray {
@@ -855,13 +855,15 @@ a:hover .fa-flag {
 
 .fa-arrow-up,
 a .fa-arrow-up,
-a:hover .fa-arrow-up {
+a:hover .fa-arrow-up,
+.card-pf-aggregate-status .card-pf-title .fa-arrow-up {
   color: @brand-success;
 }
 
 .fa-repeat,
 a .fa-repeat,
-a:hover .fa-repeat {
+a:hover .fa-repeat,
+.card-pf-aggregate-status .card-pf-title .fa-repeat {
   color: @brand-success;
 }
 
@@ -879,8 +881,23 @@ a:hover .fa-chain-broken {
 
 .fa-spinner,
 a .fa-spinner,
-a:hover .fa-spinner {
+a:hover .fa-spinner,
+.card-pf-aggregate-status .card-pf-title .fa-spinner {
   color: @gray-light;
+}
+
+.fa-chain-broken,
+a .fa-chain-broken,
+a:hover .fa-chain-broken,
+.card-pf-aggregate-status .card-pf-title .fa-chain-broken {
+  color: @gray-light;
+}
+
+.fa-times-circle-o,
+a .fa-times-circle-o,
+a:hover .fa-times-circle-o,
+.card-pf-aggregate-status .card-pf-title .fa-times-circle-o {
+  color: @brand-danger;
 }
 
 &.fa-check-circle-o {
@@ -2160,7 +2177,8 @@ td .fa-comment-o {
 
   .fa-arrow-down,
   a .fa-arrow-down,
-  a:hover .fa-arrow-down {
+  a:hover .fa-arrow-down,
+  .card-pf-aggregate-status .card-pf-title .fa-arrow-down {
     color: @gray-light;
   }
 }
@@ -2269,6 +2287,16 @@ section {
   -webkit-transition: max-height 0.3s ease;
   -moz-transition: max-height 0.3s ease;
   transition: max-height 0.3s ease;
+
+  &.ng-enter,
+  &.ng-leave.ng-leave-active {
+    max-height: 0;
+  }
+
+  &.ng-leave,
+  &.ng-enter.ng-enter-active {
+    max-height: 1320px;
+  }
 
   &:not(.hide) {
     margin-bottom: @grid-gutter-width/2;
