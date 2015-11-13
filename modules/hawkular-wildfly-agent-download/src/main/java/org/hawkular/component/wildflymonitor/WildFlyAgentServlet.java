@@ -17,13 +17,25 @@
 package org.hawkular.component.wildflymonitor;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,10 +52,21 @@ public class WildFlyAgentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // the system property that defines how many concurrent downloads we will allow (0 == disable)
-    private static String SYSPROP_AGENT_DOWNLOADS_LIMIT = "hawkular.wildfly.agent.downloads.limit";
+    private static final String SYSPROP_AGENT_DOWNLOADS_LIMIT = "hawkular.wildfly.agent.downloads.limit";
 
     // if the system property is not set or invalid, this is the default limit for number of concurrent downloads
-    private static int DEFAULT_AGENT_DOWNLOADS_LIMIT = 100;
+    private static final int DEFAULT_AGENT_DOWNLOADS_LIMIT = 100;
+
+    // name of the property file stored in the root of the installer jar file
+    private static final String AGENT_INSTALLER_PROPERTIES_FILE_NAME = "hawkular-wildfly-agent-installer.properties";
+
+    private static final String AGENT_INSTALLER_PROPERTY_WILDFLY_HOME = "wildfly-home";
+    private static final String AGENT_INSTALLER_PROPERTY_MODULE_DIST = "module-dist";
+    private static final String AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER = "hawkular-server-url";
+    private static final String AGENT_INSTALLER_PROPERTY_USERNAME = "hawkular-username";
+    private static final String AGENT_INSTALLER_PROPERTY_PASSWORD = "hawkular-password";
+    private static final String AGENT_INSTALLER_PROPERTY_SECURITY_KEY = "hawkular-security-key";
+    private static final String AGENT_INSTALLER_PROPERTY_SECURITY_SECRET = "hawkular-security-secret";
 
     // the error code that will be returned if the server has been configured to disable agent updates
     private static final int ERROR_CODE_AGENT_UPDATE_DISABLED = HttpServletResponse.SC_FORBIDDEN;
@@ -52,16 +75,22 @@ public class WildFlyAgentServlet extends HttpServlet {
     private static final int ERROR_CODE_TOO_MANY_DOWNLOADS = HttpServletResponse.SC_SERVICE_UNAVAILABLE;
 
     private AtomicInteger numActiveDownloads = null;
-    private File downloadFile = null;
+    private File moduleDownloadFile = null;
+    private File installerDownloadFile = null;
 
     @Override
     public void init() throws ServletException {
         log("Starting the WildFly Agent download servlet");
         numActiveDownloads = new AtomicInteger(0);
         try {
-            log("Agent File: " + getAgentDownloadFile());
+            log("Agent Module File: " + getAgentModuleDownloadFile());
         } catch (Throwable t) {
-            throw new ServletException("Missing Hawkular WildFly Agent download file", t);
+            throw new ServletException("Missing Hawkular WildFly Agent module download file", t);
+        }
+        try {
+            log("Agent Installer File: " + getAgentInstallerDownloadFile());
+        } catch (Throwable t) {
+            throw new ServletException("Missing Hawkular WildFly Agent installer download file", t);
         }
     }
 
@@ -86,8 +115,165 @@ public class WildFlyAgentServlet extends HttpServlet {
         } else {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid servlet path - please contact administrator");
         }
+    }
 
-        return;
+    private void downloadAgentModule(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            File agentModuleZip = getAgentModuleDownloadFile();
+            resp.setContentType("application/octet-stream");
+            resp.setHeader("Content-Disposition", "attachment; filename=" + agentModuleZip.getName());
+            resp.setContentLength((int) agentModuleZip.length());
+            resp.setDateHeader("Last-Modified", agentModuleZip.lastModified());
+            try (FileInputStream agentModuleZipStream = new FileInputStream(agentModuleZip)) {
+                copy(agentModuleZipStream, resp.getOutputStream());
+            }
+        } catch (Throwable t) {
+            String clientAddr = getClientAddress(req);
+            log("Failed to stream file to remote client [" + clientAddr + "]", t);
+            disableBrowserCache(resp);
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to stream file");
+        }
+    }
+
+    private void downloadAgentInstaller(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            File agentInstallerJar = getAgentInstallerDownloadFile();
+            resp.setContentType("application/octet-stream");
+            resp.setHeader("Content-Disposition", "attachment; filename=" + agentInstallerJar.getName());
+            resp.setDateHeader("Last-Modified", agentInstallerJar.lastModified());
+
+            HashMap<String, String> newProperties = new HashMap<>();
+
+            String serverUrl = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER,
+                    getDefaultHawkularServerUrl(false));
+            // strip any ending slash in the url since we don't want it
+            if (serverUrl.endsWith("/")) {
+                serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
+            }
+            new URL(serverUrl); // validates the URL - this throws an exception if the URL is invalid
+
+            String moduleDist = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_MODULE_DIST,
+                    serverUrl + "/hawkular/wildfly-agent/download");
+            String wildflyHome = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_WILDFLY_HOME, null);
+            String username = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_USERNAME, null);
+            String password = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_PASSWORD, null);
+            String securityKey = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_SECURITY_KEY, null);
+            String securitySecret = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_SECURITY_SECRET, null);
+            newProperties.put(AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER, serverUrl);
+            newProperties.put(AGENT_INSTALLER_PROPERTY_MODULE_DIST, moduleDist);
+            newProperties.put(AGENT_INSTALLER_PROPERTY_WILDFLY_HOME, wildflyHome);
+            newProperties.put(AGENT_INSTALLER_PROPERTY_USERNAME, username);
+            newProperties.put(AGENT_INSTALLER_PROPERTY_PASSWORD, password);
+            newProperties.put(AGENT_INSTALLER_PROPERTY_SECURITY_KEY, securityKey);
+            newProperties.put(AGENT_INSTALLER_PROPERTY_SECURITY_SECRET, securitySecret);
+
+            int contentLength = 0;
+
+            try (ZipFile agentInstallerZip = new ZipFile(agentInstallerJar);
+                    ZipOutputStream zos = new ZipOutputStream(resp.getOutputStream(), StandardCharsets.UTF_8)) {
+
+                for (Enumeration<? extends ZipEntry> e = agentInstallerZip.entries(); e.hasMoreElements();) {
+                    ZipEntry entryIn = e.nextElement();
+                    if (!entryIn.getName().equalsIgnoreCase(AGENT_INSTALLER_PROPERTIES_FILE_NAME)) {
+                        // skip everything else
+                        zos.putNextEntry(entryIn);
+                        try (InputStream is = agentInstallerZip.getInputStream(entryIn)) {
+                            byte[] buf = new byte[4096];
+                            int len;
+                            while ((len = (is.read(buf))) > 0) {
+                                zos.write(buf, 0, len);
+                                contentLength += len;
+                            }
+                        }
+                    } else {
+                        zos.putNextEntry(new ZipEntry(AGENT_INSTALLER_PROPERTIES_FILE_NAME));
+                        try (BufferedReader br = new BufferedReader(
+                                new InputStreamReader(agentInstallerZip.getInputStream(entryIn),
+                                        StandardCharsets.UTF_8))) {
+                            String line;
+                            while ((line = br.readLine()) != null) {
+                                // for each new prop, see if current line sets it; if so, set the prop to our new value
+                                for (Map.Entry<String, String> entry : newProperties.entrySet()) {
+                                    String newLine = getNewPropertyLine(line, entry.getKey(), entry.getValue());
+                                    if (!line.equals(newLine)) {
+                                        line = newLine;
+                                        break; // found the property, no need to keep going; go write the new line now
+                                    }
+                                }
+                                byte[] buf = (line + '\n').getBytes(StandardCharsets.UTF_8);
+                                zos.write(buf);
+                                contentLength += buf.length;
+                            }
+                        }
+                    }
+                    zos.closeEntry();
+                }
+            }
+
+            // I don't think this will work, because if the content is large enough, we will have flushed
+            // the resp outputStream, at which time you can no longer send headers such as content length
+            // resp.setContentLength(contentLength);
+            log("Sending Hawkular WildFly Agent installer with content length of: " + contentLength);
+
+        } catch (Throwable t) {
+            String clientAddr = getClientAddress(req);
+            log("Failed to stream file to remote client [" + clientAddr + "]", t);
+            disableBrowserCache(resp);
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to stream file: " + t);
+        }
+    }
+
+    /**
+     * Given a single line of a properties file, this will look to see if it contains a property we are looking for.
+     * If it does, we'll set it to the given new value.
+     * Note that this will look to see if the property is explicitly set
+     * or if it is commented out - if it is either, we'll modify the line regardless.
+     *
+     * If newPropValue is null, and the property is found in the line,
+     * the line returned will be a commented out property
+     *
+     * For example, if you pass in a lineToModify of "#wildfly-home=/opt/wildfly", propNameToFind of "wildfly-home"
+     * and newPropValue of "/usr/bin/wf", this method will return "wildfly-home=/usr/bin/wf". Notice that the given
+     * lineToModify was a commented out property - this method will detect that and still modify the line. This allows
+     * us to "uncomment" a property and set it to the new value.
+     *
+     * @param lineToModify the line to check if its what we want - we'll modify it and returned that modified string
+     * @param propNameToFind the property to search in the line
+     * @param newPropValue the new value to set the property to.
+     *
+     * @return if the line has the property we are looking for, a new line is returned with the property set to the
+     *         given new value; otherwise, lineToModify is returned as-is
+     */
+    private String getNewPropertyLine(String lineToModify, String propNameToFind, String newPropValue) {
+        // Look for the property (even if its commented out) and ignore spaces before and after the property name.
+        // We also don't care what the value was (doesn't matter what is after the = character).
+        Matcher m = Pattern.compile("#? *" + propNameToFind + " *=.*").matcher(lineToModify);
+        if (m.matches()) {
+            if (newPropValue != null) {
+                lineToModify = m.replaceAll(propNameToFind + "=" + newPropValue);
+            } else {
+                lineToModify = m.replaceAll("#" + propNameToFind + "=");
+            }
+        }
+        return lineToModify;
+    }
+
+    // TODO we need to return the URL of the server we are actually running in, not "localhost"
+    private String getDefaultHawkularServerUrl(boolean secure) {
+        String protocol = (secure) ? "https" : "http";
+        String hostname = "localhost";
+        int port = (secure) ? 8443 : 8080;
+
+        return String.format("%s://%s:%d", protocol, hostname, port);
+    }
+
+    private String getValueFromQueryParam(HttpServletRequest req, String key, String
+            defaultValue) throws IOException {
+        String value = req.getParameter(key);
+        if (value == null || value.isEmpty()) {
+            return defaultValue;
+        }
+        return value;
     }
 
     private void getDownload(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -99,24 +285,12 @@ public class WildFlyAgentServlet extends HttpServlet {
             sendErrorTooManyDownloads(resp);
             return;
         }
-
-        try {
-            File agentJar = getAgentDownloadFile();
-            resp.setContentType("application/octet-stream");
-            resp.setHeader("Content-Disposition", "attachment; filename=" + agentJar.getName());
-            resp.setContentLength((int) agentJar.length());
-            resp.setDateHeader("Last-Modified", agentJar.lastModified());
-            try (FileInputStream agentJarStream = new FileInputStream(agentJar)) {
-                copy(agentJarStream, resp.getOutputStream());
-            }
-        } catch (Throwable t) {
-            String clientAddr = getClientAddress(req);
-            log("Failed to stream file to remote client [" + clientAddr + "]", t);
-            disableBrowserCache(resp);
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to stream file");
+        // ?installer=true downloads the installer
+        if ("true".equals(req.getParameter("installer"))) {
+            downloadAgentInstaller(req, resp);
+        } else {
+            downloadAgentModule(req, resp);
         }
-
-        return;
     }
 
     private int getDownloadLimit() {
@@ -171,23 +345,42 @@ public class WildFlyAgentServlet extends HttpServlet {
         output.flush();
     }
 
-    private File getAgentDownloadFile() throws Exception {
-        if (downloadFile != null) {
-            if (downloadFile.exists()) {
-                return downloadFile;
+    private File getAgentModuleDownloadFile() throws Exception {
+        if (moduleDownloadFile != null) {
+            if (moduleDownloadFile.exists()) {
+                return moduleDownloadFile;
             } else {
-                downloadFile = null; // the file was removed recently - let's look for a new one
+                moduleDownloadFile = null; // the file was removed recently - let's look for a new one
             }
         }
 
         File configDir = new File(System.getProperty("jboss.server.config.dir"));
         for (File file : configDir.listFiles()) {
             if (file.getName().startsWith("hawkular-wildfly-agent-wf-extension") && file.getName().endsWith(".zip")) {
-                downloadFile = file;
-                return downloadFile;
+                moduleDownloadFile = file;
+                return moduleDownloadFile;
             }
         }
-        throw new FileNotFoundException("Cannot find agent download in: " + configDir);
+        throw new FileNotFoundException("Cannot find agent module download in: " + configDir);
+    }
+
+    private File getAgentInstallerDownloadFile() throws Exception {
+        if (installerDownloadFile != null) {
+            if (installerDownloadFile.exists()) {
+                return installerDownloadFile;
+            } else {
+                installerDownloadFile = null; // the file was removed recently - let's look for a new one
+            }
+        }
+
+        File configDir = new File(System.getProperty("jboss.server.config.dir"));
+        for (File file : configDir.listFiles()) {
+            if (file.getName().startsWith("hawkular-wildfly-agent-installer") && file.getName().endsWith(".jar")) {
+                installerDownloadFile = file;
+                return installerDownloadFile;
+            }
+        }
+        throw new FileNotFoundException("Cannot find agent installer download in: " + configDir);
     }
 
 }

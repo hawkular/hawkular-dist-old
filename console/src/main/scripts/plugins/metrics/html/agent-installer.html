@@ -1,0 +1,107 @@
+<div ng-controller="AgentInstallerController as aic" class="hk-agent-installer">
+  <div class="hk-heading">
+    <h1>Agent Installer</h1>
+  </div>
+
+  <div class="container">
+
+    <div class="col-lg-9 col-md-8">
+      <form class="panel panel-default clearfix">
+        <fieldset>
+          <div class="panel-heading">
+            <h2>Required</h2>
+          </div>
+          <div class="panel-body">
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label" for="hawkular-server-url">Hawkular Server URL</label>
+
+                <div class="col-sm-5">
+                  <div class="hk-input-text">
+                    <input class="form-control" type="url" ng-model="aic.hawkularServerUrl"
+                           placeholder="URL of Hawkular (e.g.: http://localhost:8080)" required hk-autofocus
+                           id="hawkular-server-url"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label" for="wildfly-home">Wildfly Home</label>
+
+                <div class="col-sm-5">
+                  <div class="input-group">
+                    <input ng-model="aic.wildflyHome"
+                           class="form-control" id="wildfly-home"/>
+
+                    <span class="btn btn-primary btn-file ">
+                      Browse <input type="file" webkitdirectory directory multiple/>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          <div class="panel-heading">
+            <h2>Optional</h2>
+          </div>
+          <div class="panel-body">
+
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label" for="module-zip">Module zip</label>
+
+                <div class="col-sm-5">
+                  <div class="input-group">
+                    <input ng-model="aic.moduleZip" class="form-control" id="module-zip"/>
+                      <span class="btn btn-primary btn-file ">
+                      Browse <input type="file"/>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label" for="username">Username</label>
+
+                <div class="col-sm-5">
+                  <div class="hk-input-text">
+                    <input class="form-control" ng-model="aic.username" id="username"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label" for="password">Password</label>
+
+                <div class="col-sm-5">
+                  <div class="hk-input-text">
+                    <input class="form-control" type="password" ng-model="aic.password" id="password"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="form-aictions hk-form-aictions-separator text-right">
+              <button type="button" class="btn btn-primary" ng-click="aic.download()"
+                      ng-disabled="!aic.requiredFieldsFilled(hawkularServerUrl, wildflyHome)">
+                Download Installer
+              </button>
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+</div>
