@@ -22,11 +22,10 @@ module HawkularMetrics {
 
   export class GlobalController {
 
-    public static  $inject = ['$scope', '$log', '$rootScope'];
-
     constructor(private $scope:any,
                 private $log:ng.ILogService,
-                private $rootScope:IHawkularRootScope
+                private $rootScope:IHawkularRootScope,
+                private NotificationsService:INotificationsService
     ) {
       $scope.global = this;
 
@@ -40,6 +39,7 @@ module HawkularMetrics {
       this.$rootScope.isExperimental = !this.$rootScope.isExperimental;
       if (this.$rootScope.isExperimental) {
         this.$log.info('Starting Experimental Mode');
+        this.NotificationsService.info('Entering Experimental Mode');
       } else {
         this.$log.info('Ending Experimental Mode');
       }
