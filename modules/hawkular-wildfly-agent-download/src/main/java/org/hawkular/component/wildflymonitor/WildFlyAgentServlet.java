@@ -144,8 +144,11 @@ public class WildFlyAgentServlet extends HttpServlet {
 
             HashMap<String, String> newProperties = new HashMap<>();
 
-            String serverUrl = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER,
-                    getDefaultHawkularServerUrl(false));
+            String serverUrl = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER, null);
+            // we only call getDefaultHawkularServerUrl if we need to - no sense doing it if we were given a URL
+            if (serverUrl == null) {
+                serverUrl = getDefaultHawkularServerUrl(req);
+            }
             // strip any ending slash in the url since we don't want it
             if (serverUrl.endsWith("/")) {
                 serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
@@ -258,13 +261,23 @@ public class WildFlyAgentServlet extends HttpServlet {
         return lineToModify;
     }
 
-    // TODO we need to return the URL of the server we are actually running in, not "localhost"
-    private String getDefaultHawkularServerUrl(boolean secure) {
-        String protocol = (secure) ? "https" : "http";
-        String hostname = "localhost";
-        int port = (secure) ? 8443 : 8080;
+    private String getDefaultHawkularServerUrl(HttpServletRequest request) {
+        try {
+            URL url = new URL(request.getRequestURL().toString());
 
-        return String.format("%s://%s:%d", protocol, hostname, port);
+            // the request URL has path info that we need to strip - we want only protocol, host, and port
+            String protocol = url.getProtocol();
+            String hostname = url.getHost();
+            int port = url.getPort();
+            if (port > 0) {
+                return String.format("%s://%s:%d", protocol, hostname, port);
+            } else {
+                return String.format("%s://%s", protocol, hostname);
+            }
+        } catch (Exception e) {
+            log("Cannot determine request URL; will use http://localhost:8080 as default: " + e);
+            return "http://localhost:8080";
+        }
     }
 
     private String getValueFromQueryParam(HttpServletRequest req, String key, String
