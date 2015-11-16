@@ -96,6 +96,15 @@ public class WildFlyAgentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doIt(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doIt(req, resp);
+    }
+
+    protected void doIt(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         disableBrowserCache(resp);
 
