@@ -30,6 +30,8 @@ module HawkularMetrics {
     private username: string;
     private password: string;
 
+    private codeSnippetShown: boolean;
+
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
                 private $rootScope:any,
@@ -41,15 +43,22 @@ module HawkularMetrics {
     }
 
     public requiredFieldsFilled(hawkularServerUrl: string, wildflyHome: string): boolean {
-      return this.hawkularServerUrl !== undefined
-        && ((this.hawkularServerUrl.slice(0, 7) === 'http://' && this.hawkularServerUrl.length > 7)
-            || (this.hawkularServerUrl.slice(0, 8) === 'https://' && this.hawkularServerUrl.length > 8))
-        && this.wildflyHome !== undefined && this.wildflyHome.length > 2;
+      //return this.hawkularServerUrl !== undefined
+      //  && ((this.hawkularServerUrl.slice(0, 7) === 'http://' && this.hawkularServerUrl.length > 7)
+      //      || (this.hawkularServerUrl.slice(0, 8) === 'https://' && this.hawkularServerUrl.length > 8)) &&
+        return this.wildflyHome !== undefined && this.wildflyHome.length > 2;
+    }
+
+    public getTextToCopy(): string {
+      return 'java -jar hawkular-wildfly-agent-installer-0.13.1.Final.jar';
     }
 
     public download(): void {
       var newPath = '/hawkular/wildfly-agent/download?installer=true&wildfly-home='
-        + encodeURIComponent(this.wildflyHome) + '&hawkular-server-url=' + encodeURIComponent(this.hawkularServerUrl);
+        + encodeURIComponent(this.wildflyHome);
+      if (this.hawkularServerUrl) {
+        newPath += '&hawkular-server-url=' + encodeURIComponent(this.hawkularServerUrl);
+      }
       if (this.moduleZip) {
         newPath += '&module-zip=' + encodeURIComponent(this.moduleZip);
       }
@@ -61,9 +70,16 @@ module HawkularMetrics {
       }
       this.$log.info('downloading agent installer..');
       window.location.href = newPath;
+      this.codeSnippetShown = true;
     }
 
   }
+  _module.config(['ngClipProvider', (ngClipProvider) => {
+    ngClipProvider.setConfig({
+      zIndex: 50
+    });
+  }]);
+
   _module.controller('AgentInstallerController', AgentInstallerController);
 
 }
