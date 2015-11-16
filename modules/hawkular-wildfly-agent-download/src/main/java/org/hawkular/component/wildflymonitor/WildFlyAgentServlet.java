@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +61,10 @@ public class WildFlyAgentServlet extends HttpServlet {
     // name of the property file stored in the root of the installer jar file
     private static final String AGENT_INSTALLER_PROPERTIES_FILE_NAME = "hawkular-wildfly-agent-installer.properties";
 
+    // optional key the user can provide - if specified, we'll encode the passwords in the installer
+    static final String AGENT_INSTALLER_ENCRYPTION_KEY = "encryption-key";
+
+    // the options the user can set in the installer properties config file
     private static final String AGENT_INSTALLER_PROPERTY_WILDFLY_HOME = "wildfly-home";
     private static final String AGENT_INSTALLER_PROPERTY_MODULE_DIST = "module-dist";
     private static final String AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER = "hawkular-server-url";
@@ -67,6 +72,10 @@ public class WildFlyAgentServlet extends HttpServlet {
     private static final String AGENT_INSTALLER_PROPERTY_PASSWORD = "hawkular-password";
     private static final String AGENT_INSTALLER_PROPERTY_SECURITY_KEY = "hawkular-security-key";
     private static final String AGENT_INSTALLER_PROPERTY_SECURITY_SECRET = "hawkular-security-secret";
+    private static final String AGENT_INSTALLER_PROPERTY_KEYSTORE_PATH = "keystore-path";
+    private static final String AGENT_INSTALLER_PROPERTY_KEYSTORE_PASSWORD = "keystore-password";
+    private static final String AGENT_INSTALLER_PROPERTY_KEY_PASSWORD = "key-password";
+    private static final String AGENT_INSTALLER_PROPERTY_KEY_ALIAS = "key-alias";
 
     // the error code that will be returned if the server has been configured to disable agent updates
     private static final int ERROR_CODE_AGENT_UPDATE_DISABLED = HttpServletResponse.SC_FORBIDDEN;
@@ -153,7 +162,7 @@ public class WildFlyAgentServlet extends HttpServlet {
 
             HashMap<String, String> newProperties = new HashMap<>();
 
-            String serverUrl = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER, null);
+            String serverUrl = getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER, null);
             // we only call getDefaultHawkularServerUrl if we need to - no sense doing it if we were given a URL
             if (serverUrl == null) {
                 serverUrl = getDefaultHawkularServerUrl(req);
@@ -164,20 +173,38 @@ public class WildFlyAgentServlet extends HttpServlet {
             }
             new URL(serverUrl); // validates the URL - this throws an exception if the URL is invalid
 
-            String moduleDist = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_MODULE_DIST,
-                    serverUrl + "/hawkular/wildfly-agent/download");
-            String wildflyHome = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_WILDFLY_HOME, null);
-            String username = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_USERNAME, null);
-            String password = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_PASSWORD, null);
-            String securityKey = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_SECURITY_KEY, null);
-            String securitySecret = getValueFromQueryParam(req, AGENT_INSTALLER_PROPERTY_SECURITY_SECRET, null);
             newProperties.put(AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER, serverUrl);
-            newProperties.put(AGENT_INSTALLER_PROPERTY_MODULE_DIST, moduleDist);
-            newProperties.put(AGENT_INSTALLER_PROPERTY_WILDFLY_HOME, wildflyHome);
-            newProperties.put(AGENT_INSTALLER_PROPERTY_USERNAME, username);
-            newProperties.put(AGENT_INSTALLER_PROPERTY_PASSWORD, password);
-            newProperties.put(AGENT_INSTALLER_PROPERTY_SECURITY_KEY, securityKey);
-            newProperties.put(AGENT_INSTALLER_PROPERTY_SECURITY_SECRET, securitySecret);
+            newProperties.put(AGENT_INSTALLER_PROPERTY_MODULE_DIST,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_MODULE_DIST,
+                            serverUrl + "/hawkular/wildfly-agent/download"));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_WILDFLY_HOME,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_WILDFLY_HOME, null));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_USERNAME,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_USERNAME, null));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_PASSWORD,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_PASSWORD, null));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_SECURITY_KEY,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_SECURITY_KEY, null));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_SECURITY_SECRET,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_SECURITY_SECRET, null));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_KEYSTORE_PATH,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_KEYSTORE_PATH, null));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_KEY_ALIAS,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_KEY_ALIAS, null));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_KEYSTORE_PASSWORD,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_KEYSTORE_PASSWORD, null));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_KEY_PASSWORD,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_KEY_PASSWORD, null));
+
+            // If an encryption key was provided, encode the passwords in the .properties file.
+            // The installer must be given this encryption key by the user in order to install the agent.
+            String encryptionKey = getValueFromRequestParam(req, AGENT_INSTALLER_ENCRYPTION_KEY, null);
+            if (encryptionKey != null) {
+                encode(newProperties, AGENT_INSTALLER_PROPERTY_KEYSTORE_PASSWORD, encryptionKey);
+                encode(newProperties, AGENT_INSTALLER_PROPERTY_KEY_PASSWORD, encryptionKey);
+                encode(newProperties, AGENT_INSTALLER_PROPERTY_PASSWORD, encryptionKey);
+                encode(newProperties, AGENT_INSTALLER_PROPERTY_SECURITY_SECRET, encryptionKey);
+            }
 
             int contentLength = 0;
 
@@ -236,6 +263,29 @@ public class WildFlyAgentServlet extends HttpServlet {
     }
 
     /**
+     * Encodes the value of the given property found in the given properties map.
+     *
+     * @param properties the map where the property is found; this will be updated with the newly encoded value
+     * @param propertyName the name of the property that needs to be encoded
+     * @param encryptionKey the key to use when encoding the value
+     */
+    private void encode(HashMap<String, String> properties, String propertyName, String encryptionKey)
+            throws Exception {
+        String clearText = properties.get(propertyName);
+        if (clearText != null) {
+            // follows the same algorithm as installer's EncoderDecoder
+            StringBuilder encodedString = new StringBuilder();
+            for (int i = 0; i < clearText.length(); i++) {
+                char keyChar = encryptionKey.charAt(i % encryptionKey.length());
+                char encChar = (char) ((clearText.charAt(i) + keyChar) % ((char) 256));
+                encodedString.append(encChar);
+            }
+            properties.put(propertyName,
+                    new String(Base64.getEncoder().encode(encodedString.toString().getBytes()), "UTF-8"));
+        }
+    }
+
+    /**
      * Given a single line of a properties file, this will look to see if it contains a property we are looking for.
      * If it does, we'll set it to the given new value.
      * Note that this will look to see if the property is explicitly set
@@ -289,7 +339,7 @@ public class WildFlyAgentServlet extends HttpServlet {
         }
     }
 
-    private String getValueFromQueryParam(HttpServletRequest req, String key, String
+    private String getValueFromRequestParam(HttpServletRequest req, String key, String
             defaultValue) throws IOException {
         String value = req.getParameter(key);
         if (value == null || value.isEmpty()) {
