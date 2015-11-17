@@ -37,7 +37,7 @@
             <a href="#" class="btn btn-default" dropdown-toggle>
               Change State <b class="caret"></b>
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu dropdown-menu-right">
               <li><a href="#" ng-click="act.enableSelected()" ng-disabled="!act.hasDisabledSelectedItems || act.isWorking">Enable</a></li>
               <li><a href="#" ng-click="act.disableSelected()" ng-disabled="!act.hasEnabledSelectedItems || act.isWorking">Disable</a></li>
             </ul>
@@ -71,7 +71,7 @@
             <td><a ng-href="{{act.getResourceRoute(trigger)}}">{{trigger.context.resourceName|truncate: 30}}</a></td>
             <td>{{trigger.severity|firstUpper}}</td>
             <td>{{trigger.enabled ? "Enabled" : "Disabled"}}</td>
-            <td>{{trigger.actions.email.length}} <i class="fa fa-envelope"></i></td>
+            <td>{{trigger.actions.email.length}} <i class="fa fa-envelope-o"></i></td>
             <td><a ng-href="{{act.getDetailRoute(trigger)}}" class="btn btn-link"><i class="fa fa-chevron-circle-right fa-lg"
                                            tooltip="View Details" tooltip-trigger tooltip-placement="top">
             </i></a>
