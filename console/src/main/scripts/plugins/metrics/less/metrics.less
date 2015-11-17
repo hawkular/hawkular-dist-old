@@ -43,6 +43,16 @@ body {
   float: none;
 }
 
+.container {
+  @media (min-width: 1201px) and (max-width: 1440px) {
+    width: calc(~"100% - 40px");
+  }
+
+  @media (min-width: 1441px) {
+    width: 1400px;
+  }
+}
+
 .row { // reducing space between boxes
 
   @media (min-width: @screen-lg-min) {
@@ -70,16 +80,6 @@ body {
     > .col-md-9 + .col-md-3 {
       padding-left: 0;
     }
-  }
-}
-
-.container {
-  @media (min-width: 1201px) and (max-width: 1440px) {
-    width: calc(~"100% - 40px");
-  }
-
-  @media (min-width: 1441px) {
-    width: 1400px;
   }
 }
 
@@ -365,8 +365,12 @@ a:hover {
   font-size: 20px;
 }
 
-.card-pf.hk-h2-offset {
+.hk-h2-offset {
   margin-top: 39px;
+}
+
+.hk-cards-offset {
+  margin-top: 30px;
 }
 
 .hk-definitions-link {
@@ -829,6 +833,10 @@ p + .form-horizontal {
   margin-bottom: 0;
 }
 
+.hk-control-actions-bar .input-group {
+  width: 330px;
+}
+
 
 // Icons
 
@@ -1219,6 +1227,21 @@ a:hover .fa-times-circle-o,
 
 // Panels
 
+.row-panels { // provisional until everything is updated to cards
+  margin-left: -10px;
+  margin-right: -10px;
+
+  .panel {
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+
+  .row-cards-pf {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+}
+
 .panel {
 
   border: none;
@@ -1430,9 +1453,10 @@ a:hover .fa-times-circle-o,
 }
 
 
-
+// Right Sidebar
 
 .col-lg-3 .hk-info-top {
+  margin-top: 10px;
   margin-bottom: 15px;
 }
 
@@ -1856,6 +1880,15 @@ td .fa-comment-o {
     margin: 10px 0;
     width: 100%;
   }
+}
+
+.tile:hover {
+  cursor: pointer;
+}
+
+.hk-control-actions-bar + .tiles-view-pf {
+  margin-top: -10px;
+  padding-top: 0;
 }
 
 .hk-tile-alert {
@@ -2330,6 +2363,10 @@ section {
   }
 }
 
+#hk-datasources .row-cards-pf {
+  margin-top: 30px;
+}
+
 
 // Application overview screen
 
@@ -2373,24 +2410,6 @@ section {
 
   p.card-pf-aggregate-status-notifications {
     margin-bottom: 0;
-  }
-}
-
-
-// Application URLs screen
-
-.hk-application-urls {
-
-  .hk-control-actions-bar .input-group {
-    width: 330px;
-  }
-
-  .tiles-view-pf {
-    padding-top: 0;
-  }
-
-  .tile:hover {
-    cursor: pointer;
   }
 }
 

@@ -1,12 +1,14 @@
 <section id="hk-web" class="hk-tab-content">
 
+  <div class="hk-info-top clearfix">
+    <h3 class="pull-left">Web Status</h3>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+      <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+    </span>
+  </div>
+
   <div class="row">
     <div class="col-lg-9">
-
-      <h3 class="pull-left">Web Status</h3>
-      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
-        <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
-      </span>
 
       <div class="row row-cards-pf">
         <div class="col-md-3">

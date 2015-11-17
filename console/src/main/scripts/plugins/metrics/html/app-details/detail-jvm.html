@@ -1,12 +1,14 @@
 <section id="hk-jvm-metrics" class="hk-tab-content">
 
+  <div class="hk-info-top clearfix">
+    <h3 class="pull-left">JVM Status</h3>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+      <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+    </span>
+  </div>
+
   <div class="row">
     <div class="col-lg-9">
-
-      <h3 class="pull-left">JVM Status</h3>
-      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
-        <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
-      </span>
 
       <div class="row row-cards-pf">
         <div class="col-md-3">
@@ -134,11 +136,15 @@
         <div class="hk-legend text-left hk-legend-metrics">
         </div>
       </div>
+
     </div>
+
     <div class="col-lg-3">
       <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)" resource-id="vm.resourceId"
                      title="JVM">
       </hk-alert-info>
     </div>
+
   </div>
+
 </section>
