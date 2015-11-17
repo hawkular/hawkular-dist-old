@@ -1,12 +1,14 @@
 <section id="hk-deployments" class="hk-tab-content">
 
+  <div class="hk-info-top clearfix">
+    <h3 class="pull-left">Deployment Status</h3>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update">
+      <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+    </span>
+  </div>
+
   <div class="row">
     <div class="col-lg-9">
-
-      <h3 class="pull-left">Deployment Status</h3>
-      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="bottom" tooltip="Last update">
-        <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
-      </span>
 
       <div class="row row-cards-pf">
         <div class="col-md-3">
@@ -20,7 +22,7 @@
         <div class="col-md-3">
           <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
             <h2 class="card-pf-title">
-              <i class="fa fa-times-circle-o"></i>
+              <i class="fa fa-times-circle-o" ng-show="vm.failedDeployments"></i>
               <span class="card-pf-aggregate-status-count">{{vm.failedDeployments || 0}} Failed</span> Deployments
             </h2>
           </div>

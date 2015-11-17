@@ -1,9 +1,7 @@
 <div class="hk-box-v-item">
   <div class="hk-display-table">
     <div class="hk-icon-container">
-      <div class="hk-alert-icon">
-        <i class="fa fa-exclamation-triangle" ng-class="{'hk-warning': alert.status=='OPEN'}"></i>
-      </div>
+      <i class="fa fa-exclamation-triangle" ng-class="{'hk-warning': alert.status=='OPEN'}"></i>
     </div>
     <div class="hk-info-container">
       <div class="hk-info-heading" ng-switch on="alert.alertType">
@@ -53,7 +51,7 @@
         </div>
       </div>
       <p class="hk-info-info">
-        {{alert.start | date:'d MMM y HH:mm:ss' }}
+        {{alert.start | date:'d MMM y, HH:mm:ss' }}
       </p>
     </div>
     <div class="hk-icon-container">
