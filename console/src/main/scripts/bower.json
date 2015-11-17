@@ -12,7 +12,7 @@
     "plugins"
   ],
   "dependencies": {
-    "angular-animate": "~1.4.4",
+    "angular-animate": "1.4.4",
     "angular-bootstrap": "0.11.0",
     "angular-md5": "0.1.7",
     "angular-momentjs": "0.1.9",
@@ -23,7 +23,7 @@
     "animate.css": "3.0.0",
     "ngInfiniteScroll": "1.2.1",
     "bootstrap-select": "1.6",
-    "hawkular-charts": "0.5.21",
+    "hawkular-charts": "0.5.23",
     "hawkular-ui-services": "0.8.15",
     "hawtio-core-navigation": "2.0.51",
     "hawtio-core": "2.0.18",
@@ -38,8 +38,8 @@
     "angular-truncate": "sparkalow/angular-truncate",
     "angular-smart-truncate": "1.0.2",
     "angular-wizard": "0.5.5",
-    "ng-clip": "~0.2.6",
-    "zeroclipboard": "~2.2.0"
+    "ng-clip": "0.2.6",
+    "zeroclipboard": "2.2.0"
   },
   "devDependencies": {
     "hawtio-core-dts": "2.0.18"
