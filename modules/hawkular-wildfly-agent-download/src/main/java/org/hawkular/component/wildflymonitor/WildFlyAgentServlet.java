@@ -206,16 +206,6 @@ public class WildFlyAgentServlet extends HttpServlet {
                 encode(newProperties, AGENT_INSTALLER_PROPERTY_SECURITY_SECRET, encryptionKey);
             }
 
-            // if neither username or security key is provided, set them to something to indicate
-            // to the user that they need to manually set it.
-            if (newProperties.get(AGENT_INSTALLER_PROPERTY_USERNAME) == null &&
-                    newProperties.get(AGENT_INSTALLER_PROPERTY_SECURITY_KEY) == null) {
-                newProperties.put(AGENT_INSTALLER_PROPERTY_USERNAME, "SET_ME");
-                newProperties.put(AGENT_INSTALLER_PROPERTY_PASSWORD, "SET_ME");
-                newProperties.put(AGENT_INSTALLER_PROPERTY_SECURITY_KEY, null);
-                newProperties.put(AGENT_INSTALLER_PROPERTY_SECURITY_SECRET, null);
-            }
-
             int contentLength = 0;
 
             try (ZipFile agentInstallerZip = new ZipFile(agentInstallerJar);
