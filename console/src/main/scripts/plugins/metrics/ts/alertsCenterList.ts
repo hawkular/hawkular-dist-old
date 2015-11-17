@@ -27,7 +27,6 @@ module HawkularMetrics {
     public isWorking = false;
     public alertsTimeStart:TimestampInMillis;
     public alertsTimeEnd:TimestampInMillis;
-    public alertsTimeOffset:TimestampInMillis;
     public lastUpdateDate:Date = new Date();
 
     public alertsList:IAlert[];
@@ -47,6 +46,7 @@ module HawkularMetrics {
 
     constructor(private $scope:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
+                private HawkularNav:any,
                 private ErrorsManager:IErrorsManager,
                 private $log:ng.ILogService,
                 private $q:ng.IQService,
@@ -57,16 +57,9 @@ module HawkularMetrics {
                 private $location:ng.ILocationService) {
       $scope.ac = this;
 
-      if ($routeParams.timeOffset === undefined) {
-        $routeParams.timeOffset = 3600000 * 12;
-        $scope.hkParams.timeOffset = $routeParams.timeOffset;
-      }
-
-      this.alertsTimeOffset = $routeParams.timeOffset;
-
       // If the end time is not specified in URL use current time as end time
       this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : Date.now();
-      this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
+      this.alertsTimeStart = this.alertsTimeEnd - HawkularNav.getTimeOffset();
 
       this.autoRefresh(120);
       if ($rootScope.currentPersona) {
@@ -93,7 +86,7 @@ module HawkularMetrics {
     public getAlerts():void {
 
       this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : Date.now();
-      this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
+      this.alertsTimeStart = this.alertsTimeEnd - this.HawkularNav.getTimeOffset();
 
       let ordering = 'asc';
       if (!this.sortAsc) {
@@ -124,7 +117,7 @@ module HawkularMetrics {
     }
 
     public showDetailPage(alertId:AlertId):void {
-      let timeOffset = this.alertsTimeOffset;
+      let timeOffset = this.HawkularNav.getTimeOffset();
       let endTime = this.alertsTimeEnd;
       this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}/${timeOffset}/${endTime}`);
     }
