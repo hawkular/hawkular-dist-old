@@ -65,13 +65,13 @@ public class WildFlyAgentServlet extends HttpServlet {
     static final String AGENT_INSTALLER_ENCRYPTION_KEY = "encryption-key";
 
     // the options the user can set in the installer properties config file
-    private static final String AGENT_INSTALLER_PROPERTY_WILDFLY_HOME = "wildfly-home";
+    private static final String AGENT_INSTALLER_PROPERTY_TARGET_LOCATION = "target-location";
     private static final String AGENT_INSTALLER_PROPERTY_MODULE_DIST = "module-dist";
-    private static final String AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER = "hawkular-server-url";
-    private static final String AGENT_INSTALLER_PROPERTY_USERNAME = "hawkular-username";
-    private static final String AGENT_INSTALLER_PROPERTY_PASSWORD = "hawkular-password";
-    private static final String AGENT_INSTALLER_PROPERTY_SECURITY_KEY = "hawkular-security-key";
-    private static final String AGENT_INSTALLER_PROPERTY_SECURITY_SECRET = "hawkular-security-secret";
+    private static final String AGENT_INSTALLER_PROPERTY_SERVER_URL = "server-url";
+    private static final String AGENT_INSTALLER_PROPERTY_USERNAME = "username";
+    private static final String AGENT_INSTALLER_PROPERTY_PASSWORD = "password";
+    private static final String AGENT_INSTALLER_PROPERTY_SECURITY_KEY = "security-key";
+    private static final String AGENT_INSTALLER_PROPERTY_SECURITY_SECRET = "security-secret";
     private static final String AGENT_INSTALLER_PROPERTY_KEYSTORE_PATH = "keystore-path";
     private static final String AGENT_INSTALLER_PROPERTY_KEYSTORE_PASSWORD = "keystore-password";
     private static final String AGENT_INSTALLER_PROPERTY_KEY_PASSWORD = "key-password";
@@ -162,7 +162,7 @@ public class WildFlyAgentServlet extends HttpServlet {
 
             HashMap<String, String> newProperties = new HashMap<>();
 
-            String serverUrl = getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER, null);
+            String serverUrl = getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_SERVER_URL, null);
             // we only call getDefaultHawkularServerUrl if we need to - no sense doing it if we were given a URL
             if (serverUrl == null) {
                 serverUrl = getDefaultHawkularServerUrl(req);
@@ -173,12 +173,12 @@ public class WildFlyAgentServlet extends HttpServlet {
             }
             new URL(serverUrl); // validates the URL - this throws an exception if the URL is invalid
 
-            newProperties.put(AGENT_INSTALLER_PROPERTY_HAWKULAR_SERVER, serverUrl);
+            newProperties.put(AGENT_INSTALLER_PROPERTY_SERVER_URL, serverUrl);
             newProperties.put(AGENT_INSTALLER_PROPERTY_MODULE_DIST,
                     getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_MODULE_DIST,
                             serverUrl + "/hawkular/wildfly-agent/download"));
-            newProperties.put(AGENT_INSTALLER_PROPERTY_WILDFLY_HOME,
-                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_WILDFLY_HOME, null));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_TARGET_LOCATION,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_TARGET_LOCATION, null));
             newProperties.put(AGENT_INSTALLER_PROPERTY_USERNAME,
                     getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_USERNAME, null));
             newProperties.put(AGENT_INSTALLER_PROPERTY_PASSWORD,
@@ -294,10 +294,10 @@ public class WildFlyAgentServlet extends HttpServlet {
      * If newPropValue is null, and the property is found in the line,
      * the line returned will be a commented out property
      *
-     * For example, if you pass in a lineToModify of "#wildfly-home=/opt/wildfly", propNameToFind of "wildfly-home"
-     * and newPropValue of "/usr/bin/wf", this method will return "wildfly-home=/usr/bin/wf". Notice that the given
-     * lineToModify was a commented out property - this method will detect that and still modify the line. This allows
-     * us to "uncomment" a property and set it to the new value.
+     * For example, if you pass in a lineToModify of "#target-location=/opt/wildfly",
+     * propNameToFind of "target-location", and newPropValue of "/usr/bin/wf", this method will return
+     * "wildfly-home=/usr/bin/wf". Notice that the given lineToModify was a commented out property - this method will
+     * detect that and still modify the line. This allows us to "uncomment" a property and set it to the new value.
      *
      * @param lineToModify the line to check if its what we want - we'll modify it and returned that modified string
      * @param propNameToFind the property to search in the line
