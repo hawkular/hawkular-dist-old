@@ -30,7 +30,7 @@ module HawkularMetrics {
     public static AVAILABLE_COLOR = '#1884c7'; /// blue
     public static IN_USE_COLOR = '#49a547'; /// green
     public static TIMED_OUT_COLOR = '#515252'; /// dark gray
-    public static WAIT_COLOR = '#d5d026'; /// yellow
+    public static WAIT_COLOR = '#bcb932'; /// yellow
     public static CREATION_COLOR = '#95489c'; /// purple
 
     public static DEFAULT_CONN_THRESHOLD = 200; // < 200 # connections available
@@ -97,7 +97,7 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis, res:any):void {
+    private getAlerts(resourceId:ResourceId, startTime:TimestampInMillis, endTime:TimestampInMillis, res:any):void {
       let dsArray:IAlert[];
       let promise = this.HawkularAlertsManager.queryAlerts({
         statuses: 'OPEN',
@@ -364,7 +364,7 @@ module HawkularMetrics {
       }, this);
     }
 
-    private loadDatasourceTriggers(resId):void {
+    private loadDatasourceTriggers(resId:ResourceId):void {
       // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
 
       let connTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_conn').then(() => {
@@ -542,7 +542,7 @@ module HawkularMetrics {
 
     }
 
-    public encodeResourceId(resourceId:string):string {
+    public encodeResourceId(resourceId:ResourceId):string {
       // for some reason using standard encoding is not working correctly in the route. So do something dopey...
       //let encoded = encodeURIComponent(resourceId);
       let encoded = resourceId;
