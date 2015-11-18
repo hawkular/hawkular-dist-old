@@ -62,18 +62,18 @@ module Subtab {
       };
 
       $scope.getFormattedDate = (): string => {
-        let diff = $scope.hkParams.timeOffset;
+        let diff = HawkularNav.getTimeOffset();
         const DATE_FORMAT = 'D MMM YYYY';
         const HOUR_FORMAT = 'HH:mm';
 
         // FIXME: Use moment ?
-        $scope.offsetName = $scope.rangeNames[$scope.hkParams.timeOffset] || 'Custom';
+        $scope.offsetName = $scope.rangeNames[diff] || 'Custom';
 
         // TODO: Use this for custom
         // let momStart = moment($scope.hkStartTimestamp);
         // let momEnd = moment($scope.hkEndTimestamp);
 
-        let momStart = moment().subtract($scope.hkParams.timeOffset, 'milliseconds');
+        let momStart = moment().subtract(diff, 'milliseconds');
         let momEnd = moment();
 
         if (diff < 24 * 60 * 60 * 1000) {

@@ -25,7 +25,8 @@ module HawkularMetrics {
   export class MetricsViewController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$log',
-      '$routeParams', 'HawkularAlertsManager', 'ErrorsManager', '$q', 'NotificationsService', 'MetricsService'];
+      '$routeParams', 'HawkularAlertsManager', 'HawkularNav', 'ErrorsManager', '$q', 'NotificationsService',
+      'MetricsService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
@@ -47,6 +48,7 @@ module HawkularMetrics {
                 private $log:ng.ILogService,
                 private $routeParams:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
+                private HawkularNav:any,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
                 private NotificationsService:INotificationsService,
@@ -112,7 +114,7 @@ module HawkularMetrics {
       this.autoRefreshPromise = this.$interval(()  => {
         this.$scope.hkEndTimestamp = +moment();
         this.endTimeStamp = this.$scope.hkEndTimestamp;
-        this.$scope.hkStartTimestamp = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+        this.$scope.hkStartTimestamp = +moment().subtract(this.HawkularNav.getTimeOffset(), 'milliseconds');
         this.startTimeStamp = this.$scope.hkStartTimestamp;
         this.refreshSummaryData(this.getMetricId());
         this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
@@ -128,7 +130,7 @@ module HawkularMetrics {
 
     private refreshChartDataNow(metricId:MetricId, startTime?:TimestampInMillis):void {
       this.$scope.hkEndTimestamp = +moment();
-      let adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+      let adjStartTimeStamp:number = +moment().subtract(this.HawkularNav.getTimeOffset(), 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.refreshSummaryData(metricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       this.refreshHistoricalChartDataForTimestamp(metricId,

@@ -24,6 +24,7 @@ module Topbar {
 
     public static $inject = ['$rootScope', '$route', '$routeParams', 'HawkularInventory'];
 
+    public globalTimeOffset;
 
     constructor(private $rootScope:any,
                 private $route:any,
@@ -31,8 +32,11 @@ module Topbar {
                 private HawkularInventory:any) {
       $rootScope.hkParams = $routeParams || [];
 
+      console.log('New HawkularNav');
+
       // default time period set to 12 hours
       let defaultOffset = 12 * 60 * 60 * 1000;
+      this.globalTimeOffset = defaultOffset;
 
       let init = (tenantId?:string) => {
         HawkularInventory.Resource.query({environmentId: globalEnvironmentId}, (resourceList) => {
@@ -69,6 +73,7 @@ module Topbar {
     public setTimestamp(offset:number, end ?:number) {
       this.$route.updateParams({timeOffset: offset, endTime: end});
       this.$rootScope.hkParams.timeOffset = offset;
+      this.globalTimeOffset = offset;
       this.$rootScope.hkEndTimestamp = end;
       this.$rootScope.hkStartTimestamp = moment().subtract(this.$rootScope.hkParams.timeOffset,
         'milliseconds').valueOf();
@@ -78,9 +83,15 @@ module Topbar {
       let offset = end - start;
       this.$route.updateParams({timeOffset: offset, endTime: end});
       this.$rootScope.hkParams.timeOffset = offset;
+      this.globalTimeOffset = offset;
       this.$rootScope.hkEndTimestamp = end;
       this.$rootScope.hkStartTimestamp = start;
     }
+
+    public getTimeOffset() {
+      return this.globalTimeOffset;
+    }
+
   }
 
   _module.service('HawkularNav', HawkularNav);

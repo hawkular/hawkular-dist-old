@@ -37,7 +37,7 @@ module HawkularMetrics {
   export class MetricsAvailabilityController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric',
-      'MetricsService', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
+      'MetricsService', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager', 'HawkularNav',
       'ErrorsManager', '$q', 'NotificationsService'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
@@ -66,6 +66,7 @@ module HawkularMetrics {
                 private $filter:ng.IFilterService,
                 private $moment:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
+                private HawkularNav:any,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
                 private NotificationsService:INotificationsService) {
@@ -131,7 +132,7 @@ module HawkularMetrics {
 
     public refreshAvailPageNow(resourceId:ResourceId, startTime?:number):void {
       this.$scope.hkEndTimestamp = +this.$moment();
-      let adjStartTimeStamp:number = +this.$moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+      let adjStartTimeStamp:number = +this.$moment().subtract(this.HawkularNav.getTimeOffset(), 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       if (resourceId) {
         this.$log.debug('Updating Availability Page');
@@ -148,7 +149,7 @@ module HawkularMetrics {
       this.autoRefreshPromise = this.$interval(()  => {
         this.$scope.hkEndTimestamp = +this.$moment();
         this.endTimeStamp = this.$scope.hkEndTimestamp;
-        this.$scope.hkStartTimestamp = +this.$moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+        this.$scope.hkStartTimestamp = +this.$moment().subtract(this.HawkularNav.getTimeOffset(), 'milliseconds');
         this.startTimeStamp = this.$scope.hkStartTimestamp;
         this.refreshAvailPageNow(this.getResourceId());
       }, intervalInSeconds * 1000);
