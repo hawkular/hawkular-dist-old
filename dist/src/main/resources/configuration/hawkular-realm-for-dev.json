@@ -20,7 +20,7 @@
     "emailVerified" : false,
     "firstName" : "John",
     "lastName" : "Doe",
-    "email" : "jdoe@acme.com",
+    "email" : "jdoe@example.com",
     "credentials" : [ {
       "type" : "password",
       "hashedSaltedValue" : "ltSl89y75f8LTzoT646xO9NPTrm114ubTauplgw+TQ62ZDy8K89+y7jFzp/jnSvEh9TENQ4RRvNA6vdGOUDcXg==",
