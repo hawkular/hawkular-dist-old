@@ -22,7 +22,8 @@ module HawkularMetrics {
 
   export let _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ngAnimate', 'ui.select',
     'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr',
-    'infinite-scroll', 'mgo-angular-wizard', 'truncate', '500tech.smart-truncate', 'hawkular.charts', 'ngClipboard']);
+    'infinite-scroll', 'mgo-angular-wizard', 'truncate', '500tech.smart-truncate', 'hawkular.charts', 'ngClipboard',
+    'patternfly.filters']);
 
   _module.config(['$compileProvider', function ($compileProvider) {
     //disable debug info
@@ -59,7 +60,7 @@ module HawkularMetrics {
             return $q.defer().promise;
           }
         }
-      }).when('/hawkular-ui/url/url-list/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/url-list.html'}).
+      }).when('/hawkular-ui/url/url-list', {templateUrl: 'plugins/metrics/html/url-list.html'}).
       when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {
         templateUrl: 'plugins/metrics/html/url-response-time.html',
         reloadOnSearch: false,
@@ -117,8 +118,7 @@ module HawkularMetrics {
           }
         }
       }).
-      when('/hawkular-ui/app/app-list/:timeOffset?/:endTime?',
-      {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
+      when('/hawkular-ui/app/app-list', {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
       when('/hawkular-ui/app/app-details/:resourceId/:tabId/:timeOffset?/:endTime?', {
         templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
         reloadOnSearch: false,

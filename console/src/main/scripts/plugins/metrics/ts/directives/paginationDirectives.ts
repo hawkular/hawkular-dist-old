@@ -21,7 +21,7 @@
 module HawkularMetrics {
 /// TODO: use ControllerAs syntax
 
-  let paginationLink = ($scope:any) => {
+  let paginationLink = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
 
     $scope.currentPageView = $scope.currentPage + 1;
     $scope.pagesNumber = getPagesNumber();
@@ -72,9 +72,9 @@ module HawkularMetrics {
   };
 
   class HkPagination {
-    public link:($scope:any) => void;
+    public link:($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
     public templateUrl = 'plugins/metrics/html/url-pagination.html';
-    public $scope = {
+    public scope = {
       resourceList: '=',
       currentPage: '=',
       linkHeader: '=',
@@ -99,12 +99,10 @@ module HawkularMetrics {
     }
   }
 
-  _module.directive('hkPagination', HkPagination.Factory());
-
   class HkDataPagination {
-    public link:($scope:ng.IScope) => void;
+    public link:($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
     public templateUrl = 'plugins/metrics/html/data-pagination.html';
-    public $scope = {
+    public scope = {
       resourceList: '=',
       currentPage: '=',
       linkHeader: '=',
@@ -129,5 +127,6 @@ module HawkularMetrics {
     }
   }
 
+  _module.directive('hkPagination', HkPagination.Factory());
   _module.directive('hkDataPagination', HkDataPagination.Factory());
 }

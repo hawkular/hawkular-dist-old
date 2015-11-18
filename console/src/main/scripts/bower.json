@@ -13,10 +13,10 @@
   ],
   "dependencies": {
     "angular-animate": "1.4.4",
-    "angular-bootstrap": "0.11.0",
+    "angular-bootstrap": "0.13.4",
     "angular-md5": "0.1.7",
     "angular-momentjs": "0.1.9",
-    "angular-patternfly": "2.3.1",
+    "angular-patternfly": "2.6.1",
     "angular-scroll": "0.6.5",
     "angular-ui-select": "0.11.2",
     "angular-toastr": "1.4.1",
