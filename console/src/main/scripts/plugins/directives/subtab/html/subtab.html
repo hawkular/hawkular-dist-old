@@ -2,12 +2,12 @@
   <div>
     <div class="row hk-top-row">
       <div class="col-xs-7">
-        <a ng-show="isAppServerPage()" href="/hawkular-ui/app/app-list" class="back">« All Application Servers</a>
-        <a ng-hide="isUrlPage()" href="/hawkular-ui/url/url-list" class="back">« All URLs</a>
-        <a ng-show="isAlertsCenterDetailPage()" href="/hawkular-ui/alerts-center-detail" class="back">« All Alerts</a>
+        <a ng-show="isAppServerPage()" href="/hawkular-ui/app/app-list/{{hkParams.timeOffset}}" class="back">« All Application Servers</a>
+        <a ng-hide="isUrlPage()" href="/hawkular-ui/url/url-list/{{hkParams.timeOffset}}" class="back">« All URLs</a>
+        <a ng-show="isAlertsCenterDetailPage()" href="/hawkular-ui/alerts-center-detail/{{hkParams.timeOffset}}" class="back">« All Alerts</a>
       </div>
       <div class="col-xs-5">
-        <div class="hk-date-range dropdown">
+        <div class="hk-date-range dropdown" ng-hide="isAlertsCenterTriggersPage()">
           <div class="input-group" dropdown-toggle>
             <div class="hk-input">
               {{offsetName}} <span ng-show="false">{{getFormattedDate()}}</span>

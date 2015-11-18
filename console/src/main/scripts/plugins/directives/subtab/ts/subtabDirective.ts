@@ -40,6 +40,10 @@ module Subtab {
         return $location.path().indexOf('/hawkular-ui/alerts-center-detail') === 0;
       };
 
+      $scope.isAlertsCenterTriggersPage = () => {
+        return $location.path().indexOf('/hawkular-ui/alerts-center-triggers') === 0;
+      };
+
       $scope.isUrlPage = () => {
         return $location.path().indexOf('/hawkular-ui/url/') !== 0;
       };
