@@ -117,7 +117,8 @@ module HawkularMetrics {
           }
         }
       }).
-      when('/hawkular-ui/app/app-list/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
+      when('/hawkular-ui/app/app-list/:timeOffset?/:endTime?',
+      {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
       when('/hawkular-ui/app/app-details/:resourceId/:tabId/:timeOffset?/:endTime?', {
         templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
         reloadOnSearch: false,
