@@ -27,6 +27,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.spec.KeySpec;
 import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -38,6 +40,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -63,6 +69,8 @@ public class WildFlyAgentServlet extends HttpServlet {
 
     // optional key the user can provide - if specified, we'll encode the passwords in the installer
     static final String AGENT_INSTALLER_ENCRYPTION_KEY = "encryption-key";
+    static final String AGENT_INSTALLER_ENCRYPTION_SALT = "encryption-salt";
+    static final String AGENT_INSTALLER_ENCRYPTION_WEAK = "encryption-weak";
 
     // the options the user can set in the installer properties config file
     private static final String AGENT_INSTALLER_PROPERTY_TARGET_LOCATION = "target-location";
@@ -199,11 +207,23 @@ public class WildFlyAgentServlet extends HttpServlet {
             // If an encryption key was provided, encode the passwords in the .properties file.
             // The installer must be given this encryption key by the user in order to install the agent.
             String encryptionKey = getValueFromRequestParam(req, AGENT_INSTALLER_ENCRYPTION_KEY, null);
+            String encryptionSalt = getValueFromRequestParam(req, AGENT_INSTALLER_ENCRYPTION_SALT, null);
+            String encryptionWeak = getValueFromRequestParam(req, AGENT_INSTALLER_ENCRYPTION_WEAK, null);
+            boolean useWeakEncryption = "true".equalsIgnoreCase(encryptionWeak);
+
             if (encryptionKey != null) {
-                encode(newProperties, AGENT_INSTALLER_PROPERTY_KEYSTORE_PASSWORD, encryptionKey);
-                encode(newProperties, AGENT_INSTALLER_PROPERTY_KEY_PASSWORD, encryptionKey);
-                encode(newProperties, AGENT_INSTALLER_PROPERTY_PASSWORD, encryptionKey);
-                encode(newProperties, AGENT_INSTALLER_PROPERTY_SECURITY_SECRET, encryptionKey);
+                if (encryptionSalt == null) {
+                    encryptionSalt = encryptionKey;
+                }
+
+                encode(newProperties, AGENT_INSTALLER_PROPERTY_KEYSTORE_PASSWORD,
+                        encryptionKey, encryptionSalt, useWeakEncryption);
+                encode(newProperties, AGENT_INSTALLER_PROPERTY_KEY_PASSWORD,
+                        encryptionKey, encryptionSalt, useWeakEncryption);
+                encode(newProperties, AGENT_INSTALLER_PROPERTY_PASSWORD,
+                        encryptionKey, encryptionSalt, useWeakEncryption);
+                encode(newProperties, AGENT_INSTALLER_PROPERTY_SECURITY_SECRET,
+                        encryptionKey, encryptionSalt, useWeakEncryption);
             }
 
             int contentLength = 0;
@@ -267,22 +287,55 @@ public class WildFlyAgentServlet extends HttpServlet {
      *
      * @param properties the map where the property is found; this will be updated with the newly encoded value
      * @param propertyName the name of the property that needs to be encoded
-     * @param encryptionKey the key to use when encoding the value
      */
-    private void encode(HashMap<String, String> properties, String propertyName, String encryptionKey)
-            throws Exception {
+    private void encode(HashMap<String, String> properties, String propertyName, String encryptionKey, String
+            encryptionSalt, boolean useWeakEncryption) throws Exception {
         String clearText = properties.get(propertyName);
-        if (clearText != null) {
-            // follows the same algorithm as installer's EncoderDecoder
-            StringBuilder encodedString = new StringBuilder();
-            for (int i = 0; i < clearText.length(); i++) {
-                char keyChar = encryptionKey.charAt(i % encryptionKey.length());
-                char encChar = (char) ((clearText.charAt(i) + keyChar) % ((char) 256));
-                encodedString.append(encChar);
-            }
-            properties.put(propertyName,
-                    new String(Base64.getEncoder().encode(encodedString.toString().getBytes()), "UTF-8"));
+        if (null == clearText) {
+            return;
         }
+
+        String finalPropertyValue;
+        if (useWeakEncryption) {
+            finalPropertyValue = doEncodeWeak(clearText, encryptionKey, encryptionSalt);
+        } else {
+            finalPropertyValue = doEncode(clearText, encryptionKey, encryptionSalt);
+        }
+
+        properties.put(propertyName, finalPropertyValue);
+    }
+
+    private String doEncodeWeak(String clearText, String encryptionKey, String encryptionSalt) throws Exception {
+        byte[] salt = encryptionSalt.getBytes("UTF-8");
+
+        Cipher cipher = Cipher.getInstance("DES");
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec spec = new PBEKeySpec(encryptionKey.toCharArray(), salt, 80_000, 64);
+        SecretKeySpec keySpec = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "DES");
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+        byte[] encryptedData = cipher.doFinal(clearText.getBytes("UTF-8"));
+        return new String(Base64.getEncoder().encode(encryptedData), "UTF-8");
+    }
+
+    private String doEncode(String clearText, String encryptionKey, String encryptionSalt) throws Exception {
+        byte[] salt = encryptionSalt.getBytes("UTF-8");
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec spec = new PBEKeySpec(encryptionKey.toCharArray(), salt, 80_000, 256);
+        SecretKeySpec keySpec = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+        } catch (InvalidKeyException invalidKeyException) {
+            // user needs the unlimited jurisdiction files...
+            log("WARNING: Server does not support strong encryption. Using weak encryption.");
+            return doEncodeWeak(clearText, encryptionKey, encryptionSalt);
+        }
+
+        byte[] encryptedData = cipher.doFinal(clearText.getBytes("UTF-8"));
+        String ivAsString = new String(Base64.getEncoder().encode(cipher.getIV()), "UTF-8");
+        String encryptedAsString = new String(Base64.getEncoder().encode(encryptedData), "UTF-8");
+        return ivAsString + "$" + encryptedAsString;
     }
 
     /**
@@ -454,5 +507,4 @@ public class WildFlyAgentServlet extends HttpServlet {
         }
         throw new FileNotFoundException("Cannot find agent installer download in: " + configDir);
     }
-
 }
