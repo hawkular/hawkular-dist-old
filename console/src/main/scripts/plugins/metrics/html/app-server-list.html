@@ -127,10 +127,10 @@
             {{res.state | firstUpper}}
           </td>
           <td>
-            <a href="/hawkular-ui/app/app-details/{{res.id | limitTo : res.id.length-2}}/jvm">
+            <a href="/hawkular-ui/app/app-details/{{res.id | limitTo : res.id.length-2}}/jvm/{{hkParams.timeOffset}}">
               {{res.id | limitTo : res.id.length-2}}
             </a>
-            <a href="/hawkular-ui/app/app-details/{{res.id}}/jvm" class="pull-right">
+            <a href="/hawkular-ui/app/app-details/{{res.id}}/jvm/{{hkParams.timeOffset}}" class="pull-right">
               <span class="label label-danger label-alert" tooltip-trigger tooltip-placement="top"
                     tooltip="Server alerts" ng-show="res.alerts.length">{{res.alerts.length}}</span>
             </a>

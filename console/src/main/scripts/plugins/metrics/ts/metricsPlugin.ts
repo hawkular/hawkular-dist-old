@@ -59,7 +59,7 @@ module HawkularMetrics {
             return $q.defer().promise;
           }
         }
-      }).when('/hawkular-ui/url/url-list', {templateUrl: 'plugins/metrics/html/url-list.html'}).
+      }).when('/hawkular-ui/url/url-list/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/url-list.html'}).
       when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {
         templateUrl: 'plugins/metrics/html/url-response-time.html',
         reloadOnSearch: false,
@@ -117,7 +117,8 @@ module HawkularMetrics {
           }
         }
       }).
-      when('/hawkular-ui/app/app-list', {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
+      when('/hawkular-ui/app/app-list/:timeOffset?/:endTime?',
+      {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
       when('/hawkular-ui/app/app-details/:resourceId/:tabId/:timeOffset?/:endTime?', {
         templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
         reloadOnSearch: false,

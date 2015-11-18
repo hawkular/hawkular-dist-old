@@ -1,12 +1,12 @@
 <ul class="nav navbar-nav navbar-primary">
   <li ng-class="getClass('/hawkular-ui/alerts-center')">
-    <a href="/hawkular-ui/alerts-center">Alert Center</a>
+    <a href="/hawkular-ui/alerts-center/{{hkParams.timeOffset}}">Alert Center</a>
   </li>
   <li ng-class="getClass('/hawkular-ui/url/')">
-    <a href="/hawkular-ui/url/url-list">URLs</a>
+    <a href="/hawkular-ui/url/url-list/{{hkParams.timeOffset}}">URLs</a>
   </li>
   <li ng-class="getClass('/hawkular-ui/app/')">
-    <a href="/hawkular-ui/app/app-list">Application Servers</a>
+    <a href="/hawkular-ui/app/app-list/{{hkParams.timeOffset}}">Application Servers</a>
   </li>
   <li ng-class="getClass('/hawkular-ui/topology/')">
     <a href="/hawkular-ui/topology/view">Topology</a>

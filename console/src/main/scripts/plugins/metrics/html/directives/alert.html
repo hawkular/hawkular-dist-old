@@ -37,6 +37,9 @@
         <div ng-switch-when="DSRESP">
           <strong>Responsiveness</strong>: The connection {{alert.condition}} was {{alert.avg}} ms.
         </div>
+        <div ng-switch-when="DSCREATE">
+          <strong>Create Responsiveness</strong>: The connection {{alert.condition}} was {{alert.avg}} ms.
+        </div>
         <div ng-switch-when="ACTIVE_SESSIONS">
           <strong>Active Web Sessions</strong>: The number of active web sessions was {{alert.avg}}.
         </div>
