@@ -66,6 +66,7 @@
     <dependency>
       <groupId>org.hawkular.bus</groupId>
       <artifactId>hawkular-bus-common</artifactId>
+      <scope>provided</scope> <!-- the nest provides this -->
     </dependency>
 
     <dependency>

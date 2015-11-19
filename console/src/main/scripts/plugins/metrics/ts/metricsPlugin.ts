@@ -187,6 +187,11 @@ module HawkularMetrics {
         controller: 'ThresholdTriggerSetupController',
         controllerAs: 'tc'
       }).
+      when('/hawkular-ui/alerts-center-triggers/event/:triggerId', {
+        templateUrl: 'plugins/metrics/html/triggers/event.html',
+        controller: 'EventTriggerSetupController',
+        controllerAs: 'tc'
+      }).
       when('/hawkular-ui/agent-installer/view', {templateUrl: 'plugins/metrics/html/agent-installer.html'}).
       otherwise({redirectTo: '/hawkular-ui/app/app-list'});
   }]);

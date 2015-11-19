@@ -190,6 +190,8 @@ module HawkularMetrics {
 
       if ('Availability' === trigger.context.triggerType) {
         route = '/hawkular-ui/alerts-center-triggers/availability/' + encodedId;
+      } else if ('Event' === trigger.context.triggerType) {
+        route = '/hawkular-ui/alerts-center-triggers/event/' + encodedId;
       } else if ('Range' === trigger.context.triggerType) {
         route = '/hawkular-ui/alerts-center-triggers/range/' + encodedId;
       } else if ('RangeByPercent' === trigger.context.triggerType) {
@@ -206,6 +208,8 @@ module HawkularMetrics {
 
       if ('App Server' === trigger.context.resourceType) {
         route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/jvm';
+      } else if ('App Server Deployment' === trigger.context.resourceType) {
+        route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/deployments';
       } else if ('DataSource' === trigger.context.resourceType) {
         let resIdPart = trigger.context.resourceName.split('~/')[0];
         route = '/hawkular-ui/app/app-details/' + resIdPart + '/datasources';

@@ -31,6 +31,7 @@ module HawkularMetrics {
     private autoRefreshPromise:ng.IPromise<number>;
     private resourceList;
     public modalInstance;
+    public resourceId;
     public alertList;
     public selectCount:number = 0;
     public lastUpdateTimestamp:Date;
@@ -57,7 +58,8 @@ module HawkularMetrics {
       $scope.vm = this;
       HawkularOps.init(this.NotificationsService);
 
-      this.startTimeStamp = +moment().subtract(1, 'hours');
+      this.resourceId = this.$routeParams.resourceId;
+      this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
 
       if ($rootScope.currentPersona) {
@@ -68,18 +70,28 @@ module HawkularMetrics {
         this.getResourceList(currentPersona.id));
       }
 
+      this.getAlerts();
+
       this.autoRefresh(20);
     }
 
 
     private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(() => {
-        this.getResourceList();
+        this.refresh();
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
         this.$interval.cancel(this.autoRefreshPromise);
       });
+    }
+
+    public refresh():void {
+      this.endTimeStamp = this.$routeParams.endTime || +moment();
+      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
+
+      this.getResourceList();
+      this.getAlerts();
     }
 
     public showDeploymentAddDialog():void {
@@ -103,14 +115,35 @@ module HawkularMetrics {
       });
     }
 
-    public refresh(): void {
-      this.getResourceList();
+    private getAlerts():void {
+      let alertArray: IAlert[];
+      let promise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        tags: 'resourceId|' + this.resourceId,
+        startTime: this.startTimeStamp,
+        endTime: this.endTimeStamp
+      }).then((data)=> {
+        _.remove(data.alertList, (item) => {
+          switch( item.context.alertType ) {
+            case 'DEPLOYMENT_FAIL' :
+              item['alertType'] = item.context.alertType;
+              return false;
+            default : return true; // ignore non-jvm alert
+          }
+        });
+        alertArray = data.alertList;
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching deployment failure alerts.');
+      });
+
+      this.$q.all([promise]).finally(()=> {
+        this.alertList = alertArray;
+      });
     }
 
     public getResourceList(currentTenantId?:TenantId):void {
-      this.alertList = []; // FIXME: when we have alerts for app server
       let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      let idParts = this.$routeParams.resourceId.split('~');
+      let idParts = this.resourceId.split('~');
       let feedId = idParts[0];
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
           environmentId: globalEnvironmentId,
@@ -120,7 +153,7 @@ module HawkularMetrics {
           let promises = [];
           let tmpResourceList = [];
           _.forEach(aResourceList, (res:IResource) => {
-            if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
+            if (res.id.startsWith(new RegExp(this.resourceId + '~/'))) {
               tmpResourceList.push(res);
               res.selected = _.result(_.find(this.resourceList, {'id': res.id}), 'selected');
               promises.push(this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({

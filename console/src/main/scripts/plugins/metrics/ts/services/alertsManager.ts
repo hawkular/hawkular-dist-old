@@ -92,7 +92,7 @@ module HawkularMetrics {
      * @param criteria - Filter for alerts query
      * @returns {ng.IPromise} with a list of Alerts
      */
-    queryAlerts(criteria?: IHawkularAlertCriteria):
+    queryAlerts(criteria?:IHawkularAlertCriteria):
       ng.IPromise<IHawkularAlertQueryResult>;
 
     /**
@@ -100,14 +100,14 @@ module HawkularMetrics {
      * @desc Single alert fetch
      * @param alertId - Alert to query
      */
-    getAlert(alertId: string): ng.IPromise<IAlert>;
+    getAlert(alertId:string): ng.IPromise<IAlert>;
 
     /**
      * @name queryActionsHistory
      * @desc Fetch Actions from history with different criterias
      * @param criteria - Filter for actions query
      */
-    queryActionsHistory(criteria?: IHawkularActionCriteria): ng.IPromise<any>;
+    queryActionsHistory(criteria?:IHawkularActionCriteria): ng.IPromise<any>;
 
     /**
      * @name resolveAlerts
@@ -182,7 +182,7 @@ module HawkularMetrics {
      * @param criteria - Filter for triggers query
      * @returns {ng.IPromise} with a list of Triggers
      */
-    queryTriggers(criteria?: IHawkularTriggerCriteria):
+    queryTriggers(criteria?:IHawkularTriggerCriteria):
       ng.IPromise<IHawkularTriggerQueryResult>;
 
     /**
@@ -253,18 +253,18 @@ module HawkularMetrics {
                 private ErrorsManager:IErrorsManager) {
     }
 
-    public queryAlerts(criteria: IHawkularAlertCriteria):ng.IPromise<IHawkularAlertQueryResult> {
+    public queryAlerts(criteria:IHawkularAlertCriteria):ng.IPromise<IHawkularAlertQueryResult> {
       let alertList = [];
       let headers;
 
       /* Format of Alerts:
 
        alert: {
-        type: 'THRESHOLD' or 'AVAILABILITY',
-        avg: Average value based on the evalSets 'values',
-        start: The time of the first data ('dataTimestamp') in evalSets,
-        threshold: The threshold taken from condition.threshold,
-        end: The time when the alert was sent ('ctime')
+       type: 'THRESHOLD' or 'AVAILABILITY',
+       avg: Average value based on the evalSets 'values',
+       start: The time of the first data ('dataTimestamp') in evalSets,
+       threshold: The threshold taken from condition.threshold,
+       end: The time when the alert was sent ('ctime')
        }
 
        */
@@ -343,44 +343,48 @@ module HawkularMetrics {
 
           if (serverAlert.evalSets) {
 
-            console.log( serverAlert.trigger.name + ': ' + serverAlert.evalSets );
+            if (serverAlert.context.triggerType !== 'Event') {
 
-            for (let j = 0; j < serverAlert.evalSets.length; j++) {
-              let evalItem = serverAlert.evalSets[j][0];
+              for (let j = 0; j < serverAlert.evalSets.length; j++) {
+                let evalItem = serverAlert.evalSets[j][0];
 
-              if (serverAlert.trigger.name === 'JVM Heap Used') {
-                console.log('evalItem:' + evalItem.value);
-              }
-
-              if (!consoleAlert.start && evalItem.dataTimestamp) {
-                consoleAlert.start = evalItem.dataTimestamp;
-              }
-
-              if (!consoleAlert.threshold && evalItem.condition.threshold) {
-                consoleAlert.threshold = evalItem.condition.threshold;
-              }
-
-              if (!consoleAlert.type && evalItem.condition.type) {
-                consoleAlert.type = evalItem.condition.type;
-              }
-
-              let momentAlert = this.$moment(consoleAlert.end);
-
-              if (momentAlert.year() === momentNow.year()) {
-                consoleAlert.isThisYear = true;
-                if (momentAlert.dayOfYear() === momentNow.dayOfYear()) {
-                  consoleAlert.isToday = true;
+                if (serverAlert.trigger.name === 'JVM Heap Used') {
+                  console.log('evalItem:' + evalItem.value);
                 }
+
+                if (!consoleAlert.start && evalItem.dataTimestamp) {
+                  consoleAlert.start = evalItem.dataTimestamp;
+                }
+
+                if (!consoleAlert.threshold && evalItem.condition.threshold) {
+                  consoleAlert.threshold = evalItem.condition.threshold;
+                }
+
+                if (!consoleAlert.type && evalItem.condition.type) {
+                  consoleAlert.type = evalItem.condition.type;
+                }
+
+                let momentAlert = this.$moment(consoleAlert.end);
+
+                if (momentAlert.year() === momentNow.year()) {
+                  consoleAlert.isThisYear = true;
+                  if (momentAlert.dayOfYear() === momentNow.dayOfYear()) {
+                    consoleAlert.isToday = true;
+                  }
+                }
+
+                sum += ( evalItem.value ? evalItem.value : evalItem.value1 );  // handle compare conditions
+                count++;
               }
 
-              sum += ( evalItem.value !== undefined ? evalItem.value : evalItem.value1 );  // handle compare conditions
-              count++;
+              consoleAlert.avg = sum / count;
+              consoleAlert.durationTime = consoleAlert.end - consoleAlert.start;
+
+            } else {
+              let evalItem = serverAlert.evalSets[0][0];
+              let event = evalItem.value;
+              consoleAlert.message = event.context.Message;
             }
-
-            consoleAlert.avg = sum / count;
-
-            consoleAlert.durationTime = consoleAlert.end - consoleAlert.start;
-
           }
 
           alertList.push(consoleAlert);
@@ -395,11 +399,11 @@ module HawkularMetrics {
         });
     }
 
-    public getAlert(alertId: string): ng.IPromise<IAlert> {
+    public getAlert(alertId:string):ng.IPromise<IAlert> {
       return this.HawkularAlert.Alert.get({alertId: alertId}).$promise;
     }
 
-    public queryActionsHistory(criteria?: IHawkularActionCriteria): ng.IPromise<any> {
+    public queryActionsHistory(criteria?:IHawkularActionCriteria):ng.IPromise<any> {
       let actionHistoryList = [];
       let headers;
       let queryParams = {};
@@ -460,7 +464,7 @@ module HawkularMetrics {
             actionsList: actionHistoryList,
             headers: headers
           };
-      });
+        });
     }
 
     public resolveAlerts(resolvedAlerts:any):ng.IPromise<any> {
@@ -635,7 +639,7 @@ module HawkularMetrics {
       return this.$q.all(Array.prototype.concat(emailPromise, dampeningPromises, conditionPromises));
     }
 
-    public queryTriggers(criteria: IHawkularTriggerCriteria):ng.IPromise<IHawkularTriggerQueryResult> {
+    public queryTriggers(criteria:IHawkularTriggerCriteria):ng.IPromise<IHawkularTriggerQueryResult> {
       let triggerList = [];
       let headers;
 

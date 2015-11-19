@@ -541,11 +541,64 @@ module HawkularMetrics {
           });
         });
 
+      // FAILED DEPLOYMENT TRIGGER
+
+      let failedDeploymentTriggerPromise = this.HawkularAlertsManager
+        .existTrigger(this.resourceId + '_failed_deployment').then(() => {
+          this.$log.debug('Failed Deployment trigger exists, nothing to do');
+        }, () => {
+          // Failed Deployment trigger doesn't exist, need to create one
+
+          let triggerId:string = this.resourceId + '_failed_deployment';
+          let resourceId:string = triggerId.slice(0, -18);
+          let dataId:string = this.resourceId + '_DeployApplicationResponse';
+
+          let fullTrigger = {
+            trigger: {
+              name: 'Deployment Failure',
+              id: triggerId,
+              description: 'Deployment failure for ' + resourceId,
+              autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+              autoEnable: true, // Enable trigger once an alert is resolved
+              autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+              severity: 'MEDIUM',
+              actions: {email: [defaultEmail]},
+              tags: {
+                resourceId: resourceId
+              },
+              context: {
+                alertType: 'DEPLOYMENT_FAIL',
+                resourceType: 'App Server Deployment',
+                resourceName: resourceId,
+                resourcePath: this.$rootScope.resourcePath,
+                triggerType: 'Event'
+              }
+            },
+            // default dampening, every time
+            conditions: [
+              {
+                triggerId: triggerId,
+                type: 'EVENT',
+                dataId: dataId,
+                expression: 'category == \'Hawkular Deployment\', text == \'ERROR\'',
+                context: {
+                  description: 'Deployment Failure'
+                }
+              }
+            ]
+          };
+
+          return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+            this.$log.error('Error on Trigger creation for ' + triggerId);
+          });
+        });
+
       let log = this.$log;
 
       this.$q.all([defaultEmailPromise,
         heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise, //JVM
-        activeSessionsTriggerPromise, expiredSessionsTriggerPromise, rejectedSessionsTriggerPromise // WEB
+        activeSessionsTriggerPromise, expiredSessionsTriggerPromise, rejectedSessionsTriggerPromise, // WEB
+        failedDeploymentTriggerPromise // FAILED DEPLOYMENT
       ]).then(() => {
         // do nothing
       }, () => {

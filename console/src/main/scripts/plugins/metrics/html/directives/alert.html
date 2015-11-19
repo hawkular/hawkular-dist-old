@@ -49,6 +49,9 @@
         <div ng-switch-when="REJECTED_SESSIONS">
           <strong>Rejected Web Sessions</strong>: The number of rejected web sessions was {{alert.avg}}.
         </div>
+        <div ng-switch-when="DEPLOYMENT_FAIL">
+          <strong>Deployment Failed</strong>: {{alert.message}}.
+        </div>
         <div ng-switch-default>
           <strong>Alert</strong>: <code>{{alert}}</code>
         </div>

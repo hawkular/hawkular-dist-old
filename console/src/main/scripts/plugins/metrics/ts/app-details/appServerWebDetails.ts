@@ -95,18 +95,39 @@ module HawkularMetrics {
         this.refresh();
       });
 
-      this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
+      this.getAlerts();
 
       this.autoRefresh(20);
     }
 
-    private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+    private autoRefreshPromise:ng.IPromise<number>;
+
+    private autoRefresh(intervalInSeconds:number):void {
+      this.autoRefreshPromise = this.$interval(() => {
+        this.refresh();
+      }, intervalInSeconds * 1000);
+
+      this.$scope.$on('$destroy', () => {
+        this.$interval.cancel(this.autoRefreshPromise);
+      });
+    }
+
+    public refresh():void {
+      this.endTimeStamp = this.$routeParams.endTime || +moment();
+      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
+
+      this.getWebData();
+      this.getWebChartData();
+      this.getAlerts();
+    }
+
+    private getAlerts():void {
       let webArray: IAlert[];
       let webPromise = this.HawkularAlertsManager.queryAlerts({
         statuses: 'OPEN',
-        tags: 'resourceId|' + resourceId,
-        startTime: startTime,
-        endTime: endTime
+        tags: 'resourceId|' + this.resourceId,
+        startTime: this.startTimeStamp,
+        endTime: this.endTimeStamp
       }).then((webData)=> {
         _.remove(webData.alertList, (item) => {
           switch( item.context.alertType ) {
@@ -128,55 +149,31 @@ module HawkularMetrics {
       });
     }
 
-    private autoRefreshPromise:ng.IPromise<number>;
-
-    private autoRefresh(intervalInSeconds:number):void {
-      this.autoRefreshPromise = this.$interval(() => {
-        this.refresh();
-      }, intervalInSeconds * 1000);
-
-      this.$scope.$on('$destroy', () => {
-        this.$interval.cancel(this.autoRefreshPromise);
-      });
-    }
-
-    public refresh():void {
-      this.getWebData();
-      this.getWebChartData();
-    }
-
     public getWebData():void {
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
-
       this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-        `MI~R~[${this.$routeParams.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions`,
+        `MI~R~[${this.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions`,
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
           this.activeWebSessions = resource[0].avg;
         });
       this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
-        `MI~R~[${this.$routeParams.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time`,
+        `MI~R~[${this.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time`,
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
           this.requestTime = resource[0].max - resource[0].min;
         });
       this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
-        `MI~R~[${this.$routeParams.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count`,
+        `MI~R~[${this.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count`,
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
           this.requestCount = resource[0].max - resource[0].min;
         });
     }
 
     public getWebChartData():void {
-
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
-
       let tmpChartWebSessionData = [];
       let promises = [];
 
       if (!this.skipChartData['Active Sessions']) {
         let activeSessionsPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          `MI~R~[${this.$routeParams.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions`,
+          `MI~R~[${this.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions`,
           this.startTimeStamp, this.endTimeStamp, 60);
         promises.push(activeSessionsPromise);
         activeSessionsPromise.then((data) => {
@@ -189,7 +186,7 @@ module HawkularMetrics {
       }
       if (!this.skipChartData['Expired Sessions']) {
         let expSessionsPromise = this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
-          `MI~R~[${this.$routeParams.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions`,
+          `MI~R~[${this.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions`,
           this.startTimeStamp, this.endTimeStamp, 60);
         promises.push(expSessionsPromise);
         expSessionsPromise.then((data) => {
@@ -202,7 +199,7 @@ module HawkularMetrics {
       }
       if (!this.skipChartData['Rejected Sessions']) {
         let rejSessionsPromise = this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
-          `MI~R~[${this.$routeParams.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions`,
+          `MI~R~[${this.resourceId}~~]~MT~WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions`,
           this.startTimeStamp, this.endTimeStamp, 60);
         promises.push(rejSessionsPromise);
         rejSessionsPromise.then((data) => {
@@ -215,7 +212,7 @@ module HawkularMetrics {
       }
       /* FIXME: Currently this is always returning negative values, as WFLY returns -1 per webapp. is it config value?
        this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-       counterId: 'MI~R~[' + this.$routeParams.resourceId +
+       counterId: 'MI~R~[' + this.resourceId +
        '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Max Active Web Sessions',
        start: this.startTimeStamp,
        end: this.endTimeStamp, buckets:60}, (data) => {
@@ -226,7 +223,7 @@ module HawkularMetrics {
 
       /*
        this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-       counterId: 'MI~R~[' + this.$routeParams.resourceId +
+       counterId: 'MI~R~[' + this.resourceId +
        '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Time',
        start: this.startTimeStamp,
        end: this.endTimeStamp, buckets:60}, (data) => {
@@ -234,7 +231,7 @@ module HawkularMetrics {
        color: AppServerWebDetailsController.COMMITTED_COLOR, values: this.formatCounterChartOutput(data) };
        }, this);
        this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-       counterId: 'MI~R~[' + this.$routeParams.resourceId +
+       counterId: 'MI~R~[' + this.resourceId +
        '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Servlet Request Count',
        start: this.startTimeStamp,
        end: this.endTimeStamp, buckets:60}, (data) => {

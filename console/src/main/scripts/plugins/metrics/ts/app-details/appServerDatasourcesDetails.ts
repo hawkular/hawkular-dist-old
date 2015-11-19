@@ -97,25 +97,6 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private getAlerts(resourceId:ResourceId, startTime:TimestampInMillis, endTime:TimestampInMillis, res:any):void {
-      let dsArray:IAlert[];
-      let promise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        tags: 'resourceId|' + resourceId, startTime: startTime, endTime: endTime
-      }).then((data)=> {
-        _.forEach(data.alertList, (item) => {
-          item['alertType'] = item.context.alertType;
-        });
-        dsArray = data.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching DS alerts.');
-      });
-
-      this.$q.all([promise]).finally(()=> {
-        res.alertList = dsArray;
-      });
-    }
-
     public showDriverAddDialog():void {
 
       /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
@@ -176,10 +157,6 @@ module HawkularMetrics {
       });
     }
 
-    public refresh():void {
-      this.getDatasources();
-    }
-
     public autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getDatasources();
@@ -188,6 +165,13 @@ module HawkularMetrics {
       this.$scope.$on('$destroy', () => {
         this.$interval.cancel(this.autoRefreshPromise);
       });
+    }
+
+    public refresh():void {
+      this.endTimeStamp = this.$routeParams.endTime || +moment();
+      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
+
+      this.getDatasources();
     }
 
     public getDatasources(currentTenantId?:TenantId):void {
@@ -220,7 +204,7 @@ module HawkularMetrics {
               }, (data) => {
                 res.inUseCount = data[0];
               }).$promise);
-              this.getAlerts(res.id, this.startTimeStamp, this.endTimeStamp, res);
+              this.getAlerts(res);
             }
           }, this);
           this.$q.all(promises).then(() => {
@@ -238,6 +222,27 @@ module HawkularMetrics {
           }
         });
       this.getDrivers();
+    }
+
+    private getAlerts(res:any):void {
+      let dsArray:IAlert[];
+      let promise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        tags: 'resourceId|' + res.id,
+        startTime: this.startTimeStamp,
+        endTime: this.endTimeStamp
+      }).then((data)=> {
+        _.forEach(data.alertList, (item) => {
+          item['alertType'] = item.context.alertType;
+        });
+        dsArray = data.alertList;
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching DS alerts.');
+      });
+
+      this.$q.all([promise]).finally(()=> {
+        res.alertList = dsArray;
+      });
     }
 
     public getDrivers(currentTenantId?:TenantId):void {
