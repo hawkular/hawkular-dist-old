@@ -17,7 +17,16 @@
     limitations under the License.
 
 -->
-<jboss-web>
-  <context-root>/hawkular/wildfly-agent</context-root>
-  <security-domain>keycloak</security-domain>
-</jboss-web>
+<jboss:jboss
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:jboss="http://www.jboss.com/xml/ns/javaee"
+    xmlns:s="urn:security:1.1"
+    version="3.1" impl-version="2.0">
+
+  <assembly-descriptor>
+    <s:security>
+      <ejb-name>*</ejb-name>
+      <s:security-domain>keycloak</s:security-domain>
+    </s:security>
+  </assembly-descriptor>
+</jboss:jboss>
