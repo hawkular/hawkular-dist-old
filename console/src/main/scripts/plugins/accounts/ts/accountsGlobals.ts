@@ -32,6 +32,18 @@ module HawkularAccounts {
     updatedAt: string;
   }
 
+  export interface IToken {
+    id:  string;
+    key: string;
+    secret: string;
+    createdAt: string;
+    updatedAt: string;
+    attributes: { [key:string]:string; };
+    $remove(options:{},
+            success?:(success:IOrganization) => void,
+            failure?:(error:IErrorPayload) => void);
+  }
+
   export interface IOrganization extends IPersona {
     owner: IPersona;
     $update(options:{},
