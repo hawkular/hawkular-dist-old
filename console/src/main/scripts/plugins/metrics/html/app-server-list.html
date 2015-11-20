@@ -20,49 +20,15 @@
           </h2>
         </div>
       </div>
-      <div class="col-lg-2 col-md-4">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <i class="fa fa-arrow-up"></i>
+      <div ng-repeat="state in vm.serverStatusArray">
+        <div class="col-lg-2 col-md-4">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <i class="fa {{state.icon}}"></i>
             <span class="card-pf-aggregate-status-count">
-              {{(vm.resourceList|filter:{state: 'up'}:true).length}}</span> Up
-          </h2>
-        </div>
-      </div>
-      <div class="col-lg-2 col-md-4">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <i class="fa fa-arrow-down"></i>
-            <span class="card-pf-aggregate-status-count">
-              {{(vm.resourceList|filter:{state: 'down'}:true).length}}</span> Down
-          </h2>
-        </div>
-      </div>
-      <div class="col-lg-2 col-md-4">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <i class="fa fa-chain-broken"></i>
-            <span class="card-pf-aggregate-status-count">
-              {{(vm.resourceList|filter:{state: 'unknown'}:true).length}}</span> Unknown
-          </h2>
-        </div>
-      </div>
-      <div class="col-lg-2 col-md-4">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <i class="fa fa-spinner"></i>
-            <span class="card-pf-aggregate-status-count">
-              {{(vm.resourceList|filter:{state: 'starting'}:true).length}}</span> Starting
-          </h2>
-        </div>
-      </div>
-      <div class="col-lg-2 col-md-4">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <i class="fa fa-repeat"></i>
-            <span class="card-pf-aggregate-status-count">
-              {{(vm.resourceList|filter:{state: 'restart required'}:true).length}}</span> Restart Required
-          </h2>
+              {{(vm.resourceList|filter:{state: state.state}:true).length}}</span> {{state.value}}
+            </h2>
+          </div>
         </div>
       </div>
     </div>
@@ -77,13 +43,21 @@
     </div>
 
     <div ng-show="vm.resourceList.length">
-      <div class="dataTables_header">
-        <div id="DataTables_Table_0_filter" class="dataTables_filter">
-          <label><input type="search" ng-model="vm.search" aria-controls="DataTables_Table_0"></label>
-        </div>
+      <div class="row">
+        <div class="col-md-12">
+          <table-filters
+            active-filters="vm.activeFilters"
+            filtered-resource-list="vm.filteredResourceList"
+            resource-list="vm.resourceList"
+            filter-by="vm.filterBy(filters)"
+            >
 
+          </table-filters>
+        </div>
+      </div>
+      <div class="dataTables_header">
         <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
-          Showing <b>1</b> to <b>{{(vm.resourceList | filter:vm.search).length}}</b> of
+          Showing <b>1</b> to <b>{{(vm.filteredResourceList | filter:vm.search).length}}</b> of
           <b>{{vm.resourceList.length}}</b> Items
         </div>
       </div>
@@ -104,7 +78,10 @@
         <tbody>
         <tr class="odd">
           <td valign="top" colspan="5" class="dataTables_empty"
-              ng-show="vm.search && (vm.resourceList | filter:vm.search).length === 0">
+              ng-show="
+                vm.filteredResourceList.length === 0 ||
+                (vm.search && (vm.filteredResourceList | filter:vm.search).length === 0)
+              ">
             <p>Suggestions</p>
             <ul>
               <li>Check the syntax of the search term.</li>
@@ -114,7 +91,7 @@
             </ul>
           </td>
         </tr>
-        <tr ng-repeat="res in vm.resourceList | filter:vm.search | orderBy:'properties.url':vm.reverse">
+        <tr ng-repeat="res in vm.filteredResourceList | filter:vm.search | orderBy:'properties.url':vm.reverse">
           <td class="state">
             <i class="fa fa-arrow-up" ng-show="res.state === 'up'"></i>
             <i class="fa fa-arrow-down" ng-show="res.state === 'down'"></i>
@@ -150,7 +127,7 @@
       </table>
       <div class="dataTables_footer">
         <hk-data-pagination resource-list="vm.resourceList" current-page="vm.resCurPage" headers="vm.headerLinks"
-                            page-setter="vm.setPage(pageNumber)" per-page="vm.resPerPage"></hk-data-pagination>
+                            page-setter="vm.setPage" per-page="vm.resPerPage"></hk-data-pagination>
       </div>
     </div>
   </div>

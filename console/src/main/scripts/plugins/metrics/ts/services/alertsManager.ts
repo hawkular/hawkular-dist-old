@@ -373,7 +373,7 @@ module HawkularMetrics {
                 }
               }
 
-              sum += ( evalItem.value ? evalItem.value : evalItem.value1 );  // handle compare conditions
+              sum += ( evalItem.value !== undefined ? evalItem.value : evalItem.value1 );  // handle compare conditions
               count++;
             }
 
