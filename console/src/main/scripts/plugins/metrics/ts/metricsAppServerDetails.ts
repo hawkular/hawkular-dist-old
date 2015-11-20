@@ -26,7 +26,6 @@ module HawkularMetrics {
     public static  $inject = ['$rootScope', '$scope', '$route', '$routeParams', '$q', 'HawkularOps',
       'NotificationsService', 'HawkularInventory', 'HawkularAlertsManager', '$log'];
 
-    public resourceId:string;
     public resourcePath:string;
     public jdrGenerating:boolean;
     public hasGeneratedSuccessfully:boolean;
@@ -55,8 +54,6 @@ module HawkularMetrics {
         this.resourcePath = resource.path;
         this.$rootScope.resourcePath = this.resourcePath;
       });
-
-      this.resourceId = this.$routeParams.resourceId;
 
       $scope.tabs = this;
 
@@ -142,17 +139,18 @@ module HawkularMetrics {
 
       let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
 
+      let resourceId:string = this.$routeParams.resourceId;
+
       // JVM TRIGGERS
 
-      let heapTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_pheap').then(() => {
+      let heapTriggerPromise = this.HawkularAlertsManager.existTrigger(resourceId + '_jvm_pheap').then(() => {
         this.$log.debug('Heap Used trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
         let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
         let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
 
-        let triggerId:string = this.resourceId + '_jvm_pheap';
-        let resourceId:string = triggerId.slice(0, -10);
+        let triggerId:string = resourceId + '_jvm_pheap';
         let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
         let heapMaxId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max';
 
@@ -221,15 +219,14 @@ module HawkularMetrics {
         });
       });
 
-      let nonHeapTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_nheap').then(() => {
+      let nonHeapTriggerPromise = this.HawkularAlertsManager.existTrigger(resourceId + '_jvm_nheap').then(() => {
         this.$log.debug('Non Heap Used trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
         let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
         let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
 
-        let triggerId:string = this.resourceId + '_jvm_nheap';
-        let resourceId:string = triggerId.slice(0, -10);
+        let triggerId:string = resourceId + '_jvm_nheap';
         let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used';
         let heapMaxId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max';
 
@@ -298,12 +295,11 @@ module HawkularMetrics {
         });
       });
 
-      let garbageTriggerPromise = this.HawkularAlertsManager.existTrigger(this.resourceId + '_jvm_garba').then(() => {
+      let garbageTriggerPromise = this.HawkularAlertsManager.existTrigger(resourceId + '_jvm_garba').then(() => {
         this.$log.debug('GC trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
-        let triggerId:string = this.resourceId + '_jvm_garba';
-        let resourceId:string = triggerId.slice(0, -10);
+        let triggerId:string = resourceId + '_jvm_garba';
         let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration';
 
         let fullTrigger = {
@@ -358,13 +354,12 @@ module HawkularMetrics {
       // WEB SESSION TRIGGERS
 
       let activeSessionsTriggerPromise = this.HawkularAlertsManager
-        .existTrigger(this.resourceId + '_web_active_sessions').then(() => {
+        .existTrigger(resourceId + '_web_active_sessions').then(() => {
           this.$log.debug('Active Web Sessions trigger exists, nothing to do');
         }, () => {
           // Active Web Sessions trigger doesn't exist, need to create one
 
-          let triggerId:string = this.resourceId + '_web_active_sessions';
-          let resourceId:string = triggerId.slice(0, -20);
+          let triggerId:string = resourceId + '_web_active_sessions';
           let dataId:string = 'MI~R~[' + resourceId +
             '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions';
 
@@ -421,13 +416,12 @@ module HawkularMetrics {
         });
 
       let expiredSessionsTriggerPromise = this.HawkularAlertsManager
-        .existTrigger(this.resourceId + '_web_expired_sessions').then(() => {
+        .existTrigger(resourceId + '_web_expired_sessions').then(() => {
           this.$log.debug('Expired Web Sessions trigger exists, nothing to do');
         }, () => {
           // Active Web Sessions trigger doesn't exist, need to create one
 
-          let triggerId:string = this.resourceId + '_web_expired_sessions';
-          let resourceId:string = triggerId.slice(0, -21);
+          let triggerId:string = resourceId + '_web_expired_sessions';
           let dataId:string = 'MI~R~[' + resourceId +
             '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions';
 
@@ -482,13 +476,12 @@ module HawkularMetrics {
 
 
       let rejectedSessionsTriggerPromise = this.HawkularAlertsManager
-        .existTrigger(this.resourceId + '_web_rejected_sessions').then(() => {
+        .existTrigger(resourceId + '_web_rejected_sessions').then(() => {
           this.$log.debug('Rejected Web Sessions trigger exists, nothing to do');
         }, () => {
           // Rejected Web Sessions trigger doesn't exist, need to create one
 
-          let triggerId:string = this.resourceId + '_web_rejected_sessions';
-          let resourceId:string = triggerId.slice(0, -22);
+          let triggerId:string = resourceId + '_web_rejected_sessions';
           let dataId:string = 'MI~R~[' + resourceId +
             '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions';
 
@@ -541,11 +534,63 @@ module HawkularMetrics {
           });
         });
 
+      // FAILED DEPLOYMENT TRIGGER
+
+      let failedDeploymentTriggerPromise = this.HawkularAlertsManager
+        .existTrigger(resourceId + '_failed_deployment').then(() => {
+          this.$log.debug('Failed Deployment trigger exists, nothing to do');
+        }, () => {
+          // Failed Deployment trigger doesn't exist, need to create one
+
+          let triggerId:string = resourceId + '_failed_deployment';
+          let dataId:string = resourceId + '_DeployApplicationResponse';
+
+          let fullTrigger = {
+            trigger: {
+              name: 'Deployment Failure',
+              id: triggerId,
+              description: 'Deployment failure for ' + resourceId,
+              autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+              autoEnable: true, // Enable trigger once an alert is resolved
+              autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+              severity: 'MEDIUM',
+              actions: {email: [defaultEmail]},
+              tags: {
+                resourceId: resourceId
+              },
+              context: {
+                alertType: 'DEPLOYMENT_FAIL',
+                resourceType: 'App Server Deployment',
+                resourceName: resourceId,
+                resourcePath: this.$rootScope.resourcePath,
+                triggerType: 'Event'
+              }
+            },
+            // default dampening, every time
+            conditions: [
+              {
+                triggerId: triggerId,
+                type: 'EVENT',
+                dataId: dataId,
+                expression: 'category == \'Hawkular Deployment\', text == \'ERROR\'',
+                context: {
+                  description: 'Deployment Failure'
+                }
+              }
+            ]
+          };
+
+          return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+            this.$log.error('Error on Trigger creation for ' + triggerId);
+          });
+        });
+
       let log = this.$log;
 
       this.$q.all([defaultEmailPromise,
         heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise, //JVM
-        activeSessionsTriggerPromise, expiredSessionsTriggerPromise, rejectedSessionsTriggerPromise // WEB
+        activeSessionsTriggerPromise, expiredSessionsTriggerPromise, rejectedSessionsTriggerPromise, // WEB
+        failedDeploymentTriggerPromise // FAILED DEPLOYMENT
       ]).then(() => {
         // do nothing
       }, () => {

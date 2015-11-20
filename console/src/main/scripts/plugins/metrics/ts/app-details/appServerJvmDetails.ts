@@ -45,7 +45,6 @@ module HawkularMetrics {
     public math = Math;
 
     public alertList;
-    public resourceId;
     public chartHeapData:IMultiDataPoint[];
     public chartNonHeapData:IMultiDataPoint[];
     public startTimeStamp:TimestampInMillis;
@@ -71,7 +70,6 @@ module HawkularMetrics {
                 private $q:ng.IQService ) {
       $scope.vm = this;
 
-      this.resourceId = this.$routeParams.resourceId;
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
       this.chartHeapData = [];
@@ -93,37 +91,9 @@ module HawkularMetrics {
         this.refresh();
       });
 
-      this.getAlerts(this.resourceId, this.startTimeStamp, this.endTimeStamp);
+      this.getAlerts();
 
       this.autoRefresh(20);
-    }
-
-    private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      let jvmArray: IAlert[];
-      let jvmPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        tags: 'resourceId|' + resourceId,
-        startTime: startTime,
-        endTime: endTime
-      }).then((jvmData)=> {
-        _.remove(jvmData.alertList, (item) => {
-          switch( item.context.alertType ) {
-            case 'PHEAP' :
-            case 'NHEAP' :
-            case 'GARBA' :
-              item['alertType'] = item.context.alertType;
-              return false;
-            default : return true; // ignore non-jvm alert
-          }
-        });
-        jvmArray = jvmData.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching jvm alerts.');
-      });
-
-      this.$q.all([jvmPromise]).finally(()=> {
-        this.alertList = jvmArray;
-      });
     }
 
     private autoRefreshPromise:ng.IPromise<number>;
@@ -139,14 +109,42 @@ module HawkularMetrics {
     }
 
     public refresh():void {
-      this.getJvmData();
-      this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
-    }
-
-    public getJvmData():void {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
+      this.getJvmData();
+      this.getAlerts();
+    }
+
+    private getAlerts():void {
+      let jvmArray: IAlert[];
+      let jvmPromise = this.HawkularAlertsManager.queryAlerts({
+        statuses: 'OPEN',
+        tags: 'resourceId|' + this.$routeParams.resourceId,
+        startTime: this.startTimeStamp,
+        endTime: this.endTimeStamp
+      }).then((jvmData:IHawkularAlertQueryResult)=> {
+        _.remove(jvmData.alertList, (item:IAlert) => {
+          switch( item.context.alertType ) {
+            case 'PHEAP' :
+            case 'NHEAP' :
+            case 'GARBA' :
+              item.alertType = item.context.alertType;
+              return false;
+            default : return true; // ignore non-jvm alert
+          }
+        });
+        jvmArray = jvmData.alertList;
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching jvm alerts.');
+      });
+
+      this.$q.all([jvmPromise]).finally(()=> {
+        this.alertList = jvmArray;
+      });
+    }
+
+    public getJvmData():void {
       this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
         'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used',
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
@@ -173,18 +171,15 @@ module HawkularMetrics {
     }
 
     public getJvmChartData():void {
-
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
-
       let tmpChartHeapData = [];
       let heapPromises = [];
       let tmpChartNonHeapData = [];
       let nonHeapPromises = [];
+      let resourceId:string = this.$routeParams.resourceId;
 
       if (!this.skipChartData['Heap Committed']) {
         let hCommPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Committed',
+          'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Committed',
           this.startTimeStamp, this.endTimeStamp,60);
         heapPromises.push(hCommPromise);
         hCommPromise.then((data) => {
@@ -197,7 +192,7 @@ module HawkularMetrics {
       }
       if (!this.skipChartData['Heap Used']) {
         let hUsedPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used',
+          'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used',
           this.startTimeStamp, this.endTimeStamp, 60);
         heapPromises.push(hUsedPromise);
         hUsedPromise.then((data) => {
@@ -210,7 +205,7 @@ module HawkularMetrics {
       }
       if (!this.skipChartData['Heap Max']) {
         let hMaxPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max',
+          'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max',
           this.startTimeStamp, this.endTimeStamp, 60);
         heapPromises.push(hMaxPromise);
         hMaxPromise.then((data) => {
@@ -227,7 +222,7 @@ module HawkularMetrics {
 
       if (!this.skipChartData['NonHeap Committed']) {
         let nhCommPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Committed',
+          'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Committed',
           this.startTimeStamp, this.endTimeStamp, 60);
         nonHeapPromises.push(nhCommPromise);
         nhCommPromise.then((data) => {
@@ -240,7 +235,7 @@ module HawkularMetrics {
       }
       if (!this.skipChartData['NonHeap Used']) {
         let nhUsedPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used',
+          'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used',
           this.startTimeStamp, this.endTimeStamp, 60);
         nonHeapPromises.push(nhUsedPromise);
         nhUsedPromise.then((data) => {
@@ -256,7 +251,7 @@ module HawkularMetrics {
       });
 
       this.MetricsService.retrieveCounterRateMetrics(this.$rootScope.currentPersona.id,
-        'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration',
+        'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration',
         this.startTimeStamp, this.endTimeStamp, 60).then((resource) => {
           if (resource.length) {
             this.chartGCDurationData = MetricsService.formatBucketedChartOutput(resource);

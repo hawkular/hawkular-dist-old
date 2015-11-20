@@ -41,7 +41,7 @@ module HawkularMetrics {
     public hasDisabledSelectedItems:boolean = false;
     public sortField:string = 'name';
     public sortAsc:boolean = true;
-    public resourceId;
+
 
     public loadingMoreItems:boolean = false;
     public addProgress:boolean = false;
@@ -63,8 +63,6 @@ module HawkularMetrics {
       this.$rootScope.prevLocation = $location.url();
 
       this.autoRefresh(120);
-      this.resourceId = $routeParams.resourceId ?
-        this.decodeResourceId($routeParams.resourceId) : '';
 
       if ($rootScope.currentPersona) {
         this.getTriggers();
@@ -93,7 +91,8 @@ module HawkularMetrics {
         ordering = 'desc';
       }
 
-      let tagValue = this.resourceId ? this.resourceId : '*';
+      let resourceId:string = this.$routeParams.resourceId ?  this.decodeResourceId(this.$routeParams.resourceId) : '';
+      let tagValue = resourceId ?resourceId : '*';
       this.HawkularAlertsManager.queryTriggers({
         tags: 'resourceId|' + tagValue,
         currentPage: this.triggersCurPage,
@@ -188,15 +187,24 @@ module HawkularMetrics {
       let route = 'unknown-trigger-type';
       let encodedId = this.encodeResourceId(trigger.id);
 
-      if ('Availability' === trigger.context.triggerType) {
-        route = '/hawkular-ui/alerts-center-triggers/availability/' + encodedId;
-      } else if ('Range' === trigger.context.triggerType) {
-        route = '/hawkular-ui/alerts-center-triggers/range/' + encodedId;
-      } else if ('RangeByPercent' === trigger.context.triggerType) {
-        route = '/hawkular-ui/alerts-center-triggers/range-percent/' + encodedId;
-      } else if ('Threshold' === trigger.context.triggerType) {
-        route = '/hawkular-ui/alerts-center-triggers/threshold/' + encodedId;
+      switch (trigger.context.triggerType) {
+        case 'Availability' :
+          route = '/hawkular-ui/alerts-center-triggers/availability/' + encodedId;
+          break;
+        case 'Event' :
+          route = '/hawkular-ui/alerts-center-triggers/event/' + encodedId;
+          break;
+        case 'Range' :
+          route = '/hawkular-ui/alerts-center-triggers/range/' + encodedId;
+          break;
+        case 'RangeByPercent' :
+          route = '/hawkular-ui/alerts-center-triggers/range-percent/' + encodedId;
+          break;
+        case 'Threshold' :
+          route = '/hawkular-ui/alerts-center-triggers/threshold/' + encodedId;
+          break;
       }
+
       return route;
     }
 
@@ -204,21 +212,30 @@ module HawkularMetrics {
       let route = 'unknown-resource-type';
       let encodedId = this.encodeResourceId(trigger.id);
 
-      if ('App Server' === trigger.context.resourceType) {
-        route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/jvm';
-      } else if ('DataSource' === trigger.context.resourceType) {
-        let resIdPart = trigger.context.resourceName.split('~/')[0];
-        route = '/hawkular-ui/app/app-details/' + resIdPart + '/datasources';
-      } else if ('URL' === trigger.context.resourceType) {
-        let parts = trigger.id.split('_trigger_');
-        let resourceId = parts[0];
-        let segment = ( parts[1] === 'thres' ) ? 'response-time' : 'availability';
-        route = '/hawkular-ui/url/' + segment + '/' + trigger.id.split('_trigger_')[0];
+      switch (trigger.context.resourceType) {
+        case 'App Server' :
+          route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/jvm';
+          break;
+        case 'App Server Deployment' :
+          route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/deployments';
+          break;
+        case 'DataSource' :
+          let resIdPart = trigger.context.resourceName.split('~/')[0];
+          route = '/hawkular-ui/app/app-details/' + resIdPart + '/datasources';
+          break;
+        case 'URL' :
+          let parts = trigger.id.split('_trigger_');
+          let resourceId = parts[0];
+          let segment = ( parts[1] === 'thres' ) ? 'response-time' : 'availability';
+          route = '/hawkular-ui/url/' + segment + '/' + trigger.id.split('_trigger_')[0];
+          break;
       }
+
       return route;
     }
 
-    public setPage(page:number):void {
+    public
+    setPage(page:number):void {
       this.triggersCurPage = page;
       this.getTriggers();
     }

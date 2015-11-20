@@ -127,11 +127,16 @@ module HawkularMetrics {
     feedId: FeedId;
     environmentId: Environment;
     state: string;
-    selected: boolean;
     tenantId: TenantId;
     updateTimestamp: TimestampInMillis;
     properties: IResourceProperties;
     type: IResourceType;
+
+    // for console use
+    alertList: IAlert[];
+    availableCount: number;
+    inUseCount: number;
+    selected: boolean;
   }
 
   export interface IAvailResource {
@@ -152,13 +157,17 @@ module HawkularMetrics {
   }
 
   export interface ITriggerContext {
+    alertType: string;
     resourceName: string;
     resourcePath: string;
     resourceType: string;
     triggerType: string;
+    triggerTypeProperty1: string;
+    triggerTypeProperty2: string;
   }
 
   export interface IAlertTrigger {
+    actions: any;
     autoDisable: boolean;
     autoEnable: boolean;
     autoResolve: boolean;
@@ -173,6 +182,7 @@ module HawkularMetrics {
     name: string;
     orphan: boolean;
     severity: string; /// @todo: change to enum
+    tags: any;
     tenantId: TenantId;
     triggerId: TriggerId;
     ///@todo: ignoring actions for now
@@ -203,6 +213,9 @@ module HawkularMetrics {
     // UI may augment this by adding a 'selected' property for list results
     // so we can use the original data structure as-is
     selected?: boolean;
+
+    // UI stores an 'alertType' to benefit display
+    alertType:string;
   }
 
 }

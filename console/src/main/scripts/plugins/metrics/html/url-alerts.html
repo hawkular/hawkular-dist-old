@@ -2,9 +2,13 @@
   <hawkular-subtab ng-controller="Subtab.SubtabController">
     <div class="hk-nav-tabs-container">
       <ul class="nav nav-tabs nav-tabs-pf">
-        <li class="active"><a href="/hawkular-ui/url/alerts/{{mac.$routeParams.resourceId}}/{{mac.$routeParams.timeOffset}}" class="hk-alerts">All Alerts</a></li>
-        <li><a href="/hawkular-ui/url/availability/{{mac.$routeParams.resourceId}}/{{mac.$routeParams.timeOffset}}" class="hk-availability">Availability</a></li>
-        <li><a href="/hawkular-ui/url/response-time/{{mac.$routeParams.resourceId}}/{{mac.$routeParams.timeOffset}}" class="hk-response-time">Response Time</a></li>
+        <li class="active"><a
+          href="/hawkular-ui/url/alerts/{{mac.$routeParams.resourceId}}/{{mac.$routeParams.timeOffset}}"
+          class="hk-alerts">All Alerts</a></li>
+        <li><a href="/hawkular-ui/url/availability/{{mac.$routeParams.resourceId}}/{{mac.$routeParams.timeOffset}}"
+               class="hk-availability">Availability</a></li>
+        <li><a href="/hawkular-ui/url/response-time/{{mac.$routeParams.resourceId}}/{{mac.$routeParams.timeOffset}}"
+               class="hk-response-time">Response Time</a></li>
       </ul>
     </div>
   </hawkular-subtab>
@@ -13,9 +17,9 @@
     <div class="hk-info-top clearfix">
       <h3 class="pull-left">Alerts <span>({{(mac.alertList).length}})</span></h3>
       <span class="hk-settings pull-left">
-        <a href="#" ng-click="mac.openResponseSetup()"><i class="fa fa-cog"></i>Response Time Alert Settings</a>
-        <a href="#" ng-controller="MetricsAvailabilityController as vm" ng-click="vm.openAvailabilitySetup()">
-          <i class="fa fa-cog"></i>Availability Alert Settings</a>
+        <a ng-href="/hawkular-ui/alerts-center-triggers/{{mac.$routeParams.resourceId}}">
+          <i class="fa fa-cog"></i>Definitions
+        </a>
       </span>
     </div>
     <div ng-include="'plugins/metrics/html/partials/url-alerts-view.html'"></div>

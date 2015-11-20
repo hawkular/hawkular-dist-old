@@ -29,14 +29,8 @@
 
               <fieldset>
                 {{tc.adm.trigger.conditionContext.description !== '' ?
-                  tc.adm.trigger.conditionContext.description : "Downtime"}}
+                  tc.adm.trigger.conditionContext.description : "Event"}}
               </fieldset>
-
-              <hk-fieldset-dampening hk-duration="tc.adm.trigger.evalTimeSetting"
-                                     hk-title="Downtime"
-                                     hk-title-met="Every time it goes down."
-                                     hk-title-unmet="Only when it is down for more than:">
-              </hk-fieldset-dampening>
 
               <hk-fieldset-notification hk-alert-email="tc.adm.trigger.email"></hk-fieldset-notification>
             </form>

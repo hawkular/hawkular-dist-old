@@ -88,11 +88,11 @@ module HawkularMetrics {
       let promise = this.HawkularAlertsManager.queryAlerts({
         statuses: 'OPEN',
         tags: 'resourceId|' + resourceId, startTime: startTime, endTime: endTime
-      }).then((data)=> {
-        _.remove(data.alertList, (item) => {
+      }).then((data:IHawkularAlertQueryResult)=> {
+        _.remove(data.alertList, (item:IAlert) => {
           switch (item.context.alertType) {
             case 'PINGRESPONSE' :
-              item['alertType'] = item.context.alertType;
+              item.alertType = item.context.alertType;
               return false;
             default :
               return true; // ignore non-response-time alert
@@ -141,7 +141,7 @@ module HawkularMetrics {
       return this.resourceId + '.status.duration';
     }
 
-    public static min(a:number, b:number):number {
+    public min(a:number, b:number):number {
       return Math.min(a, b);
     }
 

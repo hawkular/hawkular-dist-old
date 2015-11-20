@@ -95,50 +95,6 @@ module HawkularMetrics {
       this.refresh();
     }
 
-  ;
-
-    private getAlerts(metricIdPrefix:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      let pheapArray:any, nheapArray:any, garbaArray:any;
-      let pheapPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        triggerIds: metricIdPrefix + '_platform_mem', startTime: startTime, endTime: endTime
-      }).then((pheapData)=> {
-        _.forEach(pheapData.alertList, (item) => {
-          item['alertType'] = 'P_MEM';
-        });
-        pheapArray = pheapData.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
-      });
-
-      let nheapPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        triggerIds: metricIdPrefix + '_platform_cpu', startTime: startTime, endTime: endTime
-      }).then((nheapData)=> {
-        _.forEach(nheapData.alertList, (item) => {
-          item['alertType'] = 'PCPU';
-        });
-        nheapArray = nheapData.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
-      });
-
-      let garbaPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        triggerIds: metricIdPrefix + '_jvm_garba', startTime: startTime, endTime: endTime
-      }).then((garbaData)=> { // TODO
-        _.forEach(garbaData.alertList, (item) => {
-          item['alertType'] = 'GARBA'; // TODO
-        });
-        garbaArray = garbaData.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
-      });
-
-      this.$q.all([pheapPromise, nheapPromise, garbaPromise]).finally(()=> {
-        this.alertList = [].concat(pheapArray, nheapArray, garbaArray);
-      });
-    }
 
     private autoRefreshPromise:ng.IPromise<number>;
 
@@ -146,7 +102,6 @@ module HawkularMetrics {
     private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(() => {
         this.refresh();
-        this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -160,7 +115,6 @@ module HawkularMetrics {
       this.getMemoryChartData();
       this.getFSChartData();
       this.getCpuChartDetailData();
-      this.getAlerts(this.$routeParams.resourceId, this.startTimeStamp, this.endTimeStamp);
     }
 
     public getFileSystems():any {
