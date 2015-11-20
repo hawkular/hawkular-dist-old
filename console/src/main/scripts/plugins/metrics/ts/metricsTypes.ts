@@ -157,13 +157,17 @@ module HawkularMetrics {
   }
 
   export interface ITriggerContext {
+    alertType: string;
     resourceName: string;
     resourcePath: string;
     resourceType: string;
     triggerType: string;
+    triggerTypeProperty1: string;
+    triggerTypeProperty2: string;
   }
 
   export interface IAlertTrigger {
+    actions: any;
     autoDisable: boolean;
     autoEnable: boolean;
     autoResolve: boolean;
@@ -178,6 +182,7 @@ module HawkularMetrics {
     name: string;
     orphan: boolean;
     severity: string; /// @todo: change to enum
+    tags: any;
     tenantId: TenantId;
     triggerId: TriggerId;
     ///@todo: ignoring actions for now

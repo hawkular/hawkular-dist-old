@@ -63,15 +63,15 @@
         <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts">
           <i ng-show="vm.alertList.length" ng-class="showAllAlerts? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"></i>
           Response Time Alerts
-          <span ng-show="vm.alertList.length">
-            ({{showAllAlerts ? vm.alertList.length : MetricsViewController.min(vm.alertList.length, 3)}} of
+          <ng-span ng-show="vm.alertList.length">
+            ({{showAllAlerts ? vm.alertList.length : vm.min(vm.alertList.length, 3)}} of
             {{vm.alertList.length}})
-          </span>
+          </ng-span>
         </button>
       </h3>
       <span class="hk-settings pull-left">
-          <a ng-href="/hawkular-ui/alerts-center-triggers/{{vm.resourceId}}">
-            <i class="fa fa-cog"></i>Alert Settings
+          <a ng-href="/hawkular-ui/alerts-center-triggers/{{vm.$routeParams.resourceId}}">
+            <i class="fa fa-cog"></i>Definitions
           </a>
       </span>
     </div>

@@ -348,10 +348,6 @@ module HawkularMetrics {
               for (let j = 0; j < serverAlert.evalSets.length; j++) {
                 let evalItem = serverAlert.evalSets[j][0];
 
-                if (serverAlert.trigger.name === 'JVM Heap Used') {
-                  console.log('evalItem:' + evalItem.value);
-                }
-
                 if (!consoleAlert.start && evalItem.dataTimestamp) {
                   consoleAlert.start = evalItem.dataTimestamp;
                 }

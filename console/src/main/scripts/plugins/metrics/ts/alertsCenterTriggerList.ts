@@ -41,7 +41,7 @@ module HawkularMetrics {
     public hasDisabledSelectedItems:boolean = false;
     public sortField:string = 'name';
     public sortAsc:boolean = true;
-    public resourceId;
+
 
     public loadingMoreItems:boolean = false;
     public addProgress:boolean = false;
@@ -63,8 +63,6 @@ module HawkularMetrics {
       this.$rootScope.prevLocation = $location.url();
 
       this.autoRefresh(120);
-      this.resourceId = $routeParams.resourceId ?
-        this.decodeResourceId($routeParams.resourceId) : '';
 
       if ($rootScope.currentPersona) {
         this.getTriggers();
@@ -93,7 +91,8 @@ module HawkularMetrics {
         ordering = 'desc';
       }
 
-      let tagValue = this.resourceId ? this.resourceId : '*';
+      let resourceId:string = this.$routeParams.resourceId ?  this.decodeResourceId(this.$routeParams.resourceId) : '';
+      let tagValue = resourceId ?resourceId : '*';
       this.HawkularAlertsManager.queryTriggers({
         tags: 'resourceId|' + tagValue,
         currentPage: this.triggersCurPage,

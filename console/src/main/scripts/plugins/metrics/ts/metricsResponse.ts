@@ -141,7 +141,7 @@ module HawkularMetrics {
       return this.resourceId + '.status.duration';
     }
 
-    public static min(a:number, b:number):number {
+    public min(a:number, b:number):number {
       return Math.min(a, b);
     }
 

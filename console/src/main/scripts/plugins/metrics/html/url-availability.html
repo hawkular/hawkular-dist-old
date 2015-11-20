@@ -80,15 +80,15 @@
         <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts">
           <i ng-show="vm.alertList.length" ng-class="showAllAlerts ? 'fa fa-minus-square-o':'fa fa-plus-square-o'"></i>
           Availability Alerts
-          <span ng-show="vm.alertList.length">
-            ({{showAllAlerts ? vm.alertList.length : MetricsAvailabilityController.min(vm.alertList.length, 3)}} of
+          <ng-span ng-show="vm.alertList.length">
+            ({{showAllAlerts ? vm.alertList.length : vm.min(vm.alertList.length, 3)}} of
             {{vm.alertList.length}})
-          </span>
+          </ng-span>
         </button>
       </h3>
       <span class="hk-settings pull-left">
-          <a ng-href="/hawkular-ui/alerts-center-triggers/{{vm.resourceId}}">
-            <i class="fa fa-cog"></i>Alert Settings
+          <a ng-href="/hawkular-ui/alerts-center-triggers/{{vm.$routeParams.resourceId}}">
+            <i class="fa fa-cog"></i>Definitions
           </a>
       </span>
     </div>
@@ -109,7 +109,7 @@
       <h3 class="pull-left">Metrics</h3>
 
       <div class="hk-update pull-right">
-        <button ng-click="vm.refreshAvailPageNow(vm.getResourceId())" class="btn btn-link hk-chart-update"
+        <button ng-click="vm.refreshAvailPageNow(vm.$routeParams.resourceId)" class="btn btn-link hk-chart-update"
                 tooltip-trigger tooltip-placement="top" tooltip-append-to-body="true" tooltip="Update chart">
           <i class="fa fa-refresh"></i>
         </button>

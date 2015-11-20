@@ -31,7 +31,6 @@ module HawkularMetrics {
     private autoRefreshPromise:ng.IPromise<number>;
     private resourceList;
     public modalInstance;
-    public resourceId;
     public alertList;
     public selectCount:number = 0;
     public lastUpdateTimestamp:Date;
@@ -58,7 +57,6 @@ module HawkularMetrics {
       $scope.vm = this;
       HawkularOps.init(this.NotificationsService);
 
-      this.resourceId = this.$routeParams.resourceId;
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
 
@@ -119,7 +117,7 @@ module HawkularMetrics {
       let alertArray: IAlert[];
       let promise = this.HawkularAlertsManager.queryAlerts({
         statuses: 'OPEN',
-        tags: 'resourceId|' + this.resourceId,
+        tags: 'resourceId|' + this.$routeParams.resourceId,
         startTime: this.startTimeStamp,
         endTime: this.endTimeStamp
       }).then((data:IHawkularAlertQueryResult)=> {
@@ -143,7 +141,8 @@ module HawkularMetrics {
 
     public getResourceList(currentTenantId?:TenantId):void {
       let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      let idParts = this.resourceId.split('~');
+      let resourceId:string = this.$routeParams.resourceId;
+      let idParts = resourceId.split('~');
       let feedId = idParts[0];
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
           environmentId: globalEnvironmentId,
@@ -153,7 +152,7 @@ module HawkularMetrics {
           let promises = [];
           let tmpResourceList = [];
           _.forEach(aResourceList, (res:IResource) => {
-            if (res.id.startsWith(new RegExp(this.resourceId + '~/'))) {
+            if (res.id.startsWith(new RegExp(resourceId + '~/'))) {
               tmpResourceList.push(res);
               res.selected = _.result(_.find(this.resourceList, {'id': res.id}), 'selected');
               promises.push(this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
