@@ -21,34 +21,6 @@
 
 module HawkularMetrics {
 
-  export class ServerStatus {
-
-    constructor (public value:string, public state: string, public icon: string) {
-    }
-
-    static SERVER_UP = new ServerStatus('Up', 'up', 'fa-arrow-up');
-    static SERVER_DOWN = new ServerStatus('Down', 'down', 'fa-arrow-down');
-    static SERVER_UNKNOW = new ServerStatus('Unknown', 'unknown', 'fa-chain-broken');
-    static SERVER_STARTING = new ServerStatus('Starting', 'starting', 'fa-spinner');
-    static SERVER_RESTART_REQUIRED = new ServerStatus('Restart Required', 'restart required', 'fa-repeat');
-
-    toString = () => {
-      return this.value;
-    };
-  }
-
-  export class ServerType {
-    constructor (public value:string, public type:string) {
-    }
-
-    static SERVER_EAP = new ServerType('EAP', 'eap');
-    static SERVER_WILDFLY = new ServerType('WildFly', 'wildfly');
-
-    toString = () => {
-      return this.value;
-    };
-  }
-
 
   export class AppServerListController {
     /// this is for minification purposes
@@ -92,15 +64,13 @@ module HawkularMetrics {
         $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
         this.getResourceList(currentPersona.id));
       }
-      this.serverStatusArray = Object.keys(ServerStatus).map(function(type) {
-        return ServerStatus[type];
-      });
+      this.serverStatusArray = Object.keys(ServerStatus).map(type => ServerStatus[type]);
 
       this.setConfigForDataTable();
       this.autoRefresh(20);
     }
 
-    private arrayWithAll(orginalArray:string[]):string[] {
+    private arrayWithAll (orginalArray:string[]):string[]{
       let arrayWithAll = orginalArray;
       arrayWithAll.unshift('All');
       return arrayWithAll;
@@ -109,28 +79,32 @@ module HawkularMetrics {
     private setConfigForDataTable():void {
       let _self = this;
       _self.activeFilters = [{
+        id: 'byText',
+        title: 'By text',
+        placeholder: 'Containts text',
+        filterType: 'text'
+      },
+        {
         id: 'type',
         title:  'Type',
         placeholder: 'Filter by type',
         filterType: 'select',
-        filterValues: _self.arrayWithAll(Object.keys(ServerType).map(function(type) {
-          return ServerType[type].value;
-        }))
+        filterValues: _self.arrayWithAll(
+          Object.keys(ServerType).map(
+              type => ServerType[type].value
+          )
+        )
       },
         {
           id: 'state',
           title:  'State',
           placeholder: 'Filter by State',
           filterType: 'select',
-          filterValues: _self.arrayWithAll(Object.keys(ServerStatus).map(function(type) {
-            return ServerStatus[type].value;
-          }))
-        },
-        {
-          id: 'byText',
-          title: 'By text',
-          placeholder: 'Containts text',
-          filterType: 'text'
+          filterValues: _self.arrayWithAll(
+            Object.keys(ServerStatus).map(
+                type => ServerStatus[type].value
+            )
+          )
         }];
     }
 

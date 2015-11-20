@@ -70,7 +70,7 @@ module HawkularMetrics {
     $scope.vm.watchResourceList($scope);
   };
 
-  export class HkTableFilters {
+  export class HkTableFiltersDirective {
     public controller:any;
     public controllerAs:string = 'vm';
     public link:any;
@@ -88,7 +88,7 @@ module HawkularMetrics {
     }
     public static Factory() {
       let directive = () => {
-        return new HkTableFilters();
+        return new HkTableFiltersDirective();
       };
 
       directive['$inject'] = [];
@@ -97,5 +97,5 @@ module HawkularMetrics {
     }
   }
 
-  _module.directive('tableFilters', [HawkularMetrics.HkTableFilters.Factory()]);
+  _module.directive('tableFilters', [HawkularMetrics.HkTableFiltersDirective.Factory()]);
 }
