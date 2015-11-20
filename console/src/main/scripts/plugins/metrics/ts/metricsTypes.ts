@@ -127,11 +127,16 @@ module HawkularMetrics {
     feedId: FeedId;
     environmentId: Environment;
     state: string;
-    selected: boolean;
     tenantId: TenantId;
     updateTimestamp: TimestampInMillis;
     properties: IResourceProperties;
     type: IResourceType;
+
+    // for console use
+    alertList: IAlert[];
+    availableCount: number;
+    inUseCount: number;
+    selected: boolean;
   }
 
   export interface IAvailResource {
@@ -203,6 +208,9 @@ module HawkularMetrics {
     // UI may augment this by adding a 'selected' property for list results
     // so we can use the original data structure as-is
     selected?: boolean;
+
+    // UI stores an 'alertType' to benefit display
+    alertType:string;
   }
 
 }

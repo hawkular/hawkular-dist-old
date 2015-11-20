@@ -105,8 +105,8 @@ module HawkularMetrics {
       let promise = this.HawkularAlertsManager.queryAlerts({
         statuses: 'OPEN',
         tags: 'resourceId|' + resourceId, startTime: startTime, endTime: endTime
-      }).then((data)=> {
-        _.remove(data.alertList, (item) => {
+      }).then((data:IHawkularAlertQueryResult)=> {
+        _.remove(data.alertList, (item:IAlert) => {
           switch (item.context.alertType) {
             case 'PINGAVAIL' :
               item['alertType'] = item.context.alertType;

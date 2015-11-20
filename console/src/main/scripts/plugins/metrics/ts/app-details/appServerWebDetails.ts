@@ -128,13 +128,13 @@ module HawkularMetrics {
         tags: 'resourceId|' + this.resourceId,
         startTime: this.startTimeStamp,
         endTime: this.endTimeStamp
-      }).then((webData)=> {
-        _.remove(webData.alertList, (item) => {
+      }).then((webData:IHawkularAlertQueryResult)=> {
+        _.remove(webData.alertList, (item:IAlert) => {
           switch( item.context.alertType ) {
             case 'ACTIVE_SESSIONS' :
             case 'EXPIRED_SESSIONS' :
             case 'REJECTED_SESSIONS' :
-              item['alertType'] = item.context.alertType;
+              item.alertType = item.context.alertType;
               return false;
             default : return true; // ignore non-web alert
           }

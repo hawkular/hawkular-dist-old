@@ -125,13 +125,13 @@ module HawkularMetrics {
         tags: 'resourceId|' + this.resourceId,
         startTime: this.startTimeStamp,
         endTime: this.endTimeStamp
-      }).then((jvmData)=> {
-        _.remove(jvmData.alertList, (item) => {
+      }).then((jvmData:IHawkularAlertQueryResult)=> {
+        _.remove(jvmData.alertList, (item:IAlert) => {
           switch( item.context.alertType ) {
             case 'PHEAP' :
             case 'NHEAP' :
             case 'GARBA' :
-              item['alertType'] = item.context.alertType;
+              item.alertType = item.context.alertType;
               return false;
             default : return true; // ignore non-jvm alert
           }

@@ -122,11 +122,11 @@ module HawkularMetrics {
         tags: 'resourceId|' + this.resourceId,
         startTime: this.startTimeStamp,
         endTime: this.endTimeStamp
-      }).then((data)=> {
-        _.remove(data.alertList, (item) => {
+      }).then((data:IHawkularAlertQueryResult)=> {
+        _.remove(data.alertList, (item:IAlert) => {
           switch( item.context.alertType ) {
             case 'DEPLOYMENT_FAIL' :
-              item['alertType'] = item.context.alertType;
+              item.alertType = item.context.alertType;
               return false;
             default : return true; // ignore non-jvm alert
           }

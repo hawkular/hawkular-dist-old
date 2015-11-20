@@ -189,19 +189,19 @@ module HawkularMetrics {
         }, (aResourceList, getResponseHeaders) => {
           let promises = [];
           let tmpResourceList = [];
-          angular.forEach(aResourceList, (res:any) => {
+          angular.forEach(aResourceList, (res:IResource) => {
             if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
               tmpResourceList.push(res);
               promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
                 gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
                 distinct: true
-              }, (data) => {
+              }, (data:number[]) => {
                 res.availableCount = data[0];
               }).$promise);
               promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
                 gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
                 distinct: true
-              }, (data) => {
+              }, (data:number[]) => {
                 res.inUseCount = data[0];
               }).$promise);
               this.getAlerts(res);
@@ -224,16 +224,16 @@ module HawkularMetrics {
       this.getDrivers();
     }
 
-    private getAlerts(res:any):void {
+    private getAlerts(res:IResource):void {
       let dsArray:IAlert[];
       let promise = this.HawkularAlertsManager.queryAlerts({
         statuses: 'OPEN',
         tags: 'resourceId|' + res.id,
         startTime: this.startTimeStamp,
         endTime: this.endTimeStamp
-      }).then((data)=> {
-        _.forEach(data.alertList, (item) => {
-          item['alertType'] = item.context.alertType;
+      }).then((data:IHawkularAlertQueryResult)=> {
+        _.forEach(data.alertList, (item:IAlert) => {
+          item.alertType = item.context.alertType;
         });
         dsArray = data.alertList;
       }, (error) => {
@@ -270,7 +270,7 @@ module HawkularMetrics {
       let tmpChartAvailData = {};
       let tmpChartRespData = {};
 
-      _.forEach(this.resourceList, function (res:any) {
+      _.forEach(this.resourceList, function (res:IResource) {
 
         if (!this.skipChartData[res.id + '_Available Count']) {
           let dsAvailPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
@@ -291,7 +291,7 @@ module HawkularMetrics {
             'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
             this.startTimeStamp, this.endTimeStamp, 60);
           availPromises.push(dsInUsePromise);
-          dsInUsePromise.then((data) => {
+          dsInUsePromise.then((data:number[]) => {
             tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
             tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
               key: 'In Use',
@@ -362,7 +362,7 @@ module HawkularMetrics {
     public loadTriggers(currentTenantId?:TenantId):any {
       let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
 
-      _.forEach(this.resourceList, function (res:any, idx) {
+      _.forEach(this.resourceList, function (res:IResource, idx) {
 
         this.loadDatasourceTriggers(res.id);
 
