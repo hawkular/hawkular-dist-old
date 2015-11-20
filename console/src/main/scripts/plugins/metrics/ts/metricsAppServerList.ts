@@ -70,7 +70,7 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private arrayWithAll (orginalArray:string[]):string[]{
+    private arrayWithAll(orginalArray:string[]):string[] {
       let arrayWithAll = orginalArray;
       arrayWithAll.unshift('All');
       return arrayWithAll;
