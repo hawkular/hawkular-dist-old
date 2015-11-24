@@ -174,53 +174,69 @@ module HawkularMetrics {
       this.getDatasources();
     }
 
+    private getDSMetrics(resourceLists, currentTenantId?:TenantId) {
+      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+      let promises = [];
+      let tmpResourceList = [];
+
+      if (!resourceLists.length || _.every(resourceLists, { 'length': 0 })) {
+        this.resourceList = [];
+        this.resourceList.$resolved = true;
+        this['lastUpdateTimestamp'] = new Date();
+      }
+
+      angular.forEach(resourceLists, (aResourceList) => {
+        angular.forEach(aResourceList, (res:IResource) => {
+          console.log(res);
+          if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
+            tmpResourceList.push(res);
+            promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+              gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
+              distinct: true
+            }, (data:number[]) => {
+              res.availableCount = data[0];
+            }).$promise);
+            promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+              gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
+              distinct: true
+            }, (data:number[]) => {
+              res.inUseCount = data[0];
+            }).$promise);
+            this.getAlerts(res);
+          }
+        });
+        this.$q.all(promises).then(() => {
+          this.resourceList = tmpResourceList;
+          this.resourceList.$resolved = true;
+          this.getDatasourceChartData();
+          this.loadTriggers();
+        });
+      });
+    }
+
     public getDatasources(currentTenantId?:TenantId):void {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
-      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       let idParts = this.$routeParams.resourceId.split('~');
       let feedId = idParts[0];
 
-      this.HawkularInventory.ResourceOfTypeUnderFeed.query({
-          environmentId: globalEnvironmentId,
-          feedId: feedId,
-          resourceTypeId: 'Datasource'
-        }, (aResourceList, getResponseHeaders) => {
-          let promises = [];
-          let tmpResourceList = [];
-          angular.forEach(aResourceList, (res:IResource) => {
-            if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
-              tmpResourceList.push(res);
-              promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-                gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
-                distinct: true
-              }, (data:number[]) => {
-                res.availableCount = data[0];
-              }).$promise);
-              promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-                gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
-                distinct: true
-              }, (data:number[]) => {
-                res.inUseCount = data[0];
-              }).$promise);
-              this.getAlerts(res);
-            }
-          }, this);
-          this.$q.all(promises).then(() => {
-            this.resourceList = tmpResourceList;
-            this.resourceList.$resolved = true;
-            this.getDatasourceChartData();
-            this.loadTriggers();
-          });
-        },
-        () => { // error
-          if (!this.resourceList) {
-            this.resourceList = [];
-            this.resourceList.$resolved = true;
-            this['lastUpdateTimestamp'] = new Date();
-          }
-        });
+      let xaDSsPromise = this.HawkularInventory.ResourceOfTypeUnderFeed.query({
+        environmentId: globalEnvironmentId,
+        feedId: feedId,
+        resourceTypeId: 'XA Datasource'
+      }).$promise;
+
+      let nonXaDSsPromise = this.HawkularInventory.ResourceOfTypeUnderFeed.query({
+        environmentId: globalEnvironmentId,
+        feedId: feedId,
+        resourceTypeId: 'Datasource'
+      }).$promise;
+
+      this.$q.all([xaDSsPromise, nonXaDSsPromise]).then((resourceLists) => {
+        this.getDSMetrics(resourceLists, currentTenantId);
+      });
+
       this.getDrivers();
     }
 
