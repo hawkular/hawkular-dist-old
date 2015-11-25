@@ -38,8 +38,12 @@
   font-weight: bold;
 }
 
-body.inactivity-modal-open #main, body.inactivity-modal-open .navbar, body.inactivity-modal-open #idle {
+body.inactivity-modal-open #main, body.inactivity-modal-open .navbar, body.inactivity-modal-open #idle, body.inactivity-modal-open .screen-content {
   filter: blur(5px);
+  /* Webkit */
+  -webkit-filter: blur(5px);
+  /* Opera */
+  -o-filter: blur(5px);
 }
 
 
