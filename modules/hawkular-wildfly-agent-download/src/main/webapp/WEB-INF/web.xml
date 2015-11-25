@@ -38,4 +38,11 @@
     <realm-name>hawkular</realm-name>
   </login-config>
 
+  <security-role>
+    <role-name>user</role-name>
+  </security-role>
+  <security-role>
+    <role-name>admin</role-name>
+  </security-role>
+
 </web-app>
