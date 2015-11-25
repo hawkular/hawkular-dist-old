@@ -49,7 +49,7 @@
           <div class="actions-table">
             <button class="btn btn-primary add" type="button"
                     ng-click="vm.showDeploymentAddDialog()">Add Deployment</button>
-            <div class="dropdown">
+            <div class="dropdown" dropdown>
               <button class="btn btn-default" type="button" id="add-dep" dropdown-toggle ng-disabled="!vm.selectCount">
                 Actions
                 <span class="caret"></span>
@@ -57,19 +57,19 @@
               <ul class="dropdown-menu disabled" role="menu" aria-labelledby="add-dep">
                 <li role="presentation">
                   <a role="menuitem" tabindex="-1" href="#"
-                     ng-click="vm.performOperationMulti('Deploy', vm.resourceList)" dropdown-toggle>Enable</a>
+                     ng-click="vm.performOperationMulti('Deploy', vm.resourceList)">Enable</a>
                 </li>
                 <li role="presentation">
                   <a role="menuitem" tabindex="-1" href="#"
-                     ng-click="vm.performOperationMulti('Redeploy', vm.resourceList)" dropdown-toggle>Redeploy</a>
+                     ng-click="vm.performOperationMulti('Redeploy', vm.resourceList)">Redeploy</a>
                 </li>
                 <li role="presentation">
                   <a role="menuitem" tabindex="-1" href="#"
-                     ng-click="vm.performOperationMulti('Undeploy', vm.resourceList)" dropdown-toggle>Disable</a>
+                     ng-click="vm.performOperationMulti('Undeploy', vm.resourceList)">Disable</a>
                 </li>
                 <li role="presentation">
                   <a role="menuitem" tabindex="-1" href="#"
-                     ng-click="vm.performOperationMulti('Remove', vm.resourceList)" dropdown-toggle>Remove</a>
+                     ng-click="vm.performOperationMulti('Remove', vm.resourceList)">Remove</a>
                 </li>
               </ul>
             </div>

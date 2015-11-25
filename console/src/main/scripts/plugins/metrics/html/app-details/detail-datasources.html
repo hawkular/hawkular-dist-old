@@ -14,10 +14,10 @@
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="datasource-sort-dropdown">
             <li ng-class="{'active': !vm.sortInv}">
-              <a href="" ng-click="vm.sortInv = false" dropdown-toggle>Sort A - Z</a>
+              <a href="" ng-click="vm.sortInv = false">Sort A - Z</a>
             </li>
             <li ng-class="{'active': vm.sortInv}">
-              <a href="" ng-click="vm.sortInv = true" dropdown-toggle>Sort Z - A</a>
+              <a href="" ng-click="vm.sortInv = true">Sort Z - A</a>
             </li>
           </ul>
         </div>
@@ -30,7 +30,7 @@
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="datasource-jdbc-drivers">
             <li ng-repeat="driver in vm.driversList">
-              <a href="" ng-click="vm.deleteDriver(driver)" dropdown-toggle>{{driver.name}}
+              <a href="" ng-click="vm.deleteDriver(driver)">{{driver.name}}
                 <span class="pull-right"><i class="fa fa-trash-o"></i></span></a>
             </li>
           </ul>
