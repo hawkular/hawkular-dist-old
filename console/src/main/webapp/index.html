@@ -43,7 +43,7 @@
         </div>
         <div class="collapse navbar-collapse navbar-collapse-1">
           <ul class="nav navbar-nav navbar-utility pull-right">
-            <li class="dropdown">
+            <li class="dropdown" dropdown>
               <a href="#" dropdown-toggle>
                 Red Hat Access <b class="caret"></b>
               </a>
@@ -58,7 +58,7 @@
                 </li>
               </ul>
             </li>
-            <li class="dropdown" ng-controller="HawkularAccounts.PersonaController as personaController">
+            <li class="dropdown" dropdown ng-controller="HawkularAccounts.PersonaController as personaController">
               <a href="#" dropdown-toggle>
                 <span class="pficon pficon-user"></span>
                 {{personaController.currentPersona.name}} <b class="caret"></b>

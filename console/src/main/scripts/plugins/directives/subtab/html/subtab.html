@@ -7,8 +7,8 @@
         <a ng-show="isAlertsCenterDetailPage()" href="/hawkular-ui/alerts-center-detail/{{hkParams.timeOffset}}" class="back">« All Alerts</a>
       </div>
       <div class="col-xs-5">
-        <div class="hk-date-range dropdown" ng-hide="isAlertsCenterTriggersPage()">
-          <div class="input-group" dropdown-toggle data-toggle="dropdown">
+        <div class="hk-date-range dropdown" dropdown ng-hide="isAlertsCenterTriggersPage()">
+          <div class="input-group" dropdown-toggle>
             <div class="hk-input">
               {{offsetName}} <span ng-show="false">{{getFormattedDate()}}</span>
             </div>
