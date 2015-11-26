@@ -23,15 +23,11 @@ module HawkularMetrics {
 
 
   export class AppServerDeploymentsDetailsController implements IRefreshable {
-    /// this is for minification purposes
-    public static $inject = ['$scope', '$rootScope', '$interval', '$log', '$routeParams', '$filter',
-      '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularOps', 'HawkularAlertsManager',
-      'ErrorsManager', '$q', 'NotificationsService'];
 
     private autoRefreshPromise:ng.IPromise<number>;
     private resourceList;
     public modalInstance;
-    public alertList;
+    public alertList:any[] = [];
     public selectCount:number = 0;
     public lastUpdateTimestamp:Date;
     public startTimeStamp:TimestampInMillis;
@@ -51,6 +47,7 @@ module HawkularMetrics {
                 private HawkularMetric:any,
                 private HawkularOps:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
+                private HawkularAlertRouterManager: IHawkularAlertRouterManager,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
                 private NotificationsService:INotificationsService) {
@@ -68,6 +65,11 @@ module HawkularMetrics {
         this.getResourceList(currentPersona.id));
       }
 
+      this.HawkularAlertRouterManager.registerForAlerts(
+        this.$routeParams.resourceId,
+        'deployments',
+        _.bind(this.filterAlerts, this)
+      );
       this.getAlerts();
 
       this.autoRefresh(20);
@@ -113,30 +115,24 @@ module HawkularMetrics {
       });
     }
 
-    private getAlerts():void {
-      let alertArray: IAlert[];
-      let promise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        tags: 'resourceId|' + this.$routeParams.resourceId,
-        startTime: this.startTimeStamp,
-        endTime: this.endTimeStamp
-      }).then((data:IHawkularAlertQueryResult)=> {
-        _.remove(data.alertList, (item:IAlert) => {
-          switch( item.context.alertType ) {
-            case 'DEPLOYMENT_FAIL' :
-              item.alertType = item.context.alertType;
-              return false;
-            default : return true; // ignore non-jvm alert
-          }
-        });
-        alertArray = data.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching deployment failure alerts.');
+    public filterAlerts(alertData:IHawkularAlertQueryResult) {
+      let deploymentAlerts = alertData.alertList;
+      _.remove(deploymentAlerts, (item:IAlert) => {
+        switch( item.context.alertType ) {
+          case 'DEPLOYMENT_FAIL' :
+            item.alertType = item.context.alertType;
+            return false;
+          default : return true; // ignore non-jvm alert
+        }
       });
+      this.alertList = deploymentAlerts;
+    }
 
-      this.$q.all([promise]).finally(()=> {
-        this.alertList = alertArray;
-      });
+    private getAlerts():void {
+      this.HawkularAlertRouterManager.getAlertsForCurrentResource(
+        this.startTimeStamp,
+        this.endTimeStamp
+      );
     }
 
     public getResourceList(currentTenantId?:TenantId):void {

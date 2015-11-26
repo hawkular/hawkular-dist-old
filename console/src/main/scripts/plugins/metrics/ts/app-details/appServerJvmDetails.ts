@@ -28,10 +28,6 @@ module HawkularMetrics {
   }
 
   export class AppServerJvmDetailsController implements IRefreshable {
-    /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$routeParams',
-      '$modal', 'HawkularInventory', 'HawkularMetric','HawkularNav', 'HawkularAlertsManager',
-      'MetricsService', 'ErrorsManager', '$q', ];
 
     public static USED_COLOR = '#1884c7'; /// blue
     public static MAXIMUM_COLOR = '#f57f20'; /// orange
@@ -44,7 +40,7 @@ module HawkularMetrics {
 
     public math = Math;
 
-    public alertList;
+    public alertList:any[] = [];
     public chartHeapData:IMultiDataPoint[];
     public chartNonHeapData:IMultiDataPoint[];
     public startTimeStamp:TimestampInMillis;
@@ -53,18 +49,13 @@ module HawkularMetrics {
     // will contain in the format: 'metric name' : true | false
     public skipChartData = {};
 
-    constructor(private $location:ng.ILocationService,
-                private $scope:any,
+    constructor(private $scope:any,
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
-                private $log:ng.ILogService,
-                private $filter:ng.IFilterService,
                 private $routeParams:any,
-                private $modal:any,
-                private HawkularInventory:any,
-                private HawkularMetric:any,
                 private HawkularNav:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
+                private HawkularAlertRouterManager: IHawkularAlertRouterManager,
                 private MetricsService:IMetricsService,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService ) {
@@ -90,9 +81,12 @@ module HawkularMetrics {
         this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
         this.refresh();
       });
-
+      this.HawkularAlertRouterManager.registerForAlerts(
+        this.$routeParams.resourceId,
+        'jvm',
+        _.bind(this.filterAlerts, this)
+      );
       this.getAlerts();
-
       this.autoRefresh(20);
     }
 
@@ -116,32 +110,26 @@ module HawkularMetrics {
       this.getAlerts();
     }
 
-    private getAlerts():void {
-      let jvmArray: IAlert[];
-      let jvmPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        tags: 'resourceId|' + this.$routeParams.resourceId,
-        startTime: this.startTimeStamp,
-        endTime: this.endTimeStamp
-      }).then((jvmData:IHawkularAlertQueryResult)=> {
-        _.remove(jvmData.alertList, (item:IAlert) => {
-          switch( item.context.alertType ) {
-            case 'PHEAP' :
-            case 'NHEAP' :
-            case 'GARBA' :
-              item.alertType = item.context.alertType;
-              return false;
-            default : return true; // ignore non-jvm alert
-          }
-        });
-        jvmArray = jvmData.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching jvm alerts.');
+    public filterAlerts(alertData:IHawkularAlertQueryResult) {
+      let alertList =  alertData.alertList;
+      _.remove(alertList, (item:IAlert) => {
+        switch( item.context.alertType ) {
+          case 'PHEAP' :
+          case 'NHEAP' :
+          case 'GARBA' :
+            item.alertType = item.context.alertType;
+            return false;
+          default : return true;
+        }
       });
+      this.alertList = alertList;
+    }
 
-      this.$q.all([jvmPromise]).finally(()=> {
-        this.alertList = jvmArray;
-      });
+    private getAlerts():void {
+      this.HawkularAlertRouterManager.getAlertsForCurrentResource(
+        this.startTimeStamp,
+        this.endTimeStamp
+      );
     }
 
     public getJvmData():void {

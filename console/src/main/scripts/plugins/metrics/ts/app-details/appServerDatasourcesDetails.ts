@@ -22,11 +22,6 @@
 module HawkularMetrics {
 
   export class AppServerDatasourcesDetailsController implements IRefreshable {
-
-    /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$routeParams', '$interval', '$q', 'HawkularInventory',
-      'HawkularMetric', 'HawkularNav', 'HawkularAlertsManager', 'ErrorsManager', 'MetricsService', '$log', '$modal'];
-
     public static AVAILABLE_COLOR = '#1884c7'; /// blue
     public static IN_USE_COLOR = '#49a547'; /// green
     public static TIMED_OUT_COLOR = '#515252'; /// dark gray
@@ -64,6 +59,7 @@ module HawkularMetrics {
                 private HawkularMetric:any,
                 private HawkularNav:any,
                 private HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
+                private HawkularAlertRouterManager: IHawkularAlertRouterManager,
                 private ErrorsManager:IErrorsManager,
                 private MetricsService:IMetricsService,
                 private $log:ng.ILogService,
@@ -76,7 +72,6 @@ module HawkularMetrics {
       this.chartRespData = {};
 
       this.defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
-
 
       // handle drag ranges on charts to change the time range
       this.$scope.$on('ChartTimeRangeChanged', (event, data:Date[]) => {
@@ -187,7 +182,6 @@ module HawkularMetrics {
 
       angular.forEach(resourceLists, (aResourceList) => {
         angular.forEach(aResourceList, (res:IResource) => {
-          console.log(res);
           if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
             tmpResourceList.push(res);
             promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
@@ -202,6 +196,11 @@ module HawkularMetrics {
             }, (data:number[]) => {
               res.inUseCount = data[0];
             }).$promise);
+            this.HawkularAlertRouterManager.registerForAlerts(
+              res.id,
+              'datasource',
+              _.bind(this.filterAlerts, this, _, res)
+            );
             this.getAlerts(res);
           }
         });
@@ -240,25 +239,20 @@ module HawkularMetrics {
       this.getDrivers();
     }
 
-    private getAlerts(res:IResource):void {
-      let dsArray:IAlert[];
-      let promise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        tags: 'resourceId|' + res.id,
-        startTime: this.startTimeStamp,
-        endTime: this.endTimeStamp
-      }).then((data:IHawkularAlertQueryResult)=> {
-        _.forEach(data.alertList, (item:IAlert) => {
-          item.alertType = item.context.alertType;
-        });
-        dsArray = data.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching DS alerts.');
+    public filterAlerts(alertData:IHawkularAlertQueryResult, res:IResource) {
+      let currentAlertList = alertData.alertList;
+      _.forEach(currentAlertList, (item:IAlert) => {
+        item.alertType = item.context.alertType;
       });
+      res.alertList = currentAlertList;
+    }
 
-      this.$q.all([promise]).finally(()=> {
-        res.alertList = dsArray;
-      });
+    private getAlerts(res:IResource):void {
+      this.HawkularAlertRouterManager.getAlertsForResourceId(
+        res.id,
+        this.startTimeStamp,
+        this.endTimeStamp
+      );
     }
 
     public getDrivers(currentTenantId?:TenantId):void {

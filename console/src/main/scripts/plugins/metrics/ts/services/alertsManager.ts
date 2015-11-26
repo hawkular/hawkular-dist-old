@@ -237,19 +237,13 @@ module HawkularMetrics {
      *    }
      */
     updateTrigger(fullTrigger:any, errorCallback:any, backupTrigger?:any): ng.IPromise<any>;
-
-
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager {
-
-    public static $inject = ['HawkularAlert', '$q', '$log', '$moment', 'NotificationsService', 'ErrorsManager'];
-
     constructor(private HawkularAlert:any,
                 private $q:ng.IQService,
                 private $log:ng.ILogService,
                 private $moment:any,
-                private NotificationsService:INotificationsService,
                 private ErrorsManager:IErrorsManager) {
     }
 
@@ -733,8 +727,6 @@ module HawkularMetrics {
         to: email
       }).$promise;
     }
-
-
   }
 
   _module.service('HawkularAlertsManager', HawkularAlertsManager);
