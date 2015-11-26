@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hawkular.bus.broker.extension.BrokerService;
 import org.hawkular.nest.extension.log.MsgLogger;
 import org.jboss.as.controller.AbstractAddStepHandler;
 import org.jboss.as.controller.OperationContext;
@@ -198,7 +197,6 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
                 .getServiceTarget()
                 .addService(name, service)
                 .addDependency(ServerEnvironmentService.SERVICE_NAME, ServerEnvironment.class, service.envServiceValue)
-                .addDependency(BrokerService.SERVICE_NAME, BrokerService.class, service.brokerService)
                 .addListener(verificationHandler)
                 .setInitialMode(Mode.ACTIVE)
                 .install();

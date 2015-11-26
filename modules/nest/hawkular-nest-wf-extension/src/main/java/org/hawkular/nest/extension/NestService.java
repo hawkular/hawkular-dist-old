@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hawkular.bus.broker.extension.BrokerService;
-import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.nest.extension.log.MsgLogger;
 import org.jboss.as.server.ServerEnvironment;
 import org.jboss.logging.Logger;
@@ -48,11 +46,6 @@ public class NestService implements Service<NestService> {
     final InjectedValue<ServerEnvironment> envServiceValue = new InjectedValue<ServerEnvironment>();
 
     /**
-     * Our subsystem add-step handler will inject this as a dependency for us.
-     */
-    final InjectedValue<BrokerService> brokerService = new InjectedValue<BrokerService>();
-
-    /**
      * Configuration settings that help complete the configuration.
      * These are settings that the user set in the subsystem (e.g. standalone.xml or via CLI).
      */
@@ -67,11 +60,6 @@ public class NestService implements Service<NestService> {
      * The name this service identifies itself as.
      */
     private String nestName;
-
-    /**
-     * Use this to create contexts needed to talk to the messaging system.
-     */
-    private ConnectionContextFactory messagingConnectionContextFactory;
 
     public NestService() {
     }
@@ -106,18 +94,6 @@ public class NestService implements Service<NestService> {
 
         msglog.infoNestName(getNestName());
 
-        // we don't necessarily need the broker, but if it is not started, log that fact.
-        BrokerService broker = this.brokerService.getValue();
-        if (broker.isBrokerStarted()) {
-            try {
-                setupMessaging(broker);
-            } catch (Exception e) {
-                throw new StartException("Cannot initialize messaging client", e);
-            }
-        } else {
-            msglog.infoBrokerServiceNotStarted();
-        }
-
         this.started = true;
     }
 
@@ -125,15 +101,6 @@ public class NestService implements Service<NestService> {
         if (!isStarted()) {
             return; // nothing to do, already stopped
         }
-
-        try {
-            if (messagingConnectionContextFactory != null) {
-                messagingConnectionContextFactory.close();
-            }
-        } catch (Exception e) {
-            msglog.errorCannotCloseMsgConnCtxFactory(e);
-        }
-
         this.started = false;
     }
 
@@ -163,9 +130,4 @@ public class NestService implements Service<NestService> {
         }
     }
 
-    protected void setupMessaging(BrokerService broker) throws Exception {
-        String brokerURL = "vm://" + broker.getBrokerName();
-        msglog.infoBrokerExists(brokerURL);
-        messagingConnectionContextFactory = new ConnectionContextFactory(brokerURL);
-    }
 }

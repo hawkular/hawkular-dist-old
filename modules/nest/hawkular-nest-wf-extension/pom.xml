@@ -37,16 +37,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-bus-common</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-bus-mdb</artifactId>
-    </dependency>
-
     <!-- WildFly will provide these - the module.xml will pull these in as dependencies -->
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -55,8 +45,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-bus-broker-wf-extension</artifactId>
+      <groupId>org.jboss.common</groupId>
+      <artifactId>jboss-common-beans</artifactId>
       <scope>provided</scope>
     </dependency>
 
