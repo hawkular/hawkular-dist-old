@@ -224,9 +224,11 @@
   </xsl:template>
 
   <!-- Remove the out-of-box datasource example and add our own datasource -->
-  <xsl:template name="datasources:subsystem">
+  <xsl:template name="datasources">
+    <subsystem xmlns="urn:jboss:domain:datasources:4.0">
     <datasources>
-      <datasource jta="true" jndi-name="java:jboss/datasources/HawkularDS" pool-name="HawkularDS" enabled="true" use-ccm="true" statistics-enabled="true">
+      <datasource jta="true" jndi-name="java:jboss/datasources/HawkularDS" pool-name="HawkularDS" enabled="true"
+                  use-ccm="true" statistics-enabled="true">
         <connection-url>jdbc:h2:${jboss.server.data.dir}/hawkular_db;MVCC=TRUE</connection-url>
         <driver-class>org.h2.Driver</driver-class>
         <driver>h2</driver>
@@ -251,7 +253,8 @@
           <share-prepared-statements>false</share-prepared-statements>
         </statement>
       </datasource>
-      <datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true" statistics-enabled="true">
+      <datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true"
+                  use-java-context="true" statistics-enabled="true">
         <connection-url>jdbc:h2:${jboss.server.data.dir}${/}h2${/}keycloak;AUTO_SERVER=TRUE</connection-url>
         <driver>h2</driver>
         <security>
@@ -265,9 +268,11 @@
         </driver>
       </drivers>
     </datasources>
+    </subsystem>
   </xsl:template>
 
-  <xsl:template match="ds:datasources">
+  <!--<xsl:template match="ds:datasources">-->
+  <xsl:template match="ds:subsystem">
     <xsl:call-template name="datasources" />
   </xsl:template>
 
@@ -359,6 +364,7 @@
           <jms-topic name="HawkularAvailData" entries="java:/jms/topic/HawkularAvailData"/>
           <jms-topic name="HawkularInventoryChanges" entries="java:/jms/topic/HawkularInventoryChanges"/>
           <jms-topic name="HawkularAlertsActionsTopic" entries="java:/jms/topic/HawkularAlertsActionsTopic"/>
+          <jms-topic name="HawkularAccountsEvents" entries="java:/jms/topic/HawkularAccountsEvents"/>
 
           <connection-factory name="InVmConnectionFactory" connectors="in-vm" entries="java:/ConnectionFactory java:/HawkularBusConnectionFactory"/>
           <connection-factory name="RemoteConnectionFactory" connectors="http-connector" entries="java:jboss/exported/jms/RemoteConnectionFactory"/>
