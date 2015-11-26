@@ -47,7 +47,7 @@ module HawkularMetrics {
     public static DEFAULT_EXPIRED_SESSIONS_THRESHOLD = 15;
     public static DEFAULT_REJECTED_SESSIONS_THRESHOLD = 15;
 
-    public alertList;
+    public alertList:any[] = [];
     public activeWebSessions:number = 0;
     public requestTime:number = 0;
     public requestCount:number = 0;
@@ -67,6 +67,7 @@ module HawkularMetrics {
                 private HawkularMetric:any,
                 private HawkularNav:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
+                private HawkularAlertRouterManager: IHawkularAlertRouterManager,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
                 private MetricsService:IMetricsService) {
@@ -93,6 +94,12 @@ module HawkularMetrics {
         this.refresh();
       });
 
+      this.HawkularAlertRouterManager.registerForAlerts(
+        this.$routeParams.resourceId,
+        'web',
+        _.bind(this.filterAlerts, this)
+      );
+
       this.getAlerts();
 
       this.autoRefresh(20);
@@ -110,6 +117,21 @@ module HawkularMetrics {
       });
     }
 
+    public filterAlerts(alertData:IHawkularAlertQueryResult) {
+      let webAlerts = alertData.alertList.slice();
+      _.remove(webAlerts, (item:IAlert) => {
+        switch( item.context.alertType ) {
+          case 'ACTIVE_SESSIONS' :
+          case 'EXPIRED_SESSIONS' :
+          case 'REJECTED_SESSIONS' :
+            item.alertType = item.context.alertType;
+            return false;
+          default : return true; // ignore non-web alert
+        }
+      });
+      this.alertList = webAlerts;
+    }
+
     public refresh():void {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
@@ -120,31 +142,10 @@ module HawkularMetrics {
     }
 
     private getAlerts():void {
-      let webArray: IAlert[];
-      let webPromise = this.HawkularAlertsManager.queryAlerts({
-        statuses: 'OPEN',
-        tags: 'resourceId|' + this.$routeParams.resourceId,
-        startTime: this.startTimeStamp,
-        endTime: this.endTimeStamp
-      }).then((webData:IHawkularAlertQueryResult)=> {
-        _.remove(webData.alertList, (item:IAlert) => {
-          switch( item.context.alertType ) {
-            case 'ACTIVE_SESSIONS' :
-            case 'EXPIRED_SESSIONS' :
-            case 'REJECTED_SESSIONS' :
-              item.alertType = item.context.alertType;
-              return false;
-            default : return true; // ignore non-web alert
-          }
-        });
-        webArray = webData.alertList;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error fetching web alerts.');
-      });
-
-      this.$q.all([webPromise]).finally(()=> {
-        this.alertList = webArray;
-      });
+      this.HawkularAlertRouterManager.getAlertsForCurrentResource(
+        this.startTimeStamp,
+        this.endTimeStamp
+      );
     }
 
     public getWebData():void {
