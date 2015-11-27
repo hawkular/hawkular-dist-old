@@ -83,6 +83,12 @@ body {
   }
 }
 
+.hk-sidebar-right {
+  @media (max-width: @screen-md-max) {
+    margin-top: 20px;
+  }
+}
+
 
 /*------------------------------------*\
     SCREEN COMPONENTS
@@ -93,10 +99,6 @@ body {
 h1 {
   margin-bottom: @grid-gutter-width/2;
   margin-top: @grid-gutter-width/4*3;
-
-  &.offset-panels {
-    margin-bottom: @grid-gutter-width/4*3;
-  }
 }
 
 h2 {
@@ -366,7 +368,9 @@ a:hover {
 }
 
 .hk-h2-offset {
-  margin-top: 39px;
+  @media (min-width: @screen-lg-min) {
+    margin-top: 39px;
+  }
 }
 
 .hk-cards-offset {
@@ -375,6 +379,11 @@ a:hover {
 
 .hk-definitions-link {
   font-size: @font-size-base;
+}
+
+.hk-card-interval { // provisional until pf style
+  font-size: 10px;
+  margin-top: 10px;
 }
 
 
@@ -391,6 +400,11 @@ a:hover {
     font-weight: 600;
     margin-bottom: 5px;
     margin-top: 0;
+
+    span {
+      font-size: @font-size-base;
+      font-weight: normal;
+    }
   }
 
   .hk-graph-container  {
@@ -490,7 +504,7 @@ a:hover {
     }
 
     .hk-yellow {
-      color: #bcb932;
+      color: #d5d026;
     }
 
     .fa-circle {
@@ -1052,37 +1066,6 @@ a:hover .fa-times-circle-o,
   padding-top: 0;
 }
 
-.steps-indicator {
-  margin: 0 0 10px 0;
-  padding: 0;
-
-  li a {
-    color: @gray;
-    font-weight: normal;
-    text-transform: none;
-
-    &:before {
-      background-color: white;
-      border: 1px solid @gray-light;
-    }
-  }
-
-  li.current a,
-  li.editing a {
-    color: @gray-dark;
-    font-weight: bold;
-
-    &:before {
-      background-color: @gray-light;
-    }
-  }
-
-  li.done a:before {
-    background-color: @brand-success;
-    border-color: @brand-success;
-  }
-}
-
 .hk-form-read-only {
   .hk-editable {
     display: none;
@@ -1134,6 +1117,10 @@ a:hover .fa-times-circle-o,
 
 
 // On off switch
+
+.form-group .bootstrap-switch {
+  float: right;
+}
 
 .onoffswitch {
   -moz-user-select: none;
@@ -1784,6 +1771,18 @@ td .fa-comment-o {
   margin-left: @grid-gutter-width/8;
 }
 
+.hk-table-overflow-y {
+  border-bottom: 1px solid @table-border-color;
+  border-top: 1px solid @table-border-color;
+  max-height: 126px;
+  overflow-y: scroll;
+
+  .table {
+    margin-bottom: -1px;
+    margin-top: -1px;
+  }
+}
+
 
 // Tiles (copied from Angular Patternfly)
 
@@ -1918,7 +1917,7 @@ td .fa-comment-o {
   border: 2px solid;
   height: 50px;
   margin: 0 auto;
-  -moz-border-radius:25px;
+  border-radius:25px;
   -webkit-border-radius: 25px;
   width: 50px;
 
@@ -2024,6 +2023,87 @@ td .fa-comment-o {
 }
 
 
+// Wizard
+
+.hk-wizard {
+  position: relative;
+
+  .steps {
+    margin-top: 55px;
+  }
+
+  .steps-indicator {
+    position: absolute;
+    top: -55px;
+
+    &[class*="steps-"] {
+
+      &:before {
+        left: 0;
+      }
+
+      li {
+        padding-left: 15px;
+        padding-right: 15px;
+        width: auto;
+      }
+    }
+
+    &:before {
+      display: none;
+    }
+
+    li:before {
+      background-color: @list-group-border;
+      content: '';
+      height: 1px;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+
+    li:last-child:before {
+      width: 50%;
+    }
+
+    li a {
+      color: @gray-light;
+      font-weight: 600;
+      text-transform: none;
+
+      &:before {
+        background-color: @gray-light;
+        border: none;
+        height: 8px;
+        left: calc(~"50% - 4px");
+        top: -4px;
+        width: 8px;
+      }
+    }
+
+    li.current a,
+    li.editing a {
+      color: @link-color;
+      font-weight: 600;
+
+      &:before {
+        background-color: @link-color;
+      }
+    }
+
+    li.done a {
+      color: @gray;
+      font-weight: bold;
+
+      &:before {
+        background-color: @gray;
+      }
+    }
+  }
+}
+
+
 /*------------------------------------*\
     SCREENS
 \*------------------------------------*/
@@ -2045,6 +2125,10 @@ td .fa-comment-o {
   h1 + .fa {
     color: @gray-light;
     font-size: ceil(@font-size-base * 4);
+  }
+
+  .tiles-view-pf .tile {
+    min-height: 300px;
   }
 }
 
@@ -2491,5 +2575,4 @@ section {
 
     }
   }
-
 }
