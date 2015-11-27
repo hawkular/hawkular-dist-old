@@ -61,7 +61,8 @@ module HawkularAccounts {
         $modal.open({
           templateUrl: 'plugins/accounts/html/inactivityModal.html',
           backdrop: 'static',
-          keyboard: false
+          keyboard: false,
+          windowClass: 'time-out-dialog'
         }).opened.then(() => {
             HawtioKeycloak.keycloak.clearToken();
           });
