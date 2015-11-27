@@ -39,8 +39,7 @@ before_cache:
 - df -h
 - du -sh $HOME/.m2/repository
 after_success:
-- PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
-- echo ${PROJECT_VERSION} == ${TRAVIS_BRANCH}  == ${TRAVIS_PULL_REQUEST}
+- PROJECT_VERSION=`mvn --batch-mode org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
 - if [[ "${PROJECT_VERSION}" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
   then
    curl -X GET http://${DEPLOYMENT_JENKINS}/job/Build-Hawkular-Image/build?token=${DEPLOYMENT_JENKINS_TOKEN} ;
