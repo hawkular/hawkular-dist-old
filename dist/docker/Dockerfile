@@ -42,4 +42,4 @@ VOLUME /opt/data
 # Internal ports visible to the outside
 EXPOSE 8080 8443
 
-CMD ["/opt/hawkular-1.0.0.Alpha7-SNAPSHOT/bin/standalone.sh","-b","0.0.0.0","-bmanagement","0.0.0.0","-Djboss.server.data.dir=/opt/data"]
+CMD ["/opt/hawkular-1.0.0.Alpha8-SNAPSHOT/bin/standalone.sh","-b","0.0.0.0","-bmanagement","0.0.0.0","-Djboss.server.data.dir=/opt/data"]
