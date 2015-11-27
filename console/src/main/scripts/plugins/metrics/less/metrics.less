@@ -56,9 +56,11 @@ body {
 .row { // reducing space between boxes
 
   @media (min-width: @screen-lg-min) {
+/*
     > .col-lg-9 + .col-lg-3 {
       padding-left: 0;
     }
+*/
 
     > .col-lg-3 + .col-lg-6 {
       padding-right: 0;
@@ -67,26 +69,24 @@ body {
   }
 
   @media (max-width: @screen-md-max) {
+/*
     > .col-md-8 + .col-md-4 {
       padding-left: 0;
     }
+*/
 
     > .col-md-4 + .col-md-8 {
       padding-left: 0;
     }
   }
 
+/*
   @media (min-width: @screen-md-min) {
     > .col-md-9 + .col-md-3 {
       padding-left: 0;
     }
   }
-}
-
-.hk-sidebar-right {
-  @media (max-width: @screen-md-max) {
-    margin-top: 20px;
-  }
+*/
 }
 
 
