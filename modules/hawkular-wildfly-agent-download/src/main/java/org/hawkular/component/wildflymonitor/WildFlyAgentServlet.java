@@ -40,6 +40,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import javax.annotation.security.PermitAll;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -53,7 +54,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Serves the Hawkular WildFly Agent download that is stored in the server's download area.
  */
-@WebServlet(urlPatterns = { "/download" }, loadOnStartup = 1)
+@PermitAll
+@WebServlet(urlPatterns = { "/download", "/installer" }, loadOnStartup = 1)
 public class WildFlyAgentServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -91,7 +93,8 @@ public class WildFlyAgentServlet extends HttpServlet {
     // the error code that will be returned if the server has too many agents downloading the agent update binary
     private static final int ERROR_CODE_TOO_MANY_DOWNLOADS = HttpServletResponse.SC_SERVICE_UNAVAILABLE;
 
-    private AtomicInteger numActiveDownloads = null;
+    private static AtomicInteger numActiveDownloads = null;
+
     private File moduleDownloadFile = null;
     private File installerDownloadFile = null;
 
@@ -127,7 +130,7 @@ public class WildFlyAgentServlet extends HttpServlet {
 
         String servletPath = req.getServletPath();
         if (servletPath != null) {
-            if (servletPath.endsWith("download")) {
+            if (servletPath.endsWith("download") || servletPath.endsWith("installer")) {
                 try {
                     numActiveDownloads.incrementAndGet();
                     getDownload(req, resp);
@@ -410,8 +413,7 @@ public class WildFlyAgentServlet extends HttpServlet {
             sendErrorTooManyDownloads(resp);
             return;
         }
-        // ?installer=true downloads the installer
-        if ("true".equals(req.getParameter("installer"))) {
+        if (req.getServletPath().endsWith("installer")) {
             downloadAgentInstaller(req, resp);
         } else {
             downloadAgentModule(req, resp);
