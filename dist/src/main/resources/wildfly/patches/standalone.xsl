@@ -362,9 +362,11 @@
 
           <jms-topic name="HawkularMetricData" entries="java:/jms/topic/HawkularMetricData"/>
           <jms-topic name="HawkularAvailData" entries="java:/jms/topic/HawkularAvailData"/>
-          <jms-topic name="HawkularInventoryChanges" entries="java:/jms/topic/HawkularInventoryChanges"/>
+          <jms-topic name="HawkularInventoryChanges"
+                     entries="java:/jms/topic/HawkularInventoryChanges java:/topic/HawkularInventoryChanges"/>
           <jms-topic name="HawkularAlertsActionsTopic" entries="java:/jms/topic/HawkularAlertsActionsTopic"/>
-          <jms-topic name="HawkularAccountsEvents" entries="java:/jms/topic/HawkularAccountsEvents"/>
+          <jms-topic name="HawkularAccountsEvents"
+                     entries="java:/jms/topic/HawkularAccountsEvents java:/topic/HawkularAccountsEvents"/>
 
           <connection-factory name="InVmConnectionFactory" connectors="in-vm" entries="java:/ConnectionFactory java:/HawkularBusConnectionFactory"/>
           <connection-factory name="RemoteConnectionFactory" connectors="http-connector" entries="java:jboss/exported/jms/RemoteConnectionFactory"/>
