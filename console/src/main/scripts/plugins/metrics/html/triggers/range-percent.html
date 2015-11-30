@@ -8,20 +8,23 @@
         </div>
       </div>
       <div class="hk-heading">
-        <h1 class="offset-panels">Alert Definition Details</h1>
+        <h1>Alert Definition Details</h1>
       </div>
     </div>
   </div>
 
   <div class="container">
 
-    <div class="row row-panels hk-cards-offset">
-      <div class="col-lg-9 col-md-8">
-        <div class="panel panel-default clearfix">
-          <div class="panel-heading">
-            <h2>{{tc.adm.trigger.name}}</h2>
+    <div class="row row-cards-pf hk-cards-offset">
+
+      <div class="col-md-9">
+        <div class="card-pf">
+          <div class="card-pf-heading">
+            <h2 class="card-pf-title">
+              {{tc.adm.trigger.name}}
+            </h2>
           </div>
-          <div class="panel-body">
+          <div class="card-pf-body">
             <form class="form-horizontal">
               <div ng-include="'plugins/metrics/html/partials/trigger-general-setup.html'"></div>
 

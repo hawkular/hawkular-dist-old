@@ -52,39 +52,44 @@
         </div>
       </div>
 
-      <div class="panel panel-default hk-graph" >
-        <h2>Web Sessions</h2>
-        <div class="hk-graph-container hk-graph-metrics">
-          <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-          <hawkular-chart
-            multi-data="vm.chartWebSessionData"
-            chart-type="multiline"
-            y-axis-units="Count (#)"
-            chart-height="250">
-          </hawkular-chart>
-        </div>
-        <div class="row hk-legend text-left hk-legend-metrics">
-          <div class="col-md-3 col-lg-2">
-            <div class="hk-graphselector hk-green">
-              <input type="checkbox" id="active" checked="checked" ng-click="vm.toggleChartData('Active Sessions')">
-              <label for="active"><span>Active Sessions</span></label>
+      <div class="row row-cards-pf">
+        <div class="col-xs-12">
+          <div class="card-pf hk-graph">
+            <h2>Web Sessions</h2>
+            <div class="hk-graph-container hk-graph-metrics">
+              <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+              <hawkular-chart
+                multi-data="vm.chartWebSessionData"
+                chart-type="multiline"
+                y-axis-units="Count (#)"
+                chart-height="250">
+              </hawkular-chart>
             </div>
-          </div>
-          <div class="col-md-3 col-lg-2">
-            <div class="hk-graphselector hk-orange">
-              <input type="checkbox" id="expired" checked="checked" ng-click="vm.toggleChartData('Expired Sessions')">
-              <label for="expired"><span>Expired Sessions</span></label>
-            </div>
-          </div>
-          <div class="col-md-3 col-lg-2">
-            <div class="hk-graphselector hk-red">
-              <input type="checkbox" id="rejected" checked="checked" ng-click="vm.toggleChartData('Rejected Sessions')">
-              <label for="rejected"><span>Rejected Sessions</span></label>
+            <div class="row hk-legend text-left hk-legend-metrics">
+              <div class="col-md-3">
+                <div class="hk-graphselector hk-green">
+                  <input type="checkbox" id="active" checked="checked" ng-click="vm.toggleChartData('Active Sessions')">
+                  <label for="active"><span>Active Sessions</span></label>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="hk-graphselector hk-orange">
+                  <input type="checkbox" id="expired" checked="checked" ng-click="vm.toggleChartData('Expired Sessions')">
+                  <label for="expired"><span>Expired Sessions</span></label>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="hk-graphselector hk-red">
+                  <input type="checkbox" id="rejected" checked="checked" ng-click="vm.toggleChartData('Rejected Sessions')">
+                  <label for="rejected"><span>Rejected Sessions</span></label>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <div class="col-lg-3">
       <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)"
                      resource-id="vm.$routeParams.resourceId" title="Web">

@@ -1,119 +1,112 @@
 <div ng-controller="AgentInstallerController as aic" class="hk-agent-installer">
   <div class="hk-heading">
-    <h1>Agent Installer</h1>
+    <h1 class="text-center">Agent Installer</h1>
   </div>
 
   <div class="container">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <div class="row row-cards-pf">
+        <div class="col-xs-12">
+          <div class="card-pf">
+            <div class="card-pf-body">
 
-    <div class="col-lg-9 col-md-8">
-      <form class="panel panel-default clearfix">
-        <fieldset>
-          <div class="panel-heading">
-            <h2>Required</h2>
-          </div>
-          <div class="panel-body">
-            <div class="form-group">
-              <div class="row">
-                <label class="col-sm-3 control-label" for="wildfly-home">Wildfly Home
-                  <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
-                     popover-placement="top" popover-trigger="mouseover mouseout"
-                     popover="Path to your Wildfly server into which the wildfly agent should be installed.
-                     This is the path on your monitored host.">
-                    <i class="fa fa-info-circle"></i></a>
-                </label>
+              <form class="form-horizontal">
+                <fieldset>
+                  <legend>Required</legend>
+                  <div class="form-group">
+                    <div class="row">
+                      <label class="col-sm-3 control-label" for="wildfly-home">Wildfly Home
+                        <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
+                           popover-placement="top" popover-trigger="mouseover mouseout"
+                           popover="Path to your Wildfly server into which the wildfly agent should be installed.
+                           This is the path on your monitored host.">
+                          <i class="fa fa-info-circle"></i></a>
+                      </label>
+                      <div class="col-sm-5">
+                        <div class="hk-input-text">
+                          <input class="form-control" ng-model="aic.wildflyHome" id="wildfly-home" required hk-autofocus
+                                 placeholder="Copy&paste here the path of the Wildfly server"/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
 
-                <div class="col-sm-5">
-                  <div class="hk-input-text">
-                    <input class="form-control" ng-model="aic.wildflyHome" id="wildfly-home" required hk-autofocus
-                           placeholder="Copy&paste here the path of the Wildfly server"/>
+                <fieldset>
+                  <legend>Optional</legend>
+                  <div class="form-group">
+                    <div class="row">
+                      <label class="col-sm-3 control-label" for="module-zip">Module zip
+                        <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
+                           popover-placement="top" popover-trigger="mouseover mouseout"
+                           popover="Path to non-default zip file with agent module.
+                            This way you can for instance deploy different version of the agent.">
+                          <i class="fa fa-info-circle"></i></a>
+                      </label>
+                      <div class="col-sm-5">
+                        <div class="hk-input-text">
+                          <input ng-model="aic.moduleZip" class="form-control" id="module-zip"/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="row">
+                      <label class="col-sm-3 control-label" for="username">Username
+                        <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
+                           popover-placement="top" popover-trigger="mouseover mouseout"
+                           popover="Username for this Hawkular server.">
+                          <i class="fa fa-info-circle"></i></a>
+                      </label>
+                      <div class="col-sm-5">
+                        <div class="hk-input-text">
+                          <input class="form-control" ng-model="aic.username" id="username"
+                                 autocomplete="off"/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="row">
+                      <label class="col-sm-3 control-label" for="password">Password
+                        <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
+                           popover-placement="top" popover-trigger="mouseover mouseout"
+                           popover="Password for this Hawkular server.">
+                          <i class="fa fa-info-circle"></i></a>
+                      </label>
+                      <div class="col-sm-5">
+                        <div class="hk-input-text">
+                          <input class="form-control" type="password" ng-model="aic.password" id="password"
+                                 autocomplete="off"/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="hk-form-actions-separator text-right">
+                    <button type="button" class="btn btn-primary" ng-click="aic.download()"
+                            ng-disabled="!aic.requiredFieldsFilled(hawkularServerUrl, wildflyHome)">
+                      Download Installer
+                    </button>
+                  </div>
+                </fieldset>
+
+                <div class="code-snippet" ng-show="aic.codeSnippetShown">
+                  To install the wildfly agent, run following command:
+                  <!--
+                  <div class="zero-clipboard" auto-hide-on-no-flash="true">
+                    <span class="btn-clipboard">
+                      Copy
+                    </span>
+                  </div>-->
+                  <div class="highlight">
+                    <pre>$ java -jar hawkular-wildfly-agent-installer-0.13.1.Final.jar</pre>
                   </div>
                 </div>
-              </div>
+              </form>
             </div>
-
-          </div>
-
-          <div class="panel-heading">
-            <h2>Optional</h2>
-          </div>
-          <div class="panel-body">
-            <div class="form-group">
-              <div class="row">
-                <label class="col-sm-3 control-label" for="module-zip">Module zip
-                  <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
-                     popover-placement="top" popover-trigger="mouseover mouseout"
-                     popover="Path to non-default zip file with agent module.
-                      This way you can for instance deploy different version of the agent.">
-                    <i class="fa fa-info-circle"></i></a>
-                </label>
-
-                <div class="col-sm-5">
-                  <div class="hk-input-text">
-                    <input ng-model="aic.moduleZip" class="form-control" id="module-zip"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-
-            <div class="form-group">
-              <div class="row">
-                <label class="col-sm-3 control-label" for="username">Username
-                  <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
-                     popover-placement="top" popover-trigger="mouseover mouseout"
-                     popover="Username for this Hawkular server.">
-                    <i class="fa fa-info-circle"></i></a>
-                </label>
-
-                <div class="col-sm-5">
-                  <div class="hk-input-text">
-                    <input class="form-control" ng-model="aic.username" id="username"
-                           autocomplete="off"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <div class="row">
-                <label class="col-sm-3 control-label" for="password">Password
-                  <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
-                     popover-placement="top" popover-trigger="mouseover mouseout"
-                     popover="Password for this Hawkular server.">
-                    <i class="fa fa-info-circle"></i></a>
-                </label>
-
-                <div class="col-sm-5">
-                  <div class="hk-input-text">
-                    <input class="form-control" type="password" ng-model="aic.password" id="password"
-                           autocomplete="off"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-aictions hk-form-aictions-separator text-right">
-              <button type="button" class="btn btn-primary" ng-click="aic.download()"
-                      ng-disabled="!aic.requiredFieldsFilled(hawkularServerUrl, wildflyHome)">
-                Download Installer
-              </button>
-            </div>
-          </div>
-
-        </fieldset>
-        <div class="code-snippet" ng-show="aic.codeSnippetShown">
-          To install the wildfly agent, run following command:
-          <!--
-          <div class="zero-clipboard" auto-hide-on-no-flash="true">
-            <span class="btn-clipboard">
-              Copy
-            </span>
-          </div>-->
-          <div class="highlight">
-            <pre>$ java -jar hawkular-wildfly-agent-installer-0.13.1.Final.jar</pre>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 

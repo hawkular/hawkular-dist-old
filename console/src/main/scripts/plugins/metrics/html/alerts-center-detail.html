@@ -14,14 +14,16 @@
   </div>
 
   <div class="container">
+    <div class="row row-cards-pf hk-cards-offset">
 
-    <div class="row">
       <div class="col-md-9">
-        <div class="panel panel-default clearfix">
-          <div class="panel-heading">
-            <h2>{{acd.description | characters: 55}}</h2>
+        <div class="card-pf">
+          <div class="card-pf-heading">
+            <h2 class="card-pf-title">
+              {{acd.description | characters: 55}}
+            </h2>
           </div>
-          <div class="panel-body">
+          <div class="card-pf-body">
             <form class="form-horizontal">
               <fieldset>
                 <div class="form-group">
@@ -97,11 +99,11 @@
       </div>
 
       <div class="col-md-3">
-        <div class="panel panel-default clearfix" ng-show="acd.actionsHistory.length > 0">
-          <div class="panel-heading">
-            <h2>Notifications</h2>
+        <div class="card-pf card-pf-utilization">
+          <div class="card-pf-heading">
+            <h2 class="card-pf-title">Notifications</h2>
           </div>
-          <div class="panel-body">
+          <div class="card-pf-body">
             <div class="hk-box-v-item" ng-repeat="action in acd.actionsHistory">
               <div class="hk-display-table">
                 <div class="hk-icon-container">
@@ -120,7 +122,6 @@
       </div>
 
     </div>
-
   </div>
 
 </div>

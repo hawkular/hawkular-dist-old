@@ -5,13 +5,11 @@
   <h4 class="modal-title">Add Deployment</h4>
 </div>
 
-<wizard name="deployAdd" on-finish="dac.finishedDeployWizard()" >
+<wizard name="deployAdd" class="hk-wizard" on-finish="dac.finishedDeployWizard()">
 
-  <wz-step title="Select a Deployment File">
+  <wz-step title="1. File">
     <div class="modal-body">
-      <p><strong>Step 1 of 3: Select a Deployment File</strong></p>
-
-      <p class="hk-required-info"><span class="hk-required">*</span> All fields are required.</p>
+      <p><strong>Select a Deployment File</strong></p>
 
       <form class="form-horizontal" name="deployFileForm" novalidate>
         <div class="form-group">
@@ -33,9 +31,9 @@
     </div>
   </wz-step>
 
-  <wz-step title="Verify File">
+  <wz-step title="2. Verify File">
     <div class="modal-body">
-      <p><strong>Step 2 of 3: Verify File</strong></p>
+      <p><strong>Verify File</strong></p>
 
       <div class="hk-form-verify hk-form-read-only">
         <div class="hk-form-buttons pull-right">
@@ -112,10 +110,10 @@
   </wz-step>
 
 
-  <wz-step title="Upload and Deploy">
+  <wz-step title="3. Upload and Deploy">
 
     <div class="modal-body">
-      <p><strong>Step 3 of 3: Upload and Deploy</strong></p>
+      <p><strong>Upload and Deploy</strong></p>
 
       <div class="text-center hk-spinner-container" ng-show="dac.deploymentData.uploading">
         <div class="spinner spinner-lg"></div>
