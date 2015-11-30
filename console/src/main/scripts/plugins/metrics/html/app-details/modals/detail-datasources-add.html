@@ -5,11 +5,11 @@
   <h4 class="modal-title">Add Datasource</h4>
 </div>
 
-<wizard name="driverAdd" on-finish="dac.finishedAddDriverWizard()" >
+<wizard name="driverAdd" class="hk-wizard" on-finish="dac.finishedAddDriverWizard()" >
 
-  <wz-step title="Select XA or Non-XA Datasource">
+  <wz-step title="Type">
     <div class="modal-body">
-      <p><strong>Step 1 of 5: Datasource Type</strong></p>
+      <p><strong>Datasource Type</strong></p>
 
       <form class="hk-form-horizontal" name="addDatasourceForm" novalidate>
         <div class="form-group">
@@ -48,9 +48,9 @@
     </div>
   </wz-step>
 
-  <wz-step title="Datasource Attributes">
+  <wz-step title="Attributes">
     <div class="modal-body">
-      <p><strong>Step 2 of 5: Datasource Attributes</strong></p>
+      <p><strong>Datasource Attributes</strong></p>
 
       <form class="form-horizontal">
         <fieldset>
@@ -85,14 +85,14 @@
     </div>
   </wz-step>
 
-  <wz-step title="Datasource Driver">
+  <wz-step title="Driver">
     <div class="modal-body">
-      <p><strong>Step 3 of 5: Datasource Driver</strong></p>
+      <p><strong>Datasource Driver</strong></p>
 
       <p>To connect to a datasource, your datasource vendor's drivers need to be installed and configured.</p>
       <p class="hk-required-info pull-right"><span class="hk-required">*</span> Required field</p>
 
-      <p><span class="hk-required">*</span> Add a new driver or select from an existing one.</p>
+      <p><span class="hk-required">*</span> Select from an existing driver.</p>
       <div class="btn-table-list-container">
         <table class="table hk-table-list hk-table-select">
           <tbody>
@@ -178,9 +178,9 @@
     </div>
   </wz-step>
 
-  <wz-step title="XA Properties" wz-disabled="{{dac.dsData.xaDatasource ? 'false' : 'true' }}">
+  <wz-step title="Properties" wz-disabled="{{dac.dsData.xaDatasource ? 'false' : 'true' }}">
     <div class="modal-body">
-      <p><strong>Step 4 of 5: XA Properties</strong></p>
+      <p><strong> XA Properties</strong></p>
 
       <p>Each property is identified by the name attribute and the property value is given by the
         xa-datasource-property element content.</p>
@@ -249,9 +249,9 @@
     </div>
   </wz-step>
 
-  <wz-step title="Connection Settings">
+  <wz-step title="Settings">
     <div class="modal-body">
-      <p><strong>Step 5 of 5: Connection Settings</strong></p>
+      <p><strong>Connection Settings</strong></p>
 
       <form class="form-horizontal">
         <fieldset>
@@ -291,7 +291,7 @@
     </div>
   </wz-step>
 
-  <wz-step title="Review and Create">
+  <wz-step title="Review and Add">
 
     <div class="modal-body">
       <p><strong>Confirm - Create and Test Datasource</strong></p>
@@ -302,7 +302,7 @@
 
       <div class="alert alert-success" ng-show="dac.dsData.hasOperationSucceeded">
         <span class="pficon pficon-ok"></span>
-        <strong>Success!</strong> The Datasource "{{dac.dsData.datasourceName}}" was created.
+        The Datasource "{{dac.dsData.datasourceName}}" was successfully created.
       </div>
 
       <div class="alert alert-danger" ng-show="dac.dsData.hasOperationFailed">
