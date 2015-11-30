@@ -29,6 +29,8 @@ var gulp = require('gulp'),
     argv = require('yargs').argv,
     jsString;
 
+var inProgress = false;
+
 // CONSTANTS
 
 var POM_MAIN_PATH = '../../../pom.xml';
@@ -260,17 +262,27 @@ gulp.task('watch-server', ['build-live', 'copy-kettle-js', 'copy-kettle-css'], f
     });
 });
 
-gulp.task('copy-sources', function(done) {
+gulp.task('clean-sources', function(done) {
+  if (!inProgress) {
+    inProgress = true;
+    del(['./plugins/**/*.ts', './plugins/**/*.less', './plugins/**/*.html'], done);
+  }
+  else {
+    done();
+  }
+});
+
+gulp.task('copy-sources', ['clean-sources'], function(done) {
   var src = [config.srcPrefix + 'plugins/**/*'];
 
-  del(['./plugins/**/*.ts', './plugins/**/*.less', './plugins/**/*.html'], function () {
-    gulp.src(src)
-    .pipe(gulp.dest('./plugins')).on('end', function() {
-      done();
-    })});
+  gulp.src(src)
+  .pipe(gulp.dest('./plugins')).on('end', function() {
+    done();
+  });
 });
 
 gulp.task('copy-kettle-js', ['build-live','set-server-path'] , function() {
+  inProgress = false;
   gulp.src(['dist/hawkular-console.js'])
     .pipe(gulp.dest(config.serverPath));
 });
@@ -303,6 +315,7 @@ gulp.task('copy-vendor-css', function(done) {
 });
 
 gulp.task('copy-kettle-css', ['less-live','set-server-path'] , function() {
+  inProgress = false;
   gulp.src(['dist/hawkular-console.css'])
     .pipe(gulp.dest(config.serverPath));
 });
