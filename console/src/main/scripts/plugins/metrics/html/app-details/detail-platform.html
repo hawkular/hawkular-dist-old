@@ -1,187 +1,204 @@
 <section id="hk-platform-metrics" class="hk-tab-content" xmlns="http://www.w3.org/1999/html">
-
-  <h3 class="pull-left">Platform Status</h3>
-
-  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
-  <div class="panel panel-default hk-summary">
-    <div class="row">
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data">{{os.alertList.length}}
-            <i class="fa fa-flag" ng-show="os.alertList.length > 0"></i></span>
-        <span class="hk-item">Platform Alerts</span>
-      </div>
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data" ng-show="os.memoryAvail">{{ os.memoryAvail.avg / 1024 / 1024 | number : 0 }} MB</span>
-        <span class="hk-data" ng-hide="os.memoryAvail">Loading...</span>
-        <span class="hk-item">Average Memory Available</span>
-      </div>
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data" ng-show="os.cpuUsage">{{ os.cpuUsage.avg * 100 | number : 1 }} %</span>
-        <span class="hk-data" ng-hide="os.cpuUsage">Loading...</span>
-        <span class="hk-item">CPU Usage</span>
-      </div>
-      <div class="col-sm-3 hk-summary-item">
-        <span class="hk-data" ng-show="os.cpuUsage">{{ os.cpuUsage.max * 100 | number : 1 }} %</span>
-        <span class="hk-data" ng-hide="os.cpuUsage">Loading...</span>
-        <span class="hk-item">Maximum CPU Usage</span>
-      </div>
-    </div>
-  </div>
-
-<!--
   <div class="hk-info-top clearfix">
-    <h3 class="pull-left">
-      <button class="btn btn-link hk-trigger" ng-click="vm.showAllAlerts = !vm.showAllAlerts" tooltip-trigger
-              tooltip-placement="top" tooltip="Expand/collapse">
-        <i class="fa" ng-show="vm.alertList.length > 0"
-           ng-class="vm.showAllAlerts ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i> JVM Alerts
-        <span ng-show="vm.alertList.length > 0">
-          ({{vm.showAllAlerts ? vm.alertList.length : vm.math.min(vm.alertList.length, 3)}} of {{vm.alertList.length}})
-        </span>
-      </button>
-    </h3>
-    <span class="hk-settings pull-left">
-      <a href="#" ng-controller="JvmAlertController as jac" ng-click="jac.openSetup()">
-        <i class="fa fa-cog"></i>Alert Settings
-      </a>
+    <h3 class="pull-left">Platform Status</h3>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+      <i class="fa fa-clock-o"></i>{{os.endTimeStamp | date:'HH:mm:ss'}}
     </span>
   </div>
--->
-  <div class="clearfix">
-    <!-- No Alerts -->
-    <div class="panel panel-default alert alert-info" ng-show="os.alertList.length === 0">
-      <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-      <div class="hk-event">No Alerts.</div>
-    </div>
-    <!-- Alerts exist -->
-    <hk-alert-panel-list class="clearfix" hk-alert-list="os.alertList"
-                         hk-limit="(os.showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
-  </div>
 
-
-  <div class="hk-info-top clearfix">
-    <h3 class="pull-left">Metrics</h3>
-    <div class="hk-update pull-right">
-      <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top"
-              tooltip="Update chart" ng-click="os.getCPUChartData()"><i class="fa fa-refresh"></i></button>
-    </div>
-  </div>
-
-  <div class="panel panel-default hk-graph" ng-if="os.chartMemoryUsageData">
-    <h2>Memory Usage</h2>
-    <div class="hk-graph-container hk-graph-metrics" ng-if="os.resolvedMemoryData">
-      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-      <hawkular-chart
-          data="os.chartMemoryUsageData"
-          chart-type="area"
-          hide-high-low-values="false"
-          y-axis-units="Available (MB)"
-          chart-height="250">
-      </hawkular-chart>
-    </div>
-  </div>
-
-  <div class="panel panel-default hk-graph" ng-if="os.chartCpuData">
-    <h2>CPU Usage</h2>
-      <!-- cpu summary usage over all cpus -->
-    <div class="hk-graph-container hk-graph-metrics" ng-if="os.resolvedCPUData">
-      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-      <hawkular-chart
-          data="os.chartCpuData"
-          chart-type="rhqbar"
-          hide-high-low-values="false"
-          y-axis-units="Usage (%)"
-          chart-height="250">
-      </hawkular-chart>
-    </div>
-
-      <!-- mini charts per cpu -->
-
-      <div class="panel panel-default hk-graph" ng-if="os.resolvedCPUData">
-        <div class="row">
-          <!-- TODO we should show them as rows of 2 mini-charts -->
-        <div class="hk-graph-container hk-graph-metrics"  ng-repeat="cpu in os.processorList">
-          <span ng-show="os.chartCpuDataMulti[cpu]">
-              <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-            <hawkular-chart
-              data="os.chartCpuDataMulti[cpu]"
-              chart-type="rhqbar"
-              hide-high-low-values="false"
-              y-axis-units="Usage (%)"
-              chart-height="150">
-             </hawkular-chart>
-           </span>
-           <span class="hk-data" ng-show="!os.chartCpuDataMulti[cpu]">Loading ...</span>
-          <span class="hk-item">{{os.processorListNames[cpu]}}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel panel-default hk-graph">
-    <h2>File System usage</h2>
-
-
-      <div class="hk-resource-container"
-       ng-repeat="fs in os.fileStoreList | filter: os.filter| orderBy:'name':osSortInv">
-
-      <div class="panel panel-default hk-summary">
-          <div class="panel-heading">
-              <span class="hk-heading pull-left">{{fs.name}}</span>
-          </div>
-          <div class="row"></div>
-      </div>
-      <div class="hk-panel-collapse-area" ng-class="{'hk-collapsed' : !os.expandedList[fs.id]}">
-        <a href="#" ng-click="os.expandedList[fs.id] = !os.expandedList[fs.id]">
-          <span ng-hide="os.expandedList[fs.id]">View Metrics</span>
-          <span ng-show="os.expandedList[fs.id]">Hide Metrics</span>
-          <i class="fa"
-             ng-class="os.expandedList[fs.id] ? 'fa-chevron-circle-up' : 'fa-chevron-circle-down'"></i>
-        </a>
-      </div>
-
-      <div class="hk-collapsible-area" ng-class="{ 'hide': !os.expandedList[fs.id]}" ng-if="os.expandedList[fs.id]">
-
-        <div class="hk-info-top clearfix">
-          <h3 class="pull-left">Metrics</h3>
-
-          <div class="hk-update pull-right">
-            <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart">
-              <i class="fa fa-refresh"></i>
-            </button>
+  <div class="row">
+    <!-- info panel -->
+    <div class="col-lg-9">
+      <!-- Start of info panel -->
+      <div class="row row-cards-pf">
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <i class="fa fa-flag" ng-show="os.alertList.length"></i>
+              <span class="card-pf-aggregate-status-count">{{os.alertList.length}}</span> Platform Alerts
+            </h2>
           </div>
         </div>
-
-        <div class="panel panel-default hk.graph" ng-if="os.resolvedChartFileSystemData[fs.id]">
-          <div class="hk-graph-container hk-graph-metrics">
-            <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-            <hawkular-chart
-                  multi-data="os.chartFileSystemData[fs.id]"
-                  chart-type="multiline"
-                  y-axis-units="FS Usage (MB)"
-                  chart-height="250">
-            </hawkular-chart>
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <span class="card-pf-aggregate-status-count" ng-show="os.memoryAvail.avg">
+                {{ os.memoryAvail.avg / 1024 / 1024 | number : 0 }} MB</span>
+              <span class="card-pf-aggregate-status-count" ng-hide="os.memoryAvail.avg">n/a</span>
+              Average Memory Available
+            </h2>
           </div>
-          <div class="hk-legend text-left hk-legend-metrics">
-            <div class="col-md-12">
-              <h4>Connection Availability</h4>
-              <div class="hk-graphselector hk-orange">
-                <input id="connavail_{{$index}}" type="checkbox"
-                     ng-checked="!os.skipChartData[fs.id + '_Total']"
-                     ng-click="os.toggleChartData(fs.id + '_Total')">
-                <label for="connavail_{{$index}}"><span>Total space</span></label>
-              </div>
-              <div class="hk-graphselector hk-blue">
-                <input id="conninuse_{{$index}}" type="checkbox"
-                     ng-checked="!os.skipChartData[fs.id + '_Free']"
-                     ng-click="os.toggleChartData(fs.id + '_Free')">
-                <label for="conninuse_{{$index}}"><span>Free space</span></label>
-              </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <span class="card-pf-aggregate-status-count" ng-show="os.cpuUsage.avg">
+                {{ os.cpuUsage.avg * 100 | number : 1 }} %
+              </span>
+              <span class="card-pf-aggregate-status-count" ng-hide="os.cpuUsage.avg">n/a</span>
+              CPU Usage
+            </h2>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+            <h2 class="card-pf-title">
+              <span class="card-pf-aggregate-status-count" ng-show="os.cpuUsage.max">
+                {{ os.cpuUsage.max * 100 | number : 1 }} %
+              </span>
+              <span class="card-pf-aggregate-status-count" ng-hide="os.cpuUsage.max">n/a</span>
+              Maximum CPU Usage
+            </h2>
+          </div>
+        </div>
+      </div>
+      <!-- End of info panel -->
+
+      <!-- Start of graphs -->
+      <div class="hk-info-top clearfix">
+        <h3 class="pull-left">Metrics</h3>
+        <div class="hk-update pull-right">
+          <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top"
+                  tooltip="Update chart" ng-click="os.getCPUChartData()"><i class="fa fa-refresh"></i></button>
+        </div>
+      </div>
+
+      <div class="panel panel-default hk-graph" ng-if="os.chartMemoryUsageData">
+        <h2>Memory Usage</h2>
+        <div class="hk-graph-container hk-graph-metrics" ng-if="os.resolvedMemoryData">
+          <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+          <hawkular-chart
+            data="os.chartMemoryUsageData"
+            chart-type="area"
+            hide-high-low-values="false"
+            y-axis-units="Available (MB)"
+            chart-height="250">
+          </hawkular-chart>
+        </div>
+      </div>
+
+      <div class="panel panel-default hk-graph" ng-if="os.chartCpuData">
+        <h2>CPU Usage</h2>
+        <!-- cpu summary usage over all cpus -->
+        <div class="hk-graph-container hk-graph-metrics" ng-if="os.resolvedCPUData">
+          <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+          <hawkular-chart
+            data="os.chartCpuData"
+            chart-type="rhqbar"
+            hide-high-low-values="false"
+            y-axis-units="Usage (%)"
+            chart-height="250">
+          </hawkular-chart>
+        </div>
+
+        <!-- mini charts per cpu -->
+
+        <div class="panel panel-default hk-graph" ng-if="os.resolvedCPUData">
+          <div class="row">
+            <div class="hk-graph-container hk-graph-metrics col-xs-6"  ng-repeat="cpu in os.processorList">
+              <span ng-show="os.chartCpuDataMulti[cpu]">
+                <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+                <hawkular-chart
+                  data="os.chartCpuDataMulti[cpu]"
+                  chart-type="rhqbar"
+                  hide-high-low-values="false"
+                  y-axis-units="Usage (%)"
+                  chart-height="150">
+                </hawkular-chart>
+              </span>
+              <span class="hk-data" ng-show="!os.chartCpuDataMulti[cpu]">Loading ...</span>
+              <span class="hk-item">{{os.processorListNames[cpu]}}</span>
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="hk-graph">
+          <h2>File System usage</h2>
         </div>
       </div>
-    </div>
+        <div class="hk-resource-container"
+             ng-repeat="fs in os.fileStoreList | filter: os.filter| orderBy:'name':osSortInv">
 
+          <div class="panel panel-default hk-summary">
+            <div class="panel-heading">
+              <span class="hk-heading hk-bold hk-resource-name">
+                {{fs.name}}
+              </span>
+              <div class="btn-group pull-right hk-action-buttons" dropdown auto-close="always">
+                <button id="ds-actions" class="btn btn-link" type="button" dropdown-toggle aria-haspopup="true"
+                        aria-expanded="true">
+                  Actions
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="ds-actions">
+                  <li class="disabled"><a href="#">Enable</a></li>
+                  <li class="disabled"><a href="#">Disable</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="row"></div>
+          </div>
+          <div class="hk-panel-collapse-area" ng-class="{'hk-collapsed' : !os.expandedList[fs.id]}">
+            <a href="#" ng-click="os.expandedList[fs.id] = !os.expandedList[fs.id]">
+              <span ng-hide="os.expandedList[fs.id]">View Metrics</span>
+              <span ng-show="os.expandedList[fs.id]">Hide Metrics</span>
+              <i class="fa"
+                 ng-class="os.expandedList[fs.id] ? 'fa-chevron-circle-up' : 'fa-chevron-circle-down'"></i>
+            </a>
+          </div>
+
+          <div class="hk-collapsible-area" ng-class="{ 'hide': !os.expandedList[fs.id]}" ng-if="os.expandedList[fs.id]">
+                <div class="panel-heading hk-info-top clearfix">
+                  <h3 class="pull-left">Metrics</h3>
+                  <div class="hk-update pull-right">
+                    <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top"
+                            tooltip-append-to-body="true" tooltip="Update chart">
+                      <i class="fa fa-refresh"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="panel panel-default hk-graph" ng-if="os.resolvedChartFileSystemData[fs.id]">
+                  <h2>Availability</h2>
+                  <div class="hk-graph-container hk-graph-metrics">
+                    <hawkular-chart
+                      multi-data="os.chartFileSystemData[fs.id]"
+                      chart-type="multiline"
+                      y-axis-units="FS Usage (MB)"
+                      chart-height="250">
+                    </hawkular-chart>
+                  </div>
+                  <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
+                    <div class="col-md-12">
+                      <h4>Connection Availability</h4>
+                      <div class="hk-graphselector hk-orange">
+                        <input id="connavail_{{$index}}" type="checkbox"
+                               ng-checked="!os.skipChartData[fs.id + '_Total']"
+                               ng-click="os.toggleChartData(fs.id + '_Total')">
+                        <label for="connavail_{{$index}}"><span>Total space</span></label>
+                      </div>
+                      <div class="hk-graphselector hk-blue">
+                        <input id="conninuse_{{$index}}" type="checkbox"
+                               ng-checked="!os.skipChartData[fs.id + '_Free']"
+                               ng-click="os.toggleChartData(fs.id + '_Free')">
+                        <label for="conninuse_{{$index}}"><span>Free space</span></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+          </div>
+        </div>
+      <!-- End of graphs -->
+
+    </div>
+    <!-- /info panel -->
+    <!-- alert panel -->
+    <div class="col-lg-3">
+      <hk-alert-info list="os.alertList" limit="(os.showAllAlerts ? 100000 : 3)"
+                     resource-id="os.$routeParams.feedId" title="Platform">
+      </hk-alert-info>
+    </div>
+    <!-- /alert panel -->
+  </div>
 </section>
