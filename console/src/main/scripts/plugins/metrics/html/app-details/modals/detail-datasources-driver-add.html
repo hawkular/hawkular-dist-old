@@ -5,11 +5,11 @@
   <h4 class="modal-title">Add JDBC Driver</h4>
 </div>
 
-<wizard name="driverAdd" on-finish="dac.finishedAddDriverWizard()" >
+<wizard name="driverAdd" class="hk-wizard" on-finish="dac.finishedAddDriverWizard()" >
 
-  <wz-step title="Select a JDBC Driver File">
+  <wz-step title="File">
     <div class="modal-body">
-      <p><strong>Step 1 of 3: Select JDBC Driver File</strong></p>
+      <p><strong>Select JDBC Driver File</strong></p>
 
       <form class="hk-form-horizontal" name="addJdbcDriverForm" novalidate>
         <fieldset>
@@ -35,9 +35,9 @@
     </div>
   </wz-step>
 
-  <wz-step title="Define Parameters">
+  <wz-step title="Parameters">
     <div class="modal-body">
-      <p><strong>Step 2 of 3: Define Parameters</strong></p>
+      <p><strong>Define Parameters</strong></p>
 
       <form class="form-horizontal">
         <fieldset>
@@ -105,10 +105,10 @@
   </wz-step>
 
 
-  <wz-step title="Review and Add Driver">
+  <wz-step title="Review and Add">
 
     <div class="modal-body">
-      <p><strong>Step 3 of 3: Review and Add Driver</strong></p>
+      <p><strong>Review and Add Driver</strong></p>
 
       <div class="text-center hk-spinner-container" ng-show="dac.driverData.uploading">
         <div class="spinner spinner-lg"></div>
