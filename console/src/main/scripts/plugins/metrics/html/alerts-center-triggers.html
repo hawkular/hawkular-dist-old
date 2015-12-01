@@ -68,7 +68,8 @@
             <td><input type="checkbox" ng-checked="trigger.selected"/></td>
             <td>{{trigger.name}}</td>
             <td>{{trigger.description}}</td>
-            <td><a ng-href="{{act.getResourceRoute(trigger)}}">{{trigger.context.resourceName|truncate: 30}}</a></td>
+            <td><a ng-href="{{act.getResourceRoute(trigger)}}">
+              {{trigger.context.resourceName | truncate: 30 : false : 'middle'}}</a></td>
             <td>{{trigger.severity|firstUpper}}</td>
             <td>{{trigger.enabled ? "Enabled" : "Disabled"}}</td>
             <td>{{trigger.actions.email.length}} <i class="fa fa-envelope-o"></i></td>
