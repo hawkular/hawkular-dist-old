@@ -79,9 +79,9 @@
             <td><input type="checkbox" ng-checked="alert.selected"/></td>
             <td ng-class="{'hk-bold': alert.status === 'OPEN'}" class="text-nowrap">{{alert.status|firstUpper}} <i ng-show="(alert.notes.length > 0)" class="fa fa-comment-o" tooltip="With comments" tooltip-trigger tooltip-placement="top"></i></td>
             <td>{{alert.severity|firstUpper}}</td>
-            <td>{{alert.trigger.description| characters: 50}}</td>
+            <td>{{alert.trigger.description| truncate: 50}}</td>
             <td>{{alert.ctime | date:'d MMM yyyy, HH:mm'}}</td>
-            <td>{{alert.context.resourceName | truncate: 30}}</td>
+            <td>{{alert.context.resourceName | truncate: 30 : false : 'middle'}}</td>
             <td><a class="btn btn-link"><i class="fa fa-chevron-circle-right fa-lg"
                                            tooltip="View Details" tooltip-trigger tooltip-placement="top"
                                            ng-click="ac.showDetailPage(alert.id)">
