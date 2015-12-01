@@ -38,19 +38,17 @@
       <div class="hk-form-verify hk-form-read-only">
         <div class="hk-form-buttons pull-right">
           <div class="hk-rename-button" ng-show="!dac.deploymentData.editDeploymentFiles">
-            <button class="btn btn-default" data-toggle="tooltip" data-placement="top"
-                    ng-click="dac.editVerifyFile()"
-                    data-original-title="Rename">
+            <button class="btn btn-default" tooltip-trigger tooltip="Rename" ng-click="dac.editVerifyFile()">
               <i class="fa fa-pencil"></i>
             </button>
           </div>
           <div class="hk-discard-confirm-buttons" ng-show="dac.deploymentData.editDeploymentFiles">
-            <button class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Discard"
+            <button class="btn btn-default" tooltip-trigger tooltip="Discard"
                     ng-disabled="!dac.deploymentData.editDeploymentFiles"
                     ng-click="dac.resetVerifyFile()">
               <i class="fa fa-close"></i>
             </button>
-            <button class="btn btn-default" data-toggle="tooltip" data-placement="top" data-original-title="Confirm"
+            <button class="btn btn-default" tooltip-trigger tooltip="Confirm"
                     ng-disabled="!dac.deploymentData.editDeploymentFiles"
                     ng-click="dac.saveVerifyFile()">
               <i class="fa fa-check"></i>
@@ -90,10 +88,7 @@
             <label>
               <input type="checkbox" ng-model="dac.deploymentData.dontEnableDuringDeployment"
                      name="checkBoxDisable"> Do not enable, during deployment.
-              <i class="fa fa-info-circle"
-                 data-toggle="tooltip"
-                 data-placement="top"
-                 data-original-title="Enabling activates the deployment.">
+              <i class="fa fa-info-circle" tooltip-trigger tooltip="Enabling activates the deployment.">
               </i>
             </label>
           </div>
