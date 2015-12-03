@@ -43,21 +43,6 @@
         </div>
         <div class="collapse navbar-collapse navbar-collapse-1">
           <ul class="nav navbar-nav navbar-utility pull-right">
-            <li class="dropdown" dropdown>
-              <a href="#" dropdown-toggle>
-                Red Hat Access <b class="caret"></b>
-              </a>
-              <ul class="dropdown-menu">
-                <li><a href="/hawkular-ui/access/search">Search</a></li>
-                <li class="dropdown-submenu">
-                  <a data-toggle="dropdown" tabindex="-1" href="#">Support</a>
-                  <ul class="dropdown-menu">
-                    <li><a href="/hawkular-ui/access/openCase">Open Case</a></li>
-                    <li><a href="/hawkular-ui/access/myCases">My Cases</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
             <li class="dropdown" dropdown ng-controller="HawkularAccounts.PersonaController as personaController">
               <a href="#" dropdown-toggle>
                 <span class="pficon pficon-user"></span>
@@ -95,12 +80,6 @@
     <div ng-controller="HawtioNav.ViewController">
       <div class="container screen-content" ng-include src="viewPartial"></div>
     </div>
-
-  <div ng-non-bindable data-$injector="">
-    <div id="redhat-access-cases">
-      <div ui-view autoscroll="false"></div>
-    </div>
-  </div>
 
     <!-- add any scripts under dist/ here -->
     <script src="dist/hawkular-console.js?v=${hawkular.console.timestamp}"></script>
