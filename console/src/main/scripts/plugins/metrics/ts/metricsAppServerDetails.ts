@@ -47,8 +47,7 @@ module HawkularMetrics {
       HawkularOps.init(this.NotificationsService);
 
       HawkularInventory.ResourceUnderFeed.get({
-        environmentId: globalEnvironmentId,
-        feedId: this.$routeParams.resourceId.split('~')[0],
+        feedId: this.$routeParams.feedId,
         resourcePath: this.$routeParams.resourceId + '~~'
       }, (resource:IResourcePath) => {
         this.resourcePath = resource.path;
@@ -139,7 +138,8 @@ module HawkularMetrics {
 
       let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
 
-      let resourceId:string = this.$routeParams.resourceId;
+      let resourceId:string = this.$routeParams.feedId + '/' + this.$routeParams.resourceId;
+      let metPrefix:string = MetricsService.getMetricId('M', this.$routeParams.feedId, this.$routeParams.resourceId,'');
 
       // JVM TRIGGERS
 
@@ -151,8 +151,8 @@ module HawkularMetrics {
         let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
 
         let triggerId:string = resourceId + '_jvm_pheap';
-        let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used';
-        let heapMaxId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max';
+        let dataId:string = metPrefix + 'WildFly Memory Metrics~Heap Used';
+        let heapMaxId:string = metPrefix + 'WildFly Memory Metrics~Heap Max';
 
         let fullTrigger = {
           trigger: {
@@ -227,8 +227,8 @@ module HawkularMetrics {
         let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
 
         let triggerId:string = resourceId + '_jvm_nheap';
-        let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used';
-        let heapMaxId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max';
+        let dataId:string = metPrefix + 'WildFly Memory Metrics~NonHeap Used';
+        let heapMaxId:string = metPrefix + 'WildFly Memory Metrics~Heap Max';
 
         let fullTrigger = {
           trigger: {
@@ -300,7 +300,7 @@ module HawkularMetrics {
       }, () => {
         // Jvm trigger doesn't exist, need to create one
         let triggerId:string = resourceId + '_jvm_garba';
-        let dataId:string = 'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration';
+        let dataId:string = metPrefix + 'WildFly Memory Metrics~Accumulated GC Duration';
 
         let fullTrigger = {
           trigger: {
@@ -360,8 +360,7 @@ module HawkularMetrics {
           // Active Web Sessions trigger doesn't exist, need to create one
 
           let triggerId:string = resourceId + '_web_active_sessions';
-          let dataId:string = 'MI~R~[' + resourceId +
-            '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Active Web Sessions';
+          let dataId:string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Active Web Sessions';
 
           let fullTrigger = {
             trigger: {
@@ -422,8 +421,7 @@ module HawkularMetrics {
           // Active Web Sessions trigger doesn't exist, need to create one
 
           let triggerId:string = resourceId + '_web_expired_sessions';
-          let dataId:string = 'MI~R~[' + resourceId +
-            '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions';
+          let dataId:string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions';
 
           let fullTrigger = {
             trigger: {
@@ -482,8 +480,7 @@ module HawkularMetrics {
           // Rejected Web Sessions trigger doesn't exist, need to create one
 
           let triggerId:string = resourceId + '_web_rejected_sessions';
-          let dataId:string = 'MI~R~[' + resourceId +
-            '~~]~MT~WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions';
+          let dataId:string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions';
 
           let fullTrigger = {
             trigger: {

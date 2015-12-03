@@ -124,9 +124,10 @@ module HawkularMetrics {
     }
 
     public showDetailPage(alertId:AlertId):void {
-      let timeOffset = this.alertsTimeOffset;
-      let endTime = this.alertsTimeEnd;
-      this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}/${timeOffset}/${endTime}`);
+      //let timeOffset = this.alertsTimeOffset;
+      //let endTime = this.alertsTimeEnd;
+      //this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}/${timeOffset}/${endTime}`);
+      this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}`);
     }
 
     public resolveSelected():void {

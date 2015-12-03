@@ -50,6 +50,9 @@ module HawkularMetrics {
     public startTimeStamp:TimestampInMillis;
     public endTimeStamp:TimestampInMillis;
 
+    private feedId: FeedId;
+    private resourceId: ResourceId;
+
     constructor(private $scope:any,
                 private $rootScope:IHawkularRootScope,
                 private $routeParams:any,
@@ -65,6 +68,9 @@ module HawkularMetrics {
                 private $log:ng.ILogService,
                 private $modal:any) {
       $scope.vm = this;
+
+      this.feedId = this.$routeParams.feedId;
+      this.resourceId = this.$routeParams.resourceId + '~~';
 
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
@@ -182,16 +188,16 @@ module HawkularMetrics {
 
       angular.forEach(resourceLists, (aResourceList) => {
         angular.forEach(aResourceList, (res:IResource) => {
-          if (res.id.startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
+          if (res.id.startsWith(this.$routeParams.resourceId + '~/')) {
             tmpResourceList.push(res);
             promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-              gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
+              gaugeId: MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Available Count'),
               distinct: true
             }, (data:number[]) => {
               res.availableCount = data[0];
             }).$promise);
             promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-              gaugeId: 'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
+              gaugeId: MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~In Use Count'),
               distinct: true
             }, (data:number[]) => {
               res.inUseCount = data[0];
@@ -217,18 +223,13 @@ module HawkularMetrics {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
-      let idParts = this.$routeParams.resourceId.split('~');
-      let feedId = idParts[0];
-
       let xaDSsPromise = this.HawkularInventory.ResourceOfTypeUnderFeed.query({
-        environmentId: globalEnvironmentId,
-        feedId: feedId,
+        feedId: this.$routeParams.feedId,
         resourceTypeId: 'XA Datasource'
       }).$promise;
 
       let nonXaDSsPromise = this.HawkularInventory.ResourceOfTypeUnderFeed.query({
-        environmentId: globalEnvironmentId,
-        feedId: feedId,
+        feedId: this.$routeParams.feedId,
         resourceTypeId: 'Datasource'
       }).$promise;
 
@@ -257,7 +258,7 @@ module HawkularMetrics {
 
     public getDrivers(currentTenantId?:TenantId):void {
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
-        environmentId: globalEnvironmentId, feedId: this.$routeParams.resourceId.split('~')[0],
+        feedId: this.$routeParams.feedId,
         resourceTypeId: 'JDBC Driver'
       }, (aResourceList, getResponseHeaders) => {
         this.driversList = aResourceList;
@@ -284,7 +285,7 @@ module HawkularMetrics {
 
         if (!this.skipChartData[res.id + '_Available Count']) {
           let dsAvailPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-            'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Available Count',
+            MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Available Count'),
             this.startTimeStamp, this.endTimeStamp, 60);
           availPromises.push(dsAvailPromise);
           dsAvailPromise.then((data) => {
@@ -298,7 +299,7 @@ module HawkularMetrics {
         }
         if (!this.skipChartData[res.id + '_In Use Count']) {
           let dsInUsePromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-            'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~In Use Count',
+            MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~In Use Count'),
             this.startTimeStamp, this.endTimeStamp, 60);
           availPromises.push(dsInUsePromise);
           dsInUsePromise.then((data:number[]) => {
@@ -312,7 +313,7 @@ module HawkularMetrics {
         }
         if (!this.skipChartData[res.id + '_Timed Out']) {
           let dsTimedPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-            'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Timed Out',
+            MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Timed Out'),
             this.startTimeStamp, this.endTimeStamp, 60);
           availPromises.push(dsTimedPromise);
           dsTimedPromise.then((data) => {
@@ -331,7 +332,7 @@ module HawkularMetrics {
 
         if (!this.skipChartData[res.id + '_Average Get Time']) {
           let dsWTimePromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-            'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Get Time',
+            MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Average Get Time'),
             this.startTimeStamp, this.endTimeStamp, 60);
           respPromises.push(dsWTimePromise);
           dsWTimePromise.then((data) => {
@@ -345,7 +346,7 @@ module HawkularMetrics {
         }
         if (!this.skipChartData[res.id + '_Average Creation Time']) {
           let dsCTimePromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-            'MI~R~[' + res.id + ']~MT~Datasource Pool Metrics~Average Creation Time',
+            MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Average Creation Time'),
             this.startTimeStamp, this.endTimeStamp, 60);
           respPromises.push(dsCTimePromise);
           dsCTimePromise.then((data) => {
@@ -370,11 +371,9 @@ module HawkularMetrics {
     }
 
     public loadTriggers(currentTenantId?:TenantId):any {
-      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-
       _.forEach(this.resourceList, function (res:IResource, idx) {
 
-        this.loadDatasourceTriggers(res.id);
+        this.loadDatasourceTriggers(this.feedId + '/' + res.id);
 
       }, this);
     }

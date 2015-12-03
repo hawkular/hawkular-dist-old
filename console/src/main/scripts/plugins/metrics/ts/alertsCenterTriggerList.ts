@@ -189,19 +189,19 @@ module HawkularMetrics {
 
       switch (trigger.context.triggerType) {
         case 'Availability' :
-          route = '/hawkular-ui/alerts-center-triggers/availability/' + encodedId;
+          route = '/hawkular-ui/alerts-center-triggers-availability/' + encodedId;
           break;
         case 'Event' :
-          route = '/hawkular-ui/alerts-center-triggers/event/' + encodedId;
+          route = '/hawkular-ui/alerts-center-triggers-event/' + encodedId;
           break;
         case 'Range' :
-          route = '/hawkular-ui/alerts-center-triggers/range/' + encodedId;
+          route = '/hawkular-ui/alerts-center-triggers-range/' + encodedId;
           break;
         case 'RangeByPercent' :
-          route = '/hawkular-ui/alerts-center-triggers/range-percent/' + encodedId;
+          route = '/hawkular-ui/alerts-center-triggers-range-percent/' + encodedId;
           break;
         case 'Threshold' :
-          route = '/hawkular-ui/alerts-center-triggers/threshold/' + encodedId;
+          route = '/hawkular-ui/alerts-center-triggers-threshold/' + encodedId;
           break;
       }
 
@@ -234,8 +234,7 @@ module HawkularMetrics {
       return route;
     }
 
-    public
-    setPage(page:number):void {
+    public setPage(page:number):void {
       this.triggersCurPage = page;
       this.getTriggers();
     }

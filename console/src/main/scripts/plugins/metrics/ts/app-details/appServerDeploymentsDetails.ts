@@ -137,23 +137,21 @@ module HawkularMetrics {
 
     public getResourceList(currentTenantId?:TenantId):void {
       let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-      let resourceId:string = this.$routeParams.resourceId;
-      let idParts = resourceId.split('~');
-      let feedId = idParts[0];
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
-          environmentId: globalEnvironmentId,
-          feedId: feedId,
+          feedId: this.$routeParams.feedId,
           resourceTypeId: 'Deployment'
         }, (aResourceList:IResource[], getResponseHeaders) => {
           let promises = [];
           let tmpResourceList = [];
           _.forEach(aResourceList, (res:IResource) => {
-            if (res.id.startsWith(new RegExp(resourceId + '~/'))) {
+            if (res.id.startsWith(this.$routeParams.resourceId + '~/')) {
               tmpResourceList.push(res);
+              res.feedId = this.$routeParams.feedId;
               res.selected = _.result(_.find(this.resourceList, {'id': res.id}), 'selected');
               promises.push(this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
                 tenantId: tenantId,
-                availabilityId: 'AI~R~[' + res.id + ']~AT~Deployment Status~Deployment Status',
+                availabilityId: MetricsService.getMetricId('A', res.feedId, res.id,
+                  'Deployment Status~Deployment Status'),
                 distinct: true
               }, (availResource:IAvailResource[]) => {
                 let latestData = _.last(availResource);

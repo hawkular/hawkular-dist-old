@@ -77,8 +77,7 @@ module HawkularMetrics {
       HawkularOps.init(this.NotificationsService);
 
       HawkularInventory.ResourceUnderFeed.get({
-        environmentId: globalEnvironmentId,
-        feedId: this.$routeParams.resourceId.split('~')[0],
+        feedId: this.$routeParams.feedId,
         resourcePath: this.$routeParams.resourceId + '~~'
       }, (resource:IResourcePath) => {
         this.dsData.resourcePath = resource.path;
@@ -118,7 +117,7 @@ module HawkularMetrics {
 
     public exitStepDatasourceAttributes():void {
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
-        environmentId: globalEnvironmentId, feedId: this.$routeParams.resourceId.split('~')[0],
+        environmentId: globalEnvironmentId, feedId: this.$routeParams.feedId,
         resourceTypeId: 'JDBC Driver'}, (aResourceList, getResponseHeaders) => {
           this.driversList = aResourceList;
           _.forEach(this.driversList, function(item: any) {

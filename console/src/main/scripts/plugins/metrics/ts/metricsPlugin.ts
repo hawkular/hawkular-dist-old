@@ -38,28 +38,7 @@ module HawkularMetrics {
 
   _module.config(['$routeProvider', ($routeProvider) => {
     $routeProvider.
-      when('/metrics/response-time', {
-        templateUrl: 'plugins/metrics/html/url-response-time.html',
-        resolve: {
-          hkResourceList: ($route, $filter, $location, $rootScope, $q, HawkularInventory) => {
-            let idParts = $route.current.params.resourceId.split('~');
-            let feedId = idParts[0];
-            let resPromise = HawkularInventory.ResourceUnderFeed.query({
-              environmentId: globalEnvironmentId,
-              feedId: feedId
-            }).$promise;
-            resPromise.then((hkResourceList) => {
-              $location.path('/metrics/response-time/' + hkResourceList[0].id);
-            }, () => {
-              $location.url('/error');
-            });
-
-            // Returning a promise which would never be resolved, so that the page would not render.
-            // The page will be redirected before rendering based on the resource list loaded above.
-            return $q.defer().promise;
-          }
-        }
-      }).when('/hawkular-ui/url/url-list/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/url-list.html'}).
+      when('/hawkular-ui/url/url-list/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/url-list.html'}).
       when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {
         templateUrl: 'plugins/metrics/html/url-response-time.html',
         reloadOnSearch: false,
@@ -119,7 +98,7 @@ module HawkularMetrics {
       }).
       when('/hawkular-ui/app/app-list/:timeOffset?/:endTime?',
       {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
-      when('/hawkular-ui/app/app-details/:resourceId/:tabId/:timeOffset?/:endTime?', {
+      when('/hawkular-ui/app/app-details/:feedId/:resourceId/:tabId/:timeOffset?/:endTime?', {
         templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
         reloadOnSearch: false,
         resolve: {
@@ -130,14 +109,8 @@ module HawkularMetrics {
               $location.path('/hawkular-ui/app/app-list');
             };
             let checkAppServerExists = () => {
-              let idParts = $route.current.params.resourceId.split('~');
-              if (idParts.length !== 2) {
-                redirectMissingAppServer();
-                return;
-              }
               let p = HawkularInventory.ResourceUnderFeed.get({
-                environmentId: globalEnvironmentId,
-                feedId: idParts[0],
+                feedId: $route.current.params.feedId,
                 resourcePath: $route.current.params.resourceId + '~~'
               }).$promise;
               p.then((response) => {
@@ -156,37 +129,37 @@ module HawkularMetrics {
         controller: 'AlertsCenterController',
         controllerAs: 'ac'
       }).
-      when('/hawkular-ui/alerts-center-detail/:alertId/:timeOffset?/:endTime?', {
+      when('/hawkular-ui/alerts-center-detail/:alertId*', {
         templateUrl: 'plugins/metrics/html/alerts-center-detail.html',
         controller: 'AlertsCenterDetailsController',
         controllerAs: 'acd'
       }).
-      when('/hawkular-ui/alerts-center-triggers/:resourceId?', {
+      when('/hawkular-ui/alerts-center-triggers/:resourceId*?', {
         templateUrl: 'plugins/metrics/html/alerts-center-triggers.html',
         controller: 'AlertsCenterTriggerController',
         controllerAs: 'act'
       }).
-      when('/hawkular-ui/alerts-center-triggers/availability/:triggerId', {
+      when('/hawkular-ui/alerts-center-triggers-availability/:triggerId', {
         templateUrl: 'plugins/metrics/html/triggers/availability.html',
         controller: 'AvailabilityTriggerSetupController',
         controllerAs: 'tc'
       }).
-      when('/hawkular-ui/alerts-center-triggers/range/:triggerId', {
+      when('/hawkular-ui/alerts-center-triggers-range/:triggerId', {
         templateUrl: 'plugins/metrics/html/triggers/range.html',
         controller: 'RangeTriggerSetupController',
         controllerAs: 'tc'
       }).
-      when('/hawkular-ui/alerts-center-triggers/range-percent/:triggerId', {
+      when('/hawkular-ui/alerts-center-triggers-range-percent/:triggerId', {
         templateUrl: 'plugins/metrics/html/triggers/range-percent.html',
         controller: 'RangeByPercentTriggerSetupController',
         controllerAs: 'tc'
       }).
-      when('/hawkular-ui/alerts-center-triggers/threshold/:triggerId', {
+      when('/hawkular-ui/alerts-center-triggers-threshold/:triggerId', {
         templateUrl: 'plugins/metrics/html/triggers/threshold.html',
         controller: 'ThresholdTriggerSetupController',
         controllerAs: 'tc'
       }).
-      when('/hawkular-ui/alerts-center-triggers/event/:triggerId', {
+      when('/hawkular-ui/alerts-center-triggers-event/:triggerId', {
         templateUrl: 'plugins/metrics/html/triggers/event.html',
         controller: 'EventTriggerSetupController',
         controllerAs: 'tc'

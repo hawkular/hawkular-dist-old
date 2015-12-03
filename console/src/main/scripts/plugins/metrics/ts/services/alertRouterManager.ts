@@ -96,7 +96,6 @@ module HawkularMetrics {
     }
 
     public getAlertsForResourceId(resourceId, startTime, endTime):void {
-      console.log(this.registeredForAlerts);
       let fullAlertData = {};
 
       let promise = this.HawkularAlertsManager.queryAlerts({
