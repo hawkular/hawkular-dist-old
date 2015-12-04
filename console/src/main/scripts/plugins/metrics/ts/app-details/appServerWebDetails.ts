@@ -66,12 +66,8 @@ module HawkularMetrics {
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private $routeParams:any,
-                private HawkularInventory:any,
-                private HawkularMetric:any,
                 private HawkularNav:any,
-                private HawkularAlertsManager:IHawkularAlertsManager,
                 private HawkularAlertRouterManager: IHawkularAlertRouterManager,
-                private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
                 private MetricsService:IMetricsService) {
       $scope.vm = this;
@@ -178,7 +174,6 @@ module HawkularMetrics {
     public getWebChartData():void {
       let tmpChartWebSessionData = [];
       let promises = [];
-      let resourceId:string = this.$routeParams.resourceId;
 
       if (!this.skipChartData['Active Sessions']) {
         let activeSessionsPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,

@@ -25,7 +25,7 @@ module HawkularMetrics {
   export class AppServerListController {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
-        'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager', '$q',
+        'HawkularInventory', 'HawkularMetric',  '$q',
         'md5', 'HkHeaderParser'];
 
     private resourceList;
@@ -47,14 +47,9 @@ module HawkularMetrics {
                 private $modal: any,
                 private HawkularInventory: any,
                 private HawkularMetric: any,
-                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
-                private ErrorsManager: HawkularMetrics.IErrorsManager,
                 private $q: ng.IQService,
                 private md5: any,
-                private HkHeaderParser: HawkularMetrics.IHkHeaderParser,
-                public startTimeStamp:TimestampInMillis,
-                public endTimeStamp:TimestampInMillis,
-                public resourceUrl: string) {
+                private HkHeaderParser: HawkularMetrics.IHkHeaderParser ) {
       $scope.vm = this;
 
       if ($rootScope.currentPersona) {
@@ -112,7 +107,7 @@ module HawkularMetrics {
       let _self = this;
       let filterObj = _self.resourceList;
       _self['search'] = '';
-      filters.forEach(function (filter) {
+      filters.forEach(function (filter:any) {
         filterObj = filterObj.filter(function(item){
           if (filter.value === 'All') {
             return true;

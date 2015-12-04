@@ -33,8 +33,6 @@ module HawkularMetrics {
     public static MAXIMUM_COLOR = '#f57f20'; /// orange
     public static COMMITTED_COLOR = '#515252'; /// dark gray
 
-    private static STATUSES = 'OPEN';
-
     public static MAX_HEAP = 1024 * 1024 * 1024;
     public static BYTES2MB = 1 / 1024 / 1024;
 
@@ -57,10 +55,8 @@ module HawkularMetrics {
                 private $interval:ng.IIntervalService,
                 private $routeParams:any,
                 private HawkularNav:any,
-                private HawkularAlertsManager:IHawkularAlertsManager,
                 private HawkularAlertRouterManager: IHawkularAlertRouterManager,
                 private MetricsService:IMetricsService,
-                private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService ) {
       $scope.vm = this;
 
@@ -169,7 +165,6 @@ module HawkularMetrics {
       let heapPromises = [];
       let tmpChartNonHeapData = [];
       let nonHeapPromises = [];
-      let resourceId:string = this.$routeParams.resourceId;
 
       if (!this.skipChartData['Heap Committed']) {
         let hCommPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
