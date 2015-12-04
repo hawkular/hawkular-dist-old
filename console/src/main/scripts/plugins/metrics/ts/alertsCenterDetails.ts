@@ -58,7 +58,7 @@ module HawkularMetrics {
       $scope.acd = this;
       this._alertId = $routeParams.alertId;
 
-      this.alertsTimeOffset = $routeParams.timeOffset || 3600000;
+      this.alertsTimeOffset = $routeParams.timeOffset || $rootScope.hkParams.timeOffset || DEF_TIME_OFFSET;
       // If the end time is not specified in URL use current time as end time
       this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : Date.now();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
@@ -97,9 +97,10 @@ module HawkularMetrics {
     }
 
     public cancel():void {
-      let timeOffset = this.alertsTimeOffset;
-      let endTime = this.alertsTimeEnd;
-      this.$location.url(`/hawkular-ui/alerts-center/${timeOffset}/${endTime}`);
+      //let timeOffset = this.alertsTimeOffset;
+      //let endTime = this.alertsTimeEnd;
+      //this.$location.url(`/hawkular-ui/alerts-center/${timeOffset}/${endTime}`);
+      this.$location.url(`/hawkular-ui/alerts-center/`);
     }
 
     public save(): void {

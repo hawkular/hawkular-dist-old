@@ -92,7 +92,7 @@ module HawkularMetrics {
     }
 
     public getAlertsForCurrentResource(startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      this.getAlertsForResourceId(this.$routeParams.resourceId, startTime, endTime);
+      this.getAlertsForResourceId(this.$routeParams.feedId + '/' + this.$routeParams.resourceId, startTime, endTime);
     }
 
     public getAlertsForResourceId(resourceId, startTime, endTime):void {

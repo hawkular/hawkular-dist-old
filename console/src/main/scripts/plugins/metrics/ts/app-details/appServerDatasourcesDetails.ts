@@ -189,6 +189,7 @@ module HawkularMetrics {
       angular.forEach(resourceLists, (aResourceList) => {
         angular.forEach(aResourceList, (res:IResource) => {
           if (res.id.startsWith(this.$routeParams.resourceId + '~/')) {
+            res.feedId = this.feedId;
             tmpResourceList.push(res);
             promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
               gaugeId: MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Available Count'),
@@ -203,7 +204,7 @@ module HawkularMetrics {
               res.inUseCount = data[0];
             }).$promise);
             this.HawkularAlertRouterManager.registerForAlerts(
-              res.id,
+              res.feedId + '/' + res.id,
               'datasource',
               _.bind(this.filterAlerts, this, _, res)
             );
@@ -250,7 +251,7 @@ module HawkularMetrics {
 
     private getAlerts(res:IResource):void {
       this.HawkularAlertRouterManager.getAlertsForResourceId(
-        res.id,
+        res.feedId + '/' + res.id,
         this.startTimeStamp,
         this.endTimeStamp
       );

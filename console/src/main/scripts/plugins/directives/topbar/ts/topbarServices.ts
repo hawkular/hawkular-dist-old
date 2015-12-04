@@ -44,17 +44,19 @@ module Topbar {
           }
         });
 
-        $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
+        $rootScope.hkParams.timeOffset = $routeParams.timeOffset || $rootScope.hkParams.timeOffset || defaultOffset;
         $rootScope.hkEndTimestamp = $routeParams.endTimestamp || +moment();
         $rootScope.hkStartTimestamp = moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
         $rootScope.$on('$routeChangeSuccess', (event, current, previous) => {
-          $rootScope.hkParams = current.params;
 
-          $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
-          $rootScope.hkEndTimestamp = $routeParams.endTimestamp || +moment();
-          $rootScope.hkStartTimestamp = moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
+          // store any routeParams inside hkParams
+          let newHkParams = current.params;
+          newHkParams.timeOffset = $routeParams.timeOffset || $rootScope.hkParams.timeOffset || defaultOffset;
+          newHkParams.hkEndTimestamp = $routeParams.endTimestamp || $rootScope.hkParams.hkEndTimestamp || +moment();
+          newHkParams.hkStartTimestamp = moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
+          $rootScope.hkParams = newHkParams;
         }, this);
       };
       let tenantId = this.$rootScope.currentPersona && this.$rootScope.currentPersona.id;

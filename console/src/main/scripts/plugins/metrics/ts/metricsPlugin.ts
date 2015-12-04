@@ -139,6 +139,10 @@ module HawkularMetrics {
         controller: 'AlertsCenterTriggerController',
         controllerAs: 'act'
       }).
+      when('/hawkular-ui/alerts-center-triggers', {
+        // because the final '/' makes a difference...
+        redirectTo: '/hawkular-ui/alerts-center-triggers/'
+      }).
       when('/hawkular-ui/alerts-center-triggers-availability/:triggerId', {
         templateUrl: 'plugins/metrics/html/triggers/availability.html',
         controller: 'AvailabilityTriggerSetupController',

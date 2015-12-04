@@ -101,7 +101,7 @@ module HawkularMetrics {
       });
 
       this.HawkularAlertRouterManager.registerForAlerts(
-        this.$routeParams.resourceId,
+        this.$routeParams.feedId + '/' + this.$routeParams.resourceId,
         'web',
         _.bind(this.filterAlerts, this)
       );

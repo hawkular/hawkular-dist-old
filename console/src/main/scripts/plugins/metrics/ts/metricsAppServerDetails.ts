@@ -139,7 +139,8 @@ module HawkularMetrics {
       let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
 
       let resourceId:string = this.$routeParams.feedId + '/' + this.$routeParams.resourceId;
-      let metPrefix:string = MetricsService.getMetricId('M', this.$routeParams.feedId, this.$routeParams.resourceId,'');
+      let metPrefix:string = MetricsService.getMetricId('M', this.$routeParams.feedId,
+        this.$routeParams.resourceId + '~~','');
 
       // JVM TRIGGERS
 

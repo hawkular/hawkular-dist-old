@@ -88,7 +88,7 @@ module HawkularMetrics {
         this.refresh();
       });
       this.HawkularAlertRouterManager.registerForAlerts(
-        this.$routeParams.resourceId,
+        this.$routeParams.feedId + '/' + this.$routeParams.resourceId,
         'jvm',
         _.bind(this.filterAlerts, this)
       );

@@ -57,10 +57,7 @@ module HawkularMetrics {
                 private $location:ng.ILocationService) {
       $scope.ac = this;
 
-      if ($routeParams.timeOffset === undefined) {
-        $routeParams.timeOffset = 3600000 * 12;
-        $scope.hkParams.timeOffset = $routeParams.timeOffset;
-      }
+      $routeParams.timeOffset = $routeParams.timeOffset || $scope.hkParams.timeOffset || 3600000 * 12;
 
       this.alertsTimeOffset = $routeParams.timeOffset;
 
