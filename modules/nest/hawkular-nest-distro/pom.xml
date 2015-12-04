@@ -54,19 +54,19 @@
       <type>zip</type>
     </dependency>
 
-    <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-bus-broker-wf-extension</artifactId>
-      <classifier>module</classifier>
-      <type>zip</type>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.hawkular.bus</groupId>-->
+      <!--<artifactId>hawkular-bus-broker-wf-extension</artifactId>-->
+      <!--<classifier>module</classifier>-->
+      <!--<type>zip</type>-->
+    <!--</dependency>-->
 
-    <dependency>
-      <groupId>org.hawkular.bus</groupId>
-      <artifactId>hawkular-bus-ra-wf-module</artifactId>
-      <classifier>module</classifier>
-      <type>zip</type>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.hawkular.bus</groupId>-->
+      <!--<artifactId>hawkular-bus-ra-wf-module</artifactId>-->
+      <!--<classifier>module</classifier>-->
+      <!--<type>zip</type>-->
+    <!--</dependency>-->
 
     <dependency>
       <groupId>org.wildfly</groupId>
@@ -120,8 +120,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/hawkular-modules</outputDirectory>
               <includeArtifactIds>
-                hawkular-nest-wf-extension,
-                hawkular-bus-broker-wf-extension,
+                hawkular-nest-wf-extension
               </includeArtifactIds>
               <stripVersion>true</stripVersion>
               <stripClassifier>true</stripClassifier>
@@ -196,16 +195,16 @@
               <jbossHome>${assembly.dir}/${wildfly.dist.zip.root.dir}</jbossHome>
               <serverConfig>standalone/configuration/standalone.xml</serverConfig>
               <modulesHome>modules/</modulesHome>
-              <moduleZip>${project.build.directory}/hawkular-modules/hawkular-bus-broker-wf-extension.zip</moduleZip>
-              <subsystem>${basedir}/src/main/scripts/subsystem-hawkular-bus-broker-wf-extension.xml</subsystem>
-              <socketBinding>${basedir}/src/main/scripts/socketbinding-hawkular-bus-broker-wf-extension.xml</socketBinding>
-              <edit>
-                <insert>
-                  <select>/server/socket-binding-group[@name='standard-sockets']</select>
-                  <xml><![CDATA[<socket-binding name="org.hawkular.bus.broker.discovery" port="0" multicast-address="224.0.0.4" multicast-port="63636" />]]></xml>
-                  <attribute>name</attribute>
-                </insert>
-              </edit>
+              <!--<moduleZip>${project.build.directory}/hawkular-modules/hawkular-bus-broker-wf-extension.zip</moduleZip>-->
+              <!--<subsystem>${basedir}/src/main/scripts/subsystem-hawkular-bus-broker-wf-extension.xml</subsystem>-->
+              <!--<socketBinding>${basedir}/src/main/scripts/socketbinding-hawkular-bus-broker-wf-extension.xml</socketBinding>-->
+              <!--<edit>-->
+                <!--<insert>-->
+                  <!--<select>/server/socket-binding-group[@name='standard-sockets']</select>-->
+                  <!--<xml><![CDATA[<socket-binding name="org.hawkular.bus.broker.discovery" port="0" multicast-address="224.0.0.4" multicast-port="63636" />]]></xml>-->
+                  <!--<attribute>name</attribute>-->
+                <!--</insert>-->
+              <!--</edit>-->
             </configuration>
           </execution>
           <execution>

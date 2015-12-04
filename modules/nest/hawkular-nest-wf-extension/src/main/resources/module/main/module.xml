@@ -23,12 +23,10 @@
   <resources>
     <resource-root path="." />
     <resource-root path="${project.build.finalName}.jar" />
-    <resource-root path="hawkular-bus-common-${version.org.hawkular.bus}.jar" />
-    <resource-root path="hawkular-bus-mdb-${version.org.hawkular.bus}.jar" />
   </resources>
 
   <dependencies>
-    <module name="org.hawkular.bus.broker" export="true" />
+    <module name="org.hawkular.bus" export="true"/>
 
     <!-- modules required by any subsystem -->
     <module name="javax.api" />
@@ -53,7 +51,7 @@
     <module name="org.apache.commons.pool" />
     <module name="org.apache.log4j" />
     <module name="org.jboss.logmanager" services="import" />
-    <module name="org.jboss.common-core" />
+    <module name="org.jboss.common-beans" />
     <module name="org.jboss.as.network" />
     <module name="org.jboss.as.jmx" />
     <module name="org.slf4j" />

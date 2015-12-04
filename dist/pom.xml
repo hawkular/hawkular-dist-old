@@ -49,6 +49,14 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hawkular.bus</groupId>
+      <artifactId>hawkular-bus-common</artifactId>
+      <version>${version.org.hawkular.bus}</version>
+      <classifier>module</classifier>
+      <type>zip</type>
+    </dependency>
+
+    <dependency>
       <groupId>org.hawkular.agent</groupId>
       <artifactId>hawkular-wildfly-agent-wf-extension</artifactId>
       <type>zip</type>

@@ -19,8 +19,8 @@ package org.hawkular.nest.extension;
 import java.util.Map;
 
 import org.jboss.as.server.ServerEnvironment;
+import org.jboss.common.beans.property.PropertiesValueResolver;
 import org.jboss.logging.Logger;
-import org.jboss.util.StringPropertyReplacer;
 
 public class NestConfigurationSetup {
 
@@ -55,7 +55,7 @@ public class NestConfigurationSetup {
         for (Map.Entry<String, String> entry : this.customConfiguration.entrySet()) {
             String value = entry.getValue();
             if (value != null) {
-                entry.setValue(StringPropertyReplacer.replaceProperties(value));
+                entry.setValue(PropertiesValueResolver.replaceProperties(value));
             }
         }
 
