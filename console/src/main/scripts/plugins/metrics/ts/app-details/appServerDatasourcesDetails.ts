@@ -547,8 +547,6 @@ module HawkularMetrics {
 
       });
 
-      let log = this.$log;
-
       this.$q.all([connTriggerPromise, waitTimeTriggerPromise, createTimeTriggerPromise]).then(() => {
         // do nothing
       }, () => {
