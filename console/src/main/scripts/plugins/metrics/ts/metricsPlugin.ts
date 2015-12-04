@@ -22,7 +22,8 @@ module HawkularMetrics {
 
   export let _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ngAnimate', 'ui.select',
     'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr',
-    'infinite-scroll', 'mgo-angular-wizard', 'hawkular.charts', 'ngClipboard', 'patternfly.filters']);
+    'infinite-scroll', 'mgo-angular-wizard', 'hawkular.charts', 'ngClipboard', 'patternfly.filters',
+    'patternfly.charts']);
 
   _module.config(['$compileProvider', function ($compileProvider) {
     //disable debug info

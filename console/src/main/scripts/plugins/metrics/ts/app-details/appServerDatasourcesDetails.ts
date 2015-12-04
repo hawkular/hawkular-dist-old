@@ -66,6 +66,7 @@ module HawkularMetrics {
                 private ErrorsManager:IErrorsManager,
                 private MetricsService:IMetricsService,
                 private $log:ng.ILogService,
+                private $location:ng.ILocationService,
                 private $modal:any) {
       $scope.vm = this;
 
@@ -78,6 +79,10 @@ module HawkularMetrics {
       this.chartRespData = {};
 
       this.defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+      if ($routeParams.action && $routeParams.action === 'add-new') {
+        this.showDatasourceAddDialog();
+        $location.search('action', null);
+      }
 
       // handle drag ranges on charts to change the time range
       this.$scope.$on('ChartTimeRangeChanged', (event, data:Date[]) => {

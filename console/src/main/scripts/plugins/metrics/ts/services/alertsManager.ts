@@ -362,8 +362,8 @@ module HawkularMetrics {
                     consoleAlert.isToday = true;
                   }
                 }
-
-                sum += ( evalItem.value ? evalItem.value : evalItem.value1 );  // handle compare conditions
+                // handle compare conditions
+                sum += ( typeof evalItem.value !== 'undefined' ? evalItem.value : evalItem.value1 );
                 count++;
               }
 

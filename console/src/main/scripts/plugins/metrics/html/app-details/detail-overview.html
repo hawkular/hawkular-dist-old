@@ -1,0 +1,41 @@
+<div>
+  <div class="hk-info-top clearfix">
+    <h3 class="pull-left">Server overview</h3>
+    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+      <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+    </span>
+  </div>
+  <div class="row">
+    <!-- Left panel -->
+    <div class="col-lg-3 col-md-4">
+      <div class="row row-cards-pf">
+        <div class="col-md-12">
+          <hk-server-details server-info="vm.serverInfo"></hk-server-details>
+          <hk-common-tasks></hk-common-tasks>
+        </div>
+      </div>
+    </div>
+    <!-- //Left panel -->
+    <div class="col-lg-6 col-md-8">
+      <div class="row row-cards-pf">
+        <div class="col-md-12">
+          <hk-status-overview
+            end-time-stamp="vm.endTimeStamp"
+            start-time-stamp="vm.startTimeStamp"
+            overview-info="vm.overviewInfo"
+            alert-info="vm.alertInfo"
+            datasource-info="vm.datasourceInfo"
+          ></hk-status-overview>
+        </div>
+      </div>
+    </div>
+    <!-- //Status overview -->
+    <!-- Server alerts -->
+    <div class="col-lg-3 col-md-4">
+      <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)"
+                     resource-id="vm.$routeParams.resourceId" title="Server">
+      </hk-alert-info>
+    </div>
+    <!-- //Server alerts -->
+  </div>
+</div>

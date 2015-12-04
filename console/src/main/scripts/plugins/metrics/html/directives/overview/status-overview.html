@@ -1,0 +1,71 @@
+<div class="card-pf card-pf-utilization">
+  <div class="card-pf-heading">
+    <p class="card-pf-heading-details hk-definitions-link">{{startTimeStamp | date:'d MMM yyyy'}}, {{startTimeStamp | date:'HH:mm'}} - {{endTimeStamp | date:'HH:mm'}}</p>
+    <h2 class="card-pf-title">Status Overview</h2>
+  </div>
+  <div class="card-pf-body">
+    <div class="row">
+      <div class="col-md-6 hk-dashboard-block">
+        <div ng-show="alertInfo && alertInfo.graphData">
+          <hk-overview-spark-line-chart
+            title="Alerts"
+            usage-graph="alertInfo.graphData"
+            usage="alertInfo.alertCount">
+          </hk-overview-spark-line-chart>
+        </div>
+      </div>
+      <div ng-repeat="datasource in datasourceInfo track by $index">
+        <div class="col-md-6 hk-dashboard-block">
+          <div ng-show="datasource && datasource.chartConfig">
+            <hk-overview-donut-chart
+              graph-title="Used Connections for {{datasource.name}}"
+              graph-id="datasource-{{$index}}"
+              chart-config="datasource.chartConfig"
+              usage="0">
+            </hk-overview-donut-chart>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 hk-dashboard-block">
+        <div class="hk-data-info">
+          <div class="hk-data" ng-if="overviewInfo.deployments">{{overviewInfo.deployments.length}}</div>
+          <div class="hk-info">
+            <p class="card-pf-aggregate-status-notifications">
+              <span class="card-pf-aggregate-status-notification">
+                <i class="fa fa-times-circle-o" data-toggle="tooltip" data-placement="top" data-original-title="Failed"></i>
+                <span ng-if="overviewInfo.deployments">{{vm.filterByState(overviewInfo.deployments, 'failed').length}}</span>
+              </span>
+              <span class="card-pf-aggregate-status-notification">
+                <i class="fa fa-square" data-toggle="tooltip" data-placement="top" data-original-title="Stopped"></i>
+                <span ng-if="overviewInfo.deployments">{{vm.filterByState(overviewInfo.deployments, 'down').length}}</span>
+              </span>
+              <span class="card-pf-aggregate-status-notification">
+                <i class="fa fa-check-circle-o" data-toggle="tooltip" data-placement="top" data-original-title="OK"></i>
+                <span ng-if="overviewInfo.deployments">{{vm.filterByState(overviewInfo.deployments, 'up').length}}</span>
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="hk-block-title">Deployment status</div>
+      </div>
+      <div class="col-md-6 hk-dashboard-block">
+        <div ng-show="overviewInfo && overviewInfo.heapUsage">
+          <hk-overview-spark-line-chart
+            title="JVM (Average Heap Usage per MB)"
+            usage-graph="overviewInfo.heapUsage.graph"
+            usage="overviewInfo.heapUsage.last / 1024 / 1024 | number : 0">
+          </hk-overview-spark-line-chart>
+        </div>
+      </div>
+      <div class="col-md-6 hk-dashboard-block">
+        <div ng-if="overviewInfo && overviewInfo.activeWebSessions">
+          <hk-overview-spark-line-chart
+            title="Active Web Sessions"
+            usage-graph="overviewInfo.activeWebSessions.graph"
+            usage="overviewInfo.activeWebSessions.last">
+          </hk-overview-spark-line-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

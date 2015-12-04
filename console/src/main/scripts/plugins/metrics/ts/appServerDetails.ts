@@ -24,7 +24,7 @@ module HawkularMetrics {
   export class AppServerDetailsController {
     /// for minification only
     public static  $inject = ['$rootScope', '$scope', '$route', '$routeParams', '$q', 'HawkularOps',
-      'NotificationsService', 'HawkularInventory', 'HawkularAlertsManager', '$log'];
+      'NotificationsService', 'HawkularInventory', 'HawkularAlertsManager', '$log', '$location'];
 
     public resourcePath:string;
     public jdrGenerating:boolean;
@@ -41,10 +41,18 @@ module HawkularMetrics {
                 private HawkularInventory:any,
                 private HawkularAlertsManager:any,
                 private $log:ng.ILogService,
+                private $location:ng.ILocationService,
                 public availableTabs:any,
                 public activeTab:any) {
 
       HawkularOps.init(this.NotificationsService);
+
+      $scope.$on('$routeUpdate', (action, newRoute) => {
+        if (newRoute.params.action && newRoute.params.action === 'export-jdr') {
+          $scope.tabs.requestExportJDR();
+          $location.search('action', null);
+        }
+      });
 
       HawkularInventory.ResourceUnderFeed.get({
         feedId: this.$routeParams.feedId,
@@ -57,6 +65,11 @@ module HawkularMetrics {
       $scope.tabs = this;
 
       this.availableTabs = [
+        {
+          id: 'overview', name: 'Overview', enabled: this.$rootScope.isExperimental === true,
+          src: 'plugins/metrics/html/app-details/detail-overview.html',
+          controller: HawkularMetrics.AppServerOverviewDetailsController
+        },
         {
           id: 'jvm', name: 'JVM', enabled: true,
           src: 'plugins/metrics/html/app-details/detail-jvm.html',
@@ -94,7 +107,7 @@ module HawkularMetrics {
         }
       ];
 
-      this.activeTab = $routeParams.tabId || 'jvm';
+      this.activeTab = $routeParams.tabId || 'overview';
 
       $scope.$on('ExportJDRSuccess', (event, data) => {
         this.$log.info('JDR generated!');
