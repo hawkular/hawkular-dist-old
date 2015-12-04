@@ -49,12 +49,42 @@ module HawkularAccounts {
 
     public loadData():void {
       this.loading = true;
-      this.currentPersona = this.HawkularAccount.Persona.get({id: 'current'},
+      let personaToGet = 'current';
+
+      let lastPersonaId = localStorage.getItem('lastPersona');
+      if (null != lastPersonaId) {
+        personaToGet = lastPersonaId;
+      }
+
+      this.loadAsCurrentPersona(personaToGet);
+    }
+
+    public loadAsCurrentPersona(personaId:string):void {
+      this.$log.debug(`Persona ID to load: ${personaId}`);
+      this.currentPersona = this.HawkularAccount.Persona.get({id: personaId},
         (response:IPersona) => {
-          this.$rootScope.$broadcast('CurrentPersonaLoaded', response);
+          if (response.id == null) {
+            if (personaId === 'current') {
+              // at this point, we were requested to get the personaId , but we got an empty response from the server...
+              // there's not much we can do here, and it should never happen
+              this.NotificationsService.error(`Failed to retrieve the current persona. Empty response.`);
+              this.$log.warn(`Failed to retrieve the current persona. Empty response.`);
+            } else {
+              // fall back, load the 'current' user, which is the actual user, not a persona
+              this.loadAsCurrentPersona('current');
+            }
+          } else {
+            // we got the persona we wanted!
+            this.$rootScope.$broadcast('CurrentPersonaLoaded', response);
+          }
         }, (error:IErrorPayload) => {
-          this.NotificationsService.error(`Failed to retrieve the current persona: ${error.data.message}`);
-          this.$log.warn(`Failed to retrieve the current persona: ${error.data.message}`);
+          if (personaId === 'current') {
+            this.NotificationsService.error(`Failed to retrieve the current persona: ${error.data.message}`);
+            this.$log.warn(`Failed to retrieve the current persona: ${error.data.message}`);
+          } else {
+            // fall back, load the 'current' user, which is the actual user, not a persona
+            this.loadAsCurrentPersona('current');
+          }
         }
       );
     }
@@ -74,6 +104,7 @@ module HawkularAccounts {
     public switchPersona(persona:IPersona):void {
       this.currentPersona = persona;
       this.$rootScope.$broadcast('SwitchedPersona', persona);
+      localStorage.setItem('lastPersona', persona.id);
     }
   }
 
