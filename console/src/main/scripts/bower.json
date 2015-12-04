@@ -24,7 +24,7 @@
     "ngInfiniteScroll": "1.2.1",
     "bootstrap-select": "1.6",
     "hawkular-charts": "hawkular/hawkular-charts#0b73da1",
-    "hawkular-ui-services": "hawkular/hawkular-ui-services#b1b6a8d",
+    "hawkular-ui-services": "hawkular/hawkular-ui-services#406ca4e",
     "hawtio-core-navigation": "2.0.51",
     "hawtio-core": "2.0.18",
     "hawtio-template-cache": "2.0.4",
