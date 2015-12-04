@@ -27,4 +27,5 @@ module HawkularMetrics {
 
   export var globalEnvironmentId = 'test';
 
+  export const DEF_TIME_OFFSET = 12 * 60 * 60 * 1000;
 }

@@ -104,7 +104,7 @@
             {{res.state | firstUpper}}
           </td>
           <td>
-            <a href="/hawkular-ui/app/app-details/{{res.id | limitTo : res.id.length-2}}/jvm/{{hkParams.timeOffset}}">
+            <a href="/hawkular-ui/app/app-details/{{res.feedId}}/{{res.id | limitTo : res.id.length-2}}/jvm/{{hkParams.timeOffset}}">
               {{res.id | limitTo : res.id.length-2}}
             </a>
             <a href="/hawkular-ui/app/app-details/{{res.id}}/jvm/{{hkParams.timeOffset}}" class="pull-right">

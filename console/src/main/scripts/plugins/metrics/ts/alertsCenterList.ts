@@ -57,10 +57,7 @@ module HawkularMetrics {
                 private $location:ng.ILocationService) {
       $scope.ac = this;
 
-      if ($routeParams.timeOffset === undefined) {
-        $routeParams.timeOffset = 3600000 * 12;
-        $scope.hkParams.timeOffset = $routeParams.timeOffset;
-      }
+      $routeParams.timeOffset = $routeParams.timeOffset || $scope.hkParams.timeOffset || 3600000 * 12;
 
       this.alertsTimeOffset = $routeParams.timeOffset;
 
@@ -124,9 +121,10 @@ module HawkularMetrics {
     }
 
     public showDetailPage(alertId:AlertId):void {
-      let timeOffset = this.alertsTimeOffset;
-      let endTime = this.alertsTimeEnd;
-      this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}/${timeOffset}/${endTime}`);
+      //let timeOffset = this.alertsTimeOffset;
+      //let endTime = this.alertsTimeEnd;
+      //this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}/${timeOffset}/${endTime}`);
+      this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}`);
     }
 
     public resolveSelected():void {

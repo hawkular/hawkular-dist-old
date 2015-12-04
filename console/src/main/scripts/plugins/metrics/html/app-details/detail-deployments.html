@@ -166,7 +166,7 @@
     </div>
     <div class="col-lg-3">
       <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)"
-                     resource-id="vm.$routeParams.resourceId" title="Deployments">
+                     resource-id="vm.$routeParams.feedId + '/' + vm.$routeParams.resourceId" title="Deployments">
       </hk-alert-info>
     </div>
   </div>

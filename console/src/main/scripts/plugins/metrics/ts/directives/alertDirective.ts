@@ -59,9 +59,10 @@ module HawkularMetrics {
       this.link = (scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
         scope.showDetailPage = (alert:any):void => {
           let alertId = alert.alertId || alert.id;
-          let timeOffset = (alert.timeOffSet !== undefined)?alert.timeOffSet:3600000 * 12;
-          let endTime = alert.ctime;
-          this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}/${timeOffset}/${endTime}`);
+          //let timeOffset = (alert.timeOffSet !== undefined)?alert.timeOffSet:3600000 * 12;
+          //let endTime = alert.ctime;
+          //this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}/${timeOffset}/${endTime}`);
+          this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}`);
         };
 
         scope.alertResolve = ():void => {

@@ -91,6 +91,18 @@ module HawkularMetrics {
                 private NotificationsService:INotificationsService) {
     }
 
+    /**
+     * Generates metric Id given the components
+     * @param type the metric type, as a char: 'A'vailability or 'M'etric
+     * @param feedId the feed Id
+     * @param resId the resource Id
+     * @param metricId the metric Id
+     * @returns {string} a string uniquely identifying the requested metric
+     */
+    public static getMetricId(type: string, feedId: FeedId, resId: ResourceId, metricId: MetricId): string {
+      return `${type}I~R~[${feedId}/${resId}]~${type}T~${metricId}`;
+    }
+
 
     /**
      * formatBucketedChartOutput

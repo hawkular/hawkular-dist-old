@@ -49,6 +49,9 @@ module HawkularMetrics {
     // will contain in the format: 'metric name' : true | false
     public skipChartData = {};
 
+    private feedId: FeedId;
+    private resourceId: ResourceId;
+
     constructor(private $scope:any,
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
@@ -60,6 +63,9 @@ module HawkularMetrics {
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService ) {
       $scope.vm = this;
+
+      this.feedId = this.$routeParams.feedId;
+      this.resourceId = this.$routeParams.resourceId + '~~';
 
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
@@ -82,7 +88,7 @@ module HawkularMetrics {
         this.refresh();
       });
       this.HawkularAlertRouterManager.registerForAlerts(
-        this.$routeParams.resourceId,
+        this.$routeParams.feedId + '/' + this.$routeParams.resourceId,
         'jvm',
         _.bind(this.filterAlerts, this)
       );
@@ -134,14 +140,14 @@ module HawkularMetrics {
 
     public getJvmData():void {
       this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-        'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used',
+        MetricsService.getMetricId('M', this.feedId, this.resourceId, 'WildFly Memory Metrics~Heap Used'),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
           if (resource.length) {
             this['heapUsage'] = resource[0];
           }
         });
       this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-        'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max',
+        MetricsService.getMetricId('M', this.feedId, this.resourceId, 'WildFly Memory Metrics~Heap Max'),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
           if (resource.length) {
             this['heapMax'] = resource[0];
@@ -149,7 +155,7 @@ module HawkularMetrics {
           }
         });
       this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
-        'MI~R~[' + this.$routeParams.resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration',
+        MetricsService.getMetricId('M', this.feedId, this.resourceId, 'WildFly Memory Metrics~Accumulated GC Duration'),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
           if (resource.length) {
             this['accGCDuration'] = (resource[0].max - resource[0].min);
@@ -167,7 +173,7 @@ module HawkularMetrics {
 
       if (!this.skipChartData['Heap Committed']) {
         let hCommPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Committed',
+          MetricsService.getMetricId('M', this.feedId, this.resourceId, 'WildFly Memory Metrics~Heap Committed'),
           this.startTimeStamp, this.endTimeStamp,60);
         heapPromises.push(hCommPromise);
         hCommPromise.then((data) => {
@@ -180,7 +186,7 @@ module HawkularMetrics {
       }
       if (!this.skipChartData['Heap Used']) {
         let hUsedPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Used',
+          MetricsService.getMetricId('M', this.feedId, this.resourceId, 'WildFly Memory Metrics~Heap Used'),
           this.startTimeStamp, this.endTimeStamp, 60);
         heapPromises.push(hUsedPromise);
         hUsedPromise.then((data) => {
@@ -193,7 +199,7 @@ module HawkularMetrics {
       }
       if (!this.skipChartData['Heap Max']) {
         let hMaxPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Heap Max',
+          MetricsService.getMetricId('M', this.feedId, this.resourceId, 'WildFly Memory Metrics~Heap Max'),
           this.startTimeStamp, this.endTimeStamp, 60);
         heapPromises.push(hMaxPromise);
         hMaxPromise.then((data) => {
@@ -210,7 +216,7 @@ module HawkularMetrics {
 
       if (!this.skipChartData['NonHeap Committed']) {
         let nhCommPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Committed',
+          MetricsService.getMetricId('M', this.feedId, this.resourceId, 'WildFly Memory Metrics~NonHeap Committed'),
           this.startTimeStamp, this.endTimeStamp, 60);
         nonHeapPromises.push(nhCommPromise);
         nhCommPromise.then((data) => {
@@ -223,7 +229,7 @@ module HawkularMetrics {
       }
       if (!this.skipChartData['NonHeap Used']) {
         let nhUsedPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~NonHeap Used',
+          MetricsService.getMetricId('M', this.feedId, this.resourceId, 'WildFly Memory Metrics~NonHeap Used'),
           this.startTimeStamp, this.endTimeStamp, 60);
         nonHeapPromises.push(nhUsedPromise);
         nhUsedPromise.then((data) => {
@@ -239,7 +245,7 @@ module HawkularMetrics {
       });
 
       this.MetricsService.retrieveCounterRateMetrics(this.$rootScope.currentPersona.id,
-        'MI~R~[' + resourceId + '~~]~MT~WildFly Memory Metrics~Accumulated GC Duration',
+        MetricsService.getMetricId('M', this.feedId, this.resourceId, 'WildFly Memory Metrics~Accumulated GC Duration'),
         this.startTimeStamp, this.endTimeStamp, 60).then((resource) => {
           if (resource.length) {
             this.chartGCDurationData = MetricsService.formatBucketedChartOutput(resource);
