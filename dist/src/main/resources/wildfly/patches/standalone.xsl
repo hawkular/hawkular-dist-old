@@ -219,10 +219,6 @@
         <xsl:attribute name="name">hawkular.metrics.waitForService</xsl:attribute>
         <xsl:attribute name="value">&#36;{hawkular.metrics.waitForService:True}</xsl:attribute>
       </property>
-      <property>
-        <xsl:attribute name="name">hawkular.events.listener.rest.endpoint</xsl:attribute>
-        <xsl:attribute name="value">http://&#36;{jboss.bind.address:127.0.0.1}:&#36;{jboss.http.port:8080}/hawkular-accounts-events-backend/events</xsl:attribute>
-      </property>
       <xsl:choose>
         <xsl:when test="$kettle.build.type='dev'">
         <property>
@@ -242,6 +238,14 @@
           </xsl:message>
         </xsl:otherwise>
       </xsl:choose>
+      <property>
+        <xsl:attribute name="name">keycloak.server.url</xsl:attribute>
+        <xsl:attribute name="value">&#36;{keycloak.server.url:http://localhost:8080/auth}</xsl:attribute>
+      </property>
+      <property>
+        <xsl:attribute name="name">hawkular.events.listener.rest.endpoint</xsl:attribute>
+        <xsl:attribute name="value">http://&#36;{jboss.bind.address:127.0.0.1}:&#36;{jboss.http.port:8080}/hawkular-accounts-events-backend/events</xsl:attribute>
+      </property>
     </system-properties>
   </xsl:template>
 
@@ -266,7 +270,7 @@
       </subsystem>
       <subsystem xmlns="urn:jboss:domain:keycloak:1.1">
         <realm name="hawkular">
-          <auth-server-url>http://localhost:8080/auth</auth-server-url>
+          <auth-server-url>${keycloak.server.url}</auth-server-url>
           <ssl-required>none</ssl-required>
         </realm>
         <secure-deployment name="hawkular-accounts.war">

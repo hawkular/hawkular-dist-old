@@ -1,7 +1,0 @@
-{
-  "realm": "hawkular",
-  "auth-server-url": "http://localhost:8080/auth",
-  "ssl-required": "none",
-  "resource": "hawkular-ui",
-  "public-client": true
-}
