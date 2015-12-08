@@ -85,13 +85,13 @@
     <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.hawkular.accounts>1.1.2.Final</version.org.hawkular.accounts>
-    <version.org.hawkular.agent>0.13.7.Final-SRC-revision-21737e9db79d2fc879bb1e42660d345a2a9256eb</version.org.hawkular.agent>
+    <version.org.hawkular.agent>0.13.7.Final-SRC-revision-c00f616f9d0a09202d9c8ed63a68649049a43077</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.7.0-SRC-revision-23092b8d9b7b526bde477b6d0ec8d4119e38a1ca</version.org.hawkular.alerts>
     <version.org.hawkular.bus>0.7.3.Final-SRC-revision-1af5bac4e32e26804b39ed6c6aa8fec66fdd2cf0</version.org.hawkular.bus>
     <version.org.hawkular.commons>0.2.3.Final</version.org.hawkular.commons>
     <version.org.hawkular.cmdgw>0.10.4.Final</version.org.hawkular.cmdgw>
     <version.org.hawkular.metrics>0.9.0.Final</version.org.hawkular.metrics>
-    <version.org.hawkular.inventory>0.9.0.Final</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>0.9.1.Final-SRC-revision-8620a7ffb2eea0c994705217b59768e89dca57e8</version.org.hawkular.inventory>
     <version.org.keycloak>1.6.1.Final</version.org.keycloak>
     <version.org.testng>6.5.2</version.org.testng>
   </properties>

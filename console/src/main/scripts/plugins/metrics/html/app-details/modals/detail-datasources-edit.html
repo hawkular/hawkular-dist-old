@@ -1,0 +1,155 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="mvm.cancel()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Edit Datasource</h4>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <p><strong>Edit Datasource {{mvm.datasource.name}}</strong></p>
+  </div>
+  <form class="form-horizontal">
+    <fieldset>
+      <p class="hk-required-info pull-right"><span class="hk-required">*</span> Required field</p>
+      <div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Datasource Name</label>
+        <div class="col-sm-8">
+          <input type="text" id="name" class="form-control" ng-model="mvm.datasource.datasourceName" disabled>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label" for="jndi"><span class="hk-required">*</span> JNDI  Name
+          <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
+             popover-placement="top" popover-trigger="click" popover="Specifies the JNDI Name for the datasource">
+            <i class="fa fa-info-circle"></i></a>
+        </label>
+        <div class="col-sm-8">
+          <input type="text" id="jndi" class="form-control" ng-model="mvm.datasource.jndiName">
+          <span class="help-block" ng-show="false">JNDI Name has to start with 'java:/' or 'java:jboss/'</span>
+        </div>
+      </div>
+      <div class="form-group" ng-show="!mvm.datasource.xaDatasource">
+        <label class="col-sm-4 control-label" for="dsClass"> Datasource Class</label>
+        <div class="col-sm-8">
+          <input type="text" id="dsClass" class="form-control" ng-model="mvm.datasource.datasourceClass">
+        </div>
+      </div>
+      <div class="form-group" ng-show="mvm.datasource.xaDatasource">
+        <label class="col-sm-4 control-label" for="xaDsClass"><span class="hk-required">*</span> XA Datasource Class
+        </label>
+        <div class="col-sm-8">
+          <input type="text" id="xaDsClass" class="form-control" ng-model="mvm.datasource.xaDatasourceClass">
+        </div>
+      </div>
+      <div class="form-group" ng-show="!mvm.datasource.xaDatasource">
+        <label class="col-sm-4 control-label" for="connURL"><span class="hk-required">*</span> Connection URL</label>
+        <div class="col-sm-8">
+          <input type="text" id="connURL" class="form-control" ng-model="mvm.datasource.connectionUrl">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label" for="driver"><span class="hk-required">*</span> Driver Name
+          <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
+             popover-placement="top" popover-trigger="click" popover="Specifies the Driver Name for the datasource">
+            <i class="fa fa-info-circle"></i></a>
+        </label>
+        <div class="col-sm-8">
+          <input type="text" id="driver" class="form-control" ng-model="mvm.datasource.driverName">
+        </div>
+      </div>
+      <div class="form-group" ng-show="!mvm.datasource.xaDatasource">
+        <label class="col-sm-4 control-label" for="drvClass"><span class="hk-required">*</span> Driver Class </label>
+        <div class="col-sm-8">
+          <input type="text" id="drvClass" class="form-control" ng-model="mvm.datasource.driverClass">
+        </div>
+      </div>
+      <div class="form-group" ng-show="mvm.datasource.xaDatasource">
+        <label class="col-sm-4 control-label" for="driver"><span class="hk-required">*</span> Datasource Properties
+        </label>
+        <div class="col-sm-8">
+          <table class="table hk-table-list">
+            <thead>
+            <tr>
+              <th>
+                Name Attribute
+                <a href="#" class="hk-btn-icon" popover-append-to-body="true" popover-placement="top"
+                   popover-trigger="click" popover="Each property is identified by the name attribute.">
+                  <i class="fa fa-question-circle"></i>
+                </a>
+              </th>
+              <th>
+                Property Value
+                <a href="#" class="hk-btn-icon" popover-append-to-body="true" popover-placement="top"
+                   popover-trigger="click" popover="Specifies a property value to assign to the XADataSource
+                 implementation class.">
+                  <i class="fa fa-question-circle"></i></a>
+              </th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-hide="mvm.datasource.datasourceProperties">
+              <td colspan="3" class="text-center">
+                No Properties defined. For XA Datasources at least one property must be specified.
+              </td>
+            </tr>
+            <tr ng-repeat="dsProp in mvm.tmpDSProperties">
+              <td>
+                <input type="text" class="form-control" ng-model="dsProp.name">
+              </td>
+              <td>
+                <input type="text" class="form-control" ng-model="dsProp.value">
+              </td>
+              <td class="hk-actions-one">
+                <button class="btn btn-link" tooltip-trigger tooltip="Remove" ng-click="mvm.removeDSProperty($index)">
+                  <i class="fa fa-trash-o"></i>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>Add Property</td>
+              <td></td>
+              <td class="hk-actions-one">
+                <button class="btn btn-link" tooltip-trigger tooltip="Add" ng-click="mvm.addDSProperty()">
+                  <i class="fa fa-plus"></i>
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- User Name -->
+      <div class="form-group">
+        <label class="col-sm-4 control-label" for="username">User Name</label>
+        <div class="col-sm-8">
+          <input type="text" id="username" class="form-control" ng-model="mvm.datasource.conn.username">
+        </div>
+      </div>
+      <!-- Password -->
+      <div class="form-group">
+        <label class="col-sm-4 control-label" for="password">Password</label>
+        <div class="col-sm-8">
+          <input type="password" id="password" class="form-control" ng-model="mvm.datasource.conn.password">
+        </div>
+      </div>
+      <!-- Security Domain -->
+      <div class="form-group">
+        <label class="col-sm-4 control-label" for="secdom"> Security Domain
+          <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true" popover-placement="top"
+             popover-trigger="click" popover="Specify the security domain which defines the javax.security.auth.">
+            <i class="fa fa-info-circle"></i>
+          </a>
+        </label>
+        <div class="col-sm-8">
+          <input type="text" id="secdom" class="form-control" ng-model="mvm.datasource.conn.secDomain">
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="mvm.cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" ng-click="mvm.updateDatasource()">Save</button>
+</div>
