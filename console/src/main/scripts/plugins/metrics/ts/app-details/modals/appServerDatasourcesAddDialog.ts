@@ -160,7 +160,7 @@ module HawkularMetrics {
         this.dsData.driverClass,
         this.dsData.connectionUrl,
         this.dsData.xaDatasourceClass,
-        this.dsData.datasourceProperties || {URL: 'jdbc:h2:mem:test'},
+        this.dsData.datasourceProperties || {},
         this.dsData.conn.username,
         this.dsData.conn.password,
         this.dsData.conn.securityDomain
