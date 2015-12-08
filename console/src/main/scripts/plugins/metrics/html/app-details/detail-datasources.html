@@ -59,7 +59,7 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="ds-actions">
-            <li class="disabled"><a href="#">Edit</a></li>
+            <li><a href="" ng-click="vm.showDatasourceEditDialog(ds)">Edit</a></li>
             <li><a href="" ng-click="vm.deleteDatasource(ds)">Delete</a></li>
             <li class="disabled"><a href="#">Enable</a></li>
             <li class="disabled"><a href="#">Disable</a></li>
@@ -173,7 +173,6 @@
         </div>
         <div class="col-lg-3">
           <hk-alert-info list="ds.alertList" limit="(vm.showAllAlerts ? 100000 : 3)"
-                         resource-id="vm.encodeResourceId(ds.id)" title="Datasource">
                          resource-id="vm.encodeResourceId(vm.$routeParams.feedId + '/' + ds.id)" title="Datasource">
           </hk-alert-info>
         </div>

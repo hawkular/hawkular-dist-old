@@ -130,6 +130,17 @@ module HawkularMetrics {
       });
     }
 
+    public showDatasourceEditDialog(datasource:any):void {
+      /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
+      let datasourceEditDialog = this.$modal.open({
+        templateUrl: 'plugins/metrics/html/app-details/modals/detail-datasources-edit.html',
+        controller: 'AppServerDatasourcesEditDialogController as mvm',
+        resolve: {
+          datasource: () => datasource
+        }
+      });
+    }
+
     public deleteDatasource(datasource:any):void {
       /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
       let datasourceDeleteDialog = this.$modal.open({
