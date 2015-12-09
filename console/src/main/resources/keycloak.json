@@ -1,6 +1,6 @@
 {
   "realm": "hawkular",
-  "auth-server-url": "http://localhost:8080/auth",
+  "auth-server-url": "${keycloak.server.url}",
   "ssl-required": "none",
   "resource": "hawkular-ui",
   "public-client": true
