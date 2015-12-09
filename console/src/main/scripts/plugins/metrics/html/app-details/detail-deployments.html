@@ -132,7 +132,7 @@
                 <td class="state" ng-show="res.state === 'down'"><i class="fa fa-square"></i> Stopped</td>
                 <td class="state" ng-show="res.state === 'unknown'"><i class="fa fa-times-circle-o"></i> Failed</td>
                 <td class="state" ng-hide="res.state"><i class="fa fa-chain-broken"></i> Unknown</td>
-                <td><strong>{{res.name | limitTo : (res.name.length-13) : 12}}</strong>
+                <td><strong>{{res.name}}</strong>
                   <span ng-show="false">({{res.name | limitTo : (res.name.length-13) : 12}})</span>
                   <span class="label label-danger label-alert pull-right" tooltip-trigger tooltip-placement="top"
                         tooltip="Deployment alerts">{{res.alerts}}</span>

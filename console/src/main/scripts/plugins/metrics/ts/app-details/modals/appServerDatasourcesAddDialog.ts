@@ -120,9 +120,6 @@ module HawkularMetrics {
         environmentId: globalEnvironmentId, feedId: this.$routeParams.feedId,
         resourceTypeId: 'JDBC Driver'}, (aResourceList, getResponseHeaders) => {
           this.driversList = aResourceList;
-          _.forEach(this.driversList, function(item: any) {
-            item.name = item.id.split('jdbc-driver=')[1];
-          }, this);
       });
     }
 
@@ -148,7 +145,6 @@ module HawkularMetrics {
     }
 
     public addDatasource():void {
-      console.log('adding DS', this.dsData);
       this.dsData.uploading = true;
       this.HawkularOps.performAddDatasourceOperation(this.dsData.resourcePath,
         this.$rootScope.userDetails.token,
