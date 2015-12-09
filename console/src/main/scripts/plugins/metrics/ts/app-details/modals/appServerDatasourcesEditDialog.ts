@@ -62,8 +62,6 @@ module HawkularMetrics {
           }
           this.datasource.enabled = resource.value['Enabled'];
           this.datasource.jndiName = resource.value['JNDI Name'];
-          this.datasource.datasourceName =
-            this.datasource.jndiName.substr(this.datasource.jndiName.lastIndexOf('/') + 1);
           this.datasource.conn = {
             username: resource.value['Username'],
             password: resource.value['Password'],

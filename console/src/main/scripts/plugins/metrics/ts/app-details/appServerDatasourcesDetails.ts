@@ -274,9 +274,6 @@ module HawkularMetrics {
         resourceTypeId: 'JDBC Driver'
       }, (aResourceList, getResponseHeaders) => {
         this.driversList = aResourceList;
-        _.forEach(this.driversList, function (item:any) {
-          item.name = item.id.split('jdbc-driver=')[1];
-        }, this);
       });
 
     }
