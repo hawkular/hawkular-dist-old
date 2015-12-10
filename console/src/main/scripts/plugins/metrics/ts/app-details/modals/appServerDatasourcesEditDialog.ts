@@ -71,6 +71,7 @@ module HawkularMetrics {
 
       $scope.$on('DatasourceUpdateSuccess', (event, data) => {
         this.$modalInstance.close(data);
+        this.NotificationsService.success('The Datasource ' + this.datasource.name + ' was updated.');
       });
 
       $scope.$on('DatasourceUpdateError', (event, data) => {

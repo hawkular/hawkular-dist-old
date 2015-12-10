@@ -79,7 +79,7 @@ module HawkularMetrics {
 
       HawkularInventory.ResourceUnderFeed.get({
         environmentId: globalEnvironmentId,
-        feedId: this.$routeParams.resourceId.split('~')[0],
+        feedId: this.$routeParams.feedId,
         resourcePath: this.$routeParams.resourceId + '~~'
       }, (resource:IResourcePath) => {
         this.deploymentData.resourcePath = resource.path;

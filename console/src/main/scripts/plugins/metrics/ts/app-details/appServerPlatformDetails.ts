@@ -74,7 +74,7 @@ module HawkularMetrics {
       this.chartCpuData = [];
       this.chartFileSystemData = {};
       this.chartCpuDataMulti = [];
-      this.feedId = this.$routeParams.resourceId.split('~')[0];
+      this.feedId = this.$routeParams.feedId;
 
       if ($rootScope.currentPersona) {
         this.$log.log('We have have a persona');
