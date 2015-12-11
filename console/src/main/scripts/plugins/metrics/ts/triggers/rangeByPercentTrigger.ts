@@ -92,7 +92,17 @@ module HawkularMetrics {
       updatedFullTrigger.trigger.severity = this.adm.trigger.severity;
 
       updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
-      updatedFullTrigger.dampenings[0].evalTimeSetting = this.adm.trigger.evalTimeSetting;
+
+      // time == 1 is a flag for default dampening (i.e. Strict(1))
+      if ( this.adm.trigger.evalTimeSetting === 1 ) {
+        updatedFullTrigger.dampenings[0].type = 'STRICT';
+        updatedFullTrigger.dampenings[0].evalTrueSetting = 1;
+        updatedFullTrigger.dampenings[0].evalTimeSetting = null;
+      } else {
+        updatedFullTrigger.dampenings[0].type = 'STRICT_TIME';
+        updatedFullTrigger.dampenings[0].evalTrueSetting = null;
+        updatedFullTrigger.dampenings[0].evalTimeSetting = this.adm.trigger.evalTimeSetting;
+      }
 
       if (updatedFullTrigger.conditions[0].operator === 'GT') {
         updatedFullTrigger.conditions[0].data2Multiplier = this.adm.trigger.conditionGtPercent / 100;

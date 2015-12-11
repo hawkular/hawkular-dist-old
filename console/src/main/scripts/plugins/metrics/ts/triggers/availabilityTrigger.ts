@@ -61,7 +61,16 @@ module HawkularMetrics {
       // When using AutoResolve the settings are implicit. We use the same dampening as for Firing mode.
       // So, update both the firing and, if it exists, AR dampening.
       updatedFullTrigger.dampenings.forEach((dampening:any) => {
-        dampening.evalTimeSetting = this.adm.trigger.evalTimeSetting;
+        // time == 1 is a flag for default dampening (i.e. Strict(1))
+        if ( this.adm.trigger.evalTimeSetting === 1 ) {
+          dampening.type = 'STRICT';
+          dampening.evalTrueSetting = 1;
+          dampening.evalTimeSetting = null;
+        } else {
+          dampening.type = 'STRICT_TIME';
+          dampening.evalTrueSetting = null;
+          dampening.evalTimeSetting = this.adm.trigger.evalTimeSetting;
+        }
       });
 
       let triggerSavePromise = this.HawkularAlertsManager.updateTrigger(updatedFullTrigger, errorCallback,

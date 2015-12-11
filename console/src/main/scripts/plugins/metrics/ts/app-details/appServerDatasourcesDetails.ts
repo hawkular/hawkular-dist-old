@@ -398,8 +398,6 @@ module HawkularMetrics {
       let connTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_conn').then(() => {
         this.$log.debug('Datasource connection trigger exists, nothing to do');
       }, () => {
-        /// Datasource connection trigger doesn't exist, need to create one
-
         let triggerId:string = resId + '_ds_conn';
         let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Available Count';
         let fullTrigger = {
@@ -451,10 +449,8 @@ module HawkularMetrics {
       });
 
       let waitTimeTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_wait').then(() => {
-        /// Datasource wait time trigger exists, nothing to do
         this.$log.debug('Datasource Wait Time trigger exists, nothing to do');
       }, () => {
-        /// trigger doesn't exist, need to create one
         let triggerId:string = resId + '_ds_wait';
         let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Wait Time';
 
@@ -506,10 +502,8 @@ module HawkularMetrics {
       });
 
       let createTimeTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_create').then(() => {
-        /// Datasource create time trigger exists, nothing to do
         this.$log.debug('Datasource create time trigger exists, nothing to do');
       }, () => {
-        /// trigger doesn't exist, need to create one
         let triggerId:string = resId + '_ds_create';
         let dataId:string = 'MI~R~[' + resId + ']~MT~Datasource Pool Metrics~Average Creation Time';
         let fullTrigger = {
