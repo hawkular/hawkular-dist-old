@@ -23,7 +23,7 @@ module HawkularMetrics {
 
   export class AppServerDetailsController {
     /// for minification only
-    public static  $inject = ['$rootScope', '$scope', '$route', '$routeParams', '$q', 'HawkularOps',
+    public static  $inject = ['$rootScope', '$scope', '$route', '$routeParams', '$q', '$timeout', 'HawkularOps',
       'NotificationsService', 'HawkularInventory', 'HawkularAlertsManager', '$log', '$location'];
 
     public resourcePath:string;
@@ -36,6 +36,7 @@ module HawkularMetrics {
                 private $route:any,
                 private $routeParams:any,
                 private $q:ng.IQService,
+                private $timeout:ng.ITimeoutService,
                 private HawkularOps:any,
                 private NotificationsService:INotificationsService,
                 private HawkularInventory:any,
@@ -64,6 +65,12 @@ module HawkularMetrics {
 
       $scope.tabs = this;
 
+      $rootScope.$watch('isExperimental', (isExperimental) => {
+        this.$timeout(() => {
+          this.availableTabs[1].enabled = isExperimental;
+        });
+      });
+
       this.availableTabs = [
         {
           id: 'overview', name: 'Overview', enabled: this.$rootScope.isExperimental === true,
@@ -76,7 +83,7 @@ module HawkularMetrics {
           controller: HawkularMetrics.AppServerJvmDetailsController
         },
         {
-          id: 'platform', name: 'Platform', enabled: this.$rootScope.isExperimental === true,
+          id: 'platform', name: 'Platform', enabled: this.$rootScope.isExperimental,
           src: 'plugins/metrics/html/app-details/detail-platform.html',
           controller: HawkularMetrics.AppServerPlatformDetailsController
         },
