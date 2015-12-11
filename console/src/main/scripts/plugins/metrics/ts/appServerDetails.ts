@@ -328,6 +328,13 @@ module HawkularMetrics {
         let triggerId:string = resourceId + '_jvm_garba';
         let dataId:string = metPrefix + 'WildFly Memory Metrics~Accumulated GC Duration';
 
+        // Note that the GC metric is a counter, an ever-increasing value reflecting the total time the JVM
+        // has spent doing GC.  'Accumulated' here reflects that we are combining the totals for 4 different GCs in
+        // the VM, each a counter itself, and reporting a single metric value for total GC time spent. So, from
+        // an alerting perspective we want to alert when GC is taking unacceptably long. That means we need to
+        // alert on high *deltas* in the metric values reported, which reflect a lot of time spent in GC between
+        // readings.  We'll start with 200ms per minute for 5 minutes.
+        // TODO: 'Rate' This should likely be a new triggerType but for now we'll treat it like threshold.
         let fullTrigger = {
           trigger: {
             name: 'JVM Accumulated GC Duration',
@@ -352,7 +359,7 @@ module HawkularMetrics {
           dampenings: [
             {
               triggerId: triggerId,
-              evalTimeSetting: 7 * 60000,
+              evalTimeSetting: 5 * 60000,
               triggerMode: 'FIRING',
               type: 'STRICT_TIME'
             }
@@ -360,8 +367,10 @@ module HawkularMetrics {
           conditions: [
             {
               triggerId: triggerId,
-              type: 'THRESHOLD',
+              type: 'RATE',
               dataId: dataId,
+              direction: 'INCREASING',
+              period: 'MINUTE',
               threshold: 200,
               operator: 'GT',
               context: {

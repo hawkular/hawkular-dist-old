@@ -362,8 +362,14 @@ module HawkularMetrics {
                     consoleAlert.isToday = true;
                   }
                 }
-                // handle compare conditions
-                sum += ( typeof evalItem.value !== 'undefined' ? evalItem.value : evalItem.value1 );
+
+                if ( evalItem.rate ) {
+                  // handle rate conditions
+                  sum += evalItem.rate;
+                } else {
+                  // handle compare conditions
+                  sum += ( evalItem.value ? evalItem.value : evalItem.value1 );
+                }
                 count++;
               }
 
