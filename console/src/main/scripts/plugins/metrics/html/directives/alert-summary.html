@@ -1,0 +1,52 @@
+<div class="hk-info-heading" ng-switch on="alert.alertType || alert.context.alertType">
+  <div ng-switch-when="PINGAVAIL">
+    Server <strong>down</strong> for
+    <hk-time-interval hk-time="alert.durationTime"></hk-time-interval>
+    (until
+    <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'HH:mm' }}).</span>
+    <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'d MMM HH:mm:ss' }}).</span>
+    <span ng-show="!alert.isThisYear">{{alert.end | date:'d MMM y HH:mm:ss' }}).</span>
+  </div>
+  <div ng-switch-when="PINGRESPONSE">
+    <strong>Response time</strong> was above the threshold ({{alert.threshold | number: 0}} ms) for
+    <hk-time-interval hk-time="alert.durationTime"></hk-time-interval>
+    (until
+    <span ng-show="alert.isThisYear && alert.isToday">{{alert.end | date:'HH:mm' }}).</span>
+    <span ng-show="alert.isThisYear && !alert.isToday">{{alert.end | date:'d MMM HH:mm:ss' }}).</span>
+    <span ng-show="!alert.isThisYear">{{alert.end | date:'d MMM y HH:mm:ss' }}).</span>
+    The average response time was {{alert.avg | number: 0}} ms.
+  </div>
+  <div ng-switch-when="PHEAP">
+    <strong>Heap Memory</strong>: The Heap memory usage was {{alert.avg / 1024 / 1024 | number:2}} MB.
+  </div>
+  <div ng-switch-when="NHEAP">
+    <strong>Non Heap Memory</strong>: The Non Heap memory usage was {{alert.avg / 1024 / 1024 | number:2}} MB.
+  </div>
+  <div ng-switch-when="GARBA">
+    <strong>Garbage collection</strong>: The garbage collection took more than {{alert.avg | number:2}} ms.
+  </div>
+  <div ng-switch-when="DSCONN">
+    <strong>Available Connections</strong>: The number of available connections was {{alert.avg}}.
+  </div>
+  <div ng-switch-when="DSRESP">
+    <strong>Responsiveness</strong>: The connection {{alert.condition}} was {{alert.avg}} ms.
+  </div>
+  <div ng-switch-when="DSCREATE">
+    <strong>Create Responsiveness</strong>: The connection {{alert.condition}} was {{alert.avg}} ms.
+  </div>
+  <div ng-switch-when="ACTIVE_SESSIONS">
+    <strong>Active Web Sessions</strong>: The number of active web sessions was {{alert.avg}}.
+  </div>
+  <div ng-switch-when="EXPIRED_SESSIONS">
+    <strong>Expired Web Sessions</strong>: The number of expired web sessions was {{alert.avg}}.
+  </div>
+  <div ng-switch-when="REJECTED_SESSIONS">
+    <strong>Rejected Web Sessions</strong>: The number of rejected web sessions was {{alert.avg}}.
+  </div>
+  <div ng-switch-when="DEPLOYMENT_FAIL">
+    <strong>Deployment Failed</strong>: {{alert.message}}.
+  </div>
+  <div ng-switch-default>
+    <strong>Alert</strong>: <code>{{alert}}</code>
+  </div>
+</div>

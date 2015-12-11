@@ -42,6 +42,25 @@ module HawkularMetrics {
     }
   }
 
+  export class HkAlertSummary {
+    public link:(scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
+    public replace = 'true';
+    public scope = {
+      alert: '=hkAlert'
+    };
+    public templateUrl = 'plugins/metrics/html/directives/alert-summary.html';
+
+    public static Factory() {
+      let directive = () => {
+        return new HkAlertSummary();
+      };
+
+      directive['$inject'] = [];
+
+      return directive;
+    }
+  }
+
   export class HkAlertPanel {
 
     public link:(scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
@@ -310,4 +329,5 @@ module HawkularMetrics {
   _module.directive('hkTimeInterval', HawkularMetrics.HkTimeInterval.Factory());
   _module.directive('hkFieldsetDampening', HawkularMetrics.HkFieldsetDampening.Factory());
   _module.directive('hkAlertInfo', HawkularMetrics.HkAlertInfo.Factory());
+  _module.directive('hkAlertSummary', HawkularMetrics.HkAlertSummary.Factory());
 }

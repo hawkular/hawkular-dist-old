@@ -198,6 +198,7 @@ module HawkularMetrics {
     ackNotes: string;
     ackTime: TimestampInMillis;
     ctime: TimestampInMillis;
+    dataId: MetricId;
     resolvedBy: string;
     resolvedNotes: string;
     resolvedTime: TimestampInMillis;
@@ -216,6 +217,11 @@ module HawkularMetrics {
 
     // UI stores an 'alertType' to benefit display
     alertType:string;
+
+    // UI calculates start, end time and duration
+    start?: TimestampInMillis;
+    end?: TimestampInMillis;
+    durationTime?: number;
   }
 
   export class ServerStatus {
