@@ -38,6 +38,14 @@ module HawkularAccounts {
         {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-accept-invitation.html')})
 
         .when(
+        '/hawkular-ui/tokens',
+        {templateUrl: builder.join(HawkularAccounts.templatePath, 'tokens.html')})
+
+        .when(
+        '/hawkular-ui/tokens/:id',
+        {templateUrl: builder.join(HawkularAccounts.templatePath, 'tokens.html')})
+
+        .when(
         '/hawkular-ui/settings',
         {templateUrl: builder.join(HawkularAccounts.templatePath, 'user-settings.html')});
   }]);

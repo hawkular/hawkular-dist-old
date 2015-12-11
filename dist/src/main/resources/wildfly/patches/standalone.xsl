@@ -219,6 +219,14 @@
         <xsl:attribute name="name">hawkular.metrics.waitForService</xsl:attribute>
         <xsl:attribute name="value">&#36;{hawkular.metrics.waitForService:True}</xsl:attribute>
       </property>
+      <property>
+        <xsl:attribute name="name">secretstore.redirectTo</xsl:attribute>
+        <xsl:attribute name="value">&#36;{secretstore.redirectTo:/hawkular-ui/tokens/{tokenId}}</xsl:attribute>
+      </property>
+      <property>
+        <xsl:attribute name="name">secretstore.parametersToPersist</xsl:attribute>
+        <xsl:attribute name="value">&#36;{secretstore.parametersToPersist:Hawkular-Persona}</xsl:attribute>
+      </property>
       <xsl:choose>
         <xsl:when test="$kettle.build.type='dev'">
         <property>

@@ -1,0 +1,22 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="removeModal.cancel()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Revoke Token</h4>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <p class="primary-message">
+      Are you sure you want to revoke the token <strong>{{removeModal.token.id}}</strong>?
+    </p>
+    <p>
+      All clients using this token will need to be configured with a new token, otherwise their requests will be
+      denied.
+    </p>
+    <p>This action can't be undone.</p>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="removeModal.cancel()">Cancel</button>
+  <button type="button" class="btn btn-danger" ng-click="removeModal.revoke()">Revoke</button>
+</div>
