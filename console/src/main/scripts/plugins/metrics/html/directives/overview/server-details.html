@@ -1,0 +1,46 @@
+<div>
+  <div class="card-pf card-pf-utilization">
+    <div class="card-pf-heading">
+      <h2 class="card-pf-title">Server Details</h2>
+    </div>
+    <div class="card-pf-body">
+      <dl class="dl-horizontal">
+        <dt>Type</dt>
+        <dd><span class="hk-open">{{serverInfo.type.name}}</span></dd>
+        <dt>Version</dt>
+        <dd></dd>
+        <dt>Status</dt>
+        <dd>
+          <span ng-hide="serverInfo.state === 'up'">
+              Stopped <i class="fa fa-arrow-down"></i>
+          </span>
+          <span ng-show="serverInfo.state === 'up'">
+              Running <i class="fa fa-arrow-up"></i>
+          </span>
+        </dd>
+        <dt>Host</dt>
+        <dd class="hk-word-break">{{serverInfo.configuration.Hostname}}</dd>
+        <dt>Labels</dt>
+        <div ng-if="vm.serverInfo && vm.serverInfo.properties">
+            <div ng-repeat="(index, label) in vm.serverInfo.properties.labels" class="server-label">
+              <hk-detail-label-editor
+                confirm="vm.publishProperties(vm.serverInfo.properties)"
+                label="label"
+                close="vm.removeLabel(index)">
+                <span class="label label-primary label-clickable">{{label.key}} : {{label.value}}</span>
+              </hk-detail-label-editor>
+            </div>
+        </div>
+        <dd>
+          <hk-detail-label-editor
+            confirm="vm.confirmNewLabel()"
+            label="vm.newLabel"
+            close="vm.closeDropDown()">
+            <button class="btn btn-link"><i class="fa fa-plus-circle"></i>Add Label </button>
+          </hk-detail-label-editor>
+          </dd>
+      </dl>
+    </div>
+  </div>
+
+</div>

@@ -37,6 +37,7 @@ module HawkularMetrics {
     public headerLinks = {};
     public activeFilters:any[];
     public serverStatusArray:ServerStatus[];
+    public defaultTab:string='jvm';
 
     constructor(private $location: ng.ILocationService,
                 private $scope: any,
@@ -59,6 +60,7 @@ module HawkularMetrics {
         $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
         this.getResourceList(currentPersona.id));
       }
+
       this.serverStatusArray = Object.keys(ServerStatus).map(type => ServerStatus[type]);
 
       this.setConfigForDataTable();
@@ -107,8 +109,8 @@ module HawkularMetrics {
       let _self = this;
       let filterObj = _self.resourceList;
       _self['search'] = '';
-      filters.forEach(function (filter:any) {
-        filterObj = filterObj.filter(function(item){
+      filters.forEach((filter) => {
+        filterObj = filterObj.filter((item) => {
           if (filter.value === 'All') {
             return true;
           }

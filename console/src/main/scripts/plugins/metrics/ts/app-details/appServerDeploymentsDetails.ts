@@ -26,6 +26,7 @@ module HawkularMetrics {
 
     private autoRefreshPromise:ng.IPromise<number>;
     private resourceList;
+    public modalInstance;
     public alertList:any[] = [];
     public selectCount:number = 0;
     public lastUpdateTimestamp:Date;
@@ -45,12 +46,19 @@ module HawkularMetrics {
                 private HawkularInventory:any,
                 private HawkularMetric:any,
                 private HawkularOps:any,
+                private HawkularAlertsManager:IHawkularAlertsManager,
                 private HawkularAlertRouterManager: IHawkularAlertRouterManager,
+                private ErrorsManager:IErrorsManager,
+                private $location:ng.ILocationService,
                 private $q:ng.IQService,
                 private NotificationsService:INotificationsService) {
       $scope.vm = this;
       HawkularOps.init(this.NotificationsService);
 
+      if ($routeParams.action && $routeParams.action === 'add-new') {
+        this.showDeploymentAddDialog();
+        $location.search('action', null);
+      }
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
 
