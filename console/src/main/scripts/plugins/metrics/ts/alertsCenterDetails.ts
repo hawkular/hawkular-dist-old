@@ -69,11 +69,11 @@ module HawkularMetrics {
     }
 
     public getAlert(alertId:AlertId) {
-      return this.HawkularAlertsManager.getAlert(alertId).then((alert) => {
+      return this.HawkularAlertsManager.queryAlerts({alertIds: alertId}).then((alerts) => {
+        let alert = alerts.alertList[0];
         this.detailAlert = alert;
-        let descriptionsParts = alert.trigger.description.split('~');
-        this.description = descriptionsParts[0];
-        this.feedId = descriptionsParts[1];
+        this.description = alert.trigger.description;
+        this.feedId = alert.context.resourceName.split('/')[0];
         this.status = alert.status;
         if (this.status === 'OPEN') {
           this.statuses = ['OPEN', 'ACKNOWLEDGED', 'RESOLVED'];
@@ -85,6 +85,7 @@ module HawkularMetrics {
         } else {
           this.comments = alert.resolvedNotes;
         }
+        this.getSparklineData(alert);
       });
     }
 
@@ -175,6 +176,20 @@ module HawkularMetrics {
         this.getAlert(this._alertId);
         this.getActions(this._alertId);
       });
+    }
+
+    public getSparklineData(alert: IAlert) {
+      let offset = Math.ceil((60 * 60 * 1000 - alert.durationTime) / 2);
+      // Works for Accum GC.. possibly others ?
+      let metricsMethod = !!alert.dataId.match(new RegExp('accumulated', 'i')) ?
+        'retrieveCounterRateMetrics' : 'retrieveGaugeMetrics';
+      this.MetricsService[metricsMethod](this.$rootScope.userDetails.id,
+        alert.dataId,
+        alert.start - offset, alert.end + offset, 60).then((resource) => {
+          if (resource.length) {
+            this['alertChartData'] = resource;
+          }
+        });
     }
 
   }
