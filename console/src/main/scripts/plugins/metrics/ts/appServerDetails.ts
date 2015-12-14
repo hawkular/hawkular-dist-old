@@ -65,15 +65,20 @@ module HawkularMetrics {
 
       $scope.tabs = this;
 
+      let experimentalTabs = ['overview', 'platform'];
       $rootScope.$watch('isExperimental', (isExperimental) => {
         this.$timeout(() => {
-          this.availableTabs[1].enabled = isExperimental;
+          _.forEach(this.availableTabs, (tab: any) => {
+            if (experimentalTabs.indexOf(tab.id) !== -1) {
+              tab.enabled = isExperimental;
+            }
+          });
         });
       });
 
       this.availableTabs = [
         {
-          id: 'overview', name: 'Overview', enabled: this.$rootScope.isExperimental === true,
+          id: 'overview', name: 'Overview', enabled: this.$rootScope.isExperimental,
           src: 'plugins/metrics/html/app-details/detail-overview.html',
           controller: HawkularMetrics.AppServerOverviewDetailsController
         },
