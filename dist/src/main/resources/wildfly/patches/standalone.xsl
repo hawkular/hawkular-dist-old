@@ -366,7 +366,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <!-- Add a cache for Hawkular Accounts and Keycloak -->
+  <!-- Add a cache for Hawkular Accounts and Keycloak and alerts -->
   <xsl:template match="node()[name(.)='cache-container'][1]">
     <xsl:copy>
       <xsl:copy-of select="node()|@*"/>
@@ -380,6 +380,11 @@
     <cache-container name="hawkular-accounts" default-cache="role-cache" statistics-enabled="true">
       <local-cache name="role-cache"/>
       <local-cache name="operation-cache"/>
+    </cache-container>
+    <cache-container name="hawkular-alerts">
+      <local-cache name="partition"/>
+      <local-cache name="triggers"/>
+      <local-cache name="data"/>
     </cache-container>
   </xsl:template>
 
