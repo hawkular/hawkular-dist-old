@@ -21,7 +21,7 @@
         <dt>Host</dt>
         <dd class="hk-word-break">{{serverInfo.configuration.Hostname}}</dd>
         <dt>Labels</dt>
-        <div ng-if="vm.serverInfo && vm.serverInfo.properties">
+        <dd ng-if="vm.serverInfo && vm.serverInfo.properties">
             <div ng-repeat="(index, label) in vm.serverInfo.properties.labels" class="server-label">
               <hk-detail-label-editor
                 confirm="vm.publishProperties(vm.serverInfo.properties)"
@@ -30,7 +30,7 @@
                 <span class="label label-primary label-clickable">{{label.key}} : {{label.value}}</span>
               </hk-detail-label-editor>
             </div>
-        </div>
+        </dd>
         <dd>
           <hk-detail-label-editor
             confirm="vm.confirmNewLabel()"

@@ -43,17 +43,6 @@ body {
   float: none;
 }
 
-.label-editor-dropdown {
-  width: 400px;
-  padding: 15px;
-}
-
-.server-label {
-  display: inline-block;
-  padding-right: 5px;
-  cursor:pointer;
-}
-
 .container {
   @media (min-width: 1201px) and (max-width: 1440px) {
     width: calc(~"100% - 40px");
@@ -62,42 +51,6 @@ body {
   @media (min-width: 1441px) {
     width: 1400px;
   }
-}
-
-.row { // reducing space between boxes
-
-  @media (min-width: @screen-lg-min) {
-/*
-    > .col-lg-9 + .col-lg-3 {
-      padding-left: 0;
-    }
-*/
-
-    > .col-lg-3 + .col-lg-6 {
-      padding-right: 0;
-      padding-left: 0;
-    }
-  }
-
-  @media (max-width: @screen-md-max) {
-/*
-    > .col-md-8 + .col-md-4 {
-      padding-left: 0;
-    }
-*/
-
-    > .col-md-4 + .col-md-8 {
-      padding-left: 0;
-    }
-  }
-
-/*
-  @media (min-width: @screen-md-min) {
-    > .col-md-9 + .col-md-3 {
-      padding-left: 0;
-    }
-  }
-*/
 }
 
 
@@ -309,13 +262,18 @@ a:hover {
 .btn-link, a {
 
   .fa {
-    color: @gray;
+    color: @link-color;
     vertical-align: text-bottom;
   }
 
   &:hover .fa {
     color: @link-hover-color;
   }
+}
+
+.btn-link {
+  border: none;
+  padding: 0;
 }
 
 .btn-icon .fa {
@@ -397,6 +355,10 @@ a:hover {
   margin-top: 10px;
 }
 
+.card-pf-utilization-card-details-description { // provisional until pf style
+  margin-top: 10px;
+}
+
 
 // Charts and Legends
 
@@ -416,6 +378,11 @@ a:hover {
       font-size: @font-size-base;
       font-weight: normal;
     }
+  }
+
+  .form-control {
+    border: none;
+    box-shadow: none;
   }
 
   .hk-graph-container  {
@@ -684,13 +651,25 @@ a:hover {
     margin-right: 15px;
   }
 
+  label {
+    margin-right: 10px;
+  }
+
+  .input-group {
+    float: left;
+
+    &:not(:last-child) {
+      margin-right: 15px;
+    }
+  }
+
   .bootstrap-select:not([class*="span"]):not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
     margin-bottom: 0;
-    width: 100px;
+    width: auto;
   }
 
   .btn + .btn {
-    margin-left: 12px;
+    margin-left: 10px;
   }
 
   + .hk-update {
@@ -850,7 +829,7 @@ p + .form-horizontal {
 .hk-selected-container {
   border: 1px solid @list-group-border;
   max-height: 64px;
-  overflow: scroll;
+  overflow-y: scroll;
   padding: 0 5px 5px 5px;
 }
 
@@ -859,7 +838,7 @@ p + .form-horizontal {
 }
 
 .hk-control-actions-bar .input-group {
-  width: 330px;
+  width: 300px;
 }
 
 
@@ -939,6 +918,10 @@ a:hover .fa-times-circle-o,
 
 &.fa-times-circle-o {
   color: @brand-danger;
+}
+
+.btn-danger .fa {
+  color: white;
 }
 
 
@@ -1892,6 +1875,11 @@ td .fa-comment-o {
   }
 }
 
+h2 + .tiles-view-pf {
+  margin-top: -10px;
+  padding-top: 0;
+}
+
 .tile:hover {
   cursor: pointer;
 }
@@ -1923,7 +1911,6 @@ td .fa-comment-o {
 }
 
 .hk-tile-circle-icon {
-
   background-color: transparent;
   border: 2px solid;
   height: 50px;
@@ -1946,6 +1933,24 @@ td .fa-comment-o {
 .tile-content img {
   margin-bottom: @grid-gutter-width/5;
   width: 100%;
+}
+
+.hk-tile-aggregate-status {
+
+  .hk-aggregate-status-count {
+    font-size: ceil(@font-size-base * 1.5);
+    font-weight: 600;
+
+    [class*="pficon-"],
+    .fa {
+      color: @gray-light;
+      margin-right: 5px;
+    }
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 15px;
+  }
 }
 
 
@@ -2119,7 +2124,7 @@ td .fa-comment-o {
     SCREENS
 \*------------------------------------*/
 
-// Landing screen
+// URLs list
 
 .hk-urls-list {
 
@@ -2291,6 +2296,7 @@ td .fa-comment-o {
   }
 }
 
+
 // Application servers screen
 
 .hk-application-servers {
@@ -2347,8 +2353,13 @@ section {
 
 .hk-info-top {
   position: relative;
+  margin-bottom: 15px;
 
-  .hk-settings {
+  h3 {
+    margin-bottom: 0;
+  }
+
+  .hk-settings { // to be removed
     margin-top: @grid-gutter-width/4;
 
     a + a {
@@ -2507,6 +2518,19 @@ section {
   p.card-pf-aggregate-status-notifications {
     margin-bottom: 0;
   }
+}
+
+.hk-label-editor-dropdown.dropdown-menu {
+  left: -40px;
+  margin-top: 10px;
+  padding: 15px;
+  width: 402px;
+}
+
+.server-label {
+  display: inline-block;
+  padding-right: 5px;
+  cursor:pointer;
 }
 
 

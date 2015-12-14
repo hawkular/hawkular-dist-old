@@ -5,7 +5,7 @@
   </div>
   <div class="card-pf-body">
     <div class="row">
-      <div class="col-md-6 hk-dashboard-block">
+      <div class="col-sm-6 hk-dashboard-block">
         <div ng-show="alertInfo && alertInfo.graphData">
           <hk-overview-spark-line-chart
             title="Alerts"
@@ -15,7 +15,7 @@
         </div>
       </div>
       <div ng-repeat="datasource in datasourceInfo track by $index">
-        <div class="col-md-6 hk-dashboard-block">
+        <div class="col-sm-6 hk-dashboard-block">
           <div ng-show="datasource && datasource.chartConfig">
             <hk-overview-donut-chart
               graph-title="Used Connections for {{datasource.name}}"
@@ -26,7 +26,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-6 hk-dashboard-block">
+      <div class="col-sm-6 hk-dashboard-block">
         <div class="hk-data-info">
           <div class="hk-data" ng-if="overviewInfo.deployments">{{overviewInfo.deployments.length}}</div>
           <div class="hk-info">
@@ -48,7 +48,7 @@
         </div>
         <div class="hk-block-title">Deployment status</div>
       </div>
-      <div class="col-md-6 hk-dashboard-block">
+      <div class="col-sm-6 hk-dashboard-block">
         <div ng-show="overviewInfo && overviewInfo.heapUsage">
           <hk-overview-spark-line-chart
             title="JVM (Average Heap Usage per MB)"
@@ -57,7 +57,7 @@
           </hk-overview-spark-line-chart>
         </div>
       </div>
-      <div class="col-md-6 hk-dashboard-block">
+      <div class="col-sm-6 hk-dashboard-block">
         <div ng-if="overviewInfo && overviewInfo.activeWebSessions">
           <hk-overview-spark-line-chart
             title="Active Web Sessions"
