@@ -28,7 +28,7 @@
                 label="label"
                 close="vm.closeDropDown()">
                 <span class="label label-primary label-clickable">{{label.key}} : {{label.value}}
-                  <i ng-click="vm.removeLabel(index, $event)" class="fa fa-times remove-label"></i>
+                  <span ng-click="vm.removeLabel(index, $event)" class="pficon-close remove-label"></span>
                 </span>
               </hk-detail-label-editor>
             </div>
