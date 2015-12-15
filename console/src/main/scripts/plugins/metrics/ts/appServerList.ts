@@ -80,7 +80,7 @@ module HawkularMetrics {
       _self.activeFilters = [{
         id: 'byText',
         title: 'By text',
-        placeholder: 'Containts text',
+        placeholder: 'All',
         filterType: 'text'
       },
         {

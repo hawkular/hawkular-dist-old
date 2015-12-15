@@ -38,6 +38,34 @@ module HawkularMetrics {
     origin: string;
     href: string;
   }
+
+  export class UrlChartDataPoint implements IChartDataPoint {
+    date:Date;
+    min:number;
+    max:number;
+    percentile95th:number;
+    median:number;
+    timestamp:number;
+    value:number;
+    avg:number;
+    empty:boolean;
+    start: number;
+
+    constructor(value, timestamp) {
+      this.start = timestamp;
+      this.timestamp = timestamp;
+      this.min = value;
+      this.max = value;
+      this.percentile95th = value;
+      this.median = value;
+      this.date = new Date(timestamp);
+      this.value = value;
+      this.avg = value;
+      this.empty = false;
+    }
+
+  }
+
   interface URL {
     revokeObjectURL(url:string): void;
     createObjectURL(object:any, options?:ObjectURLOptions): string;
@@ -52,9 +80,13 @@ module HawkularMetrics {
       'md5', 'HkHeaderParser', 'NotificationsService'];
 
     private autoRefreshPromise:ng.IPromise<number>;
+    private static NUM_OF_POINTS = 30;
     private httpUriPart = 'http://';
     private resourceList;
-    private resPerPage = 5;
+    private resPerPage = 12;
+
+    public filteredResourceList:any[]=[];
+    public activeFilters:any[]=[];
     public resCurPage = 0;
     public lastUpdateTimestamp:Date = new Date();
     public headerLinks:any = {};
@@ -63,6 +95,8 @@ module HawkularMetrics {
     public loadingMoreItems:boolean = false;
     public addProgress:boolean = false;
 
+    public sorting:any;
+    public currentSortIndex:number = 0;
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
                 private $rootScope:any,
@@ -92,10 +126,10 @@ module HawkularMetrics {
       }
 
       $scope.$on('SwitchedPersona', () => this.getResourceList());
-
+      this.sorting = ['Sort A-Z', 'Sort Z-A'];
+      this.setConfigForDataTable();
       this.autoRefresh(20);
     }
-
 
     private autoRefresh(intervalInSeconds:number):void {
       this.autoRefreshPromise = this.$interval(()  => {
@@ -104,6 +138,28 @@ module HawkularMetrics {
 
       this.$scope.$on('$destroy', () => {
         this.$interval.cancel(this.autoRefreshPromise);
+      });
+    }
+
+    public changeSortByIndex(index) {
+      this.currentSortIndex = index;
+      this.sortUrls();
+    }
+
+    sortUrls() {
+      switch (this.currentSortIndex) {
+        case 1:
+          this.filteredResourceList = this.sortFilteredResourceList().reverse();
+          break;
+        default:
+          this.filteredResourceList = this.sortFilteredResourceList();
+          break;
+      }
+    }
+
+    private sortFilteredResourceList() {
+      return _.sortBy(this.filteredResourceList, (a) => {
+        return a.properties['hwk-gui-domainSort'];
       });
     }
 
@@ -384,6 +440,13 @@ module HawkularMetrics {
               start: moment().subtract(1, 'hours').valueOf(), end: moment().valueOf()
             }, (resource) => {
               res['responseTime'] = resource;
+              let chartData = [];
+              _.forEach(resource.slice(0, UrlListController.NUM_OF_POINTS), (item) => {
+                if (item.hasOwnProperty('value') && item.hasOwnProperty('timestamp')) {
+                  chartData.push(new UrlChartDataPoint(item['value'], item['timestamp']));
+                }
+              });
+              res['graphResponseTime'] = MetricsService.formatResponseTimeData(chartData);
             }).$promise);
             promises.push(this.HawkularMetric.AvailabilityMetricData(tenantId).query({
               availabilityId: res.id, distinct: true,
@@ -435,6 +498,51 @@ module HawkularMetrics {
       }
     }
 
+    private arrayWithAll(orginalArray:string[]):string[] {
+      let arrayWithAll = orginalArray;
+      arrayWithAll.unshift('All');
+      return arrayWithAll;
+    }
+
+    private setConfigForDataTable():void {
+      this.activeFilters = [{
+        id: 'byText',
+        title: 'Name',
+        placeholder: 'Containts text',
+        filterType: 'text'
+      },
+        {
+          id: 'state',
+          title:  'State',
+          placeholder: 'Filter by State',
+          filterType: 'select',
+          filterValues: this.arrayWithAll(
+            Object.keys(DatasourceStatus).map(
+              type => DatasourceStatus[type].value
+            )
+          )
+        }];
+    }
+
+    public filterBy(filters:any):void {
+      let filterObj = this.resourceList;
+      this['search'] = '';
+      filters.forEach( (filter) => {
+        filterObj = filterObj.filter((item) => {
+          if (filter.value === 'All') {
+            return true;
+          }
+          switch(filter.id) {
+            case 'state':
+              return item.isUp && filter.value === 'Up' || !item.isUp && filter.value === 'Down';
+            case 'byText':
+              return (item.properties.url.indexOf(filter.value)) !== -1;
+          }
+        });
+      });
+      this.filteredResourceList = filterObj;
+      this.sortUrls();
+    }
   }
 
   class DeleteResourceModalController {
