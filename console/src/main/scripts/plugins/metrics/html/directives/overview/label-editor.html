@@ -11,8 +11,10 @@
           <input type="text" class="form-control" ng-model="label.key"> :
           <input type="text" class="form-control" ng-model="label.value">
         </div>
-        <button type="button" ng-click="confirmDropDown()" class="btn btn-default"><i class="fa fa-check"></i></button>
-        <button type="button" ng-click="closeDropDown()" class="btn btn-danger"><i class="fa fa-times"></i></button>
+        <div class="pull-right label-buttons">
+          <button type="button" ng-click="confirmDropDown()" class="btn btn-default"><span>Ok</span></button>
+          <button type="button" ng-click="closeDropDown()" class="btn btn-default"><span>Cancel</span></button>
+        </div>
       </form>
     </div>
   </div>
