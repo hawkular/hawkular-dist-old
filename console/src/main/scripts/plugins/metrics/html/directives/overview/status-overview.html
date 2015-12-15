@@ -32,15 +32,15 @@
           <div class="hk-info">
             <p class="card-pf-aggregate-status-notifications">
               <span class="card-pf-aggregate-status-notification">
-                <i class="fa fa-times-circle-o" data-toggle="tooltip" data-placement="top" data-original-title="Failed"></i>
+                <i class="fa fa-times-circle-o" tooltip-trigger tooltip="Failed"></i>
                 <span ng-if="overviewInfo.deployments">{{vm.filterByState(overviewInfo.deployments, 'failed').length}}</span>
               </span>
               <span class="card-pf-aggregate-status-notification">
-                <i class="fa fa-square" data-toggle="tooltip" data-placement="top" data-original-title="Stopped"></i>
+                <i class="fa fa-square" tooltip-trigger tooltip="Stopped"></i>
                 <span ng-if="overviewInfo.deployments">{{vm.filterByState(overviewInfo.deployments, 'down').length}}</span>
               </span>
               <span class="card-pf-aggregate-status-notification">
-                <i class="fa fa-check-circle-o" data-toggle="tooltip" data-placement="top" data-original-title="OK"></i>
+                <i class="fa fa-check-circle-o" tooltip-trigger tooltip="OK"></i>
                 <span ng-if="overviewInfo.deployments">{{vm.filterByState(overviewInfo.deployments, 'up').length}}</span>
               </span>
             </p>
