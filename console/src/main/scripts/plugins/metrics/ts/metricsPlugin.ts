@@ -216,6 +216,7 @@ module HawkularMetrics {
         controllerAs: 'tc'
       }).
       when('/hawkular-ui/agent-installer/view', { templateUrl: 'plugins/metrics/html/agent-installer.html' }).
+      when('/hawkular-ui/explorer/view', {templateUrl: 'plugins/metrics/html/explorer.html'}).
       otherwise({ redirectTo: '/hawkular-ui/app/app-list' });
   }]);
 

@@ -1,0 +1,89 @@
+<div ng-controller="ExplorerController as exc">
+  <div class="hk-heading">
+    <h1 class="text-center">{{exc.title}}</h1>
+  </div>
+
+  <div class="container">
+      <progress ng-disable="!exc.pleaseWait"></progress>
+  </div>
+
+    <div class="container">
+        <div class="col-lg-9">
+            <div class="row row-cards-pf">
+                <div class="col-md-3">
+                   <div class="card-pf">
+                    <div class="dropdown col" dropdown>
+                        <button id="btn-feed" type="button" class="btn btn-primary" dropdown-toggle>
+                            Feed <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
+                            <li ng-repeat="feed in exc.feeds" role="presentation">
+                                <a role="menutitem" href="#" ng-click="exc.selectFeed(feed)">{{ feed.id }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-pf-title">{{exc.selectedFeed.id}}</div>
+                   </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="card-pf">
+                    <div class="dropdown col" dropdown>
+                        <button id="btn-resource" type="button" class="btn btn-primary" dropdown-toggle>
+                            Resource <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
+                            <li ng-repeat="resource in exc.resources" role="presentation">
+                                <a role="menutitem" href="#" ng-click="exc.selectResource(resource)">{{ resource.id }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-pf-title">{{exc.selectedResource.id}}</div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card-pf">
+                    <div class="dropdown" dropdown>
+                        <button id="btn-metric" type="button" class="btn btn-primary" dropdown-toggle>
+                            Metric <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
+                            <li ng-repeat="metric in exc.metrics" role="presentation">
+                                <a role="menutitem" href="#" ng-click="exc.selectMetric(metric)">{{ metric.name }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-pf-title">{{exc.selectedMetric.name}}</div>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button id="btn-add" type="button" class="btn btn-primary"
+                    ng-click="exc.showChart()" ng-disabled="!exc.buttonActive">
+                Add to Display
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div ng-repeat="chart in exc.charts" class="row row-cards-pf">
+            <div class="row hk-legend hk-legend-metrics">
+            <span>{{chart.name}}</span>
+            <a href="" ng-click="exc.removeChart(chart)">
+                <span class="pull-right"><i class="fa fa-trash-o"></i></span>
+            </a>
+            </div>
+            <hawkular-chart
+                data="exc.chartData[chart.id]"
+                chart-type="line"
+                hide-high-low-values="false"
+                use-zero-min-value="false"
+                y-axis-units="chart.type.unit"
+                chart-height="250">
+            </hawkular-chart>
+
+    </div>
+
+  </div>
+
+</div>
