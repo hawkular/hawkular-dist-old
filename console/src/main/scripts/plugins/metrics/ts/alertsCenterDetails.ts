@@ -58,6 +58,8 @@ module HawkularMetrics {
       $scope.acd = this;
       this._alertId = $routeParams.alertId;
 
+      $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/alerts-center/'));
+
       this.alertsTimeOffset = $routeParams.timeOffset || $rootScope.hkParams.timeOffset || DEF_TIME_OFFSET;
       // If the end time is not specified in URL use current time as end time
       this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : Date.now();
