@@ -61,8 +61,8 @@ module HawkularMetrics {
       this.closeDropDown();
     }
 
-    public removeLabel(index) {
-
+    public removeLabel(index, $event) {
+      $event.stopPropagation();
       let modalInstance = this.$modal.open({
         templateUrl: 'plugins/metrics/html/directives/overview/remove-label.html',
         controller: 'LabelEditorController as lvm',
@@ -104,6 +104,7 @@ module HawkularMetrics {
     private hasProperties() {
       return this.serverInfo.hasOwnProperty('properties');
     }
+
     public closeDropDown() {
       this.clearLabel();
       this.isOpen = false;
@@ -142,12 +143,16 @@ module HawkularMetrics {
 
   export class HkDetailLabelEditor {
     public link = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+      $scope.oldLabel = _.clone($scope.label, true);
+
       $scope.closeDropDown = () => {
+        $scope.label = _.clone($scope.oldLabel, true);
         $scope.isOpen = false;
         $scope.close();
       };
 
       $scope.confirmDropDown = () => {
+        $scope.oldLabel = _.clone($scope.label, true);
         $scope.confirm();
         $scope.isOpen = false;
       };

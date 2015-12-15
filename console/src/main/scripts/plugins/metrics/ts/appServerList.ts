@@ -37,7 +37,7 @@ module HawkularMetrics {
     public headerLinks = {};
     public activeFilters:any[];
     public serverStatusArray:ServerStatus[];
-    public defaultTab:string='jvm';
+    public defaultTab:string = 'overview';
 
     constructor(private $location: ng.ILocationService,
                 private $scope: any,
