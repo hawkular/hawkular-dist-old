@@ -113,7 +113,7 @@ module HawkularMetrics {
   export class TriggerSetupController {
 
     public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService',
-      '$log', '$q', '$rootScope', '$routeParams', 'MetricsService'];
+      '$log', '$q', '$rootScope', '$routeParams', '$location', 'MetricsService'];
 
     public fullTrigger:any = {};
 
@@ -132,6 +132,7 @@ module HawkularMetrics {
                 protected $q:ng.IQService,
                 protected $rootScope:any,
                 protected $routeParams:any,
+                protected $location:any,
                 protected MetricsService:IMetricsService) {
       // TODO - update the pfly notification service to support more and category based notifications containers.
       this.$rootScope.hkNotifications = {alerts: []};
@@ -151,6 +152,8 @@ module HawkularMetrics {
       }), () => {
         this.isSettingChange = !angular.equals(this.adm, this.admBak);
       }, true);
+
+      $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/alerts-center-triggers/'));
     }
 
     public cancel():string {

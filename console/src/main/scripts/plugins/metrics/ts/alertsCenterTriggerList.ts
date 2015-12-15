@@ -71,6 +71,8 @@ module HawkularMetrics {
         $rootScope.$watch('currentPersona', (currentPersona) =>
         currentPersona && this.getTriggers());
       }
+
+      $scope.$on('SwitchedPersona', () => this.getTriggers());
     }
 
     private autoRefresh(intervalInSeconds:number):void {
