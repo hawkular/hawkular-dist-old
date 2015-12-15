@@ -91,7 +91,7 @@
     <version.org.hawkular.commons>0.2.3.Final</version.org.hawkular.commons>
     <version.org.hawkular.cmdgw>0.10.4.Final</version.org.hawkular.cmdgw>
     <version.org.hawkular.metrics>0.9.0.Final</version.org.hawkular.metrics>
-    <version.org.hawkular.inventory>0.9.1.Final-SRC-revision-8620a7ffb2eea0c994705217b59768e89dca57e8</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>0.10.0.Final</version.org.hawkular.inventory>
     <version.org.keycloak>1.6.1.Final</version.org.keycloak>
     <version.org.testng>6.5.2</version.org.testng>
   </properties>

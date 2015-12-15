@@ -55,6 +55,8 @@ module HawkularMetrics {
         }
       });
 
+      $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/app/app-list'));
+
       HawkularInventory.ResourceUnderFeed.get({
         feedId: this.$routeParams.feedId,
         resourcePath: this.$routeParams.resourceId + '~~'

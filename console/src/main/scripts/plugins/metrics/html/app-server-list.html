@@ -6,7 +6,9 @@
   </div>
 
   <div ng-show="vm.resourceList" ng-class="{'hk-fade-in': vm.resourceList}">
-    <h1 class="text-center">{{userDetails.firstName}}'s application servers</h1>
+    <h1 class="text-center">
+      {{currentPersona.owner ? currentPersona.name : userDetails.firstName}}'s application servers
+    </h1>
 
     <h3 class="pull-left">Current Status</h3>
     <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
