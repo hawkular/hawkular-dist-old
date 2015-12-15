@@ -240,6 +240,19 @@ module HawkularMetrics {
     };
   }
 
+  export class DatasourceStatus {
+    constructor (public value:string, public isUp: boolean) {
+    }
+
+    static DATA_SOURCE_UP = new DatasourceStatus('Up', true);
+    static DATA_SOURCE_DOWN = new DatasourceStatus('Down', false);
+    static DATA_SOURCE_UNKNOW = new DatasourceStatus('Unknown', null);
+
+    toString = () => {
+      return this.value;
+    };
+  }
+
   export class ServerType {
     constructor(public value:string, public type:string) {
     }

@@ -20,119 +20,101 @@
     <hk-alert-notification></hk-alert-notification>
 
     <!-- Summary -->
-    <h3 class="pull-left">Response Time Status</h3>
-    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
-      <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
-    </span>
-
-    <div class="row row-cards-pf">
-      <div class="col-md-4">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <span class="card-pf-aggregate-status-count" ng-show="vm.average >= 0">{{vm.average}} ms</span>
-            <span class="card-pf-aggregate-status-count" ng-hide="vm.average >= 0">n/a</span>
-            Average
-          </h2>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <span class="card-pf-aggregate-status-count" ng-show="vm.median >= 0">{{vm.median}} ms</span>
-            <span class="card-pf-aggregate-status-count" ng-hide="vm.median >= 0">n/a</span>
-            Median
-          </h2>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <span class="card-pf-aggregate-status-count"
-                  ng-show="vm.percentile95th >= 0">{{vm.percentile95th}} ms</span>
-            <span class="card-pf-aggregate-status-count" ng-hide="vm.percentile95th >= 0">n/a</span>
-            95th percentile
-          </h2>
-        </div>
-      </div>
-    </div>
-    <!-- /row -->
-
-    <!-- Alerts -->
     <div class="hk-info-top clearfix">
-      <h3 class="pull-left" tooltip-trigger tooltip="Expand/collapse">
-        <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts">
-          <i ng-show="vm.alertList.length" ng-class="showAllAlerts? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"></i>
-          Response Time Alerts
-          <ng-span ng-show="vm.alertList.length">
-            ({{showAllAlerts ? vm.alertList.length : vm.min(vm.alertList.length, 3)}} of
-            {{vm.alertList.length}})
-          </ng-span>
-        </button>
-      </h3>
-      <span class="hk-settings pull-left">
-          <a ng-href="/hawkular-ui/alerts-center-triggers/{{vm.$routeParams.resourceId}}">
-            <i class="fa fa-cog"></i>Definitions
-          </a>
+      <h3 class="pull-left">Response Time Status</h3>
+      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+        <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
       </span>
     </div>
-    <div class="clearfix">
-      <!-- No Alerts -->
-      <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
-        <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-        <div>No alerts.</div>
-      </div>
-      <!-- Alerts exist -->
-      <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList" hk-limit="(showAllAlerts ? 100000 : 3)">
-      </hk-alert-panel-list>
-    </div>
 
-    <!-- Response Time Graph -->
-    <div class="hk-info-top clearfix">
-      <h3 class="pull-left">Metrics</h3>
-
-      <div class="hk-update pull-right">
-        <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top"
-                tooltip-append-to-body="true" tooltip="Update chart"
-                ng-click="vm.refreshChartDataNow(vm.getMetricId())">
-          <i class="fa fa-refresh"></i>
-        </button>
-      </div>
-    </div>
-
-    <div class="panel panel-default hk-graph" ng-if="vm.average >= 0">
-      <h2>Response Time</h2>
-
-      <div class="text-center hk-spinner-container" ng-hide="vm.chartData.dataPoints.length">
-        <div class="spinner spinner-lg"></div>
-      </div>
-
-      <div class="hk-graph-container hk-graph-metrics">
-        <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-        <hawkular-chart
-          data="vm.chartData.dataPoints"
-          chart-type="hawkularmetric"
-          alert-value="{{vm.threshold}}"
-          use-zero-min-value="true"
-          y-axis-units="Response Time (ms)"
-          chart-height="250">
-        </hawkular-chart>
-      </div>
-
-      <div class="hk-legend text-left hk-legend-metrics" ng-show="vm.chartData.dataPoints.length">
-        <span><i class="fa fa-circle hk-blue"></i>Response Time</span>
-        <span><i class="fa fa-circle hk-red"></i>Threshold</span>
-        <span><span class="hk-legend-square hk-red-light"></span>Interval above the threshold</span>
-      </div>
-    </div>
-
-    <div class="panel panel-default hk-graph" ng-if="vm.average < 0">
-      <h2>Response Time</h2>
-
-      <div class="blank-slate-pf">
-        <div class="blank-slate-pf-icon">
-          <i class="fa fa-line-chart"></i>
+    <div class="row">
+      <div class="col-lg-9">
+        <div class="row row-cards-pf">
+          <div class="col-md-4">
+            <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+              <h2 class="card-pf-title">
+                <span class="card-pf-aggregate-status-count" ng-show="vm.average >= 0">{{vm.average}} ms</span>
+                <span class="card-pf-aggregate-status-count" ng-hide="vm.average >= 0">n/a</span>
+                Average
+              </h2>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+              <h2 class="card-pf-title">
+                <span class="card-pf-aggregate-status-count" ng-show="vm.median >= 0">{{vm.median}} ms</span>
+                <span class="card-pf-aggregate-status-count" ng-hide="vm.median >= 0">n/a</span>
+                Median
+              </h2>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+              <h2 class="card-pf-title">
+            <span class="card-pf-aggregate-status-count"
+                  ng-show="vm.percentile95th >= 0">{{vm.percentile95th}} ms</span>
+                <span class="card-pf-aggregate-status-count" ng-hide="vm.percentile95th >= 0">n/a</span>
+                95th percentile
+              </h2>
+            </div>
+          </div>
         </div>
-        <h1>The server hasn't been reachable for this time range.</h1>
+        <!-- /row -->
+
+        <!-- Response Time Graph -->
+        <div class="hk-info-top clearfix">
+          <h3 class="pull-left">Metrics</h3>
+
+          <div class="hk-update pull-right">
+            <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top"
+                    tooltip-append-to-body="true" tooltip="Update chart"
+                    ng-click="vm.refreshChartDataNow(vm.getMetricId())">
+              <i class="fa fa-refresh"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel panel-default hk-graph" ng-if="vm.average >= 0">
+          <h2>Response Time</h2>
+
+          <div class="text-center hk-spinner-container" ng-hide="vm.chartData.dataPoints.length">
+            <div class="spinner spinner-lg"></div>
+          </div>
+
+          <div class="hk-graph-container hk-graph-metrics">
+            <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+            <hawkular-chart
+              data="vm.chartData.dataPoints"
+              chart-type="hawkularmetric"
+              alert-value="{{vm.threshold}}"
+              use-zero-min-value="true"
+              y-axis-units="Response Time (ms)"
+              chart-height="250">
+            </hawkular-chart>
+          </div>
+
+          <div class="hk-legend text-left hk-legend-metrics" ng-show="vm.chartData.dataPoints.length">
+            <span><i class="fa fa-circle hk-blue"></i>Response Time</span>
+            <span><i class="fa fa-circle hk-red"></i>Threshold</span>
+            <span><span class="hk-legend-square hk-red-light"></span>Interval above the threshold</span>
+          </div>
+        </div>
+
+        <div class="panel panel-default hk-graph" ng-if="vm.average < 0">
+          <h2>Response Time</h2>
+
+          <div class="blank-slate-pf">
+            <div class="blank-slate-pf-icon">
+              <i class="fa fa-line-chart"></i>
+            </div>
+            <h1>The server hasn't been reachable for this time range.</h1>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)"
+                       resource-id="vm.$routeParams.resourceId" title="Url">
+        </hk-alert-info>
       </div>
     </div>
 

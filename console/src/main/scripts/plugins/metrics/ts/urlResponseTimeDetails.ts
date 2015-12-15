@@ -94,6 +94,9 @@ module HawkularMetrics {
             case 'PINGRESPONSE' :
               item.alertType = item.context.alertType;
               return false;
+            case 'PINGAVAIL' :
+              item.alertType = item.context.alertType;
+              return false;
             default :
               return true; // ignore non-response-time alert
           }

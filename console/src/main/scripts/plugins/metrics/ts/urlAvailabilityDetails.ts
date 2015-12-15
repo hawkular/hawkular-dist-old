@@ -108,8 +108,11 @@ module HawkularMetrics {
       }).then((data:IHawkularAlertQueryResult)=> {
         _.remove(data.alertList, (item:IAlert) => {
           switch (item.context.alertType) {
+            case 'PINGRESPONSE' :
+              item.alertType = item.context.alertType;
+              return false;
             case 'PINGAVAIL' :
-              item['alertType'] = item.context.alertType;
+              item.alertType = item.context.alertType;
               return false;
             default :
               return true; // ignore non-response-time alert

@@ -30,61 +30,49 @@
   </div>
 
   <h2 ng-show="vm.resourceList.length > 0" class="text-center hk-fade-in">Current status of your URLs</h2>
-
-  <div class="row hk-urls-list-labels" ng-class="{'hk-fade-in': vm.resourceList}" ng-show="vm.resourceList.length > 0">
-    <div class="col-sm-6 text-left">
-      <button class="btn btn-link" tooltip="Sort" tooltip-trigger tooltip-placement="top" ng-click="vm.reverse = !vm.reverse">
-        URL (A-Z) <i class="fa" ng-class="vm.reverse ? 'fa-angle-up' : 'fa-angle-down'"></i>
-      </button>
-    </div>
-    <div class="col-sm-6 text-right">
+  <div class="row" ng-class="{'hk-fade-in': vm.resourceList}" ng-show="vm.resourceList.length > 0">
+    <div class="col-sm-12 text-right">
       <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.lastUpdateTimestamp | date:'HH:mm:ss'}}</span>
     </div>
   </div>
 
   <div ng-class="{'hk-fade-in': vm.resourceList}" infinite-scroll="vm.loadMoreItems()"
        infinite-scroll-listen-for-event="list:updated">
-    <!--<div class="hk-url-item" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">-->
-    <div class="hk-url-item" ng-repeat="res in vm.resourceList track by res.properties.url">
-      <div class="panel panel-default hk-url-heading">
-        <a href="/hawkular-ui/url/availability/{{res.id}}/{{hkParams.timeOffset}}">{{res.properties.url}}</a>
-        <span ng-show="res.properties['trait-collected-on']" class="pull-right">{{res.traits}}</span>
-      </div>
-
-      <div class="panel panel-default hk-summary">
-        <div class="row">
-          <div class="col-sm-3 hk-summary-item">
-            <a href="/hawkular-ui/url/alerts/{{res.id}}/{{hkParams.timeOffset}}">
-              <span class="hk-data">{{(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length || 0}} <i class="fa fa-flag" ng-show="(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length > 0"></i></span>
-              <span class="hk-item">Unresolved Alerts</span>
-            </a>
-          </div>
-          <div class="col-sm-3 hk-summary-item">
-            <a href="/hawkular-ui/url/availability/{{res.id}}/{{hkParams.timeOffset}}">
-              <span class="hk-data" ng-show="res.responseTime.length > 0"><i class="fa " ng-class="res.isUp ? 'fa-arrow-up' : 'fa-arrow-down'"></i>{{res.isUp ? 'Up' : 'Down'}}</span>
-              <span class="hk-data spinner" ng-hide="res.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-              <span class="hk-item">Current Availability</span>
-            </a>
-          </div>
-          <div class="col-sm-3 hk-summary-item">
-            <a href="/hawkular-ui/url/availability/{{res.id}}/{{hkParams.timeOffset}}">
-              <span class="hk-data" ng-show="res.lastDowntime > 0" am-time-ago="res.lastDowntime" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1000" tooltip="{{ res.lastDowntime | date:'d MMM yyyy, HH:mm:ss' }}"></span>
-              <span class="hk-data" ng-show="res.lastDowntime <= 0">n/a</span>
-              <span class="hk-item">Last Downtime</span>
-            </a>
-          </div>
-          <div class="col-sm-3 hk-summary-item">
-            <a href="/hawkular-ui/url/response-time/{{res.id}}/{{hkParams.timeOffset}}">
-              <span class="hk-data" ng-show="res.responseTime.length > 0 && res.responseTime[0].value >= 0">{{res.responseTime[0].value}} <span>ms</span></span>
-              <span class="hk-data" ng-show="res.responseTime.length > 0 && res.responseTime[0].value < 0">n/a</span>
-              <span class="hk-data spinner" ng-hide="res.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
-              <span class="hk-item">Current Response Time</span>
-            </a>
+    <div class="row hk-control-actions-bar" ng-show="vm.resourceList">
+      <div class="col-md-1">
+        <div class="btn-group bootstrap-select hk-container-separator sort-items">
+          <button type="button" class="btn dropdown-toggle btn-default" data-toggle="dropdown" title="{{vm.sorting[vm.currentSortIndex]}}">
+            <span class="filter-option pull-left">{{vm.sorting[vm.currentSortIndex]}}</span>
+            <span class="caret"></span>
+          </button>
+          <div class="dropdown-menu open">
+            <ul class="dropdown-menu inner" role="menu">
+              <li ng-repeat="(index, oneSortType) in vm.sorting">
+                <a ng-click="vm.changeSortByIndex(index)">
+                  <span class="text">{{oneSortType}}</span>
+                  <span class="glyphicon glyphicon-ok check-mark"></span>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
-        <button class="btn btn-link hk-delete" tooltip="Delete" tooltip-trigger tooltip-placement="left"  ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
+      </div>
+      <div class="col-md-11">
+        <table-filters
+          active-filters="vm.activeFilters"
+          filtered-resource-list="vm.filteredResourceList"
+          resource-list="vm.resourceList"
+          filter-by="vm.filterBy(filters)"
+        >
+        </table-filters>
       </div>
     </div>
+    <!--<div class="hk-url-item" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">-->
+    <url-list-summary
+      resource-list="vm.filteredResourceList"
+      alert-list="vm.alertList"
+      delete-resource="vm.deleteResource(res)"
+      ></url-list-summary>
     <div class="spinner" ng-show="vm.loadingMoreItems"></div>
   </div>
 
