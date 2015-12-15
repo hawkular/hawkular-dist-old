@@ -4,7 +4,7 @@
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
   <div class="hk-urls-list" ng-class="{'hk-urls-empty text-center': vm.resourceList.length === 0, 'hk-fade-in': vm.resourceList}" ng-show="vm.resourceList">
-    <h1 class="text-center">Hello {{userDetails.firstName}}!</h1>
+    <h1 class="text-center">Hello {{currentPersona.owner ? currentPersona.name : userDetails.firstName}}!</h1>
     <i class="fa fa-line-chart" ng-show="vm.resourceList.length === 0"></i>
     <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a URL that you want to monitor.</h2>
     <form class="form-horizontal hk-add-url" name="addUrlForm" role="form" novalidate ng-submit="vm.addUrl(vm.resourceUrl)">

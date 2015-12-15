@@ -91,6 +91,8 @@ module HawkularMetrics {
         currentPersona && this.getResourceList(currentPersona.id));
       }
 
+      $scope.$on('SwitchedPersona', () => this.getResourceList());
+
       this.autoRefresh(20);
     }
 

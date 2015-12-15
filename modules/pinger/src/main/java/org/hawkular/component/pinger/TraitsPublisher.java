@@ -53,7 +53,7 @@ public class TraitsPublisher {
 
         try {
             Resources.ReadWrite resourceAccess = inventory.tenants().get(dest.getTenantId()).environments()
-                    .get(dest.getEnvironmentId()).feedlessResources();
+                    .get(dest.getEnvironmentId()).resources();
 
             Resource resource = resourceAccess.get(dest.getResourceId()).entity();
 
@@ -76,7 +76,7 @@ public class TraitsPublisher {
                 updateBuilder.withProperty(TRAIT_PROPERTY_PREFIX + "powered-by", poweredBy);
             }
 
-            inventory.tenants().get(dest.getTenantId()).environments().get(dest.getEnvironmentId()).feedlessResources()
+            inventory.tenants().get(dest.getTenantId()).environments().get(dest.getEnvironmentId()).resources()
                     .update(dest.getResourceId(), updateBuilder.build());
         } catch (EntityNotFoundException e) {
             Log.LOG.iResourceNotFound(dest.getResourceId(), dest.getTenantId());

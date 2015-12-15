@@ -63,6 +63,8 @@ module HawkularMetrics {
 
       this.serverStatusArray = Object.keys(ServerStatus).map(type => ServerStatus[type]);
 
+      $scope.$on('SwitchedPersona', () => this.getResourceList());
+
       this.setConfigForDataTable();
       this.autoRefresh(20);
     }
