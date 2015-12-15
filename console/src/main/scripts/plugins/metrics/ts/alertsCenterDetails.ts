@@ -75,7 +75,9 @@ module HawkularMetrics {
         let alert = alerts.alertList[0];
         this.detailAlert = alert;
         this.description = alert.trigger.description;
-        this.feedId = alert.context.resourceName.split('/')[0];
+        let resourcePath = alert.context.resourcePath;
+        this.feedId = resourcePath.indexOf('/f;') === -1 ? '' :
+          resourcePath.substring(resourcePath.lastIndexOf('/f;')+3, resourcePath.indexOf('/r;'));
         this.status = alert.status;
         if (this.status === 'OPEN') {
           this.statuses = ['OPEN', 'ACKNOWLEDGED', 'RESOLVED'];
@@ -181,16 +183,15 @@ module HawkularMetrics {
     }
 
     public getSparklineData(alert: IAlert) {
-      let offset = Math.ceil((60 * 60 * 1000 - alert.durationTime) / 2);
+      // show 30 mins before and after the alert (this helps always having 1h of data too)
+      let offset = 30 * 60 * 1000;
       // Works for Accum GC.. possibly others ?
       let metricsMethod = !!alert.dataId.match(new RegExp('accumulated', 'i')) ?
         'retrieveCounterRateMetrics' : 'retrieveGaugeMetrics';
       this.MetricsService[metricsMethod](this.$rootScope.userDetails.id,
         alert.dataId,
         alert.start - offset, alert.end + offset, 60).then((resource) => {
-          if (resource.length) {
-            this['alertChartData'] = resource;
-          }
+          this['alertChartData'] = resource;
         });
     }
 
