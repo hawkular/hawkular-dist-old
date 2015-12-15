@@ -61,6 +61,13 @@ module HawkularMetrics {
       }, (resource:IResourcePath) => {
         this.resourcePath = resource.path;
         this.$rootScope.resourcePath = this.resourcePath;
+
+        // Optimally built-in triggers should be created outside of the UI, server-side. There is no good reason
+        // a user should have to open the UI and navigate to a resource just to start alerting on that resource. It
+        // should start automatically when the resource is discovered/created/imported. But, until that approach is
+        // in place we'll do it here.  This is still an improvement from before, when the user had to actually
+        // click on the 'Alert Settings' link for the resource.
+        this.loadTriggers();
       });
 
       $scope.tabs = this;
@@ -135,12 +142,6 @@ module HawkularMetrics {
         this.hasGeneratedError = true;
       });
 
-      // Optimally built-in triggers should be created outside of the UI, server-side. There is no good reason
-      // a user should have to open the UI and navigate to a resource just to start alerting on that resource. It
-      // should start automatically when the resource is discovered/created/imported. But, until that approach is
-      // in place we'll do it here.  This is still an improvement from before, when the user had to actually
-      // click on the 'Alert Settings' link for the resource.
-      this.loadTriggers();
     }
 
     public updateTab(newTabId:string) {

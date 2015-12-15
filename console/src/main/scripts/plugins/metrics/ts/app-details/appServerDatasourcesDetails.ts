@@ -386,13 +386,11 @@ module HawkularMetrics {
 
     public loadTriggers(currentTenantId?:TenantId):any {
       _.forEach(this.resourceList, function (res:IResource, idx) {
-
-        this.loadDatasourceTriggers(this.feedId + '/' + res.id);
-
+        this.loadDatasourceTriggers(this.feedId + '/' + res.id, res.path);
       }, this);
     }
 
-    private loadDatasourceTriggers(resId:ResourceId):void {
+    private loadDatasourceTriggers(resId: ResourceId, resPath: ResourcePath):void {
       // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
 
       let connTriggerPromise = this.HawkularAlertsManager.existTrigger(resId + '_ds_conn').then(() => {
@@ -416,7 +414,7 @@ module HawkularMetrics {
               alertType: 'DSCONN',
               resourceType: 'DataSource',
               resourceName: resId,
-              resourcePath: this.$rootScope.resourcePath,
+              resourcePath: resPath,
               triggerType: 'Threshold'
             }
           },
@@ -470,6 +468,7 @@ module HawkularMetrics {
               alertType: 'DSRESP',
               resourceType: 'DataSource',
               resourceName: resId,
+              resourcePath: resPath,
               triggerType: 'Threshold'
             }
           },
@@ -522,6 +521,7 @@ module HawkularMetrics {
               alertType: 'DSCREATE',
               resourceType: 'DataSource',
               resourceName: resId,
+              resourcePath: resPath,
               triggerType: 'Threshold'
             }
           },
