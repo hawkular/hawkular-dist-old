@@ -1,28 +1,41 @@
 <div class="col-lg-3 col-md-4">
   <div class="card-pf card-pf-utilization">
     <div class="card-pf-heading">
-      <h2 class="card-pf-title">Alerts <span class="label label-default">{{tc.alertList.length}}</span></h2>
-
+      <h2 class="card-pf-title">Alerts <span class="label label-default" ng-show="tc.alertList.length">{{tc.alertList.length}}</span></h2>
     </div>
-    <div class="card-pf-body">
-      <div ng-show="tc.alertList.length > 0">
-        <div class="hk-box-v-item" ng-repeat="alert in tc.alertList">
-          <div class="hk-display-table">
-            <div class="hk-icon-container">
-              <i class="fa fa-exclamation-triangle hk-warning"></i>
-            </div>
-            <div class="hk-info-container">
-              <div class="hk-info-heading">{{alert.trigger.description | truncate: 50}}</div>
-              <p class="hk-info-info">{{alert.ctime | date:'d MMM yyyy, HH:mm'}}</p>
-            </div>
-            <div class="hk-icon-container">
-              <a ng-href="{{tc.getAlertRoute(alert.id)}}" class="btn btn-link" tooltip-trigger tooltip="View Details">
-                <i class="fa fa-chevron-circle-right"></i>
-              </a>
-            </div>
+
+    <!-- No Alerts -->
+    <div class="card-pf-body" ng-hide="tc.alertList.length > 0">
+      <div class="hk-box-v-item">
+        <div class="hk-display-table">
+          <div class="hk-icon-container">
+            <i class="fa fa-flag gray"></i>
+          </div>
+          <div class="hk-info-container">
+            <p class="hk-info-info">No Alerts.</p>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="card-pf-body" ng-show="tc.alertList.length > 0">
+      <div class="hk-box-v-item" ng-repeat="alert in tc.alertList">
+        <div class="hk-display-table">
+          <div class="hk-icon-container">
+            <i class="fa fa-exclamation-triangle hk-warning"></i>
+          </div>
+          <div class="hk-info-container">
+            <div class="hk-info-heading">{{alert.trigger.description | truncate: 50}}</div>
+            <p class="hk-info-info">{{alert.ctime | date:'d MMM yyyy, HH:mm'}}</p>
+          </div>
+          <div class="hk-icon-container">
+            <a ng-href="{{tc.getAlertRoute(alert.id)}}" class="btn btn-link" tooltip-trigger tooltip="View Details">
+              <i class="fa fa-chevron-circle-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
