@@ -128,6 +128,24 @@ module HawkularMetrics {
       });
     }
 
+    public static getMultiplier(response):number {
+      let ret = 1;
+      let min = Number.MAX_VALUE;
+      _.forEach(response, (point:IChartDataPoint) => {
+        if (angular.isNumber(point.min)) {
+          min = Math.min(min, point.min);
+        }
+      });
+
+      while (min>1000) {
+        if ((min/1000) > 1) {  // TODO 1000 / 1024 depending on input
+          min = min/1000;
+          ret*=1000; // TODO return an index and then use this to compute unit + scale
+        }
+      }
+      return ret;
+    }
+
     /**
      * RetrieveGaugeMetrics
      * @param personaId

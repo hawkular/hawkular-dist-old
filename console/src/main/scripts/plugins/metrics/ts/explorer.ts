@@ -23,7 +23,7 @@ module HawkularMetrics {
   export class ExplorerController implements IRefreshable {
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$routeParams',
           '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'MetricsService',
-          'ErrorsManager', '$q'];
+          'ErrorsManager', '$q', '$sessionStorage', '$localStorage'];
 
 
     public feeds = ['Test','Data'];
@@ -40,6 +40,8 @@ module HawkularMetrics {
     private buttonActive = false;
     public startTimeStamp:TimestampInMillis;
     public endTimeStamp:TimestampInMillis;
+    private chartType = [];
+    private chartUnit = [];
 
 
 
@@ -55,8 +57,28 @@ module HawkularMetrics {
                 private HawkularMetric: any,
                 private MetricsService:IMetricsService,
                 private ErrorsManager:IErrorsManager,
-                private $q:ng.IQService) {
+                private $q:ng.IQService,
+                private $sessionStorage:any,
+                private $localStorage:any
+    ) {
       $scope.exc = this;
+
+      // Check if we have charts in local storage
+      // and set them up if so.
+      let tmp = $localStorage.hawkular_charts;
+      if (!angular.isUndefined(tmp)) {
+        this.charts = tmp;
+        _.forEach(tmp, (metric:any) => {
+            this.$log.log('Found metric in storage: ' + metric.id);
+        });
+        if ($rootScope.currentPersona) {
+          this.refresh();
+        } else {
+          // No persona yet injected -> wait for it.
+          $rootScope.$watch('currentPersona',
+              (currentPersona) => currentPersona && this.refresh());
+        }
+      }
 
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
@@ -154,10 +176,17 @@ module HawkularMetrics {
       // Only add if not empty and not yet in the array.
       if (this.selectedMetric != null && this.selectedMetric !== '' &&
            this.charts.indexOf(this.selectedMetric) === -1) {
-        this.charts.push(this.selectedMetric);
+        this.addNewChartToController(this.selectedMetric);
+        this.addMetricToStorage();
         this.refresh();
       }
     }
+
+    private addNewChartToController(metric) {
+      this.charts.push(metric);
+      this.chartType[metric.id] = metric.type.type;
+      this.chartUnit[metric.id] = metric.type.unit;
+    };
 
     public removeChart(chart) {
       this.$log.log('Remove ' + chart);
@@ -182,29 +211,61 @@ module HawkularMetrics {
 
       _.forEach(this.charts, (res:any) => {
           let theId = res.id;
-          //if (res.type.type === 'GAUGE') {
+          // TODO potentially replace with MetricsService....
+          if (res.type.type === 'GAUGE') {
             this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
               gaugeId: theId,
               start: this.startTimeStamp,
               end: this.endTimeStamp,
-              buckets: 60
+              buckets: 120
             }, (data) => {
 //              this.$log.log('Got data: ' + data);
 
               if (data.length) {
-                this.chartData[theId] = data;
+                let scale = 1 /  MetricsService.getMultiplier(data);
+                this.chartData[theId] = MetricsService.formatBucketedChartOutput(data,scale);
               }
             }, this);
 
-          //} else if (res.type.type == "COUNTER") {
-        //
-        //} else {
-        //  this.$log.log("Unknown type " + res.type.type);
-        //}
+          } else if (res.type.type === 'COUNTER') {
+            this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+              counterId: theId,
+              start: this.startTimeStamp,
+              end: this.endTimeStamp,
+              buckets: 120
+            }, (data) => {
+//              this.$log.log('Got data: ' + data);
+
+              if (data.length) {
+
+                this.chartData[theId] = MetricsService.formatBucketedChartOutput(data);
+              }
+            }, this);
+          } else if (res.type.type === 'AVAILABILITY') {
+            this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
+              availabilityId: theId,
+              start: this.startTimeStamp,
+              end: this.endTimeStamp,
+              buckets: 120
+            }, (data) => {
+//              this.$log.log('Got data: ' + data);
+
+              if (data.length) {
+                this.chartData[theId] = MetricsService.formatBucketedChartOutput(data);
+              }
+            }, this);
+
+        } else {
+          this.$log.log('Unknown type ' + res.type.type);
+        }
       });
     }
 
 
+    private addMetricToStorage():void {
+        this.$log.log('addMetricToStorage');
+      this.$localStorage.hawkular_charts = this.charts;
+    }
   }
 
   //_module.config(['ngClipProvider', (ngClipProvider) => {

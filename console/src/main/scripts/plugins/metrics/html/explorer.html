@@ -74,14 +74,18 @@
             </a>
             </div>
             <hawkular-chart
+                    ng-if="exc.chartType[chart.id] !=='AVAILABILITY'"
                 data="exc.chartData[chart.id]"
                 chart-type="line"
                 hide-high-low-values="false"
                 use-zero-min-value="false"
-                y-axis-units="chart.type.unit"
+                y-axis-units="{{chart.type.unit}}"
                 chart-height="250">
             </hawkular-chart>
-
+            <availability-chart ng-if="exc.chartType[chart.id] ==='AVAILABILITY'"
+                data="exc.chartData[chart.id]"
+                chart-height="250">
+            </availability-chart>
     </div>
 
   </div>
