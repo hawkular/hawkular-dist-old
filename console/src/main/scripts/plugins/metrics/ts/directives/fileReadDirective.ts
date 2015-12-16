@@ -42,7 +42,6 @@ module HawkularMetrics {
             console.error('Error occurred in fileread directive: '+error);
           };
 
-          console.log(`Reading file: ${theFile.name} to deploy. Size: ${theFile.size}`);
           reader.readAsArrayBuffer(theFile);
         });
       }

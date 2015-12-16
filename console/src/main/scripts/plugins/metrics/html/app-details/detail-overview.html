@@ -24,7 +24,7 @@
     <!-- Server alerts -->
     <div class="col-lg-3 col-md-4">
       <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)"
-                     resource-id="vm.$routeParams.resourceId" title="Server">
+                     resource-id="vm.$routeParams.feedId + '/' + vm.$routeParams.resourceId" title="Server">
       </hk-alert-info>
     </div>
     <!-- //Server alerts -->

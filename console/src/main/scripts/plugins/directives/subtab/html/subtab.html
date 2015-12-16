@@ -34,7 +34,7 @@
       </div>
     </div>
     <div class="hk-heading">
-      <h1 ng-init="isAppServerPage() ? getAppServerFromId(hkParams.resourceId) : getUrlFromId(hkParams.resourceId)">{{resourceName}}</h1>
+      <h1 ng-init="isAppServerPage() ? getAppServerFromId(hkParams.resourceId) : (!isAlertsPage() && getUrlFromId(hkParams.resourceId))">{{resourceName}}</h1>
       <h1 ng-show="isAlertsPage()">Alert Center</h1>
     </div>
     <div ng-transclude></div>

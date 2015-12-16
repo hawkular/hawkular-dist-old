@@ -36,7 +36,7 @@ module HawkularMetrics {
 
   export class MetricsAvailabilityController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', 'HawkularMetric',
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', '$location', 'HawkularMetric',
       'MetricsService', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
       'ErrorsManager', '$q', 'NotificationsService'];
 
@@ -60,6 +60,7 @@ module HawkularMetrics {
                 private $interval:ng.IIntervalService,
                 private $window:any,
                 private $log:ng.ILogService,
+                private $location:ng.ILocationService,
                 private HawkularMetric:any,
                 private MetricsService:any,
                 private $routeParams:any,
@@ -93,6 +94,7 @@ module HawkularMetrics {
           }
         });
       }
+      $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/url/url-list'));
       this.autoRefreshAvailability(20);
 
       $scope.$on(EventNames.REFRESH_AVAIL_CHART, (/*event*/) => {
