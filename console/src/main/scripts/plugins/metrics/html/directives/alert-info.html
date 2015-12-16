@@ -1,27 +1,30 @@
 <div class="card-pf card-pf-utilization">
   <div class="card-pf-heading">
-  <p class="card-pf-heading-details hk-definitions-link">
-    <a href="#" ng-show="resourceId" ng-href="/hawkular-ui/alerts-center-triggers/{{resourceId}}">
-      <i class="fa fa-cog"></i>Definitions
-    </a>
-  </p>
-  <h2 class="card-pf-title">{{title}} Alerts <span class="label label-default" ng-show="list.length">{{list.length}}</span></h2>
-</div>
+    <p class="card-pf-heading-details hk-definitions-link">
+      <a href="#" ng-show="resourceId" ng-href="/hawkular-ui/alerts-center-triggers/{{resourceId}}">
+        <i class="fa fa-cog"></i>Definitions
+      </a>
+    </p>
+    <h2 class="card-pf-title">{{title}} Alerts
+      <span class="label label-default" ng-show="list.length">{{list.length}}</span>
+    </h2>
+  </div>
 
-<!-- No Alerts -->
-<div class="card-pf-body" ng-hide="list.length">
-  <div class="hk-box-v-item">
-    <div class="hk-display-table">
-      <div class="hk-icon-container">
-        <i class="fa fa-flag gray"></i>
-      </div>
-      <div class="hk-info-container">
-        <p class="hk-info-info">No Alerts.</p>
+  <!-- No Alerts -->
+  <div class="card-pf-body" ng-hide="list.length">
+    <div class="hk-box-v-item">
+      <div class="hk-display-table">
+        <div class="hk-icon-container">
+          <i class="fa fa-flag gray"></i>
+        </div>
+        <div class="hk-info-container">
+          <p class="hk-info-info">No Alerts.</p>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Alerts exist -->
-<hk-alert-panel-list class="card-pf-body" hk-alert-list="list" ng-show="list.length"
-                      hk-limit="hkLimit"></hk-alert-panel-list>
+  <!-- Alerts exist -->
+  <hk-alert-panel-list class="card-pf-body" hk-alert-list="list" ng-show="list.length"
+                        hk-limit="hkLimit"></hk-alert-panel-list>
+</div>

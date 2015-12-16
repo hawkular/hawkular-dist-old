@@ -187,7 +187,6 @@ module HawkularMetrics {
             let latestData = _.last(resource);
             resourceData['activeWebSessions']['graph'] =
               MetricsService.formatBucketedChartOutput(resource, AppServerJvmDetailsController.BYTES2MB);
-            console.log(latestData['avg'], 'shdfsdkf');
             resourceData['activeWebSessions']['last'] = +latestData['avg'].toFixed(2);
           }
         })

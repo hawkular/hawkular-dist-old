@@ -251,7 +251,7 @@ module HawkularMetrics {
 
   export class MetricsAlertController {
     public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService', '$log', '$q',
-      '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
+      '$rootScope', '$routeParams', '$modal', '$interval', '$location', 'HkHeaderParser'];
 
     public alertList:any = [];
     public openSetup:any;
@@ -275,6 +275,7 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private $modal:any,
                 private $interval:ng.IIntervalService,
+                private $location:ng.ILocationService,
                 private HkHeaderParser:any) {
 
       this.$log.debug('querying data');
@@ -285,6 +286,7 @@ module HawkularMetrics {
       this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : (new Date()).getTime();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
       this.getAlerts();
+      $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/url/url-list'));
       this.autoRefresh(20);
     }
 

@@ -109,8 +109,6 @@ module HawkularMetrics {
     }
 
     public save(): void {
-      console.log('this.status: ' + this.status);
-      console.log('this.detailAlert.status: ' + this.detailAlert.status);
       if (this.status === this.detailAlert.status) {
         if (this.comments && this.comments.length > 0) {
           this.notes();
