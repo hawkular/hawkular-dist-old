@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular.nest</groupId>
     <artifactId>hawkular-nest-parent</artifactId>
-    <version>1.0.0.Alpha8</version>
+    <version>1.0.0.Alpha9-SNAPSHOT</version>
   </parent>
 
   <artifactId>hawkular-nest-distro</artifactId>
@@ -42,7 +42,7 @@
     <dependency>
       <groupId>org.hawkular.nest</groupId>
       <artifactId>hawkular-nest-wf-extension</artifactId>
-      <version>1.0.0.Alpha8</version>
+      <version>1.0.0.Alpha9-SNAPSHOT</version>
       <classifier>module</classifier>
       <type>zip</type>
     </dependency>
