@@ -66,7 +66,7 @@ module HawkularAccounts {
     }
 
     public create():void {
-      this.$window.location.href = '/hawkular/secret-store/v1/tokens/create?'
+      this.$window.location.href = '/secret-store/v1/tokens/create?'
         + 'Hawkular-Persona=' + encodeURI(this.$rootScope.currentPersona.id);
     }
 

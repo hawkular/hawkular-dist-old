@@ -93,6 +93,7 @@
     <version.org.hawkular.metrics>0.10.0.Final</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.10.1.Final</version.org.hawkular.inventory>
     <version.org.keycloak>1.6.1.Final</version.org.keycloak>
+    <version.org.keycloak.secretstore>1.0.4.Final</version.org.keycloak.secretstore>
     <version.org.testng>6.5.2</version.org.testng>
   </properties>
 
@@ -114,10 +115,16 @@
       </dependency>
 
       <dependency>
-        <groupId>org.hawkular.accounts</groupId>
-        <artifactId>hawkular-accounts-secret-store</artifactId>
-        <version>${version.org.hawkular.accounts}</version>
+        <groupId>org.keycloak.secretstore</groupId>
+        <artifactId>secret-store</artifactId>
+        <version>${version.org.keycloak.secretstore}</version>
         <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.keycloak.secretstore</groupId>
+        <artifactId>secret-store-undertow-filter</artifactId>
+        <version>${version.org.keycloak.secretstore}</version>
       </dependency>
 
       <dependency>

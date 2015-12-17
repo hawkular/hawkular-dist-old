@@ -122,7 +122,7 @@
         <include>org.hawkular.metrics:hawkular-metrics-component</include>
         <include>org.hawkular.commons:hawkular-commons-embedded-cassandra-ear</include>
         <include>org.hawkular.accounts:hawkular-accounts-events-backend:war</include>
-        <include>org.hawkular.accounts:hawkular-accounts-secret-store:war</include>
+        <include>org.keycloak.secretstore:secret-store:war</include>
       </includes>
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
