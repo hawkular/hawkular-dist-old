@@ -26,7 +26,7 @@ module HawkularMetrics {
 
     private autoRefreshPromise:ng.IPromise<number>;
     private resourceList;
-    public modalInstance;
+    public pendingOps: any = {};
     public alertList:any[] = [];
     public selectCount:number = 0;
     public lastUpdateTimestamp:Date;
@@ -76,6 +76,16 @@ module HawkularMetrics {
         _.bind(this.filterAlerts, this)
       );
       this.getAlerts();
+
+      $scope.$on('ExecuteOperationSuccess', (event, message, resource, operation) => {
+        this.pendingOps[resource] = false;
+        this.NotificationsService.success(message);
+      });
+
+      $scope.$on('ExecuteOperationError', (event, message, resource, operation) => {
+        this.pendingOps[resource] = false;
+        this.NotificationsService.error(message);
+      });
 
       this.autoRefresh(20);
     }
@@ -195,6 +205,8 @@ module HawkularMetrics {
             persona: this.$rootScope.currentPersona.id
           }
         };
+        item.selected = false;
+        this.pendingOps[item.path] = true;
         this.HawkularOps.performOperation(operation);
       });
     }
