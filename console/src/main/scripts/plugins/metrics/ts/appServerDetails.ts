@@ -252,7 +252,8 @@ module HawkularMetrics {
         });
       });
 
-      let nonHeapTriggerPromise = this.HawkularAlertsManager.existTrigger(qualifiedResourceId + '_jvm_nheap').then(() => {
+      let nonHeapTriggerPromise = this.HawkularAlertsManager.existTrigger(qualifiedResourceId + '_jvm_nheap')
+        .then(() => {
         this.$log.debug('Non Heap Used trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
@@ -328,7 +329,8 @@ module HawkularMetrics {
         });
       });
 
-      let garbageTriggerPromise = this.HawkularAlertsManager.existTrigger(qualifiedResourceId + '_jvm_garba').then(() => {
+      let garbageTriggerPromise = this.HawkularAlertsManager.existTrigger(qualifiedResourceId + '_jvm_garba')
+        .then(() => {
         this.$log.debug('GC trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
