@@ -78,6 +78,7 @@ public class WildFlyAgentServlet extends HttpServlet {
     private static final String AGENT_INSTALLER_PROPERTY_TARGET_LOCATION = "target-location";
     private static final String AGENT_INSTALLER_PROPERTY_MODULE_DIST = "module-dist";
     private static final String AGENT_INSTALLER_PROPERTY_SERVER_URL = "server-url";
+    private static final String AGENT_INSTALLER_PROPERTY_MANAGED_SERVER_NAME = "managed-server-name";
     private static final String AGENT_INSTALLER_PROPERTY_USERNAME = "username";
     private static final String AGENT_INSTALLER_PROPERTY_PASSWORD = "password";
     private static final String AGENT_INSTALLER_PROPERTY_SECURITY_KEY = "security-key";
@@ -185,6 +186,8 @@ public class WildFlyAgentServlet extends HttpServlet {
             new URL(serverUrl); // validates the URL - this throws an exception if the URL is invalid
 
             newProperties.put(AGENT_INSTALLER_PROPERTY_SERVER_URL, serverUrl);
+            newProperties.put(AGENT_INSTALLER_PROPERTY_MANAGED_SERVER_NAME,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_MANAGED_SERVER_NAME, null));
             newProperties.put(AGENT_INSTALLER_PROPERTY_MODULE_DIST,
                     getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_MODULE_DIST,
                             serverUrl + "/hawkular/wildfly-agent/download"));
