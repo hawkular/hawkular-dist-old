@@ -26,8 +26,10 @@
               <hk-detail-label-editor
                 confirm="vm.publishProperties(vm.serverInfo.properties)"
                 label="label"
-                close="vm.removeLabel(index)">
-                <span class="label label-primary label-clickable">{{label.key}} : {{label.value}}</span>
+                close="vm.closeDropDown()">
+                <span class="label label-primary label-clickable">{{label.key}} : {{label.value}}
+                  <span ng-click="vm.removeLabel(index, $event)" class="pficon-close remove-label"></span>
+                </span>
               </hk-detail-label-editor>
             </div>
         </dd>

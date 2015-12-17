@@ -24,7 +24,7 @@ module HawkularMetrics {
 
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log',
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', '$location',
       '$routeParams', 'HawkularAlertsManager', 'ErrorsManager', '$q', 'NotificationsService', 'MetricsService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
@@ -45,6 +45,7 @@ module HawkularMetrics {
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
+                private $location:ng.ILocationService,
                 private $routeParams:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
@@ -80,6 +81,7 @@ module HawkularMetrics {
           }
         });
       }
+      $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/url/url-list'));
       this.autoRefresh(20);
     }
 
@@ -92,6 +94,9 @@ module HawkularMetrics {
         _.remove(data.alertList, (item:IAlert) => {
           switch (item.context.alertType) {
             case 'PINGRESPONSE' :
+              item.alertType = item.context.alertType;
+              return false;
+            case 'PINGAVAIL' :
               item.alertType = item.context.alertType;
               return false;
             default :

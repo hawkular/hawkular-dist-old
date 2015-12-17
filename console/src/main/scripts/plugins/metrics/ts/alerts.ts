@@ -113,7 +113,7 @@ module HawkularMetrics {
   export class TriggerSetupController {
 
     public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService',
-      '$log', '$q', '$rootScope', '$routeParams', 'MetricsService'];
+      '$log', '$q', '$rootScope', '$routeParams', '$location', 'MetricsService'];
 
     public fullTrigger:any = {};
 
@@ -132,6 +132,7 @@ module HawkularMetrics {
                 protected $q:ng.IQService,
                 protected $rootScope:any,
                 protected $routeParams:any,
+                protected $location:any,
                 protected MetricsService:IMetricsService) {
       // TODO - update the pfly notification service to support more and category based notifications containers.
       this.$rootScope.hkNotifications = {alerts: []};
@@ -151,6 +152,8 @@ module HawkularMetrics {
       }), () => {
         this.isSettingChange = !angular.equals(this.adm, this.admBak);
       }, true);
+
+      $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/alerts-center-triggers/'));
     }
 
     public cancel():string {
@@ -248,7 +251,7 @@ module HawkularMetrics {
 
   export class MetricsAlertController {
     public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService', '$log', '$q',
-      '$rootScope', '$routeParams', '$modal', '$interval', 'HkHeaderParser'];
+      '$rootScope', '$routeParams', '$modal', '$interval', '$location', 'HkHeaderParser'];
 
     public alertList:any = [];
     public openSetup:any;
@@ -272,6 +275,7 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private $modal:any,
                 private $interval:ng.IIntervalService,
+                private $location:ng.ILocationService,
                 private HkHeaderParser:any) {
 
       this.$log.debug('querying data');
@@ -282,6 +286,7 @@ module HawkularMetrics {
       this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : (new Date()).getTime();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
       this.getAlerts();
+      $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/url/url-list'));
       this.autoRefresh(20);
     }
 

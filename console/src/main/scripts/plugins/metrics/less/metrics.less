@@ -34,6 +34,18 @@ body {
   padding-bottom: @grid-gutter-width/2;
 }
 
+.c3-danger {
+  path {
+    stroke: @brand-danger;
+    fill: @brand-danger;
+    fill-opacity: .4;
+  }
+}
+
+.toolbar-pf-results {
+  border: 0;
+}
+
 .container {
   padding: 0 @grid-gutter-width/4;
 }
@@ -648,6 +660,10 @@ a:hover {
     width: 275px;
   }
 
+  .sort-items {
+    margin-top: 15px;
+  }
+
   .hk-container-separator {
     border-right: 1px solid @table-border-color;
     float: left;
@@ -678,6 +694,11 @@ a:hover {
 
   + .hk-update {
     margin-top: 5px;
+  }
+
+  &.hk-separator {
+    border-top: 1px solid @table-border-color;
+    margin-top: 15px;
   }
 }
 
@@ -2214,6 +2235,17 @@ h2 + .tiles-view-pf {
 
 // URLs list screen
 
+.hk-urls-list-content {
+
+  .tiles-view-pf {
+    padding-top: 0;
+  }
+
+  .hk-control-actions-bar {
+    margin-bottom: 0;
+  }
+}
+
 .form-horizontal.hk-add-url {
   margin-bottom: @grid-gutter-width/4*3;
 
@@ -2529,13 +2561,30 @@ section {
   left: -40px;
   margin-top: 10px;
   padding: 15px;
-  width: 402px;
+  width: 332px;
+
+  .label-buttons {
+    margin-right: 8px;
+    margin-top: 10px;
+  }
 }
 
 .server-label {
   display: inline-block;
   padding-right: 5px;
   cursor:pointer;
+}
+
+.remove-label {
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+  margin-left: 5px;
+  margin-right: 0;
+  vertical-align: middle;
+
+  &:hover {
+    color: white;
+  }
 }
 
 

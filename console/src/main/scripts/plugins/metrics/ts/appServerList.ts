@@ -37,7 +37,7 @@ module HawkularMetrics {
     public headerLinks = {};
     public activeFilters:any[];
     public serverStatusArray:ServerStatus[];
-    public defaultTab:string='jvm';
+    public defaultTab:string = 'overview';
 
     constructor(private $location: ng.ILocationService,
                 private $scope: any,
@@ -63,6 +63,8 @@ module HawkularMetrics {
 
       this.serverStatusArray = Object.keys(ServerStatus).map(type => ServerStatus[type]);
 
+      $scope.$on('SwitchedPersona', () => this.getResourceList());
+
       this.setConfigForDataTable();
       this.autoRefresh(20);
     }
@@ -78,7 +80,7 @@ module HawkularMetrics {
       _self.activeFilters = [{
         id: 'byText',
         title: 'By text',
-        placeholder: 'Containts text',
+        placeholder: 'All',
         filterType: 'text'
       },
         {

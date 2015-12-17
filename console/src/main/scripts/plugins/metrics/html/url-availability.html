@@ -18,36 +18,39 @@
     <hk-alert-notification></hk-alert-notification>
 
     <!-- Summary -->
-    <h3 class="pull-left">Availability Status</h3>
-    <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i
-      class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
-
-    <div class="row row-cards-pf">
-      <div class="col-md-3">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <span class="card-pf-aggregate-status-count" ng-show="vm.uptimeRatio !== 1">{{vm.uptimeRatio * 100 | number:3}} %</span>
-            <span class="card-pf-aggregate-status-count" ng-show="vm.uptimeRatio === 1">100 %</span>
-            Availability
-          </h2>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <span class="card-pf-aggregate-status-count" ng-hide="vm.downtimeDuration">Always Up</span>
+    <div class="hk-info-top clearfix">
+      <h3 class="pull-left">Availability Status</h3>
+      <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i
+        class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}</span>
+    </div>
+    <div class="row">
+      <div class="col-lg-9">
+        <div class="row row-cards-pf">
+          <div class="col-md-3">
+            <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+              <h2 class="card-pf-title">
+                <span class="card-pf-aggregate-status-count" ng-show="vm.uptimeRatio !== 1">{{vm.uptimeRatio * 100 | number:3}} %</span>
+                <span class="card-pf-aggregate-status-count" ng-show="vm.uptimeRatio === 1">100 %</span>
+                Availability
+              </h2>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+              <h2 class="card-pf-title">
+                <span class="card-pf-aggregate-status-count" ng-hide="vm.downtimeDuration">Always Up</span>
             <span class="card-pf-aggregate-status-count" ng-show="vm.downtimeDuration" tooltip-trigger
                   tooltip-placement="top"
                   tooltip-popup-delay="1000"
                   tooltip="{{ vm.downtimeDuration | duration:'d\'d \'h\'h \'m\'min \'s\' s\'' }}"><ph
               ng-repeat="val in vm.downtimeDurationJson">{{val.value}}<span> {{val.unit}} </span></ph></span>
-            Total Downtime
-          </h2>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
+                Total Downtime
+              </h2>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+              <h2 class="card-pf-title">
             <span class="card-pf-aggregate-status-count" ng-hide="vm.lastDowntime.valueOf() === 0 ||
               (vm.availabilityDataPoints.length === 1 && vm.availabilityDataPoints[0].value === 'down')"
                   am-time-ago="vm.lastDowntime" tooltip-trigger tooltip-placement="top" tooltip-popup-delay="1000"
@@ -60,76 +63,53 @@
             <span class="card-pf-aggregate-status-count" ng-show="!vm.lastDowntime || vm.lastDowntime.valueOf() === 0">
               Always Up
             </span>
-            Last Downtime
-          </h2>
+                Last Downtime
+              </h2>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
+              <h2 class="card-pf-title">
+                <span class="card-pf-aggregate-status-count">{{vm.downtimeCount}}</span> Downtime Events
+              </h2>
+            </div>
+          </div>
+        </div>
+        <!-- /row -->
+
+        <!-- Availability Chart -->
+        <div class="hk-info-top clearfix">
+          <h3 class="pull-left">Metrics</h3>
+
+          <div class="hk-update pull-right">
+            <button ng-click="vm.refreshAvailPageNow(vm.$routeParams.resourceId)" class="btn btn-link hk-chart-update"
+                    tooltip-trigger tooltip-placement="top" tooltip-append-to-body="true" tooltip="Update chart">
+              <i class="fa fa-refresh"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel panel-default hk-graph">
+          <h2>Availability</h2>
+
+          <div class="hk-graph-container hk-graph-availability">
+            <availability-chart
+              start-timestamp="{{vm.startTimeStamp}}"
+              end-timestamp="{{vm.endTimeStamp}}"
+              data="vm.availabilityDataPoints">
+            </availability-chart>
+          </div>
+          <div class="hk-legend text-left hk-legend-availability">
+            <span><span class="hk-legend-square hk-green"></span>Available</span>
+            <span><span class="hk-legend-square hk-red"></span>Down</span>
+            <span><span class="hk-legend-square hk-gray-light"></span>Unknown</span>
+          </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
-          <h2 class="card-pf-title">
-            <span class="card-pf-aggregate-status-count">{{vm.downtimeCount}}</span> Downtime Events
-          </h2>
-        </div>
-      </div>
-    </div>
-    <!-- /row -->
-
-    <!-- Alerts -->
-    <div class="hk-info-top clearfix">
-      <h3 class="pull-left" tooltip-trigger tooltip="Expand/collapse">
-        <button class="btn btn-link hk-trigger" ng-click="showAllAlerts = !showAllAlerts">
-          <i ng-show="vm.alertList.length" ng-class="showAllAlerts ? 'fa fa-minus-square-o':'fa fa-plus-square-o'"></i>
-          Availability Alerts
-          <ng-span ng-show="vm.alertList.length">
-            ({{showAllAlerts ? vm.alertList.length : vm.min(vm.alertList.length, 3)}} of
-            {{vm.alertList.length}})
-          </ng-span>
-        </button>
-      </h3>
-      <span class="hk-settings pull-left">
-          <a ng-href="/hawkular-ui/alerts-center-triggers/{{vm.$routeParams.resourceId}}">
-            <i class="fa fa-cog"></i>Definitions
-          </a>
-      </span>
-    </div>
-
-    <div class="clearfix">
-      <!-- No Alerts -->
-      <div class="panel panel-default alert alert-info" ng-show="vm.alertList.length === 0">
-        <div class="hk-alert-icon"><i class="fa fa-flag gray"></i></div>
-        <div class="hk-event">No Alerts.</div>
-      </div>
-      <!-- Alerts exist -->
-      <hk-alert-panel-list class="clearfix" hk-alert-list="vm.alertList"
-                           hk-limit="(showAllAlerts ? 100000 : 3)"></hk-alert-panel-list>
-    </div>
-
-    <!-- Availability Chart -->
-    <div class="hk-info-top clearfix">
-      <h3 class="pull-left">Metrics</h3>
-
-      <div class="hk-update pull-right">
-        <button ng-click="vm.refreshAvailPageNow(vm.$routeParams.resourceId)" class="btn btn-link hk-chart-update"
-                tooltip-trigger tooltip-placement="top" tooltip-append-to-body="true" tooltip="Update chart">
-          <i class="fa fa-refresh"></i>
-        </button>
-      </div>
-    </div>
-
-    <div class="panel panel-default hk-graph">
-      <h2>Availability</h2>
-
-      <div class="hk-graph-container hk-graph-availability">
-        <availability-chart
-          start-timestamp="{{vm.startTimeStamp}}"
-          end-timestamp="{{vm.endTimeStamp}}"
-          data="vm.availabilityDataPoints">
-        </availability-chart>
-      </div>
-      <div class="hk-legend text-left hk-legend-availability">
-        <span><span class="hk-legend-square hk-green"></span>Available</span>
-        <span><span class="hk-legend-square hk-red"></span>Down</span>
-        <span><span class="hk-legend-square hk-gray-light"></span>Unknown</span>
+      <div class="col-lg-3">
+        <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)"
+                       resource-id="vm.$routeParams.resourceId" title="Url">
+        </hk-alert-info>
       </div>
     </div>
 

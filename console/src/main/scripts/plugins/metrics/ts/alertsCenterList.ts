@@ -74,6 +74,8 @@ module HawkularMetrics {
         currentPersona && this.getAlerts());
       }
 
+      $scope.$on('SwitchedPersona', () => this.getAlerts());
+
     }
 
     private autoRefresh(intervalInSeconds:number):void {

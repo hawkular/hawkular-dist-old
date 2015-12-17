@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular</artifactId>
-    <version>1.0.0.Alpha8-SNAPSHOT</version>
+    <version>1.0.0.Alpha9-SNAPSHOT</version>
   </parent>
 
   <artifactId>hawkular-dist</artifactId>
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>org.hawkular.nest</groupId>
       <artifactId>hawkular-nest-distro</artifactId>
-      <version>1.0.0.Alpha8-SNAPSHOT</version>
+      <version>1.0.0.Alpha9-SNAPSHOT</version>
       <classifier>distribution</classifier>
       <type>zip</type>
     </dependency>
@@ -80,19 +80,19 @@
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-wildfly-agent-download</artifactId>
-      <version>1.0.0.Alpha8-SNAPSHOT</version>
+      <version>1.0.0.Alpha9-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-pinger</artifactId>
-      <version>1.0.0.Alpha8-SNAPSHOT</version>
+      <version>1.0.0.Alpha9-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-avail-creator</artifactId>
-      <version>1.0.0.Alpha8-SNAPSHOT</version>
+      <version>1.0.0.Alpha9-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
@@ -118,7 +118,7 @@
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-console</artifactId>
-      <version>1.0.0.Alpha8-SNAPSHOT</version>
+      <version>1.0.0.Alpha9-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>

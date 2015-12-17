@@ -91,7 +91,7 @@ public class PingManager {
         // we use just an observable inventory here, because it allows us to see all the tenants. This essentially
         // circumvents any authz present on the inventory.
         // We need that though because pinger doesn't have storage of its own and is considered "trusted", so it's ok.
-        Set<Resource> urls = inventory.tenants().getAll().allResourceTypes().getAll(With.id(PingDestination.URL_TYPE))
+        Set<Resource> urls = inventory.tenants().getAll().resourceTypes().getAll(With.id(PingDestination.URL_TYPE))
                 .resources().getAll().entities();
         Log.LOG.iInitializedWithUrls(urls.size());
 

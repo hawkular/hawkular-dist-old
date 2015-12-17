@@ -55,6 +55,8 @@ module HawkularMetrics {
         }
       });
 
+      $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/app/app-list'));
+
       HawkularInventory.ResourceUnderFeed.get({
         feedId: this.$routeParams.feedId,
         resourcePath: this.$routeParams.resourceId + '~~'
@@ -72,7 +74,7 @@ module HawkularMetrics {
 
       $scope.tabs = this;
 
-      let experimentalTabs = ['overview', 'platform'];
+      let experimentalTabs = ['platform'];
       $rootScope.$watch('isExperimental', (isExperimental) => {
         this.$timeout(() => {
           _.forEach(this.availableTabs, (tab: any) => {
@@ -85,7 +87,7 @@ module HawkularMetrics {
 
       this.availableTabs = [
         {
-          id: 'overview', name: 'Overview', enabled: this.$rootScope.isExperimental,
+          id: 'overview', name: 'Overview', enabled: true,
           src: 'plugins/metrics/html/app-details/detail-overview.html',
           controller: HawkularMetrics.AppServerOverviewDetailsController
         },

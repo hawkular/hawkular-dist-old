@@ -128,6 +128,24 @@ module HawkularMetrics {
       });
     }
 
+
+    public static formatResponseTimeData(response, multiplier?: number):IChartDataPoint[] {
+      multiplier = multiplier || 1;
+      return _.map(response, (point:IChartDataPoint) => {
+        return {
+          timestamp: point.timestamp,
+          date: new Date(point.timestamp),
+          value: !angular.isNumber(point.value) ? 0 : point.value * multiplier,
+          avg: (point.empty) ? 0 : point.avg * multiplier,
+          min: !angular.isNumber(point.min) ? 0 : point.min * multiplier,
+          max: !angular.isNumber(point.max) ? 0 : point.max * multiplier,
+          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th * multiplier,
+          median: !angular.isNumber(point.median) ? 0 : point.median * multiplier,
+          empty: point.empty
+        };
+      });
+    }
+
     public static getMultiplier(response):number {
       let ret = 1;
       let min = Number.MAX_VALUE;
@@ -137,14 +155,15 @@ module HawkularMetrics {
         }
       });
 
-      while (min>1000) {
-        if ((min/1000) > 1) {  // TODO 1000 / 1024 depending on input
-          min = min/1000;
-          ret*=1000; // TODO return an index and then use this to compute unit + scale
+      while (min > 1000) {
+        if ((min / 1000) > 1) {  // TODO 1000 / 1024 depending on input
+          min = min / 1000;
+          ret *= 1000; // TODO return an index and then use this to compute unit + scale
         }
       }
       return ret;
     }
+
 
     /**
      * RetrieveGaugeMetrics
