@@ -69,7 +69,7 @@
             <th ng-class="{'sorting_asc': ac.sortField == 'severity' && ac.sortAsc, 'sorting_desc': ac.sortField == 'severity' && !ac.sortAsc, 'sorting': ac.sortField != 'severity'}" ng-click="ac.sortBy('severity')">Severity</th>
             <th ng-class="{'sorting_asc': ac.sortField == 'trigger.description' && ac.sortAsc, 'sorting_desc': ac.sortField == 'trigger.description' && !ac.sortAsc, 'sorting': ac.sortField != 'trigger.description'}" ng-click="ac.sortBy('trigger.description')">Description</th>
             <th ng-class="{'sorting_asc': ac.sortField == 'ctime' && ac.sortAsc, 'sorting_desc': ac.sortField == 'ctime' && !ac.sortAsc, 'sorting': ac.sortField != 'ctime'}" ng-click="ac.sortBy('ctime')" ng-click="ac.sortBy('ctime')">Created</th>
-            <th ng-class="{'sorting_asc': ac.sortField == 'context.resourceName' && ac.sortAsc, 'sorting_desc': ac.sortField == 'context.resourceName' && !ac.sortAsc, 'sorting': ac.sortField != 'context.resourceName'}" ng-click="ac.sortBy('context.resourceName')">Resource Name</th>
+            <th ng-class="{'sorting_asc': ac.sortField == 'context.resourceName' && ac.sortAsc, 'sorting_desc': ac.sortField == 'context.resourceName' && !ac.sortAsc, 'sorting': ac.sortField != 'context.resourceName'}" ng-click="ac.sortBy('context.resourceName')">Resource</th>
             <th></th>
           </tr>
           </thead>
@@ -81,7 +81,8 @@
             <td>{{alert.severity|firstUpper}}</td>
             <td>{{alert.trigger.description| truncate: 50}}</td>
             <td>{{alert.ctime | date:'d MMM yyyy, HH:mm'}}</td>
-            <td>{{alert.context.resourceName | truncate: 30 : false : 'middle'}}</td>
+            <td><a ng-href="{{ac.getResourceRoute(alert.trigger)}}">
+              {{alert.context.resourceName | truncate: 30 : false : 'middle'}}</a></td>
             <td><a class="btn btn-link"><i class="fa fa-chevron-circle-right fa-lg"
                                            tooltip="View Details" tooltip-trigger tooltip-placement="top"
                                            ng-click="ac.showDetailPage(alert.id)">

@@ -155,6 +155,41 @@ module HawkularMetrics {
       }
     }
 
+    public getResourceRoute(trigger:IAlertTrigger):string {
+      let route = 'unknown-resource-type';
+      let encodedId = this.encodeResourceId(trigger.id);
+
+      switch (trigger.context.resourceType) {
+        case 'App Server' :
+          route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/jvm';
+          break;
+        case 'App Server Deployment' :
+          route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/deployments';
+          break;
+        case 'DataSource' :
+          let resIdPart = trigger.context.resourceName.split('~/')[0];
+          route = '/hawkular-ui/app/app-details/' + resIdPart + '/datasources';
+          break;
+        case 'URL' :
+          let parts = trigger.id.split('_trigger_');
+          let resourceId = parts[0];
+          let segment = ( parts[1] === 'thres' ) ? 'response-time' : 'availability';
+          route = '/hawkular-ui/url/' + segment + '/' + trigger.id.split('_trigger_')[0];
+          break;
+      }
+
+      return route;
+    }
+
+    private encodeResourceId(resourceId:string):string {
+      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
+      //let encoded = encodeURIComponent(resourceId);
+      let encoded = resourceId;
+      while (encoded.indexOf('/') > -1) {
+        encoded = encoded.replace('/', '$');
+      }
+      return encoded;
+    }
 
     public ackSelected() {
       this.$log.log('Ack Selected: ' + this.selectCount);
