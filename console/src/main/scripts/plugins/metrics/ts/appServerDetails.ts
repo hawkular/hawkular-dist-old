@@ -166,20 +166,24 @@ module HawkularMetrics {
 
       let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
 
-      let resourceId:string = this.$routeParams.feedId + '/' + this.$routeParams.resourceId;
+      // The Wildfly agent generates resource IDs unique among the app servers it is monitoring because
+      // each resource is prefixed with the managedServerName.  But when dealing with multiple Wildfly-agent feeds
+      // a resource ID is not guaranteed to be unique.  So, we further qualify the resource ID with the feed ID and
+      // use this qualifiedResourceId in the trigger definition.
+      let qualifiedResourceId:string = this.$routeParams.feedId + '/' + this.$routeParams.resourceId;
       let metPrefix:string = MetricsService.getMetricId('M', this.$routeParams.feedId,
         this.$routeParams.resourceId + '~~','');
 
       // JVM TRIGGERS
 
-      let heapTriggerPromise = this.HawkularAlertsManager.existTrigger(resourceId + '_jvm_pheap').then(() => {
+      let heapTriggerPromise = this.HawkularAlertsManager.existTrigger(qualifiedResourceId + '_jvm_pheap').then(() => {
         this.$log.debug('Heap Used trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
         let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
         let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
 
-        let triggerId:string = resourceId + '_jvm_pheap';
+        let triggerId:string = qualifiedResourceId + '_jvm_pheap';
         let dataId:string = metPrefix + 'WildFly Memory Metrics~Heap Used';
         let heapMaxId:string = metPrefix + 'WildFly Memory Metrics~Heap Max';
 
@@ -187,7 +191,7 @@ module HawkularMetrics {
           trigger: {
             name: 'JVM Heap Used',
             id: triggerId,
-            description: 'JVM Heap Used for ' + resourceId,
+            description: 'JVM Heap Used for ' + qualifiedResourceId,
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
@@ -195,12 +199,12 @@ module HawkularMetrics {
             actions: {email: [defaultEmail]},
             firingMatch: 'ANY',
             tags: {
-              resourceId: resourceId
+              resourceId: qualifiedResourceId
             },
             context: {
               alertType: 'PHEAP',
               resourceType: 'App Server',
-              resourceName: resourceId,
+              resourceName: qualifiedResourceId,
               resourcePath: this.$rootScope.resourcePath,
               triggerType: 'RangeByPercent',
               triggerTypeProperty1: heapMaxId,
@@ -248,14 +252,14 @@ module HawkularMetrics {
         });
       });
 
-      let nonHeapTriggerPromise = this.HawkularAlertsManager.existTrigger(resourceId + '_jvm_nheap').then(() => {
+      let nonHeapTriggerPromise = this.HawkularAlertsManager.existTrigger(qualifiedResourceId + '_jvm_nheap').then(() => {
         this.$log.debug('Non Heap Used trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
         let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
         let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
 
-        let triggerId:string = resourceId + '_jvm_nheap';
+        let triggerId:string = qualifiedResourceId + '_jvm_nheap';
         let dataId:string = metPrefix + 'WildFly Memory Metrics~NonHeap Used';
         let heapMaxId:string = metPrefix + 'WildFly Memory Metrics~Heap Max';
 
@@ -263,7 +267,7 @@ module HawkularMetrics {
           trigger: {
             name: 'JVM Non Heap Used',
             id: triggerId,
-            description: 'JVM Non Heap Used for ' + resourceId,
+            description: 'JVM Non Heap Used for ' + qualifiedResourceId,
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
@@ -271,12 +275,12 @@ module HawkularMetrics {
             actions: {email: [defaultEmail]},
             firingMatch: 'ANY',
             tags: {
-              resourceId: resourceId
+              resourceId: qualifiedResourceId
             },
             context: {
               alertType: 'NHEAP',
               resourceType: 'App Server',
-              resourceName: resourceId,
+              resourceName: qualifiedResourceId,
               resourcePath: this.$rootScope.resourcePath,
               triggerType: 'RangeByPercent',
               triggerTypeProperty1: heapMaxId,
@@ -324,11 +328,11 @@ module HawkularMetrics {
         });
       });
 
-      let garbageTriggerPromise = this.HawkularAlertsManager.existTrigger(resourceId + '_jvm_garba').then(() => {
+      let garbageTriggerPromise = this.HawkularAlertsManager.existTrigger(qualifiedResourceId + '_jvm_garba').then(() => {
         this.$log.debug('GC trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
-        let triggerId:string = resourceId + '_jvm_garba';
+        let triggerId:string = qualifiedResourceId + '_jvm_garba';
         let dataId:string = metPrefix + 'WildFly Memory Metrics~Accumulated GC Duration';
 
         // Note that the GC metric is a counter, an ever-increasing value reflecting the total time the JVM
@@ -342,19 +346,19 @@ module HawkularMetrics {
           trigger: {
             name: 'JVM Accumulated GC Duration',
             id: triggerId,
-            description: 'Accumulated GC Duration for ' + resourceId,
+            description: 'Accumulated GC Duration for ' + qualifiedResourceId,
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             severity: 'HIGH',
             actions: {email: [defaultEmail]},
             tags: {
-              resourceId: resourceId
+              resourceId: qualifiedResourceId
             },
             context: {
               alertType: 'GARBA',
               resourceType: 'App Server',
-              resourceName: resourceId,
+              resourceName: qualifiedResourceId,
               resourcePath: this.$rootScope.resourcePath,
               triggerType: 'Threshold'
             }
@@ -392,31 +396,31 @@ module HawkularMetrics {
       // WEB SESSION TRIGGERS
 
       let activeSessionsTriggerPromise = this.HawkularAlertsManager
-        .existTrigger(resourceId + '_web_active_sessions').then(() => {
+        .existTrigger(qualifiedResourceId + '_web_active_sessions').then(() => {
           this.$log.debug('Active Web Sessions trigger exists, nothing to do');
         }, () => {
           // Active Web Sessions trigger doesn't exist, need to create one
 
-          let triggerId:string = resourceId + '_web_active_sessions';
+          let triggerId:string = qualifiedResourceId + '_web_active_sessions';
           let dataId:string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Active Web Sessions';
 
           let fullTrigger = {
             trigger: {
               name: 'Web Sessions Active',
               id: triggerId,
-              description: 'Active Web Sessions for ' + resourceId,
+              description: 'Active Web Sessions for ' + qualifiedResourceId,
               autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'MEDIUM',
               actions: {email: [defaultEmail]},
               tags: {
-                resourceId: resourceId
+                resourceId: qualifiedResourceId
               },
               context: {
                 alertType: 'ACTIVE_SESSIONS',
                 resourceType: 'App Server',
-                resourceName: resourceId,
+                resourceName: qualifiedResourceId,
                 resourcePath: this.$rootScope.resourcePath,
                 triggerType: 'Range'
               }
@@ -453,31 +457,31 @@ module HawkularMetrics {
         });
 
       let expiredSessionsTriggerPromise = this.HawkularAlertsManager
-        .existTrigger(resourceId + '_web_expired_sessions').then(() => {
+        .existTrigger(qualifiedResourceId + '_web_expired_sessions').then(() => {
           this.$log.debug('Expired Web Sessions trigger exists, nothing to do');
         }, () => {
           // Active Web Sessions trigger doesn't exist, need to create one
 
-          let triggerId:string = resourceId + '_web_expired_sessions';
+          let triggerId:string = qualifiedResourceId + '_web_expired_sessions';
           let dataId:string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions';
 
           let fullTrigger = {
             trigger: {
               name: 'Web Sessions Expired',
               id: triggerId,
-              description: 'Expired Web Sessions for ' + resourceId,
+              description: 'Expired Web Sessions for ' + qualifiedResourceId,
               autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'LOW',
               actions: {email: [defaultEmail]},
               tags: {
-                resourceId: resourceId
+                resourceId: qualifiedResourceId
               },
               context: {
                 alertType: 'EXPIRED_SESSIONS',
                 resourceType: 'App Server',
-                resourceName: resourceId,
+                resourceName: qualifiedResourceId,
                 resourcePath: this.$rootScope.resourcePath,
                 triggerType: 'Threshold'
               }
@@ -512,31 +516,31 @@ module HawkularMetrics {
 
 
       let rejectedSessionsTriggerPromise = this.HawkularAlertsManager
-        .existTrigger(resourceId + '_web_rejected_sessions').then(() => {
+        .existTrigger(qualifiedResourceId + '_web_rejected_sessions').then(() => {
           this.$log.debug('Rejected Web Sessions trigger exists, nothing to do');
         }, () => {
           // Rejected Web Sessions trigger doesn't exist, need to create one
 
-          let triggerId:string = resourceId + '_web_rejected_sessions';
+          let triggerId:string = qualifiedResourceId + '_web_rejected_sessions';
           let dataId:string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions';
 
           let fullTrigger = {
             trigger: {
               name: 'Web Sessions Rejected',
               id: triggerId,
-              description: 'Rejected Web Sessions for ' + resourceId,
+              description: 'Rejected Web Sessions for ' + qualifiedResourceId,
               autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'LOW',
               actions: {email: [defaultEmail]},
               tags: {
-                resourceId: resourceId
+                resourceId: qualifiedResourceId
               },
               context: {
                 alertType: 'REJECTED_SESSIONS',
                 resourceType: 'App Server',
-                resourceName: resourceId,
+                resourceName: qualifiedResourceId,
                 resourcePath: this.$rootScope.resourcePath,
                 triggerType: 'Threshold'
               }
@@ -572,31 +576,35 @@ module HawkularMetrics {
       // FAILED DEPLOYMENT TRIGGER
 
       let failedDeploymentTriggerPromise = this.HawkularAlertsManager
-        .existTrigger(resourceId + '_failed_deployment').then(() => {
+        .existTrigger(qualifiedResourceId + '_failed_deployment').then(() => {
           this.$log.debug('Failed Deployment trigger exists, nothing to do');
         }, () => {
           // Failed Deployment trigger doesn't exist, need to create one
 
-          let triggerId:string = resourceId + '_failed_deployment';
-          let dataId:string = resourceId + '_DeployApplicationResponse';
+          let triggerId:string = qualifiedResourceId + '_failed_deployment';
+
+          // Note that this dataId does not map to a metric, it maps to Events being generated by
+          // the CommandEventListener in HK Alerts' Bus module.  Any change here *must* have an analogous
+          // change there or the condition will not match the actual events.
+          let dataId:string = qualifiedResourceId + '_DeployApplicationResponse';
 
           let fullTrigger = {
             trigger: {
               name: 'Deployment Failure',
               id: triggerId,
-              description: 'Deployment failure for ' + resourceId,
+              description: 'Deployment failure for ' + qualifiedResourceId,
               autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'MEDIUM',
               actions: {email: [defaultEmail]},
               tags: {
-                resourceId: resourceId
+                resourceId: qualifiedResourceId
               },
               context: {
                 alertType: 'DEPLOYMENT_FAIL',
                 resourceType: 'App Server Deployment',
-                resourceName: resourceId,
+                resourceName: qualifiedResourceId,
                 resourcePath: this.$rootScope.resourcePath,
                 triggerType: 'Event'
               }
