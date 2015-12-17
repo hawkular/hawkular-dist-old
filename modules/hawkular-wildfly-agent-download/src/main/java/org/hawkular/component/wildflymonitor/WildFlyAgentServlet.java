@@ -187,7 +187,7 @@ public class WildFlyAgentServlet extends HttpServlet {
 
             newProperties.put(AGENT_INSTALLER_PROPERTY_SERVER_URL, serverUrl);
             newProperties.put(AGENT_INSTALLER_PROPERTY_MANAGED_SERVER_NAME,
-                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_MANAGED_SERVER_NAME, "Local"));
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_MANAGED_SERVER_NAME, null));
             newProperties.put(AGENT_INSTALLER_PROPERTY_MODULE_DIST,
                     getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_MODULE_DIST,
                             serverUrl + "/hawkular/wildfly-agent/download"));
