@@ -67,10 +67,8 @@ module HawkularAccounts {
         .then((organization:IOrganization) => {
           this.NotificationsService.success('Organization successfully created.');
           this.organizations.unshift(organization);
-        }, (type:string, error:IErrorPayload) => {
-          if (type === 'error') {
-            this.NotificationsService.error(`Error while creating organization: ${error.data.message}`);
-          }
+        }, (error:IErrorPayload) => {
+          this.NotificationsService.error(`Error while creating organization: ${error.data.message}`);
         });
     }
 
@@ -121,7 +119,7 @@ module HawkularAccounts {
           this.$modalInstance.close(organization);
         }, (error:IErrorPayload) => {
           this.$log.debug(`Organization could NOT be added: ${error.data.message}`);
-          this.$modalInstance.dismiss('error', error);
+          this.$modalInstance.dismiss(error);
         });
     }
   }
