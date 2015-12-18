@@ -363,12 +363,12 @@ module HawkularMetrics {
                   }
                 }
 
-                if ( undefined != evalItem.rate ) {
+                if ( undefined !== evalItem.rate ) {
                   // handle rate conditions
                   sum += evalItem.rate;
                 } else {
                   // handle 'value' conditions and also compare conditions ('value1')
-                  sum += ( ( undefined != evalItem.value ) ? evalItem.value : evalItem.value1 );
+                  sum += ( ( undefined !== evalItem.value ) ? evalItem.value : evalItem.value1 );
                 }
                 count++;
               }
