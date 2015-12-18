@@ -132,8 +132,8 @@
       <type>war</type>
     </dependency>
     <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-secret-store</artifactId>
+      <groupId>org.keycloak.secretstore</groupId>
+      <artifactId>secret-store</artifactId>
       <type>war</type>
     </dependency>
 

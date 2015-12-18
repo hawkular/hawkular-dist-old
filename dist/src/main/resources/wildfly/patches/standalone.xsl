@@ -329,7 +329,7 @@
             <xsl:value-of select="$uuid.hawkular.accounts.backend"/>
           </credential>
         </secure-deployment>
-        <secure-deployment name="hawkular-accounts-secret-store.war">
+        <secure-deployment name="secret-store.war">
           <realm>hawkular</realm>
           <resource>hawkular-accounts-backend</resource>
           <use-resource-role-mappings>true</use-resource-role-mappings>
