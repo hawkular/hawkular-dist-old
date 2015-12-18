@@ -1,7 +1,0 @@
-<socket-binding name="org.hawkular.bus.broker" port="62626" />
-<!--
-     WE NEED THIS TOO, BUT THE PLUGIN NEEDS VALID XML TO WORK.
-     WE WILL INJECT THIS VIA PLUGIN <edit> FEATURE
-<socket-binding name="org-hawkular-bus-broker-discovery" port="0"
-                mulicast-address="224.0.0.4" multicast-port="63636" />
--->

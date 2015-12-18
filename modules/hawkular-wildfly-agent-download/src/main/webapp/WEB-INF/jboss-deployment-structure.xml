@@ -21,7 +21,7 @@
   <deployment>
     <dependencies>
       <module name="org.hawkular.nest" />
-      <module name="com.datastax.cassandra" />
+      <module name="org.hawkular.commons.cassandra-driver" />
     </dependencies>
   </deployment>
 </jboss-deployment-structure>

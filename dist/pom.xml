@@ -32,31 +32,67 @@
   <description>Hawkular distribution that integrates all components into a single server.</description>
 
   <properties>
+    <agent.enabled>false</agent.enabled>
+    <agent.username>SET_ME</agent.username>
+    <agent.password>SET_ME</agent.password>
+    <dozip>true</dozip>
     <kettle.build.type>production</kettle.build.type>
-    <checkstyle.suppressions.file>checkstyle-suppressions.xml</checkstyle.suppressions.file>
     <assembly.dir>${project.build.directory}/assembly</assembly.dir>
     <wildfly.dist.zip.root.dir>wildfly-${version.org.wildfly}</wildfly.dist.zip.root.dir>
-    <hawkular.dist.zip.root.dir>hawkular-${project.version}</hawkular.dist.zip.root.dir>
   </properties>
 
   <dependencies>
+
     <dependency>
-      <groupId>org.hawkular.nest</groupId>
-      <artifactId>hawkular-nest-distro</artifactId>
-      <version>1.0.0.Alpha9-SNAPSHOT</version>
-      <classifier>distribution</classifier>
-      <type>zip</type>
+      <groupId>org.hawkular.agent</groupId>
+      <artifactId>hawkular-wildfly-agent-feature-pack</artifactId>
+      <version>${version.org.hawkular.agent}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>org.hawkular.agent</groupId>
-      <artifactId>hawkular-wildfly-agent-wf-extension</artifactId>
+      <artifactId>hawkular-wildfly-agent-feature-pack</artifactId>
+      <version>${version.org.hawkular.agent}</version>
       <type>zip</type>
-      <!-- for some reason, the assembly plugin barfs if we don't exclude this -->
       <exclusions>
         <exclusion>
-          <groupId>org.hawkular.agent</groupId>
-          <artifactId>hawkular-wildfly-agent-feature-pack</artifactId>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-feature-pack</artifactId>
+      <version>${version.org.hawkular.accounts}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-feature-pack</artifactId>
+      <version>${version.org.hawkular.accounts}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -72,11 +108,13 @@
       <artifactId>hawkular-inventory-dist</artifactId>
       <type>war</type>
     </dependency>
+
     <dependency>
       <groupId>org.hawkular.cmdgw</groupId>
       <artifactId>hawkular-command-gateway-war</artifactId>
       <type>war</type>
     </dependency>
+
     <dependency>
       <groupId>org.hawkular</groupId>
       <artifactId>hawkular-wildfly-agent-download</artifactId>
@@ -96,6 +134,13 @@
       <type>war</type>
     </dependency>
     <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-console</artifactId>
+      <version>1.0.0.Alpha9-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
       <groupId>org.hawkular.alerts</groupId>
       <artifactId>hawkular-alerts-rest</artifactId>
       <type>war</type>
@@ -105,132 +150,210 @@
       <artifactId>hawkular-alerts-actions-email</artifactId>
       <type>war</type>
     </dependency>
+
     <dependency>
       <groupId>org.hawkular.metrics</groupId>
       <artifactId>hawkular-metrics-component</artifactId>
       <type>war</type>
     </dependency>
-    <dependency>
-      <groupId>org.hawkular.commons</groupId>
-      <artifactId>hawkular-commons-embedded-cassandra-ear</artifactId>
-      <type>ear</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular</groupId>
-      <artifactId>hawkular-console</artifactId>
-      <version>1.0.0.Alpha9-SNAPSHOT</version>
-      <type>war</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts</artifactId>
-      <type>war</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-events-backend</artifactId>
-      <type>war</type>
-    </dependency>
-    <dependency>
-      <groupId>org.keycloak.secretstore</groupId>
-      <artifactId>secret-store</artifactId>
-      <type>war</type>
-    </dependency>
 
-    <!-- Keycloak-related dependencies -->
-    <dependency>
-      <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-wf9-modules</artifactId>
-      <version>${version.org.keycloak}</version>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-keycloak-theme</artifactId>
-      <version>${version.org.hawkular.accounts}</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-keycloak-event-listener-jms</artifactId>
-      <version>${version.org.hawkular.accounts}</version>
-      <classifier>module</classifier>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-keycloak-event-listener-rest</artifactId>
-      <version>${version.org.hawkular.accounts}</version>
-      <classifier>module</classifier>
-      <type>zip</type>
-    </dependency>
   </dependencies>
 
   <build>
+    <finalName>hawkular-${project.version}</finalName>
     <plugins>
+
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <groupId>org.wildfly.build</groupId>
+        <artifactId>wildfly-server-provisioning-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack</id>
-            <phase>prepare-package</phase>
+            <id>server-provisioning</id>
             <goals>
-              <goal>unpack</goal>
+              <goal>build</goal>
             </goals>
+            <phase>compile</phase>
             <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.keycloak</groupId>
-                  <artifactId>keycloak-server-overlay</artifactId>
-                  <type>zip</type>
-                  <version>${version.org.keycloak}</version>
-                  <outputDirectory>${project.build.directory}/keycloak</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.keycloak</groupId>
-                  <artifactId>keycloak-wf9-modules</artifactId>
-                  <type>zip</type>
-                  <outputDirectory>${project.build.directory}/keycloak/modules/system/layers/base</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unpack-wildfly</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/wildfly</outputDirectory>
-              <includeArtifactIds>hawkular-nest-distro</includeArtifactIds>
-              <!-- In */domain, we remove everything except for /configuration/*.properties that are need because of HAWKULAR-430 -->
-              <excludes>*/appclient/**,*/docs/**,*/domain/data/**,*/domain/tmp/**,*/domain/configuration/*.xml</excludes>
-            </configuration>
-          </execution>
-          <!-- copies any extension modules we want to later add to the kettle -->
-          <execution>
-            <id>copy-hawkular-modules</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/hawkular-modules</outputDirectory>
-              <includeArtifactIds>
-                hawkular-wildfly-agent-wf-extension
-              </includeArtifactIds>
-              <stripVersion>true</stripVersion>
-              <stripClassifier>true</stripClassifier>
-              <overWriteIfNew>true</overWriteIfNew>
-              <excludeTransitive>true</excludeTransitive>
+              <config-file>server-provisioning.xml</config-file>
             </configuration>
           </execution>
         </executions>
       </plugin>
 
-      <!-- use the agent installer to install the agent extension module -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>distribution-configuration</id>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <phase>process-classes</phase>
+            <configuration>
+              <overwrite>true</overwrite>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/distribution/resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-deployments</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <stripVersion>true</stripVersion>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}/modules/org/hawkular/nest/main/deployments/hawkular-console.war</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular</groupId>
+                  <artifactId>hawkular-console</artifactId>
+                  <version>${project.version}</version>
+                  <type>war</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>copy-deployments</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}/modules/org/hawkular/nest/main/deployments</outputDirectory>
+              <stripVersion>true</stripVersion>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular</groupId>
+                  <artifactId>hawkular-avail-creator</artifactId>
+                  <version>${project.version}</version>
+                  <type>war</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.hawkular</groupId>
+                  <artifactId>hawkular-pinger</artifactId>
+                  <version>${project.version}</version>
+                  <type>war</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.hawkular</groupId>
+                  <artifactId>hawkular-wildfly-agent-download</artifactId>
+                  <version>${project.version}</version>
+                  <type>war</type>
+                </artifactItem>
+
+                <artifactItem>
+                  <groupId>org.hawkular.alerts</groupId>
+                  <artifactId>hawkular-alerts-rest</artifactId>
+                  <version>${version.org.hawkular.alerts}</version>
+                  <type>war</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.hawkular.alerts</groupId>
+                  <artifactId>hawkular-alerts-actions-email</artifactId>
+                  <version>${version.org.hawkular.alerts}</version>
+                  <type>war</type>
+                </artifactItem>
+
+                <artifactItem>
+                  <groupId>org.hawkular.cmdgw</groupId>
+                  <artifactId>hawkular-command-gateway-war</artifactId>
+                  <version>${version.org.hawkular.cmdgw}</version>
+                  <type>war</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.hawkular.inventory</groupId>
+                  <artifactId>hawkular-inventory-dist</artifactId>
+                  <version>${version.org.hawkular.inventory}</version>
+                  <type>war</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.hawkular.metrics</groupId>
+                  <artifactId>hawkular-metrics-component</artifactId>
+                  <version>${version.org.hawkular.metrics}</version>
+                  <type>war</type>
+                </artifactItem>
+
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-agent-wf-extension</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}/standalone/configuration</outputDirectory>
+              <stripVersion>true</stripVersion>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular.agent</groupId>
+                  <artifactId>hawkular-wildfly-agent-wf-extension</artifactId>
+                  <version>${version.org.hawkular.agent}</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.hawkular.agent</groupId>
+                  <artifactId>hawkular-wildfly-agent-installer</artifactId>
+                  <version>${version.org.hawkular.agent}</version>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- further customize standalone.xml -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>transform-standalone-xml</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+            <configuration>
+              <transformationSets>
+                <!-- standalone.xml -->
+                <transformationSet>
+                  <dir>${project.build.directory}/${project.build.finalName}/standalone/configuration</dir>
+                  <stylesheet>${basedir}/src/main/resources/standalone.xsl</stylesheet>
+                  <includes>
+                    <include>standalone.xml</include>
+                  </includes>
+                  <outputDir>${project.build.directory}/${project.build.finalName}/standalone/configuration</outputDir>
+                  <parameters>
+                    <parameter>
+                      <name>kettle.build.type</name>
+                      <value>${kettle.build.type}</value>
+                    </parameter>
+                  </parameters>
+                </transformationSet>
+              </transformationSets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -245,22 +368,13 @@
               <includePluginDependencies>true</includePluginDependencies>
               <mainClass>org.hawkular.wildfly.agent.installer.AgentInstaller</mainClass>
               <arguments>
-                <argument>--target-location=${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}</argument>
-                <argument>--module=${project.build.directory}/hawkular-modules/hawkular-wildfly-agent-wf-extension.zip</argument>
+                <argument>--target-location=${project.build.directory}/${project.build.finalName}</argument>
+                <argument>--module-dist=${project.build.directory}/${project.build.finalName}/standalone/configuration/hawkular-wildfly-agent-wf-extension.zip</argument>
                 <argument>--server-url=http://localhost:8080</argument>
-                <argument>--username=jdoe</argument>
-                <argument>--password=password</argument>
+                <argument>--username=${agent.username}</argument>
+                <argument>--password=${agent.password}</argument>
+                <argument>--enabled=${agent.enabled}</argument>
               </arguments>
-              <systemProperties>
-                <systemProperty>
-                  <key>log4j.configuration</key>
-                  <value>file:${basedir}/log4j.xml</value>
-                </systemProperty>
-                <systemProperty>
-                  <key>org.hawkular.wildfly.agent.installer.throw-exception-on-error</key>
-                  <value>true</value>
-                </systemProperty>
-              </systemProperties>
             </configuration>
           </execution>
         </executions>
@@ -278,93 +392,6 @@
         </dependencies>
       </plugin>
 
-      <!-- further customize standalone.xml -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>xml-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>transform-standalone-xml</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>transform</goal>
-            </goals>
-            <configuration>
-              <transformationSets>
-                <!-- standalone.xml -->
-                <transformationSet>
-                  <dir>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}/standalone/configuration</dir>
-                  <stylesheet>src/main/resources/wildfly/patches/standalone.xsl</stylesheet>
-                  <includes>
-                    <include>standalone.xml</include>
-                  </includes>
-                  <outputDir>${assembly.dir}/${hawkular.dist.zip.root.dir}/standalone/configuration</outputDir>
-                  <parameters>
-                    <parameter>
-                      <name>kettle.build.type</name>
-                      <value>${kettle.build.type}</value>
-                    </parameter>
-                    <parameter>
-                      <name>uuid.hawkular.accounts.backend</name>
-                      <value>${uuid.hawkular.accounts.backend}</value>
-                    </parameter>
-                  </parameters>
-                </transformationSet>
-                <!-- standalone-itest.xml -->
-                <transformationSet>
-                  <dir>${project.build.directory}/wildfly/${wildfly.dist.zip.root.dir}/standalone/configuration</dir>
-                  <stylesheet>src/main/resources/wildfly/patches/standalone.xsl</stylesheet>
-                  <fileMappers>
-                    <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
-                      <pattern>\.xml$</pattern>
-                      <replacement>-itest.xml</replacement>
-                    </fileMapper>
-                  </fileMappers>
-                  <includes>
-                    <include>standalone.xml</include>
-                  </includes>
-                  <outputDir>${assembly.dir}/${hawkular.dist.zip.root.dir}/standalone/configuration</outputDir>
-                  <parameters>
-                    <parameter>
-                      <name>kettle.build.type</name>
-                      <value>dev</value>
-                    </parameter>
-                    <parameter>
-                      <name>uuid.hawkular.accounts.backend</name>
-                      <value>${uuid.hawkular.accounts.backend}</value>
-                    </parameter>
-                  </parameters>
-                </transformationSet>
-              </transformationSets>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <finalName>hawkular-${project.version}</finalName>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptors>
-            <descriptor>assembly.xml</descriptor>
-          </descriptors>
-          <formats>
-            <format>zip</format>
-            <format>tar.gz</format>
-          </formats>
-        </configuration>
-        <executions>
-          <execution>
-            <id>distro-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>docker-maven-plugin</artifactId>
@@ -380,31 +407,6 @@
             </resource>
           </resources>
         </configuration>
-      </plugin>
-
-      <!-- Generate some keys for Keycloak integration, so that we don't ship with default credentials -->
-      <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>set-custom-property</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <source>
-                import java.util.UUID
-                def uuidBackend = UUID.randomUUID().toString()
-                def uuidUi = UUID.randomUUID().toString()
-                project.properties.setProperty('uuid.hawkular.accounts.backend', uuidBackend.toString())
-                project.properties.setProperty('uuid.hawkular.ui', uuidUi.toString())
-              </source>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
@@ -425,36 +427,41 @@
       <id>dev</id>
       <properties>
         <kettle.build.type>dev</kettle.build.type>
+        <dozip>false</dozip>
+        <agent.enabled>true</agent.enabled>
+        <agent.username>jdoe</agent.username>
+        <agent.password>password</agent.password>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-              <formats>
-                <format>dir</format>
-              </formats>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <id>dozip</id>
-      <properties>
-        <kettle.build.type>dev</kettle.build.type>
-      </properties>
+      <activation>
+        <property>
+          <name>dozip</name>
+          <value>true</value>
+        </property>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <build>
         <plugins>
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
             <configuration>
-              <formats>
-                <format>dir</format>
-                <format>zip</format>
-                <format>tar.gz</format>
-              </formats>
+              <finalName>hawkular-${project.version}</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>assembly.xml</descriptor>
+              </descriptors>
             </configuration>
+            <executions>
+              <execution>
+                <id>distro-assembly</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

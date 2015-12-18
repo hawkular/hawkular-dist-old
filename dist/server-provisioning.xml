@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright 2015 Red Hat, Inc. and/or its affiliates
@@ -17,19 +16,10 @@
     limitations under the License.
 
 -->
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-
-  <id>${project.artifactId}</id>
-  <formats>
-    <format>zip</format>
-    <format>tar.gz</format>
-  </formats>
-  <includeBaseDirectory>true</includeBaseDirectory>
-  <fileSets>
-    <fileSet>
-      <directory>target/${project.build.finalName}</directory>
-      <outputDirectory/>
-    </fileSet>
-  </fileSets>
-</assembly>
+<server-provisioning xmlns="urn:wildfly:server-provisioning:1.1" extract-schemas="true"
+  copy-module-artifacts="true">
+  <feature-packs>
+    <feature-pack groupId="org.hawkular.agent" artifactId="hawkular-wildfly-agent-feature-pack" version="${version.org.hawkular.agent}" />
+    <feature-pack groupId="org.hawkular.accounts" artifactId="hawkular-accounts-feature-pack" version="${version.org.hawkular.accounts}" />
+  </feature-packs>
+</server-provisioning>
