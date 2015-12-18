@@ -126,8 +126,12 @@
                 </td>
               </tr>
               <tr role="row" ng-repeat="res in filteredResList = (vm.resourceList | filter:vm.search)"
-                  ng-class="{'hk-selected': res.selected}" ng-click="vm.selectItem(res)">
-                <td><input type="checkbox" ng-checked="res.selected"></td>
+                  ng-class="{'hk-selected': res.selected}" ng-click="!vm.pendingOps[res.path] && vm.selectItem(res)">
+                <td>
+                  <i class="fa fa-spinner fa-spin" ng-show="vm.pendingOps[res.path]"></i>
+                  <input type="checkbox" ng-checked="!vm.pendingOps[res.path] && res.selected"
+                         ng-hide="vm.pendingOps[res.path]">
+                </td>
                 <td class="state" ng-show="res.state === 'up'"><i class="fa fa-check-circle-o"></i> OK</td>
                 <td class="state" ng-show="res.state === 'down'"><i class="fa fa-square"></i> Stopped</td>
                 <td class="state" ng-show="res.state === 'unknown'"><i class="fa fa-times-circle-o"></i> Failed</td>
