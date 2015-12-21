@@ -41,9 +41,7 @@ module HawkularMetrics {
     public alertsStatuses:string = 'OPEN,ACKNOWLEDGED';
     public sortField:string = 'ctime';
     public sortAsc:boolean = false;
-
-    public loadingMoreItems:boolean = false;
-    public addProgress:boolean = false;
+    public search: string;
 
     constructor(private $scope:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
@@ -52,6 +50,7 @@ module HawkularMetrics {
                 private $q:ng.IQService,
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
+                private $filter:ng.IFilterService,
                 private $routeParams:any,
                 private HkHeaderParser:any,
                 private $location:ng.ILocationService) {
@@ -243,11 +242,12 @@ module HawkularMetrics {
     }
 
     public selectAll():void {
-      let toggleTo = this.selectCount !== this.alertsList.length;
-      _.forEach(this.alertsList, (item:IAlert) => {
+      let filteredList = this.$filter('filter')(this.alertsList, this.search);
+      let toggleTo = this.selectCount !== filteredList.length;
+      _.forEach(filteredList, (item:any) => {
         item.selected = toggleTo;
       });
-      this.selectCount = toggleTo ? this.alertsList.length : 0;
+      this.selectCount = toggleTo ? filteredList.length : 0;
     }
 
     public changeResolvedFilter():void {
