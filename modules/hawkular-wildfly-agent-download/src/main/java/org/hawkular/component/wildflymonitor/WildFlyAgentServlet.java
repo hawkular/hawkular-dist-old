@@ -75,6 +75,7 @@ public class WildFlyAgentServlet extends HttpServlet {
     static final String AGENT_INSTALLER_ENCRYPTION_WEAK = "encryption-weak";
 
     // the options the user can set in the installer properties config file
+    private static final String AGENT_INSTALLER_PROPERTY_ENABLED = "enabled";
     private static final String AGENT_INSTALLER_PROPERTY_TARGET_LOCATION = "target-location";
     private static final String AGENT_INSTALLER_PROPERTY_MODULE_DIST = "module-dist";
     private static final String AGENT_INSTALLER_PROPERTY_SERVER_URL = "server-url";
@@ -193,6 +194,8 @@ public class WildFlyAgentServlet extends HttpServlet {
                             serverUrl + "/hawkular/wildfly-agent/download"));
             newProperties.put(AGENT_INSTALLER_PROPERTY_TARGET_LOCATION,
                     getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_TARGET_LOCATION, null));
+            newProperties.put(AGENT_INSTALLER_PROPERTY_ENABLED,
+                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_ENABLED, null));
             newProperties.put(AGENT_INSTALLER_PROPERTY_USERNAME,
                     getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_USERNAME, null));
             newProperties.put(AGENT_INSTALLER_PROPERTY_PASSWORD,
