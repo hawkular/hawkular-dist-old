@@ -19,6 +19,8 @@
 
 module HawkularMetrics {
 
+  /// turn off the lodash TS compiler warnings over _.dropWhile()
+  declare var _:any;
 
   export interface IMetricsResponse {
     timestamp: number;

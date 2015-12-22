@@ -27,9 +27,10 @@ module HawkularMetrics {
 
   _module.config(['$compileProvider', function ($compileProvider) {
     //disable debug info
+    //@TOOD: turn this debug info back off before production
     //NOTE: tools like Batarang and Protractor may not work properly with this debug info off
     //However, this can be turned back on at runtime in the js console by typing: angular.reloadWithDebugInfo()
-    $compileProvider.debugInfoEnabled(true);
+    //$compileProvider.debugInfoEnabled(true);
   }]);
 
   _module.config(['$httpProvider', '$locationProvider', '$routeProvider',
