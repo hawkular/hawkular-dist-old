@@ -49,6 +49,7 @@ module HawkularMetrics {
   export type TimestampInMillis = number;
   export type IntervalInSeconds = number;
   export type AuthenticationToken = string;
+  export type IColor = string;
 
 
 /// Interface Definitions

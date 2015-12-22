@@ -59,13 +59,13 @@ module HawkularMetrics {
 
   export interface IMetricsService {
     retrieveGaugeMetrics(personaId:PersonaId, metricId:MetricId,
-                        startTime?:TimestampInMillis,
-                        endTime?:TimestampInMillis,
-                        buckets?:number):ng.IPromise<IChartDataPoint[]>;
+                         startTime?:TimestampInMillis,
+                         endTime?:TimestampInMillis,
+                         buckets?:number):ng.IPromise<IChartDataPoint[]>;
     retrieveCounterMetrics(personaId:PersonaId, metricId:MetricId,
-                          startTime?:TimestampInMillis,
-                          endTime?:TimestampInMillis,
-                          buckets?:number):ng.IPromise<IChartDataPoint[]>;
+                           startTime?:TimestampInMillis,
+                           endTime?:TimestampInMillis,
+                           buckets?:number):ng.IPromise<IChartDataPoint[]>;
     retrieveCounterRateMetrics(personaId:PersonaId,
                                metricId:MetricId,
                                startTime?:TimestampInMillis,
@@ -99,7 +99,7 @@ module HawkularMetrics {
      * @param metricId the metric Id
      * @returns {string} a string uniquely identifying the requested metric
      */
-    public static getMetricId(type: string, feedId: FeedId, resId: ResourceId, metricId: MetricId): string {
+    public static getMetricId(type:string, feedId:FeedId, resId:ResourceId, metricId:MetricId):string {
       return `${type}I~R~[${feedId}/${resId}]~${type}T~${metricId}`;
     }
 
@@ -110,8 +110,7 @@ module HawkularMetrics {
      * @param multiplier Value to multiply the original value with. Eg. 100 for double -> % or (1/1024) for byte->kb
      * @returns IChartDataPoint[]
      */
-    public static formatBucketedChartOutput(response, multiplier?: number):IChartDataPoint[] {
-      multiplier = multiplier || 1;
+    public static formatBucketedChartOutput(response, multiplier = 1):IChartDataPoint[] {
       //  The schema is different for bucketed output
       return _.map(response, (point:IChartDataPoint) => {
         return {
@@ -146,6 +145,21 @@ module HawkularMetrics {
     }
 
     /**
+     * formatContexChartOutput
+     * @param response
+     * @param multiplier Value to multiply the original value with. Eg. 100 for double -> % or (1/1024) for byte->kb
+     * @returns IChartDataPoint[]
+     */
+    public static formatContextChartOutput(response):IContextChartDataPoint[] {
+      // drop all of the empty values at the start, so we only show data that has been collected
+      return  _.dropWhile(response, (point:IContextChartDataPoint) => {
+        return point.empty;
+      });
+
+
+    }
+
+    /**
      * RetrieveGaugeMetrics
      * @param personaId
      * @param metricId
@@ -155,10 +169,10 @@ module HawkularMetrics {
      * @returns ng.IPromise<IChartDataPoint[]>
      */
     public retrieveGaugeMetrics(personaId:PersonaId,
-                               metricId:MetricId,
-                               startTime?:TimestampInMillis,
-                               endTime?:TimestampInMillis,
-                               buckets = 120):ng.IPromise<IChartDataPoint[]> {
+                                metricId:MetricId,
+                                startTime?:TimestampInMillis,
+                                endTime?:TimestampInMillis,
+                                buckets = 120):ng.IPromise<IChartDataPoint[]> {
 
       return this.retrieveMetrics(MetricsService.GAUGE_TYPE, personaId, metricId, startTime, endTime, buckets);
     }

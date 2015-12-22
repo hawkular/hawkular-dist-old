@@ -16,34 +16,50 @@
 ///
 
 /// <reference path="../metricsPlugin.ts"/>
-/// <reference path="../services/alertsManager.ts"/>
-/// <reference path="../services/errorsManager.ts"/>
 
 module HawkularMetrics {
 
-  export class WebAlertType {
+  class WebTabType {
 
-    constructor (public value:string) {
+    static ACTIVE_SESSIONS = new WebTabType( 'Aggregated Active Web Sessions','Active Sessions', '#49a547');
+    static EXPIRED_SESSIONS = new WebTabType('Aggregated Expired Web Sessions','Expired Sessions', '#f57f20');
+    static REJECTED_SESSIONS = new WebTabType('Aggregated Rejected Web Sessions','Rejected Sessions', '#e12226');
+
+    static SERVLET_REQUEST_TIME = new WebTabType('Aggregated Servlet Request Time');
+    static SERVLET_REQUEST_COUNT = new WebTabType('Aggregated Servlet Request Count');
+
+    private _key:string;
+    private _metricName:string;
+    private _color:IColor;
+
+    constructor(metricName:string, key?: string, color?:IColor) {
+      this._metricName = metricName;
+      this._key = key;
+      this._color = color;
     }
 
-    toString = () => {
-      return this.value;
-    };
+    public getKey() {
+      return this._key;
+    }
+    public getFullWildflyMetricName() {
+      return 'WildFly Aggregated Web Metrics~' + this._metricName;
+    }
 
-    static ACTIVE_SESSIONS = new WebAlertType('ACTIVE_SESSIONS');
-    static EXPIRED_SESSIONS = new WebAlertType('EXPIRED_SESSIONS');
-    static REJECTED_SESSIONS = new WebAlertType('REJECTED_SESSIONS');
+    public getMetricName() {
+      return this._metricName;
+    }
+
+    public getColor() {
+      return this._color;
+    }
+
   }
 
   export class AppServerWebDetailsController implements IRefreshable {
 
-    public static MAX_ACTIVE_COLOR = '#1884c7'; /// blue
-    public static EXPIRED_COLOR = '#f57f20'; /// orange
-    public static ACTIVE_COLOR = '#49a547'; /// green
-    public static REJECTED_COLOR = '#e12226'; /// red
+    //public static MAX_ACTIVE_COLOR = '#1884c7'; /// blue
     public static DEFAULT_MIN_SESSIONS = 20;
     public static DEFAULT_MAX_SESSIONS = 5000;
-    public static MAX_SESSIONS = 9999;
     public static DEFAULT_EXPIRED_SESSIONS_THRESHOLD = 15;
     public static DEFAULT_REJECTED_SESSIONS_THRESHOLD = 15;
 
@@ -55,11 +71,14 @@ module HawkularMetrics {
     public endTimeStamp:TimestampInMillis;
 
     public chartWebSessionData:IMultiDataPoint[] = [];
+    public contextChartActiveWebSessionData:IContextChartDataPoint[];
+
     // will contain in the format: 'metric name' : true | false
     public skipChartData = {};
 
-    private feedId: FeedId;
-    private resourceId: ResourceId;
+    private feedId:FeedId;
+    private resourceId:ResourceId;
+    private personaId:PersonaId;
 
     constructor(private $scope:any,
                 private $rootScope:IHawkularRootScope,
@@ -67,11 +86,12 @@ module HawkularMetrics {
                 private $log:ng.ILogService,
                 private $routeParams:any,
                 private HawkularNav:any,
-                private HawkularAlertRouterManager: IHawkularAlertRouterManager,
+                private HawkularAlertRouterManager:IHawkularAlertRouterManager,
                 private $q:ng.IQService,
                 private MetricsService:IMetricsService) {
       $scope.vm = this;
 
+      this.personaId = this.$rootScope.currentPersona.id;
       this.feedId = this.$routeParams.feedId;
       this.resourceId = this.$routeParams.resourceId + '~~';
 
@@ -81,19 +101,27 @@ module HawkularMetrics {
       if ($rootScope.currentPersona) {
         this.getWebData();
         this.getWebChartData();
+        this.getWebSessionContextChartData();
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
         $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
         this.getWebData());
         this.getWebChartData();
+        this.getWebSessionContextChartData();
       }
 
       // handle drag ranges on charts to change the time range
-      this.$scope.$on('ChartTimeRangeChanged', (event, data:Date[]) => {
-        this.startTimeStamp = data[0].getTime();
-        this.endTimeStamp = data[1].getTime();
+      this.$scope.$on(EventNames.CHART_TIMERANGE_CHANGED, (event, timeRange:Date[]) => {
+        this.startTimeStamp = timeRange[0].getTime();
+        this.endTimeStamp = timeRange[1].getTime();
         this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
         this.refresh();
+      });
+
+      // handle drag ranges on charts to change the time range
+      this.$scope.$on(EventNames.CONTEXT_CHART_TIMERANGE_CHANGED, (event, timeRange:Date[]) => {
+        this.$log.debug('Received ContextChartTimeRangeChanged event' + timeRange);
+        this.changeTimeRange(timeRange);
       });
 
       this.HawkularAlertRouterManager.registerForAlerts(
@@ -119,16 +147,24 @@ module HawkularMetrics {
       });
     }
 
+    private changeTimeRange(timeRange:Date[]):void {
+      this.startTimeStamp = timeRange[0].getTime();
+      this.endTimeStamp = timeRange[1].getTime();
+      this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
+      this.refresh();
+    }
+
     public filterAlerts(alertData:IHawkularAlertQueryResult) {
       let webAlerts = alertData.alertList.slice();
       _.remove(webAlerts, (item:IAlert) => {
-        switch( item.context.alertType ) {
+        switch (item.context.alertType) {
           case 'ACTIVE_SESSIONS' :
           case 'EXPIRED_SESSIONS' :
           case 'REJECTED_SESSIONS' :
             item.alertType = item.context.alertType;
             return false;
-          default : return true; // ignore non-web alert
+          default :
+            return true; // ignore non-web alert
         }
       });
       this.alertList = webAlerts;
@@ -151,68 +187,81 @@ module HawkularMetrics {
     }
 
     public getWebData():void {
-      this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
+      this.MetricsService.retrieveGaugeMetrics(this.personaId,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
-          'WildFly Aggregated Web Metrics~Aggregated Active Web Sessions'),
+          WebTabType.ACTIVE_SESSIONS.getFullWildflyMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
-          this.activeWebSessions = resource[0].avg;
-        });
-      this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
+        this.activeWebSessions = resource[0].avg;
+      });
+      this.MetricsService.retrieveCounterMetrics(this.personaId,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
-          'WildFly Aggregated Web Metrics~Aggregated Servlet Request Time'),
+          WebTabType.SERVLET_REQUEST_TIME.getFullWildflyMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
-          this.requestTime = resource[0].max - resource[0].min;
-        });
-      this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
+        this.requestTime = resource[0].max - resource[0].min;
+      });
+      this.MetricsService.retrieveCounterMetrics(this.personaId,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
-          'WildFly Aggregated Web Metrics~Aggregated Servlet Request Count'),
+          WebTabType.SERVLET_REQUEST_COUNT.getFullWildflyMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
-          this.requestCount = resource[0].max - resource[0].min;
-        });
+        this.requestCount = resource[0].max - resource[0].min;
+      });
+    }
+
+    private getWebSessionContextChartData():void {
+      // because the time range is so much greater here we need more points of granularity
+      const contextStartTimestamp = +moment(this.endTimeStamp).subtract(1, globalContextChartTimePeriod);
+
+      this.MetricsService.retrieveGaugeMetrics(this.personaId,
+        MetricsService.getMetricId('M', this.feedId, this.resourceId,
+          WebTabType.ACTIVE_SESSIONS.getFullWildflyMetricName()),
+        contextStartTimestamp, this.endTimeStamp, globalNumberOfContextChartDataPoints).then((contextData) => {
+        this.contextChartActiveWebSessionData = MetricsService.formatContextChartOutput(contextData);
+      });
+
     }
 
     public getWebChartData():void {
       let tmpChartWebSessionData = [];
       let promises = [];
 
-      if (!this.skipChartData['Active Sessions']) {
+      if (!this.skipChartData[WebTabType.ACTIVE_SESSIONS.getKey()]) {
         let activeSessionsPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId,
-            'WildFly Aggregated Web Metrics~Aggregated Active Web Sessions'),
+            WebTabType.ACTIVE_SESSIONS.getFullWildflyMetricName()),
           this.startTimeStamp, this.endTimeStamp, 60);
         promises.push(activeSessionsPromise);
         activeSessionsPromise.then((data) => {
           tmpChartWebSessionData[tmpChartWebSessionData.length] = {
-            key: 'Active Sessions',
-            color: AppServerWebDetailsController.ACTIVE_COLOR,
+            key: WebTabType.ACTIVE_SESSIONS.getKey(),
+            color: WebTabType.ACTIVE_SESSIONS.getColor(),
             values: MetricsService.formatBucketedChartOutput(data)
           };
         });
       }
-      if (!this.skipChartData['Expired Sessions']) {
+      if (!this.skipChartData[WebTabType.EXPIRED_SESSIONS.getKey()]) {
         let expSessionsPromise = this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId,
-            'WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions'),
+            WebTabType.EXPIRED_SESSIONS.getFullWildflyMetricName()),
           this.startTimeStamp, this.endTimeStamp, 60);
         promises.push(expSessionsPromise);
         expSessionsPromise.then((data) => {
           tmpChartWebSessionData[tmpChartWebSessionData.length] = {
-            key: 'Expired Sessions',
-            color: AppServerWebDetailsController.EXPIRED_COLOR,
+            key: WebTabType.EXPIRED_SESSIONS.getKey(),
+            color: WebTabType.EXPIRED_SESSIONS.getColor(),
             values: MetricsService.formatBucketedChartOutput(data)
           };
         });
       }
-      if (!this.skipChartData['Rejected Sessions']) {
+      if (!this.skipChartData[WebTabType.EXPIRED_SESSIONS.getKey()]) {
         let rejSessionsPromise = this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId,
-            'WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions'),
+            WebTabType.REJECTED_SESSIONS.getFullWildflyMetricName()),
           this.startTimeStamp, this.endTimeStamp, 60);
         promises.push(rejSessionsPromise);
         rejSessionsPromise.then((data) => {
           tmpChartWebSessionData[tmpChartWebSessionData.length] = {
-            key: 'Rejected Sessions',
-            color: AppServerWebDetailsController.REJECTED_COLOR,
+            key: WebTabType.EXPIRED_SESSIONS.getKey(),
+            color: WebTabType.REJECTED_SESSIONS.getColor(),
             values: MetricsService.formatBucketedChartOutput(data)
           };
         });
