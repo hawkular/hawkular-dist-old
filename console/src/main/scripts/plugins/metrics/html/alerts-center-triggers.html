@@ -52,7 +52,7 @@
         <table class="datatable table table-bordered hk-table-alerts hk-table-detailed hk-table-select">
           <thead>
           <tr>
-            <th ng-click="act.selectAll()"><input type="checkbox"/></th>
+            <th ng-click="act.selectAll()"><input type="checkbox" ng-checked="act.selectCount && act.selectCount === filteredTriggersList.length"/></th>
             <th ng-class="{'sorting_asc': act.sortField == 'name' && act.sortAsc, 'sorting_desc': act.sortField == 'name' && !act.sortAsc, 'sorting': act.sortField != 'name'}" ng-click="act.sortBy('name')">Name</th>
             <th ng-class="{'sorting_asc': act.sortField == 'description' && act.sortAsc, 'sorting_desc': act.sortField == 'description' && !act.sortAsc, 'sorting': act.sortField != 'description'}" ng-click="act.sortBy('description')">Description</th>
             <th ng-class="{'sorting_asc': act.sortField == 'context.resourceName' && act.sortAsc, 'sorting_desc': act.sortField == 'context.resourceName' && !act.sortAsc, 'sorting': act.sortField != 'context.resourceName'}" ng-click="act.sortBy('context.resourceName')">Resource</th>
@@ -63,7 +63,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="trigger in act.triggersList | filter:act.search" ng-class="{'hk-selected': act.selected}"
+          <tr ng-repeat="trigger in filteredTriggersList = (act.triggersList | filter:act.search)" ng-class="{'hk-selected': act.selected}"
               ng-click="act.selectItem(trigger)">
             <td><input type="checkbox" ng-checked="trigger.selected"/></td>
             <td>{{trigger.name}}</td>

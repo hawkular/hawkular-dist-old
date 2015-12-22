@@ -25,7 +25,7 @@ module HawkularMetrics {
   export class AlertsCenterTriggerController {
 
     public static  $inject = ['$scope', 'HawkularAlertsManager',
-      'ErrorsManager', '$log', '$q', '$rootScope', '$interval', '$routeParams',
+      'ErrorsManager', '$log', '$q', '$rootScope', '$interval', '$filter', '$routeParams',
       'HkHeaderParser', '$location', '$modal'];
 
     public isWorking = false;
@@ -41,10 +41,7 @@ module HawkularMetrics {
     public hasDisabledSelectedItems:boolean = false;
     public sortField:string = 'name';
     public sortAsc:boolean = true;
-
-
-    public loadingMoreItems:boolean = false;
-    public addProgress:boolean = false;
+    public search: string;
 
     constructor(private $scope:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
@@ -53,6 +50,7 @@ module HawkularMetrics {
                 private $q:ng.IQService,
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
+                private $filter:ng.IFilterService,
                 private $routeParams:any,
                 private HkHeaderParser:any,
                 private $location:ng.ILocationService,
@@ -259,11 +257,12 @@ module HawkularMetrics {
     }
 
     public selectAll():void {
-      let toggleTo = this.selectCount !== this.triggersList.length;
-      _.forEach(this.triggersList, (item:IAlertTrigger) => {
+      let filteredList = this.$filter('filter')(this.triggersList, this.search);
+      let toggleTo = this.selectCount !== filteredList.length;
+      _.forEach(filteredList, (item:any) => {
         item.selected = toggleTo;
       });
-      this.selectCount = toggleTo ? this.triggersList.length : 0;
+      this.selectCount = toggleTo ? filteredList.length : 0;
     }
 
     public sortBy(field:string):void {
