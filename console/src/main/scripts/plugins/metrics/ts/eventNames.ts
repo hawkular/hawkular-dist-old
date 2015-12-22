@@ -21,7 +21,8 @@ module HawkularMetrics {
 /// NOTE: this pattern is used because enums cant be used with strings
   export class EventNames {
 
-    public static TIMERANGE_CHANGED = new EventNames('TimeRangeChanged');
+    public static CHART_TIMERANGE_CHANGED = new EventNames('ChartTimeRangeChanged');
+    public static CONTEXT_CHART_TIMERANGE_CHANGED = new EventNames('ContextChartTimeRangeChanged');
     public static REFRESH_CHART = new EventNames('RefreshChart');
     public static REFRESH_AVAIL_CHART = new EventNames('RefreshAvailabilityChart');
 

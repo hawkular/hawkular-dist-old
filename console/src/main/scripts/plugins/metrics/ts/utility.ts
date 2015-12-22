@@ -15,23 +15,22 @@
 /// limitations under the License.
 ///
 
-/// <reference path='../../includes.ts'/>
+/// <reference path='metricsTypes.ts'/>
+/// <reference path='metricsPlugin.ts'/>
 
 module HawkularMetrics {
 
-  /// some config vars
-  export const pluginName = 'hawkular-metrics';
-  export const templatePath = 'plugins/metrics/html';
+  export class Utility {
 
-  /// These are plugin globals used across several screens (think session vars from server side programming)
-
-  export const globalEnvironmentId = 'test';
-
-  export const DEF_TIME_OFFSET = 12 * 60 * 60 * 1000;
-
-  //@todo: this will go away once Metrics gives us the staring metric collection period
-  export const globalContextChartTimePeriod = 'week';
-
-  export const globalNumberOfContextChartDataPoints = 480;
+    public static encodeResourceId(resourceId:ResourceId):string {
+      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
+      //let encoded = encodeURIComponent(resourceId);
+      let encoded = resourceId;
+      while (encoded.indexOf('/') > -1) {
+        encoded = encoded.replace('/', '$');
+      }
+      return encoded;
+    }
+  }
 
 }

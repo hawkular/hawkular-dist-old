@@ -52,42 +52,52 @@
 
       <div class="hk-info-top clearfix">
         <h3 class="pull-left">Metrics</h3>
+
         <div class="hk-update pull-right">
           <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top" tooltip="Update chart"
-                  tooltip-append-to-body="true" ng-click="vm.getJvmChartData()"><i class="fa fa-refresh"></i></button>
+                  tooltip-append-to-body="true" ng-click="vm.refresh()"><i class="fa fa-refresh"></i></button>
         </div>
       </div>
 
       <div class="row row-cards-pf">
         <div class="col-xs-12">
-          <div class="card-pf hk-graph" ng-if="vm.chartGCDurationData">
+          <div class="card-pf hk-graph" ng-if="vm.chartHeapData">
             <h2>JVM Heap Usage</h2>
+
             <div class="hk-graph-container hk-graph-metrics">
               <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
               <hawkular-chart
                 multi-data="vm.chartHeapData"
                 chart-type="multiline"
-                y-axis-units="Usage (MB)"
-                chart-height="250">
+                y-axis-units="Usage (MB)">
               </hawkular-chart>
-            </div>
-            <div class="row hk-legend text-left hk-legend-metrics">
-              <div class="col-md-3 col-lg-2">
-                <div class="hk-graphselector hk-blue">
-                  <input type="checkbox" id="h-used" checked="checked" ng-click="vm.toggleChartData('Heap Used')">
-                  <label for="h-used"><span>Used</span></label>
-                </div>
+              <!-- Context Chart Begins here -->
+              <div class="context-graph-container" ng-if="vm.contextChartHeapUsedData.length > 2">
+                <hawkular-context-chart
+                  data="vm.contextChartHeapUsedData"
+                  show-x-axis-values="true"
+                  show-y-axis-values="false">
+                </hawkular-context-chart>
               </div>
-              <div class="col-md-3 col-lg-2">
-                <div class="hk-graphselector hk-gray">
-                  <input type="checkbox" id="h-committed" checked="checked" ng-click="vm.toggleChartData('Heap Committed')">
-                  <label for="h-committed"><span>Committed</span></label>
+              <div class="row hk-legend text-left hk-legend-metrics">
+                <div class="col-md-3 col-lg-2">
+                  <div class="hk-graphselector hk-blue">
+                    <input type="checkbox" id="h-used" checked="checked" ng-click="vm.toggleChartData('Heap Used')">
+                    <label for="h-used"><span>Used</span></label>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-3 col-lg-2">
-                <div class="hk-graphselector hk-orange">
-                  <input type="checkbox" id="h-maximum" checked="checked" ng-click="vm.toggleChartData('Heap Max')">
-                  <label for="h-maximum"><span>Maximum</span></label>
+                <div class="col-md-3 col-lg-2">
+                  <div class="hk-graphselector hk-gray">
+                    <input type="checkbox" id="h-committed" checked="checked"
+                           ng-click="vm.toggleChartData('Heap Committed')">
+                    <label for="h-committed"><span>Committed</span></label>
+                  </div>
+                </div>
+                <div class="col-md-3 col-lg-2">
+                  <div class="hk-graphselector hk-orange">
+                    <input type="checkbox" id="h-maximum" checked="checked" ng-click="vm.toggleChartData('Heap Max')">
+                    <label for="h-maximum"><span>Maximum</span></label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -97,16 +107,25 @@
 
       <div class="row row-cards-pf">
         <div class="col-xs-12">
-          <div class="card-pf hk-graph" ng-if="vm.chartGCDurationData">
+          <div class="card-pf hk-graph" ng-if="vm.chartNonHeapData">
             <h2>Non Heap Usage</h2>
+
             <div class="hk-graph-container hk-graph-metrics">
               <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
               <hawkular-chart
                 multi-data="vm.chartNonHeapData"
                 chart-type="multiline"
-                y-axis-units="Usage (MB)"
-                chart-height="250">
+                y-axis-units="Usage (MB)">
               </hawkular-chart>
+              <!-- Context Chart Begins here
+              <div class="context-graph-container" ng-if="vm.contextChartNonHeapUsedData.length > 2">
+                <hawkular-context-chart
+                  data="vm.contextChartNonHeapUsedData"
+                  show-x-axis-values="true"
+                  show-y-axis-values="false">
+                </hawkular-context-chart>
+                -->
+              </div>
             </div>
             <div class="row hk-legend text-left hk-legend-metrics">
               <div class="col-md-3 col-lg-2">
@@ -123,6 +142,7 @@
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -131,24 +151,31 @@
         <div class="col-xs-12">
           <div class="card-pf hk-graph" ng-if="vm.chartGCDurationData">
             <h2>GC Duration</h2>
+
             <div class="hk-graph-container hk-graph-metrics">
-              <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
               <hawkular-chart
                 data="vm.chartGCDurationData"
                 chart-type="histogram"
                 alert-value="{{vm.threshold}}"
                 use-zero-min-value="true"
                 hide-high-low-values="true"
-                y-axis-units="GC Duration (ms)"
-                chart-height="250">
+                y-axis-units="GC Duration (ms)">
               </hawkular-chart>
+              <!-- Context Chart Begins here
+              <div class="context-graph-container" ng-if="vm.contextChartGCDurationData.length > 2">
+                <hawkular-context-chart
+                  data="vm.contextChartGCDurationData"
+                  show-x-axis-values="true"
+                  show-y-axis-values="false">
+                </hawkular-context-chart>
+              </div>
+              -->
             </div>
             <div class="hk-legend text-left hk-legend-metrics">
             </div>
           </div>
         </div>
       </div>
-
     </div>
 
     <div class="col-lg-3">
