@@ -265,7 +265,7 @@ gulp.task('watch-server', ['build-live', 'copy-kettle-js', 'copy-kettle-css'], f
 gulp.task('clean-sources', function(done) {
   if (!inProgress) {
     inProgress = true;
-    del(['./plugins/**/*.ts', './plugins/**/*.less', './plugins/**/*.html'], done);
+    del(['./plugins/**/*.ts', './plugins/**/*.less', './plugins/**/*.html']).then(done());
   }
   else {
     done();
