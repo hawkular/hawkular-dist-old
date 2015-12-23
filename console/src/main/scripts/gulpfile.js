@@ -230,8 +230,8 @@ var gulpConcat = function() {
   var gZipSize = size(gZippedSizeOptions);
 
   return gulp.src(['compiled.js', 'templates.js', 'version.js'])
-    .pipe(plugins.ngAnnotate())
     .pipe(plugins.sourcemaps.init({loadMaps: true}))
+    .pipe(plugins.ngAnnotate())
     .pipe(plugins.concat(config.js))
     .pipe(plugins.sourcemaps.write())
     .pipe(plugins.gulpif(argv.production, plugins.uglify))
@@ -265,7 +265,7 @@ gulp.task('watch-server', ['build-live', 'copy-kettle-js', 'copy-kettle-css'], f
 gulp.task('clean-sources', function(done) {
   if (!inProgress) {
     inProgress = true;
-    del(['./plugins/**/*.ts', './plugins/**/*.less', './plugins/**/*.html'], done);
+    del(['./plugins/**/*.ts', './plugins/**/*.less', './plugins/**/*.html']).then(done());
   }
   else {
     done();
