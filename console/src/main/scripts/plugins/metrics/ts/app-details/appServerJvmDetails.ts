@@ -122,12 +122,12 @@ module HawkularMetrics {
       this.chartNonHeapData = [];
 
       if ($rootScope.currentPersona) {
-        this.getJvmData();
+        this.refresh();
         this.getJvmContextChartData();
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
         $rootScope.$watch('currentPersona',
-          (currentPersona) => currentPersona && this.getJvmData());
+          (currentPersona) => currentPersona && this.refresh());
         this.getJvmContextChartData();
       }
 
@@ -148,7 +148,6 @@ module HawkularMetrics {
         'jvm',
         _.bind(this.filterAlerts, this)
       );
-      this.getAlerts();
       this.autoRefresh(20);
     }
 
