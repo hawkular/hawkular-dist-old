@@ -29,7 +29,7 @@ module Topbar {
                 private $route:any,
                 private $routeParams:any,
                 private HawkularInventory:any) {
-      $rootScope.hkParams = $routeParams || [];
+      $rootScope.hkParams = $routeParams ? angular.copy($routeParams) : [];
 
       // default time period set to 12 hours
       let defaultOffset = 12 * 60 * 60 * 1000;
@@ -51,7 +51,7 @@ module Topbar {
         $rootScope.$on('$routeChangeSuccess', (event, current, previous) => {
 
           // store any routeParams inside hkParams
-          let newHkParams = current.params;
+          let newHkParams = angular.copy(current.params);
           newHkParams.timeOffset = $routeParams.timeOffset || $rootScope.hkParams.timeOffset || defaultOffset;
           newHkParams.hkEndTimestamp = $routeParams.endTimestamp || $rootScope.hkParams.hkEndTimestamp || +moment();
           newHkParams.hkStartTimestamp = moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
