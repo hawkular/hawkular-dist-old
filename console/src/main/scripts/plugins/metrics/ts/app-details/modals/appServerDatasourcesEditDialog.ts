@@ -25,6 +25,7 @@ module HawkularMetrics {
       'NotificationsService', 'HawkularInventory', 'datasource'];
 
     public tmpDSProperties: any[];
+    public driversList: any[];
 
     constructor(private $scope:any,
                 private $rootScope:any,
@@ -42,6 +43,12 @@ module HawkularMetrics {
       let dsPath = datasource.path;
       let feedId = dsPath.substring(dsPath.lastIndexOf('/f;')+3, dsPath.indexOf('/r;'));
       let resourcePath = datasource.path.split('/r;').splice(1).join('/');
+
+      this.HawkularInventory.ResourceOfTypeUnderFeed.query({
+        environmentId: globalEnvironmentId, feedId: this.$routeParams.feedId,
+        resourceTypeId: 'JDBC Driver'}, (aResourceList, getResponseHeaders) => {
+        this.driversList = aResourceList;
+      });
 
       this.HawkularInventory.ResourceUnderFeed.getData({
         feedId: feedId,
