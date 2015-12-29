@@ -139,6 +139,12 @@ ul.hk-input-text {
     line-height: 1.4;
   }
 
+  dd .label {
+    display: inline-block;
+    padding: 5px 6px;
+    margin-bottom: 3px;
+  }
+
   dt {
     @media (min-width: @screen-sm-min) {
       text-align: left;
@@ -179,6 +185,7 @@ a:hover {
 
 .breadcrumb {
   margin-bottom: 0;
+  padding-top: 5px;
 }
 
 
@@ -429,11 +436,6 @@ a:hover {
     }
   }
 
-  .hk-context-graph-container {
-    margin: 0 auto;
-    height: 110px;
-  }
-
   .hk-spinner-container {
     margin-bottom: @grid-gutter-width/4*5;
     margin-top: @grid-gutter-width*1.5;
@@ -442,26 +444,8 @@ a:hover {
   .hk-legend {
     font-size: ceil(@font-size-base - 1);
     margin-bottom: 10px;
-    margin-left: 38px;
+    margin-left: 12%;
     margin-top: 10px;
-
-    &.hk-legend-availability {
-      //margin-left: 248px;
-      margin-left: 12%;
-
-      //@media (max-width: @screen-md-max) {
-      //  margin-left: 148px;
-      //}
-    }
-
-    &.hk-legend-metrics {
-      //margin-left: 270px;
-      margin-left: 12%;
-
-      //@media (max-width: @screen-md-max) {
-      //  margin-left: 170px;
-      //}
-    }
 
     &.hk-legend-inline {
       margin-top: 24px;
@@ -558,7 +542,7 @@ a:hover {
 
     &.hk-legend-inline {
 
-      > div > div {
+      .hk-graphselector {
         display: inline-block;
         margin-right: 30px;
 
@@ -650,6 +634,14 @@ a:hover {
   }
 }
 
+.c3-chart {
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+
+  .c3-chart-arcs-title {
+    dominant-baseline: inherit;
+  }
+}
+
 
 // Control Actions Bar
 
@@ -660,10 +652,6 @@ a:hover {
   .form-control {
     display: inline-block;
     width: 275px;
-  }
-
-  .sort-items {
-    margin-top: 15px;
   }
 
   .hk-container-separator {
@@ -700,7 +688,7 @@ a:hover {
 
   &.hk-separator {
     border-top: 1px solid @table-border-color;
-    margin-top: 15px;
+    padding-top: 15px;
   }
 }
 
@@ -950,6 +938,11 @@ a:hover .fa-times-circle-o,
 
 .btn-danger .fa {
   color: white;
+}
+
+[class^="pficon-"],
+[class*=" pficon-"] {
+  font-size: 14px;
 }
 
 
@@ -1887,9 +1880,12 @@ td .fa-comment-o {
 
 .tiles-view-pf {
 
+  overflow: visible;
+
   .row {
     margin-left: 0;
     margin-right: 0;
+    overflow: visible; //to avoid firefox scroll
   }
 
   [class*="col-"] {
@@ -1899,7 +1895,19 @@ td .fa-comment-o {
 
   .tile {
     margin: 10px 0;
+    position: relative;
     width: 100%;
+
+    .hk-delete {
+      position: absolute;
+      right: 13px;
+      top: 12px;
+      visibility: hidden;
+    }
+
+    &:hover .hk-delete {
+      visibility: visible;
+    }
   }
 }
 
@@ -1928,9 +1936,13 @@ h2 + .tiles-view-pf {
   font-weight: 600;
   height: 60px;
   margin-bottom: @grid-gutter-width/2;
-  overflow: hidden;
+//   overflow: hidden;
   padding-bottom: @grid-gutter-width/2;
   word-wrap: break-word;
+
+  .dropdown-toggle:not(:hover) {
+    color: @gray-dark;
+  }
 }
 
 .hk-tile-status {
@@ -1942,7 +1954,7 @@ h2 + .tiles-view-pf {
   background-color: transparent;
   border: 2px solid;
   height: 50px;
-  margin: 0 auto;
+  margin: 0 auto 10px auto;
   border-radius:25px;
   -webkit-border-radius: 25px;
   width: 50px;
@@ -1956,6 +1968,10 @@ h2 + .tiles-view-pf {
     line-height: 46px;
     margin-right: 0;
   }
+}
+
+.hk-tile-info {
+  font-size: ceil(@font-size-base + 1);
 }
 
 .tile-content img {
@@ -2421,7 +2437,13 @@ section {
 }
 
 
-// Datasources tab
+// Datasources screen
+
+.hk-application-datasources .tiles-view-pf .row {
+  overflow: hidden; // to avoid scroll in Firefox
+}
+
+// to be deleted
 
 .hk-panel-collapse-area {
 
