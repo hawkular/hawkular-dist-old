@@ -112,7 +112,7 @@ module HawkularMetrics {
           controller: HawkularMetrics.AppServerJmsDetailsController
         },
         {
-          id: 'transactions', name: 'Transactions', enabled: false,
+          id: 'transactions', name: 'Transactions', enabled: true,
           src: 'plugins/metrics/html/app-details/detail-transactions.html',
           controller: HawkularMetrics.AppServerTransactionsDetailsController
         },
