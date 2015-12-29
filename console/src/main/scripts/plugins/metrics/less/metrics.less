@@ -139,6 +139,12 @@ ul.hk-input-text {
     line-height: 1.4;
   }
 
+  dd .label {
+    display: inline-block;
+    padding: 5px 6px;
+    margin-bottom: 3px;
+  }
+
   dt {
     @media (min-width: @screen-sm-min) {
       text-align: left;
@@ -179,6 +185,7 @@ a:hover {
 
 .breadcrumb {
   margin-bottom: 0;
+  padding-top: 5px;
 }
 
 
@@ -429,11 +436,6 @@ a:hover {
     }
   }
 
-  .hk-context-graph-container {
-    margin: 0 auto;
-    height: 110px;
-  }
-
   .hk-spinner-container {
     margin-bottom: @grid-gutter-width/4*5;
     margin-top: @grid-gutter-width*1.5;
@@ -442,26 +444,8 @@ a:hover {
   .hk-legend {
     font-size: ceil(@font-size-base - 1);
     margin-bottom: 10px;
-    margin-left: 38px;
+    margin-left: 12%;
     margin-top: 10px;
-
-    &.hk-legend-availability {
-      //margin-left: 248px;
-      margin-left: 12%;
-
-      //@media (max-width: @screen-md-max) {
-      //  margin-left: 148px;
-      //}
-    }
-
-    &.hk-legend-metrics {
-      //margin-left: 270px;
-      margin-left: 12%;
-
-      //@media (max-width: @screen-md-max) {
-      //  margin-left: 170px;
-      //}
-    }
 
     &.hk-legend-inline {
       margin-top: 24px;
@@ -558,7 +542,7 @@ a:hover {
 
     &.hk-legend-inline {
 
-      > div > div {
+      .hk-graphselector {
         display: inline-block;
         margin-right: 30px;
 
@@ -650,6 +634,14 @@ a:hover {
   }
 }
 
+.c3-chart {
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+
+  .c3-chart-arcs-title {
+    dominant-baseline: inherit;
+  }
+}
+
 
 // Control Actions Bar
 
@@ -660,10 +652,6 @@ a:hover {
   .form-control {
     display: inline-block;
     width: 275px;
-  }
-
-  .sort-items {
-    margin-top: 15px;
   }
 
   .hk-container-separator {
@@ -700,7 +688,7 @@ a:hover {
 
   &.hk-separator {
     border-top: 1px solid @table-border-color;
-    margin-top: 15px;
+    padding-top: 15px;
   }
 }
 
@@ -950,6 +938,11 @@ a:hover .fa-times-circle-o,
 
 .btn-danger .fa {
   color: white;
+}
+
+[class^="pficon-"],
+[class*=" pficon-"] {
+  font-size: 14px;
 }
 
 
@@ -1887,9 +1880,12 @@ td .fa-comment-o {
 
 .tiles-view-pf {
 
+  overflow: visible;
+
   .row {
     margin-left: 0;
     margin-right: 0;
+    overflow: visible; //to avoid firefox scroll
   }
 
   [class*="col-"] {
@@ -1899,7 +1895,19 @@ td .fa-comment-o {
 
   .tile {
     margin: 10px 0;
+    position: relative;
     width: 100%;
+
+    .hk-delete {
+      position: absolute;
+      right: 13px;
+      top: 12px;
+      visibility: hidden;
+    }
+
+    &:hover .hk-delete {
+      visibility: visible;
+    }
   }
 }
 
@@ -1928,9 +1936,13 @@ h2 + .tiles-view-pf {
   font-weight: 600;
   height: 60px;
   margin-bottom: @grid-gutter-width/2;
-  overflow: hidden;
+//   overflow: hidden;
   padding-bottom: @grid-gutter-width/2;
   word-wrap: break-word;
+
+  .dropdown-toggle:not(:hover) {
+    color: @gray-dark;
+  }
 }
 
 .hk-tile-status {
@@ -1942,7 +1954,7 @@ h2 + .tiles-view-pf {
   background-color: transparent;
   border: 2px solid;
   height: 50px;
-  margin: 0 auto;
+  margin: 0 auto 10px auto;
   border-radius:25px;
   -webkit-border-radius: 25px;
   width: 50px;
@@ -1956,6 +1968,10 @@ h2 + .tiles-view-pf {
     line-height: 46px;
     margin-right: 0;
   }
+}
+
+.hk-tile-info {
+  font-size: ceil(@font-size-base + 1);
 }
 
 .tile-content img {
@@ -1985,87 +2001,86 @@ h2 + .tiles-view-pf {
 // Toastr Overrides
 
 #toast-container > div {
+  background-color: white;
+  background-position: left top;
+  background-size: 56px 100%;
   border-radius: 1px;
-  border-style: solid;
-  border-width: 2px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+//   border: 1px solid #bdbdbd;
+  border: none;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
   color: #333333;
-  filter: alpha(opacity=80);
-  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
   opacity: 0.95;
+  padding: 15px 20px 15px 71px;
+  position: relative;
   transition: opacity 0.5s ease;
+  width: 475px;
+
+  @media (max-width: @screen-xs-max) {
+    max-width: 475px;
+    width: 100%;
+  }
 }
 
 #toast-container > div:hover {
-  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
-#toast-container > .toast-info,
-#toast-container > .toast-success,
-#toast-container > .toast-warning,
+#toast-container > .toast-success {
+  background-image: linear-gradient(#439a3b, #439a3b)!important;
+}
+
+#toast-container > .toast-warning {
+  background-image: linear-gradient(#ec7a08, #ec7a08)!important;
+}
+
 #toast-container > .toast-error {
-  background-image: none!important;
+  background-image: linear-gradient(#cc0000, #cc0000)!important;
 }
 
-#toast-container > .toast-info:after,
+#toast-container > .toast-info {
+  background-image: linear-gradient(#4d5258, #4d5258)!important;
+}
+
 #toast-container > .toast-success:after,
 #toast-container > .toast-warning:after,
-#toast-container > .toast-error:after {
-  position: absolute;
+#toast-container > .toast-error:after,
+#toast-container > .toast-info:after {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "PatternFlyIcons-webfont";
+  font-size: 22px;
+  font-weight: 400;
   left: 16px;
+  position: absolute;
+  text-align: center;
   top: 10px;
-  font-family: "FontAwesome";
-  font-size: 20px;
+  width: 24px;
+}
+
+#toast-container > .toast-success:after {
+  content: "\e602";
+}
+
+#toast-container > .toast-warning:after {
+  content: "\e61c";
+}
+
+#toast-container > .toast-error:after {
+  content: "\e61d";
+}
+
+#toast-container > .toast-info:after {
+  content: "\e604";
 }
 
 .toast-close-button {
   color: @gray;
+  font-size: 24px;
 
   &:hover {
-    color: @link-hover-color;
+    color: @gray-dark;
+    opacity: 1;
   }
 }
-
-.toast-info {
-  background-color: #ffffff;
-  border-color: #999999;
-}
-
-#toast-container > .toast-info:after {
-  content: "";
-  color: #999999;
-}
-
-.toast-success {
-  background-color: #ebf5ea;
-  border-color: #3f9c35;
-}
-
-#toast-container > .toast-success:after {
-  content: "";
-  color: #3f9c35;
-}
-
-.toast-warning {
-  background-color: #fdf1e6;
-  border-color: #ec7a08;
-}
-
-#toast-container > .toast-warning:after {
-  content: "";
-  color: #ec7a08;
-}
-
-.toast-error {
-  background-color: #fbebeb;
-  border-color: #cc0000;
-}
-
-#toast-container > .toast-error:after {
-  content: "";
-  color: #cc0000;
-}
-
 
 // Wizard
 
@@ -2421,7 +2436,13 @@ section {
 }
 
 
-// Datasources tab
+// Datasources screen
+
+.hk-application-datasources .tiles-view-pf .row {
+  overflow: hidden; // to avoid scroll in Firefox
+}
+
+// to be deleted
 
 .hk-panel-collapse-area {
 
