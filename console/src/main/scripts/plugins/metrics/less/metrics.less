@@ -2001,87 +2001,86 @@ h2 + .tiles-view-pf {
 // Toastr Overrides
 
 #toast-container > div {
+  background-color: white;
+  background-position: left top;
+  background-size: 56px 100%;
   border-radius: 1px;
-  border-style: solid;
-  border-width: 2px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+//   border: 1px solid #bdbdbd;
+  border: none;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
   color: #333333;
-  filter: alpha(opacity=80);
-  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
   opacity: 0.95;
+  padding: 15px 20px 15px 71px;
+  position: relative;
   transition: opacity 0.5s ease;
+  width: 475px;
+
+  @media (max-width: @screen-xs-max) {
+    max-width: 475px;
+    width: 100%;
+  }
 }
 
 #toast-container > div:hover {
-  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
-#toast-container > .toast-info,
-#toast-container > .toast-success,
-#toast-container > .toast-warning,
+#toast-container > .toast-success {
+  background-image: linear-gradient(#439a3b, #439a3b)!important;
+}
+
+#toast-container > .toast-warning {
+  background-image: linear-gradient(#ec7a08, #ec7a08)!important;
+}
+
 #toast-container > .toast-error {
-  background-image: none!important;
+  background-image: linear-gradient(#cc0000, #cc0000)!important;
 }
 
-#toast-container > .toast-info:after,
+#toast-container > .toast-info {
+  background-image: linear-gradient(#4d5258, #4d5258)!important;
+}
+
 #toast-container > .toast-success:after,
 #toast-container > .toast-warning:after,
-#toast-container > .toast-error:after {
-  position: absolute;
+#toast-container > .toast-error:after,
+#toast-container > .toast-info:after {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "PatternFlyIcons-webfont";
+  font-size: 22px;
+  font-weight: 400;
   left: 16px;
+  position: absolute;
+  text-align: center;
   top: 10px;
-  font-family: "FontAwesome";
-  font-size: 20px;
+  width: 24px;
+}
+
+#toast-container > .toast-success:after {
+  content: "\e602";
+}
+
+#toast-container > .toast-warning:after {
+  content: "\e61c";
+}
+
+#toast-container > .toast-error:after {
+  content: "\e61d";
+}
+
+#toast-container > .toast-info:after {
+  content: "\e604";
 }
 
 .toast-close-button {
   color: @gray;
+  font-size: 24px;
 
   &:hover {
-    color: @link-hover-color;
+    color: @gray-dark;
+    opacity: 1;
   }
 }
-
-.toast-info {
-  background-color: #ffffff;
-  border-color: #999999;
-}
-
-#toast-container > .toast-info:after {
-  content: "";
-  color: #999999;
-}
-
-.toast-success {
-  background-color: #ebf5ea;
-  border-color: #3f9c35;
-}
-
-#toast-container > .toast-success:after {
-  content: "";
-  color: #3f9c35;
-}
-
-.toast-warning {
-  background-color: #fdf1e6;
-  border-color: #ec7a08;
-}
-
-#toast-container > .toast-warning:after {
-  content: "";
-  color: #ec7a08;
-}
-
-.toast-error {
-  background-color: #fbebeb;
-  border-color: #cc0000;
-}
-
-#toast-container > .toast-error:after {
-  content: "";
-  color: #cc0000;
-}
-
 
 // Wizard
 
