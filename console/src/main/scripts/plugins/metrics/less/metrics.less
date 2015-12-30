@@ -188,6 +188,11 @@ a:hover {
   padding-top: 5px;
 }
 
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+}
+
 
 // Help components
 
@@ -219,6 +224,10 @@ a:hover {
 
 .hk-success {
   color: @brand-success;
+}
+
+.hk-bg-danger {
+  background-color: @brand-danger;
 }
 
 
@@ -690,6 +699,11 @@ a:hover {
     border-top: 1px solid @table-border-color;
     padding-top: 15px;
   }
+}
+
+.simple-filter .form-group {
+  margin-bottom: 0;
+  margin-top: -9px;
 }
 
 
@@ -1834,7 +1848,7 @@ td .fa-comment-o {
 .tiles-view-pf .tile-content {
   height: 100%;
   margin: 2px 0 10px 0;
-  overflow: auto;
+  overflow: hidden;
   width: 100%;
 }
 
@@ -1894,6 +1908,7 @@ td .fa-comment-o {
   }
 
   .tile {
+    height: 300px;
     margin: 10px 0;
     position: relative;
     width: 100%;
@@ -1972,6 +1987,14 @@ h2 + .tiles-view-pf {
 
 .hk-tile-info {
   font-size: ceil(@font-size-base + 1);
+
+  a:not(:hover) {
+    color: @gray;
+  }
+}
+
+.chart-pf-sparkline + .hk-tile-info {
+  margin-top: 5px;
 }
 
 .tile-content img {
@@ -2007,7 +2030,7 @@ h2 + .tiles-view-pf {
   border-radius: 1px;
 //   border: 1px solid #bdbdbd;
   border: none;
-  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
   color: #333333;
   opacity: 0.95;
   padding: 15px 20px 15px 71px;
@@ -2022,7 +2045,7 @@ h2 + .tiles-view-pf {
 }
 
 #toast-container > div:hover {
-  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 #toast-container > .toast-success {
@@ -2052,7 +2075,7 @@ h2 + .tiles-view-pf {
   left: 16px;
   position: absolute;
   text-align: center;
-  top: 10px;
+  top: 8px;
   width: 24px;
 }
 
@@ -2081,6 +2104,7 @@ h2 + .tiles-view-pf {
     opacity: 1;
   }
 }
+
 
 // Wizard
 
@@ -2188,6 +2212,13 @@ h2 + .tiles-view-pf {
 
   .tiles-view-pf .tile {
     min-height: 300px;
+  }
+}
+
+.hk-urls-list-content .hk-control-actions-bar {
+  .bootstrap-select.btn-group,
+  > div {
+    float: left;
   }
 }
 
