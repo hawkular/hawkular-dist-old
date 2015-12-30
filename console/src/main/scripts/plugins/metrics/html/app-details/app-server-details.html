@@ -6,7 +6,7 @@
         <li ng-repeat="tab in tabs.availableTabs" ng-class="tabs.activeTab === tab.id ? 'active' : ''"
             ng-show="tab.enabled">
           <a href="#" ng-click="tabs.updateTab(tab.id)" class="hk-{{tab.id}}">{{tab.name}}
-            <span class="label label-danger label-alert pull-right" ng-show="false">3</span></a>
+            <span class="badge hk-bg-danger pull-right" ng-show="false">3</span></a>
         </li>
       </ul>
     </div>
