@@ -221,6 +221,10 @@ a:hover {
   color: @brand-success;
 }
 
+.hk-bg-danger {
+  background-color: @brand-danger;
+}
+
 
 // Alerts
 
@@ -1899,6 +1903,7 @@ td .fa-comment-o {
   }
 
   .tile {
+    height: 300px;
     margin: 10px 0;
     position: relative;
     width: 100%;
@@ -1977,6 +1982,14 @@ h2 + .tiles-view-pf {
 
 .hk-tile-info {
   font-size: ceil(@font-size-base + 1);
+
+  a:not(:hover) {
+    color: @gray;
+  }
+}
+
+.chart-pf-sparkline + .hk-tile-info {
+  margin-top: 5px;
 }
 
 .tile-content img {
@@ -2012,7 +2025,7 @@ h2 + .tiles-view-pf {
   border-radius: 1px;
 //   border: 1px solid #bdbdbd;
   border: none;
-  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
   color: #333333;
   opacity: 0.95;
   padding: 15px 20px 15px 71px;
@@ -2027,7 +2040,7 @@ h2 + .tiles-view-pf {
 }
 
 #toast-container > div:hover {
-  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 #toast-container > .toast-success {
@@ -2086,6 +2099,7 @@ h2 + .tiles-view-pf {
     opacity: 1;
   }
 }
+
 
 // Wizard
 

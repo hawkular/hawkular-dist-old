@@ -3,8 +3,8 @@
     <div class="tile-content">
       <div class="text-right hk-tile-alert">
         <a href="{{vm.getAlertUrl(resource.id)}}">
-          <span ng-if="vm.alerts.length === 0" class="label label-default hk-label-small">0</span>
-          <span ng-if="vm.alerts.length > 0" class="label label-danger hk-label-small">{{vm.alerts.length}}</span>
+          <span ng-if="vm.alerts.length === 0" class="badge"></span>
+          <span ng-if="vm.alerts.length > 0" class="badge hk-bg-danger">{{vm.alerts.length}}</span>
         </a>
       </div>
       <div class="hk-tile-title">{{resource.properties.url}}</div>
