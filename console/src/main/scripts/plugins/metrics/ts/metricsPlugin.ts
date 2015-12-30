@@ -43,6 +43,13 @@ module HawkularMetrics {
       $animateProvider.classNameFilter(/^((?!(fa-spin)).)*$/);
     }]);
 
+  _module.config(function(toastrConfig) {
+    angular.extend(toastrConfig, {
+      timeOut: 8000,
+      preventDuplicates: true
+    });
+  });
+
   _module.config(['$routeProvider', ($routeProvider) => {
     $routeProvider.
       when('/hawkular-ui/url/url-list/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/url-list.html'}).
