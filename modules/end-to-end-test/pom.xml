@@ -169,6 +169,7 @@
                 <javaOpt>-Djava.awt.headless=true</javaOpt>
                 <javaOpt>-Djboss.bind.address=${hawkular.bind.address}</javaOpt>
                 <javaOpt>-Djboss.socket.binding.port-offset=${hawkular.port.offset}</javaOpt>
+                <javaOpt>-Dkeycloak.import=${project.build.directory}/wildfly-run/hawkular-${project.version}/standalone/configuration/hawkular-realm-for-dev.json</javaOpt>
                 <javaOpt>-Dhawkular.agent.enabled=${hawkular.agent.enabled}</javaOpt>
                 <javaOpt>-Dhawkular.log=${hawkular.log}</javaOpt>
                 <javaOpt>-Dhawkular.log.accounts=${hawkular.log.accounts}</javaOpt>
@@ -194,7 +195,7 @@
                 <id>start-wildfly</id>
                 <phase>pre-integration-test</phase>
                 <configuration>
-                  <server-config>standalone-itest.xml</server-config>
+                  <server-config>standalone.xml</server-config>
                 </configuration>
                 <goals>
                   <goal>start</goal>
