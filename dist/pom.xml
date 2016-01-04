@@ -216,13 +216,23 @@
             </goals>
             <configuration>
               <stripVersion>true</stripVersion>
-              <outputDirectory>${project.build.directory}/${project.build.finalName}/modules/org/hawkular/nest/main/deployments/hawkular-console.war</outputDirectory>
               <artifactItems>
                 <artifactItem>
                   <groupId>org.hawkular</groupId>
                   <artifactId>hawkular-console</artifactId>
                   <version>${project.version}</version>
                   <type>war</type>
+                  <outputDirectory>${project.build.directory}/${project.build.finalName}/modules/org/hawkular/nest/main/deployments/hawkular-console.war</outputDirectory>
+                </artifactItem>
+
+                <!-- [FIXME metrics 1/2] Metrics should go to the copy goal that follows, once metrics war has
+                     its jboss-deployment-structure.xml fixed to depend on bus rather than nest WF module -->
+                <artifactItem>
+                  <groupId>org.hawkular.metrics</groupId>
+                  <artifactId>hawkular-metrics-component</artifactId>
+                  <version>${version.org.hawkular.metrics}</version>
+                  <type>war</type>
+                  <outputDirectory>${project.build.directory}/${project.build.finalName}/modules/org/hawkular/nest/main/deployments/hawkular-metrics-component.war</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -282,12 +292,6 @@
                   <version>${version.org.hawkular.inventory}</version>
                   <type>war</type>
                 </artifactItem>
-                <artifactItem>
-                  <groupId>org.hawkular.metrics</groupId>
-                  <artifactId>hawkular-metrics-component</artifactId>
-                  <version>${version.org.hawkular.metrics}</version>
-                  <type>war</type>
-                </artifactItem>
 
               </artifactItems>
             </configuration>
@@ -315,6 +319,29 @@
                   <type>jar</type>
                 </artifactItem>
               </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- [FIXME metrics 1/2] A temporary fix that can be removed once metrics war has
+           its jboss-deployment-structure.xml fixed to depend on bus rather than nest WF module -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <replace
+                    token="org.hawkular.nest"
+                    value="org.hawkular.bus"
+                    file="${project.build.directory}/${project.build.finalName}/modules/org/hawkular/nest/main/deployments/hawkular-metrics-component.war//WEB-INF/jboss-deployment-structure.xml"
+                />
+              </tasks>
             </configuration>
           </execution>
         </executions>
