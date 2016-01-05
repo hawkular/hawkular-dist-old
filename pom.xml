@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
     and other contributors as indicated by the @author tags.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,7 +85,7 @@
     <version.org.hawkular.accounts>2.0.10.Final-SRC-revision-f94a0f5352b459efdfba9497a8fe9194a4d5ff45</version.org.hawkular.accounts>
     <version.org.hawkular.agent>0.15.1.Final</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.8.0.Final-SRC-revision-097fe964858df8d45c703729bacb05d603c2aedd</version.org.hawkular.alerts>
-    <version.org.hawkular.commons>0.3.2.Final-SRC-revision-2acedc8832053cc0bcc145c3424478b415b9c95d</version.org.hawkular.commons>
+    <version.org.hawkular.commons>0.3.2.Final</version.org.hawkular.commons>
     <version.org.hawkular.cmdgw>0.10.6.Final</version.org.hawkular.cmdgw>
     <version.org.hawkular.metrics>0.11.0.Final-SRC-revision-7a90403c761cc446b1bc357eaac351d58ded00f4</version.org.hawkular.metrics>
     <version.org.hawkular.inventory>0.11.0.Final</version.org.hawkular.inventory>
