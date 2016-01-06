@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,7 +71,7 @@ var config = {
 gulp.task('set-server-path', function(done) {
   var parser = new xml2js.Parser();
   parser.addListener('end', function(result) {
-    config.serverPath = DIST_TARGET_PATH + 'hawkular-' + result.project.version + '/hawkular-' + result.project.version + '/' + WF_CONSOLE_PATH;
+    config.serverPath = DIST_TARGET_PATH + 'hawkular-' + result.project.version + '/' + WF_CONSOLE_PATH;
     done();
   });
 
