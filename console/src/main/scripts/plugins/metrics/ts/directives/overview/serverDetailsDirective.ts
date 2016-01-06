@@ -84,7 +84,9 @@ module HawkularMetrics {
             feedId: this.feedId,
             resourcePath: this.resourceId
           },
-          {properties});
+          {properties}, (result) => {
+            this.serverInfo['properties'] = properties;
+          });
       }
     }
 

@@ -24,9 +24,6 @@ module HawkularMetrics {
 
   export class AppServerListController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
-        'HawkularInventory', 'HawkularMetric',  '$q',
-        'md5', 'HkHeaderParser'];
 
     private resourceList;
     private filteredResourceList;
@@ -108,9 +105,8 @@ module HawkularMetrics {
     }
 
     public filterBy(filters:any):void {
-      let _self = this;
-      let filterObj = _self.resourceList;
-      _self['search'] = '';
+      let filterObj = this.resourceList;
+      let searchParam = '';
       filters.forEach((filter) => {
         filterObj = filterObj.filter((item) => {
           if (filter.value === 'All') {
@@ -122,12 +118,13 @@ module HawkularMetrics {
             case 'state':
               return item.state.toLowerCase() === filter.value.toLowerCase();
             case 'byText':
-              _self['search'] = filter.value;
+              searchParam = filter.value;
               return true;
           }
         });
       });
-      _self.filteredResourceList = filterObj;
+      filterObj = this.$filter('filter')(filterObj, searchParam);
+      this.filteredResourceList = filterObj;
     }
 
     public setPage(page): void {
