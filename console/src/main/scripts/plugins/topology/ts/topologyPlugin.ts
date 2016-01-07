@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,14 +57,6 @@ module HawkularTopology {
         App: ''
       };
 
-      $rootScope.$on('select', (ev, item) => {
-        var text = '';
-        if (item) {
-          text = 'Selected: ' + item.metadata.name;
-        }
-        angular.element(document.getElementById('selected')).text(text);
-      });
-
       // fetch the data from the inventory
       this.getData();
       this.autoRefresh(20);
@@ -121,6 +113,10 @@ module HawkularTopology {
         'Deployment': 'App'
       };
       let extractServerId = (id: string): string => id.substring(0, id.indexOf('/')) + '~';
+      let extractFeedId = (path: string): string => {
+        var feedChunk = path.split('/').filter((chunk) => chunk.startsWith('f;'));
+        return feedChunk.length === 1 && feedChunk[0] ? feedChunk[0].slice(2) : 'localhost';
+      };
 
       this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId}, (aFeedList) => {
         if (!aFeedList.length) {
@@ -143,11 +139,13 @@ module HawkularTopology {
             return;
           }
           angular.forEach(flatResources, (res) => {
-            let newItem = {
+              let feedId =  extractFeedId(res.path);
+              let newItem = {
               kind: typeToKind[res.type.id],
               id: res.id,
               metadata: {
-                name: res.name
+                name: res.name,
+                feedId: feedId
               }
             };
             if (newItem.kind !== 'Server') {
@@ -156,8 +154,7 @@ module HawkularTopology {
                 target: res.id
               });
             } else {
-                // todo: feed id
-                this.getServerMetadata('localhost', res.id, newItem);
+                this.getServerMetadata(feedId, res.id, newItem);
               }
               newData.items[res.id] = newItem;
             });
