@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,12 +81,12 @@ module HawkularTopology {
                 .offset([-10, 0])
                 .html((d) => {
                     return '<table><tr><td><span class="chartHoverLabel">' + d.item.kind +
-                        ':</span></td><td><span class="chartHoverValue">' + d.item.metadata.name + '</span></td></tr>' +
-                    (d.item.kind === 'Server' ?
-                        '<tr><td><span class="chartHoverLabel">IP:</span></td><td><span class="chartHoverValue">' +
+                        ':</span></td><td><span class="topologyHoverValue">' + d.item.metadata.name +
+                         '</span></td></tr>' + (d.item.kind === 'Server' ?
+                        '<tr><td><span class="chartHoverLabel">IP:</span></td><td><span class="topologyHoverValue">' +
                         d.item.metadata.ip +
                         '</span></td></tr><tr><td><span class="chartHoverLabel">Hostname:</span></td><td>' +
-                        '<span class="chartHoverValue">' +
+                        '<span class="topologyHoverValue">' +
                         d.item.metadata.hostname + '</span></td></tr></table>' : '');
 
                 });
@@ -166,18 +166,19 @@ module HawkularTopology {
                     .on('mouseover', (d, i) => !isDragging && tip.show(d, i))
                     .on('mouseout', tip.hide)
                     .on('dblclick', (n) => {
-                        console.log('redirect');
                         var path;
                         switch (n.item.kind) {
                             case 'Server':
-                                var id = n.item.id.substring(0, n.item.id.length - 2);
-                                path = '/hawkular-ui/app/app-details/' + id + '/jvm';
+                                path = '/hawkular-ui/app/app-details/' + n.item.metadata.feedId
+                                    + '/' + n.item.id.substring(0, n.item.id.length - 2) + '/overview';
                                 break;
                             case 'App':
-                                path = '/hawkular-ui/app/app-details/' + extractServerId(n.item.id) + '/deployments/';
+                                path = '/hawkular-ui/app/app-details/' + n.item.metadata.feedId
+                                  + '/' + extractServerId(n.item.id) + '/deployments/';
                                 break;
                             case 'DataSource':
-                                path = '/hawkular-ui/app/app-details/' + extractServerId(n.item.id) + '/datasources';
+                                path = '/hawkular-ui/app/app-details/' + n.item.metadata.feedId
+                                  + '/' + extractServerId(n.item.id) + '/datasources';
                                 break;
                             default:
                                 return;

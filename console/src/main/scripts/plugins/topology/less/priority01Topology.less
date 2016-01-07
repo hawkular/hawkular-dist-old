@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ hawkular-topology-graph {
   height: 100%;
   width: 100%;
 }
+
 .controls {
   position: absolute;
   left: 60px;
@@ -32,19 +33,12 @@ hawkular-topology-graph {
   padding: 0 10px;
   width: 190px;
 }
+
 #selected {
   float: right;
   display: none;
   margin-top: 15px;
 }
-
-.container {
-    margin-right: auto;
-    margin-left: auto important!;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
 
 // hawkular-topology specific
 hawkular-topology-graph {
@@ -159,4 +153,10 @@ hawkular-topology-icon:hover use {
     line-height: 50px;
     width: 50%;
   }
+}
+
+.topologyHoverValue {
+  color: #d3d3d3;
+  font-weight: bold;
+  margin-left: 10px;
 }
