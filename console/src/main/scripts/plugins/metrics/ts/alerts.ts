@@ -247,6 +247,13 @@ module HawkularMetrics {
       return decoded;
     }
 
+    // 0 indicates we should use default dampening (alert every time), anything above 0 is time-based dampening
+    protected getEvalTimeSetting(evalTimeSetting:any):number {
+      if ((undefined === evalTimeSetting ) || (null === evalTimeSetting) || (0 > evalTimeSetting)) {
+        return 0;
+      }
+      return evalTimeSetting;
+    }
   }
 
   export class MetricsAlertController {

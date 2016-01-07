@@ -36,22 +36,6 @@ module HawkularMetrics {
 
           this.fullTrigger = triggerData;
 
-          //let startTimeStamp = +moment().subtract((this.$routeParams.timeOffset || 3600000), 'milliseconds');
-          //let endTimeStamp = +moment();
-          //let percentOfMetricId = triggerData.trigger.context.triggerTypeProperty1;
-
-          //return this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id, percentOfMetricId,
-          //  startTimeStamp, endTimeStamp, 1);
-
-          //}).then((dataPoints) => {
-
-          //if (dataPoints.length > 0) {
-          //  this.ceiling = dataPoints[0].max;
-          //}
-          //if (this.ceiling <= 0) {
-          //  this.ceiling = 1024; // this should maybe be an error situation because a valid number is unknown.
-          //}
-
           //let triggerData = this.fullTrigger;
           this.adm.trigger = {};
           // updateable
@@ -93,15 +77,15 @@ module HawkularMetrics {
 
       updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
 
-      // time == 1 is a flag for default dampening (i.e. Strict(1))
-      if ( this.adm.trigger.evalTimeSetting === 1 ) {
+      // time == 0 is a flag for default dampening (i.e. Strict(1))
+      if ( this.adm.trigger.evalTimeSetting === 0 ) {
         updatedFullTrigger.dampenings[0].type = 'STRICT';
         updatedFullTrigger.dampenings[0].evalTrueSetting = 1;
         updatedFullTrigger.dampenings[0].evalTimeSetting = null;
       } else {
         updatedFullTrigger.dampenings[0].type = 'STRICT_TIME';
         updatedFullTrigger.dampenings[0].evalTrueSetting = null;
-        updatedFullTrigger.dampenings[0].evalTimeSetting = this.adm.trigger.evalTimeSetting;
+        updatedFullTrigger.dampenings[0].evalTimeSetting = super.getEvalTimeSetting(this.adm.trigger.evalTimeSetting);
       }
 
       if (updatedFullTrigger.conditions[0].operator === 'GT') {
