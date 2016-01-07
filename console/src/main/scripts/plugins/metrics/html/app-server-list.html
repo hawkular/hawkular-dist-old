@@ -35,8 +35,6 @@
       </div>
     </div>
 
-    <h3>Application Servers ({{vm.resourceList.length}})</h3>
-
     <div class="blank-slate-pf" ng-show="vm.resourceList.$resolved && !vm.resourceList.length">
       <div class="blank-slate-pf-icon">
         <i class="fa fa-server"></i>
@@ -59,8 +57,9 @@
       </div>
       <div class="dataTables_header">
         <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
-          Showing <b>1</b> to <b>{{(vm.filteredResourceList | filter:vm.search).length}}</b> of
-          <b>{{vm.resourceList.length}}</b> Items
+          <span ng-show="vm.filteredResourceList.length !== 0">Showing <b>1</b> to <b>{{vm.filteredResourceList.length}}</b> of
+          <b>{{vm.filteredResourceList.length}}</b> Items</span>
+          <span ng-hide="vm.filteredResourceList.length !== 0">No results</span>
         </div>
       </div>
       <table class="datatable table table-striped table-bordered" ng-show="vm.resourceList.length">
@@ -84,13 +83,7 @@
                 vm.filteredResourceList.length === 0 ||
                 (vm.search && (vm.filteredResourceList | filter:vm.search).length === 0)
               ">
-            <p>Suggestions</p>
-            <ul>
-              <li>Check the syntax of the search term.</li>
-              <li>Check that the correct menu option is chosen (token ID vs. user ID).</li>
-              <li>Use wildcards (* to match zero or more characters or ? to match a single character).</li>
-              <li>Clear the search field, then click Search to return to the 20 most recent records.</li>
-            </ul>
+            <p>No results. Try refining your search.</p>
           </td>
         </tr>
         <tr ng-repeat="res in vm.filteredResourceList | filter:vm.search | orderBy:'properties.url':vm.reverse">

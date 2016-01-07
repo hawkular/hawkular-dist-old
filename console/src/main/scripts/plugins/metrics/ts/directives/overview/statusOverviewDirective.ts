@@ -22,12 +22,14 @@ module HawkularMetrics {
   export class StatusOverviewController {
 
     public initPie(data) {
+      let used = data.inUseCount.value / (data.inUseCount.value + data.availableCount.value) * 100 || 0;
       data.chartConfig = {
         type: 'donut',
         donut: {
           label: {
             show: false
           },
+          title: used + '%',
           width: 10
         },
         size: {
@@ -39,11 +41,10 @@ module HawkularMetrics {
         color: {
           pattern: ['#0088CE','#D1D1D1']
         },
-        tooltip: {},
         data: {
           type: 'donut',
           columns: [
-            ['Used', data.inUseCount.value / (data.inUseCount.value + data.availableCount.value) * 100 || 0],
+            ['Used', used],
             ['Available', 100]
           ],
           groups: [
