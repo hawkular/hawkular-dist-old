@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,11 +62,16 @@ public class Pinger {
     /** A key to use when storing and retrieving remote IP address from and to {@link HttpContext} */
     static final String REMOTE_ADDRESS_ATTRIBUTE = Pinger.class.getPackage().getName() + ".remoteAddress";
 
-    /** A custom connnection manager used by this pinger */
+    /**
+     * A custom connection manager used by this pinger
+     */
     private final HttpClientConnectionManager connectionManager;
 
+    private final CloseableHttpClient client;
+
     public Pinger() throws Exception {
-        connectionManager = createConnectionManager();
+        this.connectionManager = createConnectionManager();
+        this.client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
     }
 
     /**
@@ -124,7 +129,7 @@ public class Pinger {
         Log.LOG.debugf("About to ping %s", destination.getUrl());
         HttpUriRequest request = RequestBuilder.create(destination.getMethod()).setUri(destination.getUrl()).build();
 
-        try (CloseableHttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build()) {
+        try {
             long start = System.currentTimeMillis();
             HttpClientContext context = HttpClientContext.create();
             try (CloseableHttpResponse httpResponse = client.execute(request, context)) {
