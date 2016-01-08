@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -288,18 +288,18 @@ module HawkularMetrics {
         scope.durationToggle = ():void => {
           if (scope.durationEnabled) {
             scope.hkDuration = durationBackup;
-            if (scope.hkDuration === 1) {
+            if (scope.hkDuration === 0) {
               scope.responseUnit = hkTimeUnit.getFittestTimeUnit(scope.hkDuration);
             }
           } else {
             durationBackup = scope.hkDuration;
-            scope.hkDuration = 1;
+            scope.hkDuration = 0;
           }
         };
 
         scope.$watch('hkDuration', () => {
           if (!localChange) {
-            scope.durationEnabled = scope.hkDuration !== 1;
+            scope.durationEnabled = scope.hkDuration !== 0;
           }
           localChange = false;
         });

@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ module HawkularMetrics {
           this.adm.trigger['minThreshold'] = triggerData.conditions[0].thresholdLow;
 
           this.adm.trigger['email'] = triggerData.trigger.actions.email[0];
-          this.adm.trigger['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.trigger['evalTimeSetting'] = super.getEvalTimeSetting(triggerData.dampenings[0].evalTimeSetting);
 
           // presentation
           this.adm.trigger['context'] = triggerData.trigger.context;
@@ -65,8 +65,8 @@ module HawkularMetrics {
 
       updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
 
-      // time == 1 is a flag for default dampening (i.e. Strict(1))
-      if ( this.adm.trigger.evalTimeSetting === 1 ) {
+      // time == 0 is a flag for default dampening (i.e. Strict(1))
+      if ( this.adm.trigger.evalTimeSetting === 0 ) {
         updatedFullTrigger.dampenings[0].type = 'STRICT';
         updatedFullTrigger.dampenings[0].evalTrueSetting = 1;
         updatedFullTrigger.dampenings[0].evalTimeSetting = null;

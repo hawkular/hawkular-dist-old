@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ module HawkularMetrics {
           this.adm.trigger['conditionThreshold'] = triggerData.conditions[0].threshold;
 
           this.adm.trigger['email'] = triggerData.trigger.actions.email[0];
-          this.adm.trigger['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
+          this.adm.trigger['evalTimeSetting'] = super.getEvalTimeSetting(triggerData.dampenings[0].evalTimeSetting);
 
           // presentation
           this.adm.trigger['context'] = triggerData.trigger.context;
@@ -65,8 +65,8 @@ module HawkularMetrics {
       // When using AutoResolve the settings are implicit. We use the same dampening as for Firing mode.
       // So, update both the firing and, if it exists, AR dampening.
       updatedFullTrigger.dampenings.forEach((dampening:any) => {
-        // time == 1 is a flag for default dampening (i.e. Strict(1))
-        if ( this.adm.trigger.evalTimeSetting === 1 ) {
+        // time == 0 is a flag for default dampening (i.e. Strict(1))
+        if ( this.adm.trigger.evalTimeSetting === 0 ) {
           dampening.type = 'STRICT';
           dampening.evalTrueSetting = 1;
           dampening.evalTimeSetting = null;
