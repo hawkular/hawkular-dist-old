@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ module HawkularMetrics {
   export class MetricsAvailabilityController {
     /// for minification only
     public static  $inject = ['$scope', '$rootScope', '$interval', '$window', '$log', '$location', 'HawkularMetric',
-      'MetricsService', '$routeParams', '$filter', '$moment', 'HawkularAlertsManager',
+      'MetricsService', '$routeParams', '$filter', '$moment', 'HawkularNav', 'HawkularAlertsManager',
       'ErrorsManager', '$q', 'NotificationsService'];
 
     private availabilityDataPoints:IChartDataPoint[] = [];
@@ -66,6 +66,7 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private $filter:ng.IFilterService,
                 private $moment:any,
+                private HawkularNav:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
@@ -100,6 +101,19 @@ module HawkularMetrics {
       $scope.$on(EventNames.REFRESH_AVAIL_CHART, (/*event*/) => {
         this.refreshAvailPageNow(this.getResourceId());
       });
+
+      // handle drag ranges on charts to change the time range
+      this.$scope.$on(EventNames.AVAIL_CHART_TIMERANGE_CHANGED, (event, data:Date[]) => {
+        this.changeTimeRange(data);
+      });
+
+    }
+
+    private changeTimeRange(data:Date[]):void {
+      this.startTimeStamp = data[0].getTime();
+      this.endTimeStamp = data[1].getTime();
+      this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
+      this.refreshAvailPageNow(this.getResourceId());
     }
 
     private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
@@ -135,26 +149,20 @@ module HawkularMetrics {
     }
 
     public refreshAvailPageNow(resourceId:ResourceId, startTime?:number):void {
-      this.$scope.hkEndTimestamp = +this.$moment();
-      let adjStartTimeStamp:number = +this.$moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
-      this.endTimeStamp = this.$scope.hkEndTimestamp;
+      this.endTimeStamp = this.$routeParams.endTime || +moment();
+      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
+
       if (resourceId) {
         this.$log.debug('Updating Availability Page');
-        this.refreshSummaryAvailabilityData(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
-        this.refreshAvailChartData(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
-        this.getAlerts(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+        this.refreshSummaryAvailabilityData(resourceId, this.startTimeStamp, this.endTimeStamp);
+        this.refreshAvailChartData(resourceId, this.startTimeStamp, this.endTimeStamp);
+        this.getAlerts(resourceId, this.startTimeStamp, this.endTimeStamp);
       }
     }
 
 
     private  autoRefreshAvailability(intervalInSeconds:TimestampInMillis):void {
-      this.endTimeStamp = this.$scope.hkEndTimestamp;
-      this.startTimeStamp = this.$scope.hkStartTimestamp;
       this.autoRefreshPromise = this.$interval(()  => {
-        this.$scope.hkEndTimestamp = +this.$moment();
-        this.endTimeStamp = this.$scope.hkEndTimestamp;
-        this.$scope.hkStartTimestamp = +this.$moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
-        this.startTimeStamp = this.$scope.hkStartTimestamp;
         this.refreshAvailPageNow(this.getResourceId());
       }, intervalInSeconds * 1000);
 

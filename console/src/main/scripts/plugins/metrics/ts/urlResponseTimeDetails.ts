@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,8 +24,8 @@ module HawkularMetrics {
 
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', '$location',
-      '$routeParams', 'HawkularAlertsManager', 'ErrorsManager', '$q', 'NotificationsService', 'MetricsService'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', '$location', '$routeParams',
+       'HawkularNav', 'HawkularAlertsManager', 'ErrorsManager', '$q', 'NotificationsService', 'MetricsService'];
 
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
@@ -47,6 +47,7 @@ module HawkularMetrics {
                 private $log:ng.ILogService,
                 private $location:ng.ILocationService,
                 private $routeParams:any,
+                private HawkularNav:any,
                 private HawkularAlertsManager:IHawkularAlertsManager,
                 private ErrorsManager:IErrorsManager,
                 private $q:ng.IQService,
@@ -62,6 +63,11 @@ module HawkularMetrics {
       $scope.$on(EventNames.REFRESH_CHART, (event) => {
         this.$log.debug('RefreshChart Event');
         this.refreshChartDataNow(this.getMetricId());
+      });
+
+      // handle drag ranges on charts to change the time range
+      this.$scope.$on(EventNames.CHART_TIMERANGE_CHANGED, (event, data:Date[]) => {
+        this.changeTimeRange(data);
       });
 
       let waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
@@ -83,6 +89,13 @@ module HawkularMetrics {
       }
       $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/url/url-list'));
       this.autoRefresh(20);
+    }
+
+    private changeTimeRange(data:Date[]):void {
+      this.startTimeStamp = data[0].getTime();
+      this.endTimeStamp = data[1].getTime();
+      this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
+      this.refreshChartDataNow(this.getMetricId());
     }
 
     private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
@@ -115,14 +128,7 @@ module HawkularMetrics {
 
     private autoRefresh(intervalInSeconds:IntervalInSeconds):void {
       this.autoRefreshPromise = this.$interval(()  => {
-        this.$scope.hkEndTimestamp = +moment();
-        this.endTimeStamp = this.$scope.hkEndTimestamp;
-        this.$scope.hkStartTimestamp = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
-        this.startTimeStamp = this.$scope.hkStartTimestamp;
-        this.refreshSummaryData(this.getMetricId());
-        this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
-        this.getAlerts(this.resourceId, this.$scope.hkStartTimestamp, this.endTimeStamp);
-        this.retrieveThreshold();
+        this.refreshChartDataNow(this.getMetricId());
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -132,13 +138,12 @@ module HawkularMetrics {
 
 
     private refreshChartDataNow(metricId:MetricId, startTime?:TimestampInMillis):void {
-      this.$scope.hkEndTimestamp = +moment();
-      let adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
-      this.endTimeStamp = this.$scope.hkEndTimestamp;
-      this.refreshSummaryData(metricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
-      this.refreshHistoricalChartDataForTimestamp(metricId,
-        !startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
-      this.getAlerts(this.resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+      this.endTimeStamp = this.$routeParams.endTime || +moment();
+      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
+
+      this.refreshSummaryData(metricId, this.startTimeStamp, this.endTimeStamp);
+      this.refreshHistoricalChartDataForTimestamp(metricId, this.startTimeStamp, this.endTimeStamp);
+      this.getAlerts(this.resourceId, this.startTimeStamp, this.endTimeStamp);
       this.retrieveThreshold();
     }
 
