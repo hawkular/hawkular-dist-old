@@ -97,7 +97,7 @@
         <xsl:with-param name="credential.secret" select="*[local-name()='secure-deployment']/*[local-name()='credential' and @name='secret']/text()"/>
       </xsl:call-template>
       <xsl:call-template name="secure-deployment">
-        <xsl:with-param name="deployment.name" select="'hawkular-alerts-actions-email'" />
+        <xsl:with-param name="deployment.name" select="'hawkular-alerts-actions-email.war'" />
         <xsl:with-param name="credential.secret" select="*[local-name()='secure-deployment']/*[local-name()='credential' and @name='secret']/text()"/>
       </xsl:call-template>
       <xsl:call-template name="secure-deployment">
