@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -167,11 +167,11 @@ module HawkularMetrics {
     updateSelected(enabled, errorCallback):Array<ng.IPromise<any>> {
 
       let promises = [];
-      let triggerDefinition = {};
-      let triggerBackup = {};
 
       this.triggersList.forEach((triggerItem:IAlertTrigger) => {
         if (triggerItem.selected && (triggerItem.enabled !== enabled)) {
+          let triggerDefinition = {};
+          let triggerBackup = {};
           triggerDefinition['trigger'] = angular.copy(triggerItem);
           delete triggerDefinition['trigger'].selected;
           triggerBackup['trigger'] = angular.copy(triggerDefinition['trigger']);
