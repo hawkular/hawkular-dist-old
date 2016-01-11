@@ -56,6 +56,7 @@
     <module>modules/hawkular-wildfly-agent-download</module>
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
+    <module>modules/hawkular-api-parent</module>
     <module>dist</module>
     <module>modules/end-to-end-test</module>
   </modules>
@@ -90,6 +91,9 @@
     <version.org.hawkular.inventory>0.12.0.Final</version.org.hawkular.inventory>
     <version.org.hawkular.metrics>0.11.0.Final-SRC-revision-7a90403c761cc446b1bc357eaac351d58ded00f4</version.org.hawkular.metrics>
     <version.org.keycloak.secretstore>1.0.4.Final</version.org.keycloak.secretstore>
+    <version.rxjava>1.0.16</version.rxjava>
+    <version.hystrix-core>1.4.21</version.hystrix-core>
+    <version.hystrix-request-servlet>1.1.2</version.hystrix-request-servlet>
   </properties>
 
   <dependencyManagement>
@@ -183,6 +187,24 @@
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${version.commons.io}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.netflix.hystrix</groupId>
+        <artifactId>hystrix-core</artifactId>
+        <version>${version.hystrix-core}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.netflix.hystrix</groupId>
+        <artifactId>hystrix-request-servlet</artifactId>
+        <version>${version.hystrix-request-servlet}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.reactivex</groupId>
+        <artifactId>rxjava</artifactId>
+        <version>${version.rxjava}</version>
       </dependency>
 
       <dependency>

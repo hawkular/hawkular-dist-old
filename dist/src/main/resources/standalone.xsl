@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
     and other contributors as indicated by the @author tags.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
     limitations under the License.
 
 -->
-
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:ds="urn:jboss:domain:datasources:3.0" xmlns:ra="urn:jboss:domain:resource-adapters:3.0" xmlns:ejb3="urn:jboss:domain:ejb3:3.0"
   xmlns:logging="urn:jboss:domain:logging:3.0" xmlns:undertow="urn:jboss:domain:undertow:2.0" xmlns:tx="urn:jboss:domain:transactions:3.0"
@@ -105,6 +104,10 @@
         <xsl:with-param name="deployment.name" select="'hawkular-wildfly-agent-download.war'" />
         <xsl:with-param name="credential.secret" select="*[local-name()='secure-deployment']/*[local-name()='credential' and @name='secret']/text()"/>
       </xsl:call-template>
+      <xsl:call-template name="secure-deployment">
+        <xsl:with-param name="deployment.name" select="'hawkular-rest-api.war'" />
+        <xsl:with-param name="credential.secret" select="*[local-name()='secure-deployment']/*[local-name()='credential' and @name='secret']/text()"/>
+      </xsl:call-template>
     </xsl:copy>
   </xsl:template>
 
@@ -167,9 +170,19 @@
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.inventory.rest.requests:INFO}</xsl:text></xsl:attribute>
       </level>
     </logger>
+    <logger category="org.hawkular.inventory.ws">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.inventory.ws:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
     <logger category="org.hawkular.metrics">
       <level>
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.metrics:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <logger category="org.hawkular.rest">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.rest:INFO}</xsl:text></xsl:attribute>
       </level>
     </logger>
 

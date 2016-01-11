@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
     and other contributors as indicated by the @author tags.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +34,24 @@
   <dependencies>
 
     <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.hawkular.inventory</groupId>
       <artifactId>hawkular-inventory-itest</artifactId>
       <version>${version.org.hawkular.inventory}</version>
@@ -42,6 +60,13 @@
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
       <artifactId>hawkular-inventory-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-rx</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -68,6 +93,14 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.jboss.weld.se</groupId>
+      <artifactId>weld-se</artifactId>
+      <version>2.3.2.Final</version>
+      <scope>test</scope>
+    </dependency>
+
 
   </dependencies>
 
@@ -104,6 +137,7 @@
         <hawkular.log.availcreator>INFO</hawkular.log.availcreator>
         <hawkular.log.pinger>INFO</hawkular.log.pinger>
         <hawkular.log.inventory>INFO</hawkular.log.inventory>
+        <hawkular.log.inventory.rest.requests>INFO</hawkular.log.inventory.rest.requests>
         <hawkular.log.metrics>INFO</hawkular.log.metrics>
         <hawkular.log.nest>INFO</hawkular.log.nest>
         <hawkular.log.datastax.driver>INFO</hawkular.log.datastax.driver>
@@ -158,7 +192,7 @@
               <artifactId>hawkular-dist</artifactId>
               <version>${project.version}</version>
               <skip>${skipTests}</skip>
-              <startupTimeout>240</startupTimeout>
+              <startupTimeout>360</startupTimeout>
               <port>${hawkular.management.port}</port>
               <javaOpts>
                 <javaOpt>-server</javaOpt>
@@ -179,6 +213,7 @@
                 <javaOpt>-Dhawkular.log.availcreator=${hawkular.log.availcreator}</javaOpt>
                 <javaOpt>-Dhawkular.log.pinger=${hawkular.log.pinger}</javaOpt>
                 <javaOpt>-Dhawkular.log.inventory=${hawkular.log.inventory}</javaOpt>
+                <javaOpt>-Dhawkular.log.inventory.rest.requests=${hawkular.log.inventory.rest.requests}</javaOpt>
                 <javaOpt>-Dhawkular.log.metrics=${hawkular.log.metrics}</javaOpt>
                 <javaOpt>-Dhawkular.log.nest=${hawkular.log.nest}</javaOpt>
                 <javaOpt>-Dhawkular.log.datastax.driver=${hawkular.log.datastax.driver}</javaOpt>
@@ -207,6 +242,9 @@
                 <goals>
                   <goal>shutdown</goal>
                 </goals>
+                <configuration>
+                  <timeout>120</timeout>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -223,10 +261,16 @@
                 </goals>
                 <configuration>
                   <artifactItems>
+                    <!--                    <artifactItem>
+                                          <groupId>org.hawkular.inventory</groupId>
+                                          <artifactId>hawkular-inventory-itest</artifactId>
+                                          <version>${version.org.hawkular.inventory}</version>
+                                          <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+                                        </artifactItem>-->
                     <artifactItem>
-                      <groupId>org.hawkular.inventory</groupId>
-                      <artifactId>hawkular-inventory-itest</artifactId>
-                      <version>${version.org.hawkular.inventory}</version>
+                      <groupId>org.hawkular</groupId>
+                      <artifactId>hawkular-end-to-end-tests</artifactId>
+                      <version>${project.version}</version>
                       <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
                     </artifactItem>
                   </artifactItems>
