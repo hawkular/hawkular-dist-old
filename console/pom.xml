@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
     and other contributors as indicated by the @author tags.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,9 +36,9 @@
     <hawkular.console.context>/</hawkular.console.context>
     <hawkular.console.index.html.base.href>/</hawkular.console.index.html.base.href>
     <bower.link.package />
-    <node.version>v0.12.7</node.version>
-    <node.npm.version>2.13.2</node.npm.version>
-    <node.maven.plugin.version>0.0.23</node.maven.plugin.version>
+    <node.version>v4.2.2</node.version>
+    <node.npm.version>2.14.7</node.npm.version>
+    <node.maven.plugin.version>0.0.26</node.maven.plugin.version>
     <hawkular.checkstyle.excludes>
       release.properties,
       **/*.d.ts,

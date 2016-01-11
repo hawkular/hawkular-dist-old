@@ -156,6 +156,13 @@
       <artifactId>hawkular-metrics-component</artifactId>
       <type>war</type>
     </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-rest-api</artifactId>
+      <version>1.0.0.Alpha9-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+
 
   </dependencies>
 
@@ -263,6 +270,12 @@
                 <artifactItem>
                   <groupId>org.hawkular</groupId>
                   <artifactId>hawkular-wildfly-agent-download</artifactId>
+                  <version>${project.version}</version>
+                  <type>war</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.hawkular</groupId>
+                  <artifactId>hawkular-rest-api</artifactId>
                   <version>${project.version}</version>
                   <type>war</type>
                 </artifactItem>

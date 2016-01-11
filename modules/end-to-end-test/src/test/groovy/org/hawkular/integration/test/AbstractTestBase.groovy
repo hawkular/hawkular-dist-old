@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@ class AbstractTestBase {
 
   protected static final String testUser = 'jdoe'
   protected static final String testPasword = 'password'
+  protected static String authHeader
 
   protected static final String baseURI
   static {
@@ -50,7 +51,8 @@ class AbstractTestBase {
      *  * The authorization method and a space i.e. "Basic " is then put before the encoded string.
      */
     String encodedCredentials = Base64.getMimeEncoder().encodeToString("$testUser:$testPasword".getBytes("utf-8"))
-    client.defaultRequestHeaders.Authorization = "Basic "+ encodedCredentials
+    authHeader = "Basic "+ encodedCredentials
+    client.defaultRequestHeaders.Authorization = authHeader
     client.defaultRequestHeaders.Accept = ContentType.JSON
   }
 

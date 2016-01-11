@@ -13,6 +13,11 @@ install:
 - mvn -s .travis.maven.settings.xml -version -B
 - df -h
 - du -sh $HOME/.m2/repository
+
+before_script:
+- ulimit -u 4096
+- ulimit -s 65535
+- ulimit -a
 script:
 - PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
 - if [[ "${PROJECT_VERSION}" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
