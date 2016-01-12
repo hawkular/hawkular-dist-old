@@ -33,15 +33,18 @@ module HawkularMetrics {
     private autoRefreshPromise:ng.IPromise<number>;
     public startTimeStamp:TimestampInMillis;
     public endTimeStamp:TimestampInMillis;
+    private initialStartTime:TimestampInMillis;
 
     constructor(private $location:ng.ILocationService,
                 private $routeParams:any,
-                private $rootScope:any,
                 private HawkularAlertRouterManager: IHawkularAlertRouterManager,
                 private $interval:ng.IIntervalService) {
-      this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
+      this.initialStartTime = this.$routeParams.timeOffset || 3600000;
+      this.resourceId = this.resource.id;
+      this.initStartTimeStamp();
       this.endTimeStamp = +moment();
-      this.getAlerts();
+      this.registerAlerts();
+      this.refresh();
       this.autoRefresh(20);
     }
 
@@ -91,20 +94,31 @@ module HawkularMetrics {
       );
     }
 
+    private initStartTimeStamp() {
+      this.startTimeStamp = +moment().subtract((this.$routeParams.timeOffset || 3600000), 'milliseconds');
+    }
+
+    public removeUrl($event) {
+      $event.stopPropagation();
+      if (this.hasOwnProperty('deleteResource')) {
+        this['deleteResource']({res:this.resource});
+      }
+    }
+
     public redirectToUrlAvailability(resourceId) {
       this.$location.path(this.getAvailabilityUrl(resourceId));
     }
 
     public getAlertUrl(resourceId):string {
-      return UrlItemController.ALERT_URL + resourceId + '/' + this.$rootScope.hkParams.timeOffset;
+      return UrlItemController.ALERT_URL + resourceId + '/' + this.initialStartTime;
     }
 
     public getResponseTimeUrl(resourceId):string {
-      return UrlItemController.RESPONSE_TIME_URL + resourceId + '/' + this.$rootScope.hkParams.timeOffset;
+      return UrlItemController.RESPONSE_TIME_URL + resourceId + '/' + this.initialStartTime;
     }
 
     public getAvailabilityUrl(resourceId):string {
-      return UrlItemController.AVAILABILITY_URL + resourceId + '/' + this.$rootScope.hkParams.timeOffset;
+      return UrlItemController.AVAILABILITY_URL + resourceId + '/' + this.initialStartTime;
     }
   }
   _module.controller('UrlItemController', UrlItemController);

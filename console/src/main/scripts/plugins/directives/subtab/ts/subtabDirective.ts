@@ -93,7 +93,7 @@ module Subtab {
       };
 
       $scope.getUrlFromId = (id) => {
-        if (!$scope.resource) {
+        if (!$scope.resource && $scope.isUrlPage()) {
           $scope.resource = HawkularInventory.Resource.get({environmentId: globalEnvironmentId, resourcePath: id},
             (data) => {
               $scope.resourceName = data.properties.url;

@@ -18,18 +18,11 @@
 /// <reference path="../../metricsPlugin.ts"/>
 /// <reference path="../../../includes.ts"/>
 module HawkularMetrics {
+
   let itemLink = (scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
     if (typeof scope.alerts === 'undefined') {
       scope.alerts = [];
     }
-
-    scope.$watch('resource', (newResource) => {
-      scope.vm.resourceId = newResource.id;
-      scope.vm.resource = newResource;
-      scope.vm.registerAlerts();
-      scope.vm.refresh();
-    });
-
     scope.$on('$destroy', () => {
       scope.vm.destroy();
     });
@@ -55,10 +48,12 @@ module HawkularMetrics {
   export class ItemDirective implements ng.IDirective {
     public link = itemLink;
     public replace:boolean = true;
+    public scope = {};
     public controller = UrlItemController;
     public controllerAs = 'vm';
-    public scope = {
-      resource: '='
+    public bindToController = {
+      resource: '=',
+      deleteResource: '&'
     };
     public templateUrl = 'plugins/metrics/html/directives/url-list/item.html';
     public static Factory() {

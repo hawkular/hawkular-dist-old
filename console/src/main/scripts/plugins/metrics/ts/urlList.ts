@@ -77,7 +77,7 @@ module HawkularMetrics {
     /// this is for minification purposes
     public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal',
       'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'ErrorsManager', '$q', 'MetricsService',
-      'md5', 'HkHeaderParser', 'NotificationsService'];
+      'md5', 'HkHeaderParser', 'NotificationsService', '$routeParams'];
 
     private autoRefreshPromise:ng.IPromise<number>;
     private static NUM_OF_POINTS = 30;
@@ -97,6 +97,7 @@ module HawkularMetrics {
 
     public sorting:any;
     public currentSortIndex:number = 0;
+    public startTimeStamp:TimestampInMillis;
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
                 private $rootScope:any,
@@ -113,9 +114,11 @@ module HawkularMetrics {
                 private md5:any,
                 private HkHeaderParser:IHkHeaderParser,
                 private NotificationsService:INotificationsService,
+                private $routeParams:any,
                 public resourceUrl:string) {
       $scope.vm = this;
       this.resourceUrl = this.httpUriPart;
+      this.startTimeStamp = +moment().subtract((this.$routeParams.timeOffset || 3600000), 'milliseconds');
 
       if ($rootScope.currentPersona) {
         this.getResourceList(this.$rootScope.currentPersona.id);
@@ -199,6 +202,7 @@ module HawkularMetrics {
         resourceTypePath: '/URL',
         id: resourceId,
         properties: {
+          created: new Date().getTime(),
           url: url,
           'hwk-gui-domainSort': domainSort
         }

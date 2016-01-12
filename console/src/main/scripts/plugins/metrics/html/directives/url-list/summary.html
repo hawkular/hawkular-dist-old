@@ -4,6 +4,7 @@
       <div class="col-lg-2 col-md-3 col-sm-3" ng-repeat="res in resourceList track by res.properties.url">
         <url-list-item
           resource="res"
+          delete-resource="deleteResource({res:res})"
         ></url-list-item>
       </div>
     </div>
