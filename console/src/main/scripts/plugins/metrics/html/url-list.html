@@ -3,7 +3,10 @@
     <div class="spinner spinner-lg"></div>
     <p class="hk-spinner-legend-below">Loading...</p>
   </div>
+
   <div class="hk-urls-list" ng-class="{'hk-urls-empty text-center': vm.resourceList.length === 0, 'hk-fade-in': vm.resourceList}" ng-show="vm.resourceList">
+    <hawkular-subtab ng-controller="Subtab.SubtabController" ng-show="vm.resourceList.length > 0">
+    </hawkular-subtab>
     <h1 class="text-center">Hello {{currentPersona.owner ? currentPersona.name : userDetails.firstName}}!</h1>
     <i class="fa fa-line-chart" ng-show="vm.resourceList.length === 0"></i>
     <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a URL that you want to monitor.</h2>
@@ -16,13 +19,13 @@
                    placeholder="Enter a website URL (e.g.: http://www.website.com)" required hk-autofocus>
             <span class="input-group-btn">
               <button class="btn btn-primary" type="submit" ng-disabled="addUrlForm.$invalid || vm.addProgress">
-               <div ng-show="vm.addProgress" class="spinner spinner-sm"></div>
-              Add URL
+                <div ng-show="vm.addProgress" class="spinner spinner-sm"></div>
+                Add URL
               </button>
             </span>
           </div>
           <span class="help-block"
-                  ng-show="addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$invalid">The URL you entered is not valid. Please enter a valid URL.</span>
+                ng-show="addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$invalid">The URL you entered is not valid. Please enter a valid URL.</span>
 
         </div>
       </div>

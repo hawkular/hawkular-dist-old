@@ -1,34 +1,41 @@
-<div ng-click="vm.redirectToUrlAvailability(resource.id)">
+<div ng-click="vm.redirectToUrlAvailability(vm.resource.id)">
   <div class="tile">
     <div class="tile-content">
-      <div class="text-right hk-tile-alert">
-        <a href="{{vm.getAlertUrl(resource.id)}}">
-          <span ng-if="vm.alerts.length === 0" class="badge"></span>
-          <span ng-if="vm.alerts.length > 0" class="badge hk-bg-danger">{{vm.alerts.length}}</span>
-        </a>
+      <div class="text-left hk-tile-alert">
+        <span ng-if="vm.alerts.length === 0" class="badge"></span>
+        <span ng-if="vm.alerts.length > 0" class="badge hk-bg-danger">{{vm.alerts.length}}</span>
       </div>
-      <div class="hk-tile-title">{{resource.properties.url}}</div>
+      <div class="hk-tile-title">{{vm.resource.properties.url}}</div>
       <div class="hk-tile-status">
-        <span ng-show="resource.responseTime.length > 0">{{resource.isUp ? 'Up' : 'Down'}}</span>
+        <span ng-show="vm.resource.responseTime.length > 0">{{vm.resource.isUp ? 'Up' : 'Down'}}</span>
       </div>
       <div>
-        <div ng-show="resource.responseTime.length > 0 && resource.isUp" class="hk-tile-circle-icon hk-success"><i class="fa fa-arrow-up"></i></div>
-        <div ng-show="resource.responseTime.length > 0 && !resource.isUp" class="hk-tile-circle-icon hk-danger"><i class="fa fa-arrow-down"></i></div>
-        <span class="spinner spinner-inline" ng-hide="resource.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
+        <div ng-show="vm.resource.responseTime.length > 0 && vm.resource.isUp" class="hk-tile-circle-icon hk-success"><i class="fa fa-arrow-up"></i></div>
+        <div ng-show="vm.resource.responseTime.length > 0 && !vm.resource.isUp" class="hk-tile-circle-icon hk-danger"><i class="fa fa-arrow-down"></i></div>
+        <span class="spinner spinner-inline" ng-hide="vm.resource.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
       </div>
-      <div class="chart-pf-sparkline {{resource.isUp?'':'c3-danger'}}">
+      <div class="chart-pf-sparkline {{vm.resource.isUp?'':'c3-danger'}}">
         <hawkular-sparkline-chart
-          data="resource.graphResponseTime"
+          data="vm.resource.graphResponseTime"
           show-x-axis-values="false"
           show-y-axis-values="false">
         </hawkular-sparkline-chart>
       </div>
       <div class="hk-tile-info">
         <a href="{{vm.getResponseTimeUrl(resource.id)}}">
-          <span ng-show="resource.responseTime.length > 0 && resource.responseTime[0].value < 0">n/a</span>
-          <span ng-show="resource.responseTime.length > 0 && resource.responseTime[0].value >= 0">Response Time: {{resource.responseTime[0].value}}ms</span>
+          <span ng-show="vm.resource.responseTime.length > 0 && vm.resource.responseTime[0].value < 0">n/a</span>
+          <span ng-show="vm.resource.responseTime.length > 0 && vm.resource.responseTime[0].value >= 0">Response Time: {{vm.resource.responseTime[0].value}}ms</span>
         </a>
       </div>
     </div>
+    <button
+      class="btn-link hk-delete"
+      data-toggle="tooltip"
+      data-placement="top"
+      title=""
+      data-original-title="Delete"
+      ng-click="vm.removeUrl($event)">
+      <span class="pficon-delete"></span>
+    </button>
   </div>
 </div>

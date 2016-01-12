@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -93,7 +93,7 @@ module Subtab {
       };
 
       $scope.getUrlFromId = (id) => {
-        if (!$scope.resource) {
+        if (!$scope.resource && $scope.isUrlPage()) {
           $scope.resource = HawkularInventory.Resource.get({environmentId: globalEnvironmentId, resourcePath: id},
             (data) => {
               $scope.resourceName = data.properties.url;
