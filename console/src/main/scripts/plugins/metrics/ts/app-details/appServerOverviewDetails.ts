@@ -152,7 +152,7 @@ module HawkularMetrics {
 
     private getOverviewInfo() {
       let promises = [];
-      let resourceData = {};
+      let resourceData: any = {};
 
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         feedId: this.$routeParams.feedId,
@@ -173,7 +173,10 @@ module HawkularMetrics {
             }
           }).$promise);
         });
-        resourceData['deployments'] = aResourceList;
+        this.$q.all(promises).then(() => {
+          resourceData.deployments = aResourceList;
+          this.overviewInfo = resourceData;
+        });
       });
 
       //Web session data
@@ -206,9 +209,6 @@ module HawkularMetrics {
           }
         })
       );
-      this.$q.all(promises).then((result) => {
-        this.overviewInfo = resourceData;
-      });
     }
 
     private getActiveWebSession() {
