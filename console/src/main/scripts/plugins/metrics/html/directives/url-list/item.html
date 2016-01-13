@@ -22,7 +22,7 @@
         </hawkular-sparkline-chart>
       </div>
       <div class="hk-tile-info">
-        <a href="{{vm.getResponseTimeUrl(resource.id)}}">
+        <a href="{{vm.getResponseTimeUrl(vm.resource.id)}}">
           <span ng-show="vm.resource.responseTime.length > 0 && vm.resource.responseTime[0].value < 0">n/a</span>
           <span ng-show="vm.resource.responseTime.length > 0 && vm.resource.responseTime[0].value >= 0">Response Time: {{vm.resource.responseTime[0].value}}ms</span>
         </a>

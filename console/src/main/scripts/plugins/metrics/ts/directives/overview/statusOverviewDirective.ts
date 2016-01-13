@@ -92,6 +92,23 @@ module HawkularMetrics {
 
   export class HkOverviewDonutChart {
     public replace = 'true';
+    public link:any = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+      $scope.$on(EventNames.DONUT_CHART_RENDERED, function() {
+        if ($scope.chartConfig && $scope.chartConfig.bindto) {
+          let donutChart = d3.select($scope.chartConfig.bindto);
+          let donutChartTitle = donutChart.select('text.c3-chart-arcs-title');
+          donutChartTitle.text('');
+          _.forEach($scope.chartConfig.multiLineTitle, (item) => {
+            donutChartTitle
+              .append('tspan')
+              .text(item['text'])
+              .classed(item['classed'], true)
+              .attr('dy', item['dy'])
+              .attr('x', 0);
+          });
+        }
+      });
+    };
     public scope = {
       graphTitle: '@',
       graphId: '@',

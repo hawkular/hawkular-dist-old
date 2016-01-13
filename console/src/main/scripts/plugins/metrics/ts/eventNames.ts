@@ -27,6 +27,8 @@ module HawkularMetrics {
     public static REFRESH_CHART = new EventNames('RefreshChart');
     public static REFRESH_AVAIL_CHART = new EventNames('RefreshAvailabilityChart');
 
+    public static DONUT_CHART_RENDERED = new EventNames('HkDonutChartRendered');
+
     public static SWITCHED_PERSONA = new EventNames('SwitchedPersona');
     public static CURRENT_PERSONA_LOADED = new EventNames('CurrentPersonaLoaded');
 

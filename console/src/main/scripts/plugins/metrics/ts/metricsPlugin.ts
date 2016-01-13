@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -135,6 +135,37 @@ module HawkularMetrics {
               return p;
             };
             return checkAppServerExists();
+          }
+        }
+      }).
+      when('/hawkular-ui/app/app-details/:feedId/:resourceId/:tabId/:datasourceId/:timeOffset?/:endTime?', {
+        templateUrl: 'plugins/metrics/html/directives/datasources/detail.html',
+        controller: 'DatasourceDetailController',
+        controllerAs: 'vm',
+        reloadOnSearch: false,
+        resolve: {
+          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
+            let redirectMissingDatasource = () => {
+              NotificationsService.info('You were redirected to this page because you requested an invalid ' +
+                'Datasource.');
+              $location.path('/hawkular-ui/app/app-details/' +
+                '/' + $route.current.params.feedId +
+                '/' + $route.current.params.resourceId +
+                '/datasources');
+            };
+            return () => {
+              let resourceId = $route.current.params.resourceId + '~~';
+              let p = HawkularInventory.ResourceUnderFeed.get({
+                feedId: $route.current.params.feedId,
+                resourcePath: resourceId + '/' + $route.current.params.datasourceId.replace(/\$/g, '%2F')
+              }).$promise;
+              p.then((response) => {
+                  return response;
+                },
+                (error) => redirectMissingDatasource()
+              );
+              return p;
+            };
           }
         }
       }).

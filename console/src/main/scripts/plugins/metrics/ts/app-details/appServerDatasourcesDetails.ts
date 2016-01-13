@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,8 @@ module HawkularMetrics {
     public static TIMED_OUT_COLOR = '#515252'; /// dark gray
     public static WAIT_COLOR = '#bcb932'; /// yellow
     public static CREATION_COLOR = '#95489c'; /// purple
+
+    private static BASE_URL = '/hawkular-ui/app/app-details';
 
     public static DEFAULT_CONN_THRESHOLD = 200; // < 200 # connections available
     public static DEFAULT_WAIT_THRESHOLD = 200; // > 200 ms average wait time
@@ -58,6 +60,7 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private $interval:ng.IIntervalService,
                 private $q:ng.IQService,
+                private $route:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
                 private HawkularNav:any,
@@ -100,7 +103,7 @@ module HawkularMetrics {
         this.getDatasources(currentPersona.id));
       }
 
-      this.autoRefresh(20);
+      //this.autoRefresh(20);
     }
 
     public showDriverAddDialog():void {
@@ -222,15 +225,17 @@ module HawkularMetrics {
             this.HawkularAlertRouterManager.registerForAlerts(
               res.feedId + '/' + res.id,
               'datasource',
-              _.bind(this.filterAlerts, this, _, res)
+              _.bind(AppServerDatasourcesDetailsController.filterAlerts, this, _, res)
             );
             this.getAlerts(res);
           }
         });
         this.$q.all(promises).then(() => {
+          _.each(tmpResourceList, (item) => {
+            this.initPie(item);
+          });
           this.resourceList = tmpResourceList;
           this.resourceList.$resolved = true;
-          this.getDatasourceChartData();
           this.loadTriggers();
         });
       });
@@ -257,12 +262,13 @@ module HawkularMetrics {
       this.getDrivers();
     }
 
-    public filterAlerts(alertData:IHawkularAlertQueryResult, res:IResource) {
+    public static filterAlerts(alertData:IHawkularAlertQueryResult, res:IResource) {
       let currentAlertList = alertData.alertList;
       _.forEach(currentAlertList, (item:IAlert) => {
         item.alertType = item.context.alertType;
       });
       res.alertList = currentAlertList;
+      return currentAlertList;
     }
 
     private getAlerts(res:IResource):void {
@@ -281,107 +287,6 @@ module HawkularMetrics {
         this.driversList = aResourceList;
       });
 
-    }
-
-    public getDatasourceChartData(currentTenantId?:TenantId):void {
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
-
-      //let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
-
-      let availPromises = [];
-      let respPromises = [];
-
-      let tmpChartAvailData = {};
-      let tmpChartRespData = {};
-
-      _.forEach(this.resourceList, function (res:IResource) {
-
-        if (!this.skipChartData[res.id + '_Available Count']) {
-          let dsAvailPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-            MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Available Count'),
-            this.startTimeStamp, this.endTimeStamp, 60);
-          availPromises.push(dsAvailPromise);
-          dsAvailPromise.then((data) => {
-            tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
-            tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
-              key: 'Available Count',
-              color: AppServerDatasourcesDetailsController.AVAILABLE_COLOR,
-              values: MetricsService.formatBucketedChartOutput(data)
-            };
-          });
-        }
-        if (!this.skipChartData[res.id + '_In Use Count']) {
-          let dsInUsePromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-            MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~In Use Count'),
-            this.startTimeStamp, this.endTimeStamp, 60);
-          availPromises.push(dsInUsePromise);
-          dsInUsePromise.then((data:number[]) => {
-            tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
-            tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
-              key: 'In Use',
-              color: AppServerDatasourcesDetailsController.IN_USE_COLOR,
-              values: MetricsService.formatBucketedChartOutput(data)
-            };
-          });
-        }
-        if (!this.skipChartData[res.id + '_Timed Out']) {
-          let dsTimedPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-            MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Timed Out'),
-            this.startTimeStamp, this.endTimeStamp, 60);
-          availPromises.push(dsTimedPromise);
-          dsTimedPromise.then((data) => {
-            tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
-            tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
-              key: 'Timed Out',
-              color: AppServerDatasourcesDetailsController.TIMED_OUT_COLOR,
-              values: MetricsService.formatBucketedChartOutput(data)
-            };
-          });
-        }
-        this.$q.all(availPromises).finally(()=> {
-          this.chartAvailData[res.id] = tmpChartAvailData[res.id] || [];
-          this.resolvedAvailData[res.id] = true;
-        });
-
-        if (!this.skipChartData[res.id + '_Average Get Time']) {
-          let dsWTimePromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-            MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Average Get Time'),
-            this.startTimeStamp, this.endTimeStamp, 60);
-          respPromises.push(dsWTimePromise);
-          dsWTimePromise.then((data) => {
-            tmpChartRespData[res.id] = tmpChartRespData[res.id] || [];
-            tmpChartRespData[res.id][tmpChartRespData[res.id].length] = {
-              key: 'Wait Time (Avg.)',
-              color: AppServerDatasourcesDetailsController.WAIT_COLOR,
-              values: MetricsService.formatBucketedChartOutput(data)
-            };
-          });
-        }
-        if (!this.skipChartData[res.id + '_Average Creation Time']) {
-          let dsCTimePromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-            MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Average Creation Time'),
-            this.startTimeStamp, this.endTimeStamp, 60);
-          respPromises.push(dsCTimePromise);
-          dsCTimePromise.then((data) => {
-            tmpChartRespData[res.id] = tmpChartRespData[res.id] || [];
-            tmpChartRespData[res.id][tmpChartRespData[res.id].length] = {
-              key: 'Creation Time (Avg.)',
-              color: AppServerDatasourcesDetailsController.CREATION_COLOR,
-              values: MetricsService.formatBucketedChartOutput(data)
-            };
-          });
-        }
-        this.$q.all(respPromises).finally(()=> {
-          this.chartRespData[res.id] = tmpChartRespData[res.id] || [];
-          this.resolvedRespData[res.id] = true;
-        });
-      }, this);
-    }
-
-    public toggleChartData(name):void {
-      this.skipChartData[name] = !this.skipChartData[name];
-      this.getDatasourceChartData();
     }
 
     public loadTriggers(currentTenantId?:TenantId):any {
@@ -568,16 +473,75 @@ module HawkularMetrics {
 
     }
 
+    public redirectToDataSource(resource, event) {
+      if (this.canRedirect(event.target)) {
+        let timeOffset = (this.$routeParams.timeOffset) ? this.$routeParams.timeOffset : 0;
+        let endTime = (this.$routeParams.endTime) ? this.$routeParams.endTime : 0;
+        let redirectUrl = AppServerDatasourcesDetailsController.BASE_URL +
+          '/' + this.$routeParams.feedId +
+          '/' + this.$routeParams.resourceId +
+          '/' + this.$routeParams.tabId +
+          '/' + this.encodeResourceId(resource.id) +
+          '/' + timeOffset +
+          '/' + endTime;
+        this.$location.path(redirectUrl);
+      }
+    }
+
+    private canRedirect(clickedElement):boolean {
+      let tags = ['button', 'a'];
+      return !(
+        tags.indexOf(clickedElement.tagName.toLowerCase()) !== -1 ||
+        clickedElement.classList.contains('caret')
+      );
+    }
+
     public encodeResourceId(resourceId:ResourceId):string {
       // for some reason using standard encoding is not working correctly in the route. So do something dopey...
       //let encoded = encodeURIComponent(resourceId);
-      let encoded = resourceId;
-      while (encoded.indexOf('/') > -1) {
-        encoded = encoded.replace('/', '$');
-      }
-      return encoded;
+      return resourceId.replace(/\//g, '$');
     }
 
+    public initPie(data) {
+      if (data && data.inUseCount) {
+        let used = data.inUseCount.value / (data.inUseCount.value + data.availableCount.value) * 100 || 0;
+        data.chartConfig = {
+          multiLineTitle: [
+            {text:used+'%', dy:-10, classed: 'donut-title-big-pf'},
+            {text:'Connections', dy:20, classed: 'donut-title-small-pf'},
+            {text:'Used', dy:15, classed: 'donut-title-small-pf'}
+          ],
+          type: 'donut',
+          donut: {
+            label: {
+              show: false
+            },
+            title: used + '%',
+            width: 15
+          },
+          size: {
+            height: 171
+          },
+          legend: {
+            show: false
+          },
+          color: {
+            pattern: ['#0088CE','#D1D1D1']
+          },
+          data: {
+            type: 'donut',
+            columns: [
+              ['Used', used],
+              ['Available', 100]
+            ],
+            groups: [
+              ['used', 'available']
+            ],
+            order: null
+          }
+        };
+      }
+    }
   }
 
   _module.controller('AppServerDatasourcesDetailsController', AppServerDatasourcesDetailsController);
