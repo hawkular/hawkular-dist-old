@@ -436,7 +436,6 @@
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>docker-maven-plugin</artifactId>
-        <version>0.2.12</version>
         <configuration>
           <imageName>hawkular:snapshot</imageName>
           <dockerDirectory>docker</dockerDirectory>

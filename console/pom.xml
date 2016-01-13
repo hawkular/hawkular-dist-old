@@ -38,7 +38,6 @@
     <bower.link.package />
     <node.version>v4.2.2</node.version>
     <node.npm.version>2.14.7</node.npm.version>
-    <node.maven.plugin.version>0.0.26</node.maven.plugin.version>
     <hawkular.checkstyle.excludes>
       release.properties,
       **/*.d.ts,
@@ -183,7 +182,6 @@
           <plugin>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
-            <version>${node.maven.plugin.version}</version>
 
             <configuration>
               <workingDirectory>target/gulp-build/</workingDirectory>
@@ -243,7 +241,6 @@
           <plugin>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
-            <version>${node.maven.plugin.version}</version>
 
             <configuration>
               <workingDirectory>target/gulp-build/</workingDirectory>
@@ -317,7 +314,6 @@
           <plugin>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
-            <version>${node.maven.plugin.version}</version>
 
             <configuration>
               <workingDirectory>target/gulp-build/</workingDirectory>
