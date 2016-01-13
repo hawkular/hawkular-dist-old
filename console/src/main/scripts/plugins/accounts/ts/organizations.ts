@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,12 @@ module HawkularAccounts {
     public static $inject = ['$rootScope', '$scope', '$modal', '$log', 'HawkularAccount', 'NotificationsService'];
 
     public organizations:Array<IOrganization>;
+    public joinRequests:Array<IJoinRequest>;
     public loading:boolean = true;
+    public loadedJoinRequests:boolean = true;
+    public loadedOrganizations:boolean = true;
     public isOrganization:boolean = false;
+    public hasData:boolean = false;
 
     constructor(private $rootScope:any,
                 private $scope:any,
@@ -47,9 +51,24 @@ module HawkularAccounts {
 
     public loadData():void {
       this.loading = true;
+
+      this.joinRequests = this.HawkularAccount.OrganizationJoinRequest.query({}, (response:Array<IJoinRequest>) => {
+        this.loadedJoinRequests = true;
+        if (this.joinRequests.length > 0) {
+          this.hasData = true;
+        }
+        this.$log.debug(`Loaded Join Requests`);
+      }, (error:IErrorPayload) => {
+        this.$log.debug(`Error loading the join requests for this user. Response: ${error.data.message}`);
+      });
+
       this.organizations = this.HawkularAccount.Organization.query({},
         (response:Array<IOrganization>) => {
-          this.loading = false;
+          if (this.organizations.length > 0) {
+            this.hasData = true;
+          }
+          this.loadedOrganizations = true;
+          this.loading = !(this.loadedJoinRequests && this.loadedOrganizations);
         }, (error:IErrorPayload) => {
           this.$log.warn(`List of organizations could NOT be retrieved: ${error.data.message}`);
           this.NotificationsService.warning(`List of organizations could NOT be retrieved: ${error.data.message}`);
@@ -65,6 +84,7 @@ module HawkularAccounts {
       })
         .result
         .then((organization:IOrganization) => {
+          this.hasData = true;
           this.NotificationsService.success('Organization successfully created.');
           this.organizations.unshift(organization);
         }, (error:IErrorPayload) => {
@@ -86,6 +106,7 @@ module HawkularAccounts {
             this.NotificationsService.success('Organization successfully deleted.');
             this.$rootScope.$broadcast('OrganizationRemoved');
             this.organizations.splice(this.organizations.indexOf(organization), 1);
+            this.hasData = this.joinRequests.length > 0 || this.organizations.length > 0;
           }, (error:IErrorPayload) => {
             let message = `Failed to remove the organization ${organization.name}: ${error.data.message}`;
             this.$log.warn(message);

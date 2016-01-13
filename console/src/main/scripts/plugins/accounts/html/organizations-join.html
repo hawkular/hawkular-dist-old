@@ -1,0 +1,74 @@
+<div class="hk-organizations row" ng-controller="HawkularAccounts.OrganizationJoinController as controller">
+  <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+    <div ng-show="!controller.isOrganization">
+      <div class="hk-screen-top-nav">
+        <div class="row hk-top-row" >
+          <div class="col-xs-6" ng-show="!controller.loading">
+            <a data-ng-href="/hawkular-ui/organizations">&laquo; All organizations</a>
+          </div>
+        </div>
+        <div class="hk-heading">
+          <h1 ng-show="!controller.loading">Public organizations</h1>
+        </div>
+      </div>
+
+      <div class="text-center hk-spinner-container-alone" ng-show="controller.loading">
+        <div class="spinner spinner-lg"></div>
+        <p class="hk-spinner-legend-below">Loading...</p>
+      </div>
+
+      <div class="blank-slate-pf" ng-show="!controller.organizations.length && !controller.loading">
+        <div class="blank-slate-pf-icon">
+          <i class="fa fa-building-o"></i>
+        </div>
+        <h1>No organizations available.</h1>
+        <p>
+          There are no organizations available for joining.<br/>
+          If you are looking for a specific organization, this might mean that it's marked as 'Private'. In that case,
+          you need to be actively invited by an administrator of that organization.
+        </p>
+        <div class="blank-slate-pf-main-action">
+          <a class="btn btn-lg" ng-href="/hawkular-ui/organizations">Back</a>
+        </div>
+      </div>
+
+      <div class="hk-table-container" ng-show="controller.organizations.length && !controller.loading">
+        <table class="table table-bordered hk-table-clean">
+          <thead>
+          <tr>
+            <th>Name</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="organization in controller.organizations">
+            <td>{{organization.name}}</td>
+            <td class="hk-actions-one">
+              <button type="button"
+                      class="btn btn-link"
+                      tooltip-trigger
+                      tooltip-placement="top"
+                      tooltip="Join"
+                      ng-click="controller.joinRequest(organization)">
+                <i class="fa fa-sign-in"></i>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="blank-slate-pf" ng-show="controller.isOrganization">
+      <div class="blank-slate-pf-icon">
+        <i class="fa fa-building-o"></i>
+      </div>
+      <h1>Only users can join organizations.</h1>
+      <p>
+        You are logged in as an organization.
+        At the moment, only users can join organizations. To join an organization, switch to your user account.
+      </p>
+    </div>
+  </div>
+</div>
