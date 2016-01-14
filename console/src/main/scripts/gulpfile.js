@@ -110,6 +110,13 @@ gulp.task('path-adjust', function () {
             return newTextContent;
         }))
         .pipe(gulp.dest('libs'));
+    gulp.src('libs/**/hawkRest.d.ts')
+        .pipe(map(function (buf, filename) {
+            var textContent = buf.toString();
+            var newTextContent = textContent.replace(/\.\.\/lib\//gm, '../../../libs/');
+            return newTextContent;
+        }))
+       .pipe(gulp.dest('libs'));
 });
 
 gulp.task('clean-defs', function () {

@@ -18,6 +18,8 @@
 @import "../../../libs/patternfly/components/bootstrap/less/mixins.less";
 @import "../../../libs/patternfly/less/variables.less";
 
+@edge-color: #bbb;
+
 
 hawkular-topology-graph {
   position: fixed;
@@ -62,7 +64,7 @@ hawkular-topology-graph {
     opacity: .6;
 }
 
-.hawkular-topology g.Server text {
+.hawkular-topology g.Platform text {
     font-family: FontAwesome;
     fill: #4C4C4C;
     font-size: 16px;
@@ -89,7 +91,7 @@ hawkular-topology-graph {
 }
 
 .hawkular-topology g circle {
-    stroke: #bbb;
+    stroke: @edge-color;
     fill: #fff;
 }
 
@@ -102,14 +104,24 @@ hawkular-topology-graph {
     stroke-width: 4px;
 }
 
+#markerArrow {
+    fill: @edge-color;
+}
+
 .hawkular-topology line {
-    stroke: #bbb;
+    stroke: @edge-color;
     stroke-width: 1;
 }
 
-.hawkular-topology line.DatasourceServer {
+.hawkular-topology line.ServerDatasource {
     stroke-linecap: round;
     stroke-dasharray: 1, 2;
+}
+
+.hawkular-topology line.PlatformServer {
+    stroke-linecap: round;
+    stroke-dasharray: 9, 6;
+    marker-end: url(http://localhost:8080/hawkular-ui/topology/view#markerArrow);
 }
 
 hawkular-topology-icon {
@@ -152,6 +164,7 @@ hawkular-topology-icon:hover use {
     float: left;
     line-height: 50px;
     width: 50%;
+    white-space: nowrap;
   }
 }
 

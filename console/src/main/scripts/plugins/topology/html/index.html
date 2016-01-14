@@ -14,23 +14,42 @@
   <div ng-class="{'hk-fade-in': vm.data.relations.length}">
 
     <hawkular-topology-graph items="vm.data.items" relations="vm.data.relations" kinds="vm.kinds">
+      <svg>
+        <defs>
+        <marker id="markerArrow" markerWidth="13" markerHeight="13" refX="25" refY="6"
+          orient="auto">
+          <path d="M2,2 L2,11 L10,6 L2,2" />
+        </marker>
+        </defs>
+      </svg>
     </hawkular-topology-graph>
 
     <div class="controls">
       <label id="selected"></label>
-      <!--<button ng-click="vm.poke()" >Random Data</button>-->
-      <!--<button ng-click="vm.testClick()">test</button>-->
+
+      <div class="iconWithLabel">
+        <hawkular-topology-icon kind="Platform">
+          <svg class="hawkular-topology">
+            <g transform="translate(15, 15)" class="Platform" id="vertex-Platform">
+              <circle r="15"></circle>
+              <text y="6" x="0.5">&#xf233;</text>
+            </g>
+          </svg>
+        </hawkular-topology-icon>
+        <label>Platforms</label>
+        <br/>
+       </div>
 
        <div class="iconWithLabel">
          <hawkular-topology-icon kind="Server">
-           <svg class="hawkular-topology">
-             <g transform="translate(15, 15)" class="Server" id="vertex-Server">
-               <circle r="15"></circle>
-               <text y="6" x="0.5">&#xf233;</text>
-             </g>
-           </svg>
+          <svg class="hawkular-topology">
+            <g transform="translate(15, 15)" class="Server" id="vertex-Server">
+              <circle r="15"></circle>
+              <image xlink:href="resources/img/wildfly_logomark.svg" x="-12" y="-12" height="25px" width="25px"/>
+            </g>
+          </svg>
          </hawkular-topology-icon>
-         <label>Servers</label>
+         <label>Wildfly Servers</label>
          <br/>
        </div>
 
@@ -43,16 +62,9 @@
              </g>
            </svg>
          </hawkular-topology-icon>
-         <label>Apps</label>
+         <label>Deployments</label>
          <br/>
        </div>
-
-       <!--<hawkular-topology-icon kind="Database">
-         <svg class="hawkular-topology">
-           <use xlink:href="#vertex-Database" x="15" y="15"></use>
-         </svg>
-       </hawkular-topology-icon>
-       <label>Databases</label>-->
 
        <div class="iconWithLabel">
          <hawkular-topology-icon kind="DataSource">

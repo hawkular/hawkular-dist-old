@@ -15,8 +15,8 @@
 /// limitations under the License.
 ///
 
-/// <reference path='../../includes.ts'/>
 /// <reference path='topologyGlobals.ts'/>
+
 
 module HawkularTopology {
 
@@ -55,15 +55,15 @@ module HawkularTopology {
                     .linkDistance(80);
             }
 
-            var drag = force.drag();
+            const drag = force.drag();
 
-            var svg = outer.append('svg')
+            const svg = outer.selectAll('svg')
                 .attr('viewBox', '0 0 1600 1200')
                 .attr('preserveAspectRatio', 'xMidYMid meet')
                 .attr('class', 'hawkular-topology');
 
-            var vertices = d3.select();
-            var edges = d3.select();
+            let vertices = d3.select();
+            let edges = d3.select();
 
             force.on('tick', () => {
                 edges.attr('x1', (d) => d.source.x)
@@ -76,7 +76,7 @@ module HawkularTopology {
                 .attr('transform', (d) => 'translate(' + d.x + ',' + d.y + ')');
             });
 
-            let tip = d3.tip()
+            const tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html((d) => {
@@ -154,15 +154,15 @@ module HawkularTopology {
                 edges.exit().remove();
                 edges.enter().insert('line', ':first-child');
 
-                edges.attr('class', (d) => d.kinds);
+                edges.attr('class', (d) => d.type);
 
                 vertices = svg.selectAll('g')
                     .data(nodes, (d) => d.id);
 
                 vertices.exit().remove();
 
-                let extractServerId = (id: string): string => id.substring(0, id.indexOf('/') - 1);
-                var added = vertices.enter().append('g')
+                const extractServerId = (id: string): string => id.substring(0, id.indexOf('/') - 1);
+                const added = vertices.enter().append('g')
                     .on('mouseover', (d, i) => !isDragging && tip.show(d, i))
                     .on('mouseout', tip.hide)
                     .on('dblclick', (n) => {
@@ -174,11 +174,15 @@ module HawkularTopology {
                                 break;
                             case 'App':
                                 path = '/hawkular-ui/app/app-details/' + n.item.metadata.feedId
-                                  + '/' + extractServerId(n.item.id) + '/deployments/';
+                                  + '/' + extractServerId(n.item.id) + '/deployments';
                                 break;
                             case 'DataSource':
                                 path = '/hawkular-ui/app/app-details/' + n.item.metadata.feedId
                                   + '/' + extractServerId(n.item.id) + '/datasources';
+                                break;
+                            case 'Platform':
+                                // todo: server id is hard-coded now
+                                path = '/hawkular-ui/app/app-details/' + n.item.metadata.feedId + '/Local/platform';
                                 break;
                             default:
                                 return;
@@ -238,11 +242,12 @@ module HawkularTopology {
 
                     s = lookup[relation.source];
                     t = lookup[relation.target];
+                    const edgeType = lookup[relation.type];
                     if (s === undefined || t === undefined) {
                         continue;
                     }
 
-                    links.push({ source: s, target: t, kinds: nodes[s].item.kind + nodes[t].item.kind });
+                    links.push({ source: s, target: t, type: edgeType || nodes[s].item.kind + nodes[t].item.kind });
                 }
 
                 if (width && height) {

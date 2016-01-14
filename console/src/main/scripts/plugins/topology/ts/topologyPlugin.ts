@@ -15,8 +15,8 @@
 /// limitations under the License.
 ///
 
-/// <reference path='../../includes.ts'/>
 /// <reference path='topologyGlobals.ts'/>
+
 
 module HawkularTopology {
 
@@ -35,40 +35,60 @@ module HawkularTopology {
     private requestPending: boolean;
     private index = 0;
     private kinds: any;
+    private typeToKind: Object;
+    private kindToType: Object;
     private autoRefreshPromise: ng.IPromise<any>;
 
-    constructor(private $rootScope:any,
+    constructor(private $rootScope: any,
       private $scope: any,
       private $interval: ng.IIntervalService,
       private $q: any,
-      private HawkularInventory:any) {
+      private HawkularInventory: any) {
 
-
-      var datasets = [];
-
-      function sink(dataset) {
-        datasets.push(dataset);
+      if ($rootScope.currentPersona) {
+        this.listenToInventoryEvents(this.$rootScope.currentPersona.id);
+      } else {
+        // currentPersona hasn't been injected to the rootScope yet, wait for it..
+        $rootScope.$watch('currentPersona', (currentPersona) =>
+          currentPersona && this.listenToInventoryEvents(this.$rootScope.currentPersona.id)
+        );
       }
 
+      $scope.$on('SwitchedPersona', () => {
+        this.getData();
+        this.listenToInventoryEvents(this.$rootScope.currentPersona.id);
+      });
+
       this.kinds = {
-        Server: '',
+        Server: 'S',
         DataSource: '',
-        Database: '#vertex-Database',
+        Platform: '',
         App: ''
       };
+
+      this.typeToKind = {
+        'WildFly Server': 'Server',
+        'Datasource': 'DataSource',
+        'Deployment': 'App',
+        'Operating System': 'Platform'
+      };
+
+      this.kindToType = this.invert(this.typeToKind);
 
       // fetch the data from the inventory
       this.getData();
       this.autoRefresh(20);
     }
 
-    public testClick() {
-      this.index += 1;
-      this.data.items[this.index] = {
-        kind: 'DataSource'
-      };
-      this.$rootScope.$digest();
-    }
+    private invert(obj) {
+      const new_obj = {};
+      for (let prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+          new_obj[obj[prop]] = prop;
+        }
+      }
+      return new_obj;
+    };
 
     private autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
@@ -87,11 +107,7 @@ module HawkularTopology {
     }
 
     public getDataForOneFeed(feedId: string): ng.IPromise<any> {
-      let promises = [];
-      promises.push(this.getResourcesForResType(feedId, 'WildFly Server'));
-      promises.push(this.getResourcesForResType(feedId, 'Datasource'));
-      promises.push(this.getResourcesForResType(feedId, 'Deployment'));
-
+      const promises = _.map(_.keys(this.typeToKind), (type) => this.getResourcesForResType(feedId, _.escape(type)));
       return this.$q.all(promises);
     }
 
@@ -107,14 +123,10 @@ module HawkularTopology {
 
     public getData(): any {
       this.requestPending = true;
-      let typeToKind = {
-        'WildFly Server': 'Server',
-        'Datasource': 'DataSource',
-        'Deployment': 'App'
-      };
-      let extractServerId = (id: string): string => id.substring(0, id.indexOf('/')) + '~';
-      let extractFeedId = (path: string): string => {
-        var feedChunk = path.split('/').filter((chunk) => chunk.startsWith('f;'));
+
+      const extractServerId = (id: string): string => id.substring(0, id.indexOf('/')) + '~';
+      const extractFeedId = (path: string): string => {
+        const feedChunk = path.split('/').filter((chunk) => chunk.startsWith('f;'));
         return feedChunk.length === 1 && feedChunk[0] ? feedChunk[0].slice(2) : 'localhost';
       };
 
@@ -133,37 +145,69 @@ module HawkularTopology {
             items: {},
             relations: {}
           };
-          let flatResources = _.flatten(aResourceList, true);
+          const flatResources = _.flatten(aResourceList, true);
           if (!flatResources.length) {
             this.requestPending = false;
             return;
           }
+          let previousServerId;
           angular.forEach(flatResources, (res) => {
-              let feedId =  extractFeedId(res.path);
-              let newItem = {
-              kind: typeToKind[res.type.id],
+            const feedId =  extractFeedId(res.path);
+            const newItem = {
+              kind: this.typeToKind[res.type.id],
               id: res.id,
               metadata: {
                 name: res.name,
                 feedId: feedId
               }
             };
+            // add edge from server
             if (newItem.kind !== 'Server') {
-              newRelations.push({
-                source: extractServerId(res.id),
-                target: res.id
-              });
+              if (newItem.kind === 'Platform') {
+                newRelations.push({
+                  source: res.id,
+                  target: previousServerId,
+                  type: 'platform'
+                });
+              } else {
+                let desiredServerId = extractServerId(res.id);
+                desiredServerId = desiredServerId === '~' ? previousServerId : desiredServerId;
+                previousServerId = desiredServerId;
+                newRelations.push({
+                  source: desiredServerId,
+                  target: res.id
+                });
+              }
             } else {
                 this.getServerMetadata(feedId, res.id, newItem);
-              }
-              newData.items[res.id] = newItem;
-            });
+            }
+            newData.items[res.id] = newItem;
+          });
           newData.relations = newRelations;
           this.data = newData;
           this.requestPending = false;
         });
       });
     }
+
+    private processNewResource(json) {
+      const types = _.filter(_.keys(this.kinds), (kind) => json.type.id === this.kindToType[kind]);
+      _.forEach(types, (type) => {
+        console.log('New ' + type + ' has been added to inventory.');
+        this.getData();
+      });
+    }
+
+    public listenToInventoryEvents(tenantId) {
+      const handler: hawkularRest.IWebSocketHandler = {
+        onmessage: (json) => {
+          console.log(json);
+          this.processNewResource(json);
+        }
+      };
+      this.HawkularInventory.Events(tenantId).listen(handler);
+    }
+
   }
 
   _module.controller('HawkularTopology.TopologyController', TopologyController);

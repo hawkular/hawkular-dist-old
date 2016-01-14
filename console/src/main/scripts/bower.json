@@ -25,7 +25,7 @@
     "animate.css": "3.0.0",
     "ngInfiniteScroll": "1.2.1",
     "hawkular-charts": "hawkular/hawkular-charts#6610b0d",
-    "hawkular-ui-services": "0.8.18",
+    "hawkular-ui-services": "0.8.21",
     "hawtio-core-navigation": "2.0.51",
     "hawtio-core": "2.0.18",
     "hawtio-template-cache": "2.0.4",

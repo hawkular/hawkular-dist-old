@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 /// <reference path='../../includes.ts'/>
 /// <reference path='../ts/topologyGlobals.ts'/>
-
 module HawkularTopology {
   _module.directive('hawkularTopologyGraph',
     () => {
@@ -66,7 +65,15 @@ module HawkularTopology {
             if (!event.defaultPrevented) {
               added.attr('class', (d) => d.item.kind);
               added.append('circle').attr('r', 15);
-              added.append('text').attr('y', 6).attr('x', 0.5).text((d) => $scope.kinds[d.item.kind]);
+
+              // _.partition doesn't work for d3
+              const servers = added.filter((d) => d.item.kind === 'Server');
+              const others = added.filter((d) => d.item.kind !== 'Server');
+
+              servers.append('image').attr('xlink:href', 'resources/img/wildfly_logomark.svg')
+                .attr('y', -12).attr('x', -12).attr('height', '25px').attr('width', '25px');
+              others.append('text').attr('y', 6).attr('x', 0.5).text((d) => $scope.kinds[d.item.kind]);
+
               added.append('title');
               vertices.selectAll('title')
               .text((d) => d.item.metadata.name);
