@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -152,7 +152,7 @@ module HawkularMetrics {
 
     private getOverviewInfo() {
       let promises = [];
-      let resourceData = {};
+      let resourceData: any = {};
 
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         feedId: this.$routeParams.feedId,
@@ -173,7 +173,10 @@ module HawkularMetrics {
             }
           }).$promise);
         });
-        resourceData['deployments'] = aResourceList;
+        this.$q.all(promises).then(() => {
+          resourceData.deployments = aResourceList;
+          this.overviewInfo = resourceData;
+        });
       });
 
       //Web session data
@@ -206,9 +209,6 @@ module HawkularMetrics {
           }
         })
       );
-      this.$q.all(promises).then((result) => {
-        this.overviewInfo = resourceData;
-      });
     }
 
     private getActiveWebSession() {
