@@ -95,8 +95,8 @@ module HawkularMetrics {
     public link:any = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
       $scope.$on(EventNames.DONUT_CHART_RENDERED, function() {
         if ($scope.chartConfig && $scope.chartConfig.bindto) {
-          let donutChart = d3.select($scope.chartConfig.bindto);
-          let donutChartTitle = donutChart.select('text.c3-chart-arcs-title');
+          const donutChart = d3.select($scope.chartConfig.bindto);
+          const donutChartTitle = donutChart.select('text.c3-chart-arcs-title');
           donutChartTitle.text('');
           _.forEach($scope.chartConfig.multiLineTitle, (item) => {
             donutChartTitle

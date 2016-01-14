@@ -79,10 +79,11 @@
                 </div>
               </div>
             </div>
-            <div class="hk-tile-info"> <span class="hk-data" ng-show="ds.availableCount.value">
-            {{ ds.availableCount.value }} Available <br>(of {{ ds.inUseCount.value + ds.availableCount.value }})
+            <div class="hk-tile-info">
+              <span class="hk-data" ng-show="vm.isDefinedAndValue(ds.availableCount.value)">
+                {{ ds.availableCount.value }} Available <br>(of {{ ds.inUseCount.value + ds.availableCount.value }})
               </span>
-              <span class="hk-data" ng-hide="ds.availableCount.value">n/a</span>
+              <span class="hk-data" ng-show="!vm.isDefinedAndValue(ds.availableCount.value)">n/a</span>
             </div>
           </div>
         </div>

@@ -475,16 +475,19 @@ module HawkularMetrics {
 
     public redirectToDataSource(resource, event) {
       if (this.canRedirect(event.target)) {
-        let timeOffset = (this.$routeParams.timeOffset) ? this.$routeParams.timeOffset : 0;
-        let endTime = (this.$routeParams.endTime) ? this.$routeParams.endTime : 0;
-        let redirectUrl = AppServerDatasourcesDetailsController.BASE_URL +
-          '/' + this.$routeParams.feedId +
-          '/' + this.$routeParams.resourceId +
-          '/' + this.$routeParams.tabId +
-          '/' + this.encodeResourceId(resource.id) +
-          '/' + timeOffset +
-          '/' + endTime;
-        this.$location.path(redirectUrl);
+        const timeOffset = (this.$routeParams.timeOffset) ? this.$routeParams.timeOffset : 0;
+        const endTime = (this.$routeParams.endTime) ? this.$routeParams.endTime : 0;
+        this.$location.path(
+          [
+            AppServerDatasourcesDetailsController.BASE_URL,
+            this.$routeParams.feedId,
+            this.$routeParams.resourceId,
+            this.$routeParams.tabId,
+            Utility.encodeResourceId(resource.id),
+            timeOffset,
+            endTime
+          ].join('/')
+        );
       }
     }
 
@@ -496,10 +499,8 @@ module HawkularMetrics {
       );
     }
 
-    public encodeResourceId(resourceId:ResourceId):string {
-      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
-      //let encoded = encodeURIComponent(resourceId);
-      return resourceId.replace(/\//g, '$');
+    public isDefinedAndValue(value) {
+      return typeof value !== 'undefined' && value != null;
     }
 
     public initPie(data) {

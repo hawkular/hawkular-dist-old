@@ -69,7 +69,7 @@ module HawkularMetrics {
     }
 
     private getDatasrouce():ng.IPromise<any> {
-      let resourceId = this.$routeParams.resourceId + '~~';
+      const resourceId = this.$routeParams.resourceId + '~~';
 
       return this.HawkularInventory.ResourceUnderFeed.get({
         feedId: this.$routeParams.feedId,
@@ -195,7 +195,7 @@ module HawkularMetrics {
      * Method for constructing promise with data for chart of Use Count in Datasource pool.
      * @returns {ng.IPromise<IChartDataPoint[]>} constructed promise with data point for available chart.
      */
-    public getInUsePromise():ng.IPromise<any> {
+    public getInUsePromise():ng.IPromise<IChartDataPoint[]> {
       return this.MetricsService.retrieveGaugeMetrics(
         this.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.datasource.id, 'Datasource Pool Metrics~In Use Count'),
@@ -208,7 +208,7 @@ module HawkularMetrics {
      * Method for constructing promise with data for chart of Timed Out in Datasource pool.
      * @returns {ng.IPromise<IChartDataPoint[]>} constructed promise with data point for available chart
      */
-    public getTimedOutPromise():ng.IPromise<any> {
+    public getTimedOutPromise():ng.IPromise<IChartDataPoint[]> {
       return this.MetricsService.retrieveGaugeMetrics(
         this.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.datasource.id, 'Datasource Pool Metrics~Timed Out'),
@@ -221,7 +221,7 @@ module HawkularMetrics {
      * Method for constructing promise with data for chart of Average Get Time in Datasource pool.
      * @returns {ng.IPromise<IChartDataPoint[]>} constructed promise with data point for response chart.
      */
-    public getAvgGetTimePromise():ng.IPromise<any> {
+    public getAvgGetTimePromise():ng.IPromise<IChartDataPoint[]> {
       return this.MetricsService.retrieveGaugeMetrics(
         this.currentPersona.id,
         MetricsService.getMetricId('M',
@@ -237,7 +237,7 @@ module HawkularMetrics {
      * Method for constructing promise with data for chart of Average Creation Time in Datasource pool.
      * @returns {ng.IPromise<IChartDataPoint[]>} constructed promise with data point for response chart.
      */
-    public getAvgCreateTimePromise():ng.IPromise<any> {
+    public getAvgCreateTimePromise():ng.IPromise<IChartDataPoint[]> {
       return this.MetricsService.retrieveGaugeMetrics(this.currentPersona.id,
         MetricsService.getMetricId('M',
           this.feedId,
@@ -249,9 +249,7 @@ module HawkularMetrics {
     }
 
     public encodeResourceId(resourceId:ResourceId):string {
-      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
-      //let encoded = encodeURIComponent(resourceId);
-      return resourceId.replace(/\//g, '$');
+      return Utility.encodeResourceId(resourceId);
     }
 
     public toggleChartData(name):void {
