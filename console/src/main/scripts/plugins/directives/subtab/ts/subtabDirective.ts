@@ -45,11 +45,16 @@ module Subtab {
       };
 
       $scope.isUrlPage = () => {
-        return $location.path().indexOf('/hawkular-ui/url/') !== 0;
+        return $location.path().indexOf('/hawkular-ui/url/') !== -1 &&
+          $location.path().indexOf('url-list') === -1;
       };
 
       $scope.isAppServerPage = () => {
         return $location.path().indexOf('/hawkular-ui/app/') === 0;
+      };
+
+      $scope.isDataSourceDetail = () => {
+        return HawkularNav.$routeParams.hasOwnProperty('datasourceId');
       };
 
       $scope.getClass = (path) => {
@@ -89,11 +94,11 @@ module Subtab {
       };
 
       $scope.setRange = (range) => {
-        HawkularNav.setTimestamp(moment.duration(range).valueOf());
+        HawkularNav.setTimestamp(moment.duration(range).valueOf(), HawkularNav.$routeParams.endTime);
       };
 
       $scope.getUrlFromId = (id) => {
-        if (!$scope.resource && $scope.isUrlPage()) {
+        if (!$scope.resource && !$scope.isDataSourceDetail() && $scope.isUrlPage()) {
           $scope.resource = HawkularInventory.Resource.get({environmentId: globalEnvironmentId, resourcePath: id},
             (data) => {
               $scope.resourceName = data.properties.url;

@@ -1,0 +1,94 @@
+<div class="hk-screen-content">
+  <hawkular-subtab ng-controller="Subtab.SubtabController">
+    <div class="hk-heading">
+      <h1>
+        {{vm.datasource.type.name}}: {{vm.datasource.name}}
+      </h1>
+    </div>
+  </hawkular-subtab>
+  <div class="row">
+    <div class="col-lg-9">
+      <div class="hk-info-top clearfix">
+        <h3 class="pull-left">Metrics</h3>
+        <div class="hk-update pull-right">
+          <button class="btn btn-link hk-chart-update" tooltip-trigger tooltip-placement="top"
+                  tooltip-append-to-body="true" tooltip="Update chart" ng-click="vm.refresh()">
+            <i class="fa fa-refresh"></i>
+          </button>
+        </div>
+      </div>
+      <div class="panel panel-default hk-graph" ng-if="vm.resolvedAvailData">
+        <h2>Availability</h2>
+        <div class="hk-graph-container hk-graph-metrics">
+          <hawkular-chart multi-data="vm.chartAvailData"
+                          chart-type="multiline" y-axis-units="Availability (#)"
+                          chart-height="250">
+          </hawkular-chart>
+        </div>
+        <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
+          <div class="col-md-12">
+            <h4>Connection Availability</h4>
+            <div class="hk-graphselector hk-blue">
+              <input id="connavail_{{vm.datasource.id}}" type="checkbox"
+                     ng-checked="!vm.skipChartData[vm.datasource.id + '_Available Count']"
+                     ng-click="vm.toggleChartData(vm.datasource.id + '_Available Count')">
+              <label for="connavail_{{vm.datasource.id}}"><span>Available Connections</span></label>
+            </div>
+            <div class="hk-graphselector hk-green">
+              <input id="conninuse_{{vm.datasource.id}}" type="checkbox"
+                     ng-checked="!vm.skipChartData[vm.datasource.id + '_In Use Count']"
+                     ng-click="vm.toggleChartData(vm.datasource.id + '_In Use Count')">
+              <label for="conninuse_{{vm.datasource.id}}"><span>Connections in Use</span></label>
+            </div>
+            <div class="hk-graphselector hk-gray">
+              <input id="conntimed_{{vm.datasource.id}}" type="checkbox"
+                     ng-checked="!vm.skipChartData[vm.datasource.id + '_Timed Out']"
+                     ng-click="vm.toggleChartData(vm.datasource.id + '_Timed Out')">
+              <label for="conntimed_{{vm.datasource.id}}"><span>Timed-out Connections</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default hk-graph" ng-if="vm.resolvedRespData">
+        <h2>Responsiveness</h2>
+        <div class="hk-graph-container hk-graph-metrics">
+          <hawkular-chart multi-data="vm.chartRespData"
+                          chart-type="multiline"
+                          y-axis-units="Responsiveness (ms)"
+                          chart-height="250">
+          </hawkular-chart>
+        </div>
+        <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
+          <div class="col-md-12">
+            <h4>Responsiveness</h4>
+            <div class="hk-graphselector hk-yellow">
+              <input id="waittime_{{vm.datasource.id}}" type="checkbox"
+                     ng-checked="!vm.skipChartData[vm.datasource.id + '_Average Get Time']"
+                     ng-click="vm.toggleChartData(vm.datasource.id + '_Average Get Time')">
+              <label for="waittime_{{vm.datasource.id}}"><span>Wait Time (Avg.)</span></label>
+            </div>
+            <div class="hk-graphselector hk-purple">
+              <input id="creationtime_{{vm.datasource.id}}" type="checkbox"
+                     ng-checked="!vm.skipChartData[vm.datasource.id + '_Average Creation Time']"
+                     ng-click="vm.toggleChartData(vm.datasource.id + '_Average Creation Time')">
+              <label for="creationtime_{{vm.datasource.id}}"><span>Creation Time (Avg.)</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <div class="clearfix">
+
+        <span class="hk-update pull-right hk-in-alert" tooltip-trigger tooltip-placement="top" tooltip="Last update">
+          <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
+        </span>
+      </div>
+      <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)"
+                     resource-id="vm.encodeResourceId(vm.$routeParams.feedId + '/' + vm.datasource.id)"
+                     title="Datasource">
+      </hk-alert-info>
+    </div>
+  </div>
+</div>

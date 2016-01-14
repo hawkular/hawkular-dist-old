@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -68,7 +68,10 @@ module HawkularMetrics {
      * @param startTime poll the server starting this time.
      * @param endTime poll the server with ending this time.
      */
-    getAlertsForResourceId(resourceId:string, startTime: TimestampInMillis, endTime: TimestampInMillis): void;
+    getAlertsForResourceId(
+      resourceId:string,
+      startTime: TimestampInMillis,
+      endTime: TimestampInMillis): ng.IPromise<any>;
   }
 
   /**
@@ -95,7 +98,7 @@ module HawkularMetrics {
       this.getAlertsForResourceId(this.$routeParams.feedId + '/' + this.$routeParams.resourceId, startTime, endTime);
     }
 
-    public getAlertsForResourceId(resourceId, startTime, endTime):void {
+    public getAlertsForResourceId(resourceId, startTime, endTime):ng.IPromise<any> {
       let fullAlertData = {};
 
       let promise = this.HawkularAlertsManager.queryAlerts({
@@ -105,18 +108,21 @@ module HawkularMetrics {
         endTime: endTime
       }).then((alertData:IHawkularAlertQueryResult) => {
         let registeredObjects = this.registeredForAlerts[resourceId];
+        let filteredAlerts;
         for (let key in registeredObjects) {
           if (registeredObjects.hasOwnProperty(key)) {
-            HawkularAlertRouterManager.callRegisteredAlertByKey(registeredObjects[key], alertData);
+            filteredAlerts = HawkularAlertRouterManager.callRegisteredAlertByKey(registeredObjects[key], alertData);
           }
         }
         fullAlertData = alertData;
+        return filteredAlerts;
       }, (error) => {
         return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
       });
       this.$q.all([promise]).finally(()=> {
         this.fullAlertData = fullAlertData;
       });
+      return promise;
     }
 
     /**
@@ -128,7 +134,7 @@ module HawkularMetrics {
      */
     private static callRegisteredAlertByKey(registeredObject, alertData) {
       if (typeof registeredObject === 'function') {
-        registeredObject(_.clone(alertData, true));
+        return registeredObject(_.clone(alertData, true));
       }
     }
   }

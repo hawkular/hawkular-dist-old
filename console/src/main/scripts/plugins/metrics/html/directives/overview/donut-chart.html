@@ -1,13 +1,14 @@
 <div>
   <div class="hk-data-info">
-    <div class="hk-data">{{usage}}</div>
+    <div class="hk-data" ng-if="usage">{{usage}}</div>
     <div class="hk-info">
       <div ng-if="chartConfig">
         <div class="hk-donut-chart" pf-c3-chart id="{{graphId}}"  config="chartConfig"></div>
       </div>
     </div>
   </div>
-  <div class="hk-block-title">
+  <div class="hk-block-title" ng-if="graphTitle">
     {{graphTitle}}
   </div>
+  <div ng-if="chartConfig.multiLineTitle" hidden="hidden">{{$emit('HkDonutChartRendered')}}</div>
 </div>

@@ -708,6 +708,13 @@ a:hover {
   }
 }
 
+.hk-update {
+  &.hk-in-alert {
+    margin-bottom: @grid-gutter-width/2;
+    margin-top: @grid-gutter-width/8;
+  }
+}
+
 .simple-filter .form-group {
   margin-bottom: 0;
   margin-top: -9px;
@@ -2027,6 +2034,20 @@ h2 + .tiles-view-pf {
   }
 }
 
+.hk-datasource-tile {
+
+  .tile {
+    height: 100%;
+
+    .tile-content {
+      overflow: inherit;
+    }
+
+    .hk-tile-info .hk-data {
+      word-wrap: break-word;
+    }
+  }
+}
 
 // Toastr Overrides
 
@@ -2569,6 +2590,7 @@ section {
 
 #hk-datasources .row-cards-pf {
   margin-top: 30px;
+  padding-top: 0px;
 }
 
 
