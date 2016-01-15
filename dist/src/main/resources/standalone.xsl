@@ -19,7 +19,7 @@
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:ds="urn:jboss:domain:datasources:3.0" xmlns:ra="urn:jboss:domain:resource-adapters:3.0" xmlns:ejb3="urn:jboss:domain:ejb3:3.0"
-  xmlns:logging="urn:jboss:domain:logging:3.0" xmlns:undertow="urn:jboss:domain:undertow:2.0" xmlns:tx="urn:jboss:domain:transactions:3.0"
+  xmlns:logging="urn:jboss:domain:logging:3.0" xmlns:undertow="urn:jboss:domain:undertow:3.0" xmlns:tx="urn:jboss:domain:transactions:3.0"
   version="2.0" exclude-result-prefixes="xalan ds ra ejb3 logging undertow tx">
 
   <!-- will indicate if this is a "dev" build or "production" build -->
@@ -213,6 +213,28 @@
       <xsl:apply-templates select="node()|@*"/>
     </xsl:copy>
     <xsl:call-template name="loggers"/>
+  </xsl:template>
+
+  <!-- Enable Statistics for Undertow, TXs and Datasources -->
+  <xsl:template match="undertow:subsystem">
+    <xsl:copy>
+      <xsl:attribute name="statistics-enabled">true</xsl:attribute>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="tx:subsystem">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+      <coordinator-environment statistics-enabled="true"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="//*[local-name()='subsystem']/*[local-name()='datasources']/*[local-name()='datasource']">
+    <xsl:copy>
+      <xsl:attribute name="statistics-enabled">true</xsl:attribute>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
   </xsl:template>
 
   <xsl:template match="//*[local-name()='subsystem']/*[local-name()='server' and @name='default']">
