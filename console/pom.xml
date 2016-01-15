@@ -42,7 +42,6 @@
     <hawkular.checkstyle.excludes>
       release.properties,
       **/*.d.ts,
-      **/scripts/*.babelrc,
       **/vendor/**/*.js,
       **/vendor/**/*.css,
       **/vendor/fonts/*.*,
@@ -131,6 +130,7 @@
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
           <excludes combine.children="append">
+            <exclude>**/scripts/**/.babelrc</exclude>
             <exclude>**/vendor/**/*.js</exclude>
             <exclude>**/vendor/**/*.css</exclude>
             <exclude>**/vendor/fonts/*.*</exclude>
