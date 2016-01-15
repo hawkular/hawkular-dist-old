@@ -24,12 +24,19 @@ module HawkularMetrics {
   export class AppServerDetailsController {
     /// for minification only
     public static  $inject = ['$rootScope', '$scope', '$route', '$routeParams', '$q', '$timeout', 'HawkularOps',
-      'NotificationsService', 'HawkularInventory', 'HawkularAlertsManager', '$log', '$location'];
+      'NotificationsService', 'HawkularInventory', 'HawkularAlertsManager', '$log', '$location', 'HawkularAlert'];
 
+    public static LT = 'LT'; /// blue
+    public static GT = 'GT'; /// blue
     public resourcePath:string;
     public jdrGenerating:boolean;
     public hasGeneratedSuccessfully:boolean;
     public hasGeneratedError:boolean;
+
+    private defaultEmail:string;
+    private defaultAction:any;
+    private feedId:FeedId;
+    private resourceId:ResourceId;
 
     constructor(private $rootScope:any,
                 private $scope:any,
@@ -43,11 +50,16 @@ module HawkularMetrics {
                 private HawkularAlertsManager:any,
                 private $log:ng.ILogService,
                 private $location:ng.ILocationService,
+                private HawkularAlert:any,
                 public availableTabs:any,
                 public activeTab:any) {
 
       HawkularOps.init(this.NotificationsService);
 
+      this.defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+      this.feedId = this.$routeParams.feedId;
+      this.resourceId = this.$routeParams.feedId + '/' + this.$routeParams.resourceId;
+      this.defaultAction = {email: [this.defaultEmail]};
       $scope.$on('$routeUpdate', (action, newRoute) => {
         if (newRoute.params.action && newRoute.params.action === 'export-jdr') {
           $scope.tabs.requestExportJDR();
@@ -74,7 +86,7 @@ module HawkularMetrics {
 
       $scope.tabs = this;
 
-      let experimentalTabs = ['platform'];
+      let experimentalTabs = [''];
       $rootScope.$watch('isExperimental', (isExperimental) => {
         this.$timeout(() => {
           _.forEach(this.availableTabs, (tab: any) => {
@@ -97,7 +109,7 @@ module HawkularMetrics {
           controller: HawkularMetrics.AppServerJvmDetailsController
         },
         {
-          id: 'platform', name: 'Platform', enabled: this.$rootScope.isExperimental,
+          id: 'platform', name: 'Platform', enabled: true,
           src: 'plugins/metrics/html/app-details/detail-platform.html',
           controller: HawkularMetrics.AppServerPlatformDetailsController
         },
@@ -162,9 +174,7 @@ module HawkularMetrics {
     private loadTriggers():void {
       // Check if triggers exist on controller creation. If not, create the triggers before continuing.
 
-      let defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
-
-      let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(defaultEmail);
+      let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(this.defaultEmail);
 
       // The Wildfly agent generates resource IDs unique among the app servers it is monitoring because
       // each resource is prefixed with the managedServerName.  But when dealing with multiple Wildfly-agent feeds
@@ -196,7 +206,7 @@ module HawkularMetrics {
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             severity: 'MEDIUM',
-            actions: {email: [defaultEmail]},
+            actions: {email: [this.defaultEmail]},
             firingMatch: 'ANY',
             tags: {
               resourceId: qualifiedResourceId
@@ -273,7 +283,7 @@ module HawkularMetrics {
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             severity: 'HIGH',
-            actions: {email: [defaultEmail]},
+            actions: {email: [this.defaultEmail]},
             firingMatch: 'ANY',
             tags: {
               resourceId: qualifiedResourceId
@@ -353,7 +363,7 @@ module HawkularMetrics {
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             severity: 'HIGH',
-            actions: {email: [defaultEmail]},
+            actions: {email: [this.defaultEmail]},
             tags: {
               resourceId: qualifiedResourceId
             },
@@ -415,7 +425,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'MEDIUM',
-              actions: {email: [defaultEmail]},
+              actions: {email: [this.defaultEmail]},
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -476,7 +486,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'LOW',
-              actions: {email: [defaultEmail]},
+              actions: {email: [this.defaultEmail]},
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -535,7 +545,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'LOW',
-              actions: {email: [defaultEmail]},
+              actions: {email: [this.defaultEmail]},
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -599,7 +609,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'MEDIUM',
-              actions: {email: [defaultEmail]},
+              actions: {email: [this.defaultEmail]},
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -632,15 +642,141 @@ module HawkularMetrics {
 
       let log = this.$log;
 
-      this.$q.all([defaultEmailPromise,
-        heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise, //JVM
-        activeSessionsTriggerPromise, expiredSessionsTriggerPromise, rejectedSessionsTriggerPromise, // WEB
-        failedDeploymentTriggerPromise // FAILED DEPLOYMENT
-      ]).then(() => {
+      let promises = [defaultEmailPromise];
+      promises.push(heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise); //JVM
+      promises.push(activeSessionsTriggerPromise, expiredSessionsTriggerPromise, rejectedSessionsTriggerPromise); //WEB
+      promises.push(failedDeploymentTriggerPromise); //FAILED DEPLOYMENT
+      promises.push(this.registerAvailableMemoryAlert(), this.registerAvailableCpuAlerts()); //Platform
+      this.$q.all(promises).then(() => {
         // do nothing
       }, () => {
         this.$log.error('Missing and unable to create new App-Server Alert triggers.');
       });
+    }
+
+    private registerAvailableCpuAlerts():any {
+      let procesorPromises = [];
+      this.HawkularInventory.ResourceOfTypeUnderFeed.query({
+        environmentId: globalEnvironmentId,
+        feedId: this.feedId,
+        resourceTypeId: 'Processor'
+      }).$promise.then((resources) => {
+        _.forEach(resources, (resource) => {
+          const triggerId = this.$routeParams.feedId + '_cpu_usage_' + resource['id'];
+
+          this.HawkularAlertsManager.existTrigger(triggerId).then(() => {
+            this.$log.debug('Usage of CPU trigger for "' + triggerId+ '" exists, nothing to do');
+          }, () => {
+            procesorPromises.push(this.HawkularAlertsManager.createTrigger(
+              this.createCpuTrigger(resource, triggerId), () => {
+                this.$log.error('Error on Trigger creation for ' + triggerId);
+              }));
+          });
+        });
+      });
+      return procesorPromises;
+    }
+
+    private createCpuTrigger(cpuResource, triggerId):IAlertDefinition {
+      const dataId = MetricsService.getMetricId('M', this.feedId, cpuResource['id'], 'CPU Usage');
+      const description = 'Usage of CPU ' + cpuResource['name'] + ' outside bounds';
+      return {
+        trigger: new AlertDefinitionTriggerBuilder()
+          .withId(triggerId)
+          .withName('CPU usage')
+          .withDescription(description)
+          .withActions(this.defaultAction)
+          .withTags({resourceId: this.feedId, resourceName:cpuResource['name']})
+          .withContext(
+            new AlertDefinitionContextBuilder(AlertDefinitionContext.TRESHOLD_TRIGGER_TYPE)
+              .withAlertType('CPU_USAGE_EXCEED')
+              .withResourceType('CPU')
+              .withResourceName(this.feedId)
+              .withResourcePath(this.$rootScope.resourcePath)
+              .build()
+          )
+          .build(),
+        dampenings: AppServerDetailsController.defaultDampenings(triggerId),
+        conditions: [
+          new AlertDefinitionConditionBuilder(AlertDefinitionCondition.DEFAULT_TRESHOLD_TYPE)
+            .withTriggerId(triggerId)
+            .withDataId(dataId)
+            .withOperator('GT')
+            .withThreshold(0.2) //20%
+            .withContext({
+              description: 'CPU Usage',
+              unit: '%'
+            })
+            .build()
+        ]
+      };
+    }
+
+    private registerAvailableMemoryAlert():any {
+      const memoryResourceId = AppServerPlatformDetailsController.getMemoryResourceId(this.$routeParams.feedId);
+      const dataId = MetricsService.getMetricId('M', this.$routeParams.feedId, memoryResourceId, 'Available Memory');
+      const totalMemoryId = MetricsService.getMetricId('M', this.$routeParams.feedId, memoryResourceId, 'Total Memory');
+      const triggerId = this.$routeParams.feedId + '_available_memory';
+
+      const description = [
+        'Minimum of Available memory for',
+        this.feedId, 'is',
+        AppServerPlatformDetailsController.MINIMUM_AVAIL_MEM
+      ].join(' ');
+
+      const conditionContext = {
+        description: 'Total memory',
+        unit: 'MB'
+      };
+      Object.freeze(conditionContext);
+
+      return this.HawkularAlertsManager
+        .existTrigger(triggerId).then(() => {
+          this.$log.debug('Available memory trigger for "'+this.$routeParams.feedId+'" exists, nothing to do');
+        }, () => {
+          let fullTrigger:IAlertDefinition = {
+            trigger: new AlertDefinitionTriggerBuilder()
+              .withId(triggerId)
+              .withName('Available memory')
+              .withDescription(description)
+              .withTags({resourceId: this.feedId})
+              .withActions(this.defaultAction)
+              .withContext(
+                new AlertDefinitionContextBuilder(AlertDefinitionContext.RANGE_PERCENT_TRIGGER_TYPE)
+                  .withAlertType('AVAILABLE_MEMORY')
+                  .withResourceType('Memory')
+                  .withResourceName(this.feedId)
+                  .withResourcePath(this.$rootScope.resourcePath)
+                  .withTriggerTypeProperty1(totalMemoryId)
+                  .withTriggerTypeProperty2('Total memory').build()
+              ).build(),
+            dampenings: AppServerDetailsController.defaultDampenings(triggerId),
+            conditions : [
+              new AlertDefinitionConditionBuilder(AlertDefinitionCondition.DEFAULT_COMPARE_TYPE)
+                .withTriggerId(triggerId)
+                .withDataId(dataId)
+                .withData2Id(totalMemoryId)
+                .withOperator(AppServerDetailsController.GT)
+                .withContext(conditionContext).withData2Multiplier(0.80).build(),
+              new AlertDefinitionConditionBuilder(AlertDefinitionCondition.DEFAULT_COMPARE_TYPE)
+                .withTriggerId(triggerId)
+                .withDataId(dataId)
+                .withData2Id(totalMemoryId)
+                .withOperator(AppServerDetailsController.LT)
+                .withContext(conditionContext).withData2Multiplier(0.10).build()
+            ]
+          };
+
+          return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+            this.$log.error('Error on Trigger creation for ' + triggerId);
+          });
+        });
+    }
+
+    private static defaultDampenings(triggerId):AlertDefinitionDampening[] {
+      return [
+        new AlertDefinitionDampeningBuilder().withTriggerId(triggerId).build()
+      ];
     }
   }
 

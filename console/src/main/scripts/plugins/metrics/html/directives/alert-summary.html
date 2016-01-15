@@ -46,6 +46,14 @@
   <div ng-switch-when="DEPLOYMENT_FAIL">
     <strong>Deployment Failed</strong>: {{alert.message}}.
   </div>
+  <div ng-switch-when="AVAILABLE_MEMORY">
+    <strong>Memory alert</strong>: Available memory was {{alert.avg}}.
+  </div>
+  <div ng-switch-when="CPU_USAGE_EXCEED">
+    <strong>CPU alert</strong>: Usage of {{alert.tags.resourceName}} was {{alert.avg * 100 | number : 1}} %.
+
+  </div>
+
   <div ng-switch-default>
     <strong>Alert</strong>: <code>{{alert}}</code>
   </div>

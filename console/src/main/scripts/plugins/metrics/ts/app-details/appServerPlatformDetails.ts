@@ -20,62 +20,53 @@
 /// <reference path="../services/errorsManager.ts"/>
 
 module HawkularMetrics {
-
-
   export class AppServerPlatformDetailsController implements IRefreshable {
-    /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$routeParams',
-      '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'HawkularAlertsManager', 'MetricsService',
-      'ErrorsManager', '$q'];
-
     public static USED_COLOR = '#1884c7'; /// blue
     public static MAXIMUM_COLOR = '#f57f20'; /// orange
-    public static COMMITTED_COLOR = '#515252'; /// dark gray
 
-    public static MAX_HEAP = 1024 * 1024 * 1024;
+    public static MINIMUM_AVAIL_MEM = 100 * 1024 * 1024;
     public math = Math;
+    private autoRefreshPromise:ng.IPromise<number>;
 
-    public alertList;
+    public alertList:any[] = [];
     public fileStoreList;
     public processorList;
     public processorListNames;
-    public chartCpuData:IChartDataPoint[];
-    public chartCpuDataMulti:IChartDataPoint[];
-    public chartFileSystemData;//:IMultiDataPoint[];
+    public chartCpuData:IChartDataPoint[] = [];
+    public chartCpuDataMulti:IChartDataPoint[][] = [];
+    public chartFileSystemData = {};
     public startTimeStamp:TimestampInMillis;
     public endTimeStamp:TimestampInMillis;
     public chartMemoryUsageData:IChartDataPoint[];
     // will contain in the format: 'metric name' : true | false
     public skipChartData = {};
-    public feedId:any;
+    public feedId:FeedId;
+    private memoryResourceId:ResourceId;
 
     public resolvedChartFileSystemData = {};
     public resolvedMemoryData:boolean = false;
     public resolvedCPUData:boolean = false;
 
-    constructor(private $location:ng.ILocationService,
-                private $scope:any,
+    constructor(private $scope:any,
                 private $rootScope:IHawkularRootScope,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private $routeParams:any,
-                private $modal:any,
-                private $window:any,
+                private HawkularNav:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
-                private HawkularAlertsManager:IHawkularAlertsManager,
-                private MetricsService:IMetricsService,
-                private ErrorsManager:IErrorsManager,
-                private $q:ng.IQService) {
+                private HawkularAlertRouterManager: IHawkularAlertRouterManager,
+                private $q:ng.IQService ) {
       $scope.os = this;
-
-      this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
-      this.endTimeStamp = +moment();
-      this.chartCpuData = [];
-      this.chartFileSystemData = {};
-      this.chartCpuDataMulti = [];
       this.feedId = this.$routeParams.feedId;
+      this.memoryResourceId = AppServerPlatformDetailsController.getMemoryResourceId(this.feedId);
+      this.initTimeStamps();
 
+      this.HawkularAlertRouterManager.registerForAlerts(
+        this.feedId,
+        'platform',
+        _.bind(this.filterAlerts, this)
+      );
       if ($rootScope.currentPersona) {
         this.$log.log('We have have a persona');
         this.setup();
@@ -84,32 +75,48 @@ module HawkularMetrics {
         $rootScope.$watch('currentPersona',
           (currentPersona) => currentPersona && this.setup());
       }
-
+      // handle drag ranges on charts to change the time range
+      this.$scope.$on('ChartTimeRangeChanged', (event, data:Date[]) => {
+        this.startTimeStamp = data[0].getTime();
+        this.endTimeStamp = data[1].getTime();
+        this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
+        this.refresh();
+      });
+      this.getAlerts();
       this.autoRefresh(20);
+    }
+
+    private initTimeStamps() {
+      this.startTimeStamp = +moment().subtract((this.$routeParams.timeOffset || 3600000), 'milliseconds');
+      this.endTimeStamp = +moment();
+    }
+
+    private filterAlerts(alertData:IHawkularAlertQueryResult):IAlert[] {
+      let alertList =  alertData.alertList;
+      _.remove(alertList, (item:IAlert) => {
+        switch( item.context.alertType ) {
+          case 'CPU_USAGE_EXCEED' :
+            item.alertType = item.context.alertType;
+            return false;
+          case 'AVAILABLE_MEMORY' :
+            item.alertType = item.context.alertType;
+            return false;
+          default : return true;
+        }
+      });
+      this.alertList = alertList;
+      return alertList;
     }
 
     private setup() {
       this.getProcessors();
       this.getFileSystems();
       this.getPlatformData();
-      this.refresh();
-    }
-
-
-    private autoRefreshPromise:ng.IPromise<number>;
-
-
-    private autoRefresh(intervalInSeconds:number):void {
-      this.autoRefreshPromise = this.$interval(() => {
-        this.refresh();
-      }, intervalInSeconds * 1000);
-
-      this.$scope.$on('$destroy', () => {
-        this.$interval.cancel(this.autoRefreshPromise);
-      });
     }
 
     public refresh():void {
+      this.initTimeStamps();
+      this.getAlerts();
       this.getPlatformData();
       this.getCPUChartData();
       this.getMemoryChartData();
@@ -117,21 +124,24 @@ module HawkularMetrics {
       this.getCpuChartDetailData();
     }
 
-    public getFileSystems():any {
-      this.$log.log('getFileSystems');
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
+    private getAlerts():void {
+      this.HawkularAlertRouterManager.getAlertsForResourceId(
+        this.feedId,
+        this.startTimeStamp,
+        this.endTimeStamp
+      );
+    }
 
+    public getFileSystems():any {
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
           environmentId: globalEnvironmentId,
           feedId: this.feedId,
           resourceTypeId: 'File Store'
-        }, (aResourceList) => {
-          let promises = [];
-          this.$q.all(promises).then(() => {
-            this.fileStoreList = aResourceList;
-            this.fileStoreList.$resolved = true;
-          });
+        }).$promise.then((aResourceList) => {
+          this.fileStoreList = aResourceList;
+          this.fileStoreList.$resolved = true;
+          this.getFSChartData();
+          return aResourceList;
         },
         () => { // error
           if (!this.fileStoreList) {
@@ -144,29 +154,24 @@ module HawkularMetrics {
 
     // retrieve the list of CPUs
     public getProcessors():any {
-      this.$log.log('getProcessors');
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
-
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
           environmentId: globalEnvironmentId,
           feedId: this.feedId,
           resourceTypeId: 'Processor'
-        }, (aResourceList) => {
-          let promises = [];
-          this.$q.all(promises).then(() => {
-            this.processorList = []; // aResourceList;
-            this.processorListNames = [];
-            // Generate metric key from resource id
-            for (var i = 0; i < aResourceList.length; i++) {
-              let tmp:string = this.feedId + '~MI~R~[' + aResourceList[i].id + ']~MT~CPU Usage';
-              this.processorList[i] = tmp;
-              this.processorListNames[tmp] = aResourceList[i].id;
-
-            }
-            this.$log.log('Success, got CPUs ' + aResourceList.length);
-            this.getCPUChartData();
+        }).$promise.then((aResourceList) => {
+          this.processorList = []; // aResourceList;
+          this.processorListNames = [];
+          // Generate metric key from resource id
+          _.forEach(aResourceList, (item) => {
+            const metricId: string = MetricsService.getMetricId('M', this.feedId, item['id'], 'CPU Usage');
+            this.processorList.push(metricId);
+            this.processorListNames[metricId] = item['name'];
           });
+          this.processorList = _.sortBy(this.processorList);
+          this.getCpuUsage();
+          this.getCPUChartData();
+          this.getCpuChartDetailData();
+        return aResourceList;
         },
         () => { // error
           if (!this.processorList) {
@@ -178,161 +183,153 @@ module HawkularMetrics {
     }
 
     public getPlatformData():void {
-      this.$log.log('getPlatformData');
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
-
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: this.feedId + '~MI~R~[' + 'Memory' + ']~MT~Available Memory',
+        gaugeId: MetricsService.getMetricId('M', this.feedId, this.memoryResourceId, 'Available Memory'),
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 1
-      }, (resource) => {
+      }).$promise.then((resource) => {
         if (resource.length) {
           this['memoryAvail'] = resource[0];
+          this.getMemoryChartData();
+          return resource[0];
         }
-      }, this);
+      });
+    }
+
+    private getCpuUsage() {
       if (this.processorList) {
         this.HawkularMetric.GaugeMetricMultipleStats(this.$rootScope.currentPersona.id).get({
           metrics: this.processorList,
           start: this.startTimeStamp,
           end: this.endTimeStamp,
           buckets: 1
-        }, (resource) => {
+        }).$promise.then((resource) => {
           if (resource.length) {
             this['cpuUsage'] = resource[0];
+            return resource[0];
           }
-        }, this);
+        });
       }
     }
 
     public getFSChartData():void {
-      this.$log.log('getFSChartData');
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
-
-      let tenantId:TenantId = this.$rootScope.currentPersona.id;
-
       let availPromises = [];
-
-      let tmpChartAvailData = {};
-
-      angular.forEach(this.fileStoreList, function (res, idx) {
+      angular.forEach(this.fileStoreList, function (res) {
+        //Free Space
         if (!this.skipChartData[res.id + '_Free']) {
-          availPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-            gaugeId: this.feedId + '~MI~R~[' + res.id + ']~MT~Usable Space',
-            start: this.startTimeStamp,
-            end: this.endTimeStamp, buckets: 60
-          }, (data) => {
-            tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
-            tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
-              key: 'Usable Space',
-              color: AppServerPlatformDetailsController.USED_COLOR,
-              values: MetricsService.formatBucketedChartOutput(data, 1 / (1024 * 1024))
-            };
-          }, this).$promise);
+          availPromises.push(
+            this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+              gaugeId: MetricsService.getMetricId('M', this.feedId, res.id, 'Usable Space'),
+              start: this.startTimeStamp,
+              end: this.endTimeStamp, buckets: 60
+            }).$promise.then((data) => {
+              return {
+                fileStoreId : res.id,
+                key: 'Usable Space',
+                color: AppServerPlatformDetailsController.USED_COLOR,
+                values: MetricsService.formatBucketedChartOutput(data, 1 / (1024 * 1024))
+              };
+            })
+          );
         }
+        //Total space
         if (!this.skipChartData[res.id + '_Total']) {
-          availPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
-            gaugeId: this.feedId + '~MI~R~[' + res.id + ']~MT~Total Space',
-            start: this.startTimeStamp,
-            end: this.endTimeStamp,
-            buckets: 60
-          }, (data) => {
-            tmpChartAvailData[res.id] = tmpChartAvailData[res.id] || [];
-            tmpChartAvailData[res.id][tmpChartAvailData[res.id].length] = {
-              key: 'Total Space',
-              color: AppServerPlatformDetailsController.MAXIMUM_COLOR,
-              values: MetricsService.formatBucketedChartOutput(data, 1 / (1024 * 1024))
-            };
-          }, this).$promise);
+          availPromises.push(
+            this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
+              gaugeId: MetricsService.getMetricId('M', this.feedId, res.id, 'Total Space'),
+              start: this.startTimeStamp,
+              end: this.endTimeStamp,
+              buckets: 60
+            }).$promise.then((data) => {
+              return {
+                fileStoreId : res.id,
+                key: 'Total Space',
+                color: AppServerPlatformDetailsController.MAXIMUM_COLOR,
+                values: MetricsService.formatBucketedChartOutput(data, 1 / (1024 * 1024))
+              };
+            })
+          );
         }
-        this.$q.all(availPromises).finally(()=> {
-          this.chartFileSystemData[res.id] = tmpChartAvailData[res.id] || [];
-          this.resolvedChartFileSystemData[res.id] = true;
-        });
       }, this);
+      this.$q.all(availPromises).then((data)=> {
+        _.forEach(data, (item) => {
+          if (!this.chartFileSystemData[item.fileStoreId]) {
+            this.chartFileSystemData[item.fileStoreId] = [];
+          }
+          this.chartFileSystemData[item.fileStoreId].push(item);
+          this.resolvedChartFileSystemData[item.fileStoreId] = true;
+        });
+      });
     }
 
     public getCPUChartData():void {
-      this.$log.log('getCPUChartData');
-
-      let tenantId:TenantId = this.$rootScope.currentPersona.id;
-
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
-
-      this.$log.log('Got cpus: ' + this.processorList);
       if (this.processorList) {
-
         this.HawkularMetric.GaugeMetricMultipleStats(this.$rootScope.currentPersona.id).get({
           metrics: this.processorList,
           start: this.startTimeStamp,
           end: this.endTimeStamp,
           buckets: 60,
           stacked: true
-        }, (resource) => {
+        }).$promise.then((resource) => {
           if (resource.length) {
             this.chartCpuData = MetricsService.formatBucketedChartOutput(resource, 100);
             this.resolvedCPUData = true;
           }
-        }, this);
+          return resource;
+        });
       }
     }
 
     public getCpuChartDetailData():void {
-
-      let tenantId:TenantId = this.$rootScope.currentPersona.id;
-
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
-
-      this.$log.log('CPU Chart detail Got cpus: ' + this.processorList);
       if (this.processorList) {
-
-
-        let cpuPromises = [];
-
         _.forEach(this.processorList, (res:string) => {
-
-          cpuPromises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
+          this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
             gaugeId: res,
             start: this.startTimeStamp,
             end: this.endTimeStamp,
             buckets: 60
-          }, (data) => {
-            this.$log.log('Loaded ' + res);
+          }).$promise.then((data) => {
             this.chartCpuDataMulti[res] = MetricsService.formatBucketedChartOutput(data, 100);
-          }, this).$cpuPromise);
-          this.$q.all(cpuPromises).then(() => {
-            //this.chartCpuDataMulti[res] = tmpChartData[res] || [];
+            return data;
           });
-        }, this);
+        });
       }
     }
 
     public getMemoryChartData():void {
-      this.$log.log('getMemoryChartData');
-
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-        gaugeId: this.feedId + '~MI~R~[' + 'Memory' + ']~MT~Available Memory',
+        gaugeId: MetricsService.getMetricId('M', this.feedId, this.memoryResourceId, 'Available Memory'),
         start: this.startTimeStamp,
         end: this.endTimeStamp,
         buckets: 60
-      }, (resource) => {
+      }).$promise.then((resource) => {
         if (resource.length) {
           this.chartMemoryUsageData = MetricsService.formatBucketedChartOutput(resource, 1 / (1024 * 1024));
           this.resolvedMemoryData = true;
         }
-      }, this);
+        return resource;
+      });
     }
 
     public toggleChartData(name):void {
       this.skipChartData[name] = !this.skipChartData[name];
+      this.getFSChartData();
     }
 
+    public static getMemoryResourceId(feedId):string {
+      return 'platform~/OPERATING_SYSTEM=' + feedId + '_OperatingSystem/MEMORY=Memory';
+    }
+
+    private autoRefresh(intervalInSeconds:number):void {
+      this.autoRefreshPromise = this.$interval(() => {
+        this.refresh();
+      }, intervalInSeconds * 1000);
+
+      this.$scope.$on('$destroy', () => {
+        this.$interval.cancel(this.autoRefreshPromise);
+      });
+    }
   }
-
-  _module.controller('AppServerJvmDetailsController', AppServerJvmDetailsController);
-
+  _module.controller('AppServerPlatformDetailsController', AppServerPlatformDetailsController);
 }
