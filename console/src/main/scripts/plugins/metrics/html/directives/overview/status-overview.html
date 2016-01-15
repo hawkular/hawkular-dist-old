@@ -1,10 +1,13 @@
 <div class="card-pf card-pf-utilization">
   <div class="card-pf-heading">
-    <p class="card-pf-heading-details hk-definitions-link">{{startTimeStamp | date:'d MMM yyyy'}}, {{startTimeStamp | date:'HH:mm'}} - {{endTimeStamp | date:'HH:mm'}}</p>
+    <p class="card-pf-heading-details hk-definitions-link">{{startTimeStamp | date:'d MMM yyyy'}}, {{startTimeStamp |
+      date:'HH:mm'}} - {{endTimeStamp | date:'HH:mm'}}</p>
     <h2 class="card-pf-title">Status Overview</h2>
   </div>
   <div class="card-pf-body">
     <div class="row">
+
+      <!-- Alerts -->
       <div class="col-sm-6 hk-dashboard-block">
         <div ng-show="alertInfo && alertInfo.graphData">
           <hk-overview-spark-line-chart
@@ -14,6 +17,19 @@
           </hk-overview-spark-line-chart>
         </div>
       </div>
+
+      <!-- Heap usage -->
+      <div class="col-sm-6 hk-dashboard-block">
+        <div ng-show="overviewInfo && overviewInfo.heapUsage">
+          <hk-overview-spark-line-chart
+            title="JVM (Average Heap Usage per MB)"
+            usage-graph="overviewInfo.heapUsage.graph"
+            usage="overviewInfo.heapUsage.last / 1024 / 1024 | number : 0">
+          </hk-overview-spark-line-chart>
+        </div>
+      </div>
+
+      <!-- DS connections -->
       <div ng-repeat="datasource in datasourceInfo track by $index">
         <div class="col-sm-6 hk-dashboard-block">
           <div ng-show="datasource && datasource.chartConfig">
@@ -26,6 +42,8 @@
           </div>
         </div>
       </div>
+
+      <!-- Deployment Status -->
       <div class="col-sm-6 hk-dashboard-block">
         <div class="hk-data-info">
           <div class="hk-data" ng-show="overviewInfo.deployments">{{overviewInfo.deployments.length}}</div>
@@ -55,15 +73,8 @@
         </div>
         <div class="hk-block-title">Deployment status</div>
       </div>
-      <div class="col-sm-6 hk-dashboard-block">
-        <div ng-show="overviewInfo && overviewInfo.heapUsage">
-          <hk-overview-spark-line-chart
-            title="JVM (Average Heap Usage per MB)"
-            usage-graph="overviewInfo.heapUsage.graph"
-            usage="overviewInfo.heapUsage.last / 1024 / 1024 | number : 0">
-          </hk-overview-spark-line-chart>
-        </div>
-      </div>
+
+      <!-- Active Web Sessions -->
       <div class="col-sm-6 hk-dashboard-block">
         <div ng-if="overviewInfo && overviewInfo.activeWebSessions">
           <hk-overview-spark-line-chart
@@ -73,6 +84,7 @@
           </hk-overview-spark-line-chart>
         </div>
       </div>
+
     </div>
   </div>
 </div>
