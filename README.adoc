@@ -55,7 +55,7 @@ http://www.hawkular.org/docs/dev/development.html[developer documentation] for m
 Hawkular is released under Apache License, Version 2.0 as described in the link:LICENSE[LICENSE] document.
 
 ----
-   Copyright 2015 Red Hat, Inc.
+   Copyright 2015-2016 Red Hat, Inc.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
