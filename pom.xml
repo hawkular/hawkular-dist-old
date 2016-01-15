@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>31</version>
+    <version>33</version>
   </parent>
 
   <artifactId>hawkular</artifactId>
@@ -87,13 +87,15 @@
     <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
     <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
-    <version.org.hawkular.accounts>2.0.10.Final</version.org.hawkular.accounts>
-    <version.org.hawkular.agent>0.15.2.Final</version.org.hawkular.agent>
+
+    <version.org.hawkular.accounts>2.0.11.Final</version.org.hawkular.accounts>
+    <version.org.hawkular.agent>0.15.4.Final</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.8.2.Final</version.org.hawkular.alerts>
-    <version.org.hawkular.cmdgw>0.10.7.Final</version.org.hawkular.cmdgw>
-    <version.org.hawkular.commons>0.3.2.Final</version.org.hawkular.commons>
-    <version.org.hawkular.inventory>0.12.0.Final</version.org.hawkular.inventory>
+    <version.org.hawkular.cmdgw>0.10.9.Final</version.org.hawkular.cmdgw>
+    <version.org.hawkular.commons>0.3.4.Final</version.org.hawkular.commons>
+    <version.org.hawkular.inventory>0.12.1.Final</version.org.hawkular.inventory>
     <version.org.hawkular.metrics>0.11.0.Final-SRC-revision-7a90403c761cc446b1bc357eaac351d58ded00f4</version.org.hawkular.metrics>
+
     <version.org.keycloak.secretstore>1.0.4.Final</version.org.keycloak.secretstore>
     <version.rxjava>1.0.16</version.rxjava>
     <version.hystrix-core>1.4.21</version.hystrix-core>
