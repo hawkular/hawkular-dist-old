@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -99,7 +99,6 @@ module HawkularMetrics {
 
     private feedId:FeedId;
     private resourceId:ResourceId;
-    private personaId:PersonaId;
 
     constructor(private $scope:any,
                 private $rootScope:IHawkularRootScope,
@@ -114,7 +113,6 @@ module HawkularMetrics {
 
       this.feedId = this.$routeParams.feedId;
       this.resourceId = this.$routeParams.resourceId + '~~';
-      this.personaId = this.$rootScope.currentPersona.id;
 
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
@@ -123,12 +121,10 @@ module HawkularMetrics {
 
       if ($rootScope.currentPersona) {
         this.refresh();
-        this.getJvmContextChartData();
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
         $rootScope.$watch('currentPersona',
           (currentPersona) => currentPersona && this.refresh());
-        this.getJvmContextChartData();
       }
 
       // handle drag ranges on charts to change the time range
@@ -174,6 +170,7 @@ module HawkularMetrics {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
+      this.getJvmContextChartData();
       this.getJvmData();
       this.getAlerts();
     }
@@ -208,7 +205,7 @@ module HawkularMetrics {
 
     private getJvmAggregateStatistics():void {
 
-      this.MetricsService.retrieveGaugeMetrics(this.personaId,
+      this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           JVMMetricsTabType.HEAP_USED.getWildflyFullMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource:IChartDataPoint[]) => {
@@ -216,7 +213,7 @@ module HawkularMetrics {
           this[JVMMetricsTabType.HEAP_USED.getStatisticsKey()] = resource[0];
         }
       });
-      this.MetricsService.retrieveGaugeMetrics(this.personaId,
+      this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           JVMMetricsTabType.HEAP_MAX.getWildflyFullMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
@@ -225,7 +222,7 @@ module HawkularMetrics {
           AppServerJvmDetailsController.MAX_HEAP = resource[0].max;
         }
       });
-      this.MetricsService.retrieveCounterMetrics(this.personaId,
+      this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           JVMMetricsTabType.ACCUMULATED_GC_DURATION.getWildflyFullMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
@@ -240,21 +237,21 @@ module HawkularMetrics {
       const contextStartTimestamp = +moment(this.endTimeStamp).subtract(1, globalContextChartTimePeriod);
 
 
-      this.MetricsService.retrieveGaugeMetrics(this.personaId,
+      this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           JVMMetricsTabType.HEAP_USED.getWildflyFullMetricName()),
         contextStartTimestamp, this.endTimeStamp, globalNumberOfContextChartDataPoints).then((contextData) => {
         this.contextChartHeapUsedData = MetricsService.formatContextChartOutput(contextData);
       });
 
-      this.MetricsService.retrieveGaugeMetrics(this.personaId,
+      this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           JVMMetricsTabType.NON_HEAP_USED.getWildflyFullMetricName()),
         contextStartTimestamp, this.endTimeStamp, globalNumberOfContextChartDataPoints).then((contextData) => {
         this.contextChartNonHeapUsedData = MetricsService.formatContextChartOutput(contextData);
       });
 
-      this.MetricsService.retrieveCounterRateMetrics(this.personaId,
+      this.MetricsService.retrieveCounterRateMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           JVMMetricsTabType.ACCUMULATED_GC_DURATION.getWildflyFullMetricName()),
         contextStartTimestamp, this.endTimeStamp, globalNumberOfContextChartDataPoints).then((contextData) => {
@@ -272,7 +269,7 @@ module HawkularMetrics {
 
       const heapCommitted = JVMMetricsTabType.HEAP_COMMITTED;
       if (!this.skipChartData[heapCommitted.getKey()]) {
-        let hCommPromise = this.MetricsService.retrieveGaugeMetrics(this.personaId,
+        let hCommPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId,
             heapCommitted.getWildflyFullMetricName()),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -289,7 +286,7 @@ module HawkularMetrics {
       const heapUsed = JVMMetricsTabType.HEAP_USED;
       if (!this.skipChartData[heapUsed.getKey()]) {
 
-        let hUsedPromise = this.MetricsService.retrieveGaugeMetrics(this.personaId,
+        let hUsedPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId,
             heapUsed.getWildflyFullMetricName()),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -307,7 +304,7 @@ module HawkularMetrics {
 
       const heapMax = JVMMetricsTabType.HEAP_MAX;
       if (!this.skipChartData[heapMax.getKey()]) {
-        let hMaxPromise = this.MetricsService.retrieveGaugeMetrics(this.personaId,
+        let hMaxPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId,
             heapMax.getWildflyFullMetricName()),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -326,7 +323,7 @@ module HawkularMetrics {
 
       const nonHeapCommitted = JVMMetricsTabType.NON_HEAP_COMMITTED;
       if (!this.skipChartData[nonHeapCommitted.getKey()]) {
-        let nhCommPromise = this.MetricsService.retrieveGaugeMetrics(this.personaId,
+        let nhCommPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId,
             nonHeapCommitted.getWildflyFullMetricName()),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -342,7 +339,7 @@ module HawkularMetrics {
 
       const nonHeapUsed = JVMMetricsTabType.NON_HEAP_USED;
       if (!this.skipChartData[nonHeapUsed.getKey()]) {
-        let nhUsedPromise = this.MetricsService.retrieveGaugeMetrics(this.personaId,
+        let nhUsedPromise = this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId,
             nonHeapUsed.getWildflyFullMetricName()),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -360,7 +357,7 @@ module HawkularMetrics {
       });
 
       const accumulatedGCDuration = JVMMetricsTabType.ACCUMULATED_GC_DURATION;
-      this.MetricsService.retrieveCounterRateMetrics(this.personaId,
+      this.MetricsService.retrieveCounterRateMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           accumulatedGCDuration.getWildflyFullMetricName()),
         this.startTimeStamp, this.endTimeStamp, 60).then((resource) => {

@@ -81,11 +81,7 @@ module HawkularMetrics {
       if ($rootScope.currentPersona) {
         waitForResourceId();
       } else {
-        $rootScope.$watch('currentPersona', (currentPersona) => {
-          if (currentPersona) {
-            waitForResourceId();
-          }
-        });
+        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && waitForResourceId());
       }
       $scope.$on('SwitchedPersona', () => $location.path('/hawkular-ui/url/url-list'));
       this.autoRefresh(20);

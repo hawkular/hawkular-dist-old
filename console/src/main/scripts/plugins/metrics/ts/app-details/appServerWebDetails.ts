@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,7 +78,6 @@ module HawkularMetrics {
 
     private feedId:FeedId;
     private resourceId:ResourceId;
-    private personaId:PersonaId;
 
     constructor(private $scope:any,
                 private $rootScope:IHawkularRootScope,
@@ -91,7 +90,6 @@ module HawkularMetrics {
                 private MetricsService:IMetricsService) {
       $scope.vm = this;
 
-      this.personaId = this.$rootScope.currentPersona.id;
       this.feedId = this.$routeParams.feedId;
       this.resourceId = this.$routeParams.resourceId + '~~';
 
@@ -99,15 +97,10 @@ module HawkularMetrics {
       this.endTimeStamp = +moment();
 
       if ($rootScope.currentPersona) {
-        this.getWebData();
-        this.getWebChartData();
-        this.getWebSessionContextChartData();
+        this.refresh();
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
-        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
-        this.getWebData());
-        this.getWebChartData();
-        this.getWebSessionContextChartData();
+        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.refresh());
       }
 
       // handle drag ranges on charts to change the time range
@@ -129,8 +122,6 @@ module HawkularMetrics {
         'web',
         _.bind(this.filterAlerts, this)
       );
-
-      this.getAlerts();
 
       this.autoRefresh(20);
     }
@@ -187,19 +178,19 @@ module HawkularMetrics {
     }
 
     public getWebData():void {
-      this.MetricsService.retrieveGaugeMetrics(this.personaId,
+      this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           WebTabType.ACTIVE_SESSIONS.getFullWildflyMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
         this.activeWebSessions = resource[0].avg;
       });
-      this.MetricsService.retrieveCounterMetrics(this.personaId,
+      this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           WebTabType.SERVLET_REQUEST_TIME.getFullWildflyMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
         this.requestTime = resource[0].max - resource[0].min;
       });
-      this.MetricsService.retrieveCounterMetrics(this.personaId,
+      this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           WebTabType.SERVLET_REQUEST_COUNT.getFullWildflyMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
@@ -211,7 +202,7 @@ module HawkularMetrics {
       // because the time range is so much greater here we need more points of granularity
       const contextStartTimestamp = +moment(this.endTimeStamp).subtract(1, globalContextChartTimePeriod);
 
-      this.MetricsService.retrieveGaugeMetrics(this.personaId,
+      this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           WebTabType.ACTIVE_SESSIONS.getFullWildflyMetricName()),
         contextStartTimestamp, this.endTimeStamp, globalNumberOfContextChartDataPoints).then((contextData) => {
