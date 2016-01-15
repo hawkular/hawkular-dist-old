@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,12 +25,13 @@ module HawkularMetrics {
     private httpUriPart = 'http://';
     private hawkularServerUrl: string;
     private wildflyHome: string;
-    private moduleZip: string;
+    private serverName: string;
 
     private username: string;
     private password: string;
 
     private codeSnippetShown: boolean;
+    private snippetToCopy: string = 'java -jar hawkular-wildfly-agent-installer.jar';
 
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
@@ -43,24 +44,29 @@ module HawkularMetrics {
     }
 
     public requiredFieldsFilled(hawkularServerUrl: string, wildflyHome: string): boolean {
-      //return this.hawkularServerUrl !== undefined
-      //  && ((this.hawkularServerUrl.slice(0, 7) === 'http://' && this.hawkularServerUrl.length > 7)
-      //      || (this.hawkularServerUrl.slice(0, 8) === 'https://' && this.hawkularServerUrl.length > 8)) &&
-        return this.wildflyHome !== undefined && this.wildflyHome.length > 2;
+        return true;
     }
 
-    public getTextToCopy(): string {
-      return 'java -jar hawkular-wildfly-agent-installer-0.13.1.Final.jar';
+    public copySuccess(): void {
+      console.log('copied to clipboard');
+
+    }
+
+    public copyFail(err): void {
+      console.error('copy error', err);
     }
 
     public download(): void {
-      var newPath = '/hawkular/wildfly-agent/download?installer=true&wildfly-home='
-        + encodeURIComponent(this.wildflyHome);
+      let newPath = '/hawkular/wildfly-agent/installer?';
+
+      if (this.wildflyHome) {
+        newPath += '&target-location=' + encodeURIComponent(this.wildflyHome);
+      }
       if (this.hawkularServerUrl) {
         newPath += '&hawkular-server-url=' + encodeURIComponent(this.hawkularServerUrl);
       }
-      if (this.moduleZip) {
-        newPath += '&module-zip=' + encodeURIComponent(this.moduleZip);
+      if (this.serverName) {
+        newPath += '&managed-server-name=' + encodeURIComponent(this.serverName);
       }
       if (this.username) {
         newPath += '&username=' + encodeURIComponent(this.username);
@@ -74,12 +80,6 @@ module HawkularMetrics {
     }
 
   }
-  _module.config(['ngClipProvider', (ngClipProvider) => {
-    ngClipProvider.setConfig({
-      zIndex: 50
-    });
-  }]);
-
   _module.controller('AgentInstallerController', AgentInstallerController);
 
 }

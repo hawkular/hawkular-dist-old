@@ -2720,6 +2720,7 @@ section {
 
   .btn-clipboard {
     position: absolute;
+    cursor: pointer;
     top: 0;
     right: 0;
     z-index: 10;
@@ -2732,7 +2733,7 @@ section {
     border-radius: 0 4px 0 4px;
   }
 
-  .zero-clipboard {
+  .clipboard {
     position: relative;
     display: none;
   }
@@ -2742,10 +2743,8 @@ section {
   }
 
   @media (min-width: 768px) {
-    .zero-clipboard {
+    .clipboard {
       display: block;
-      position: relative;
-
     }
   }
 }
