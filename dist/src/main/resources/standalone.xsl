@@ -65,15 +65,15 @@
   <xsl:template name="secure-deployment">
     <xsl:param name="deployment.name" />
     <xsl:param name="credential.secret" />
-      <secure-deployment>
-        <xsl:attribute name="name"><xsl:value-of select="$deployment.name"/></xsl:attribute>
-        <realm>hawkular</realm>
-        <resource>hawkular-accounts-backend</resource>
-        <use-resource-role-mappings>true</use-resource-role-mappings>
-        <enable-cors>true</enable-cors>
-        <enable-basic-auth>true</enable-basic-auth>
-        <credential name="secret"><xsl:value-of select="$credential.secret"/></credential>
-      </secure-deployment>
+    <secure-deployment>
+      <xsl:attribute name="name"><xsl:value-of select="$deployment.name"/></xsl:attribute>
+      <realm>hawkular</realm>
+      <resource>hawkular-accounts-backend</resource>
+      <use-resource-role-mappings>true</use-resource-role-mappings>
+      <enable-cors>true</enable-cors>
+      <enable-basic-auth>true</enable-basic-auth>
+      <credential name="secret"><xsl:value-of select="$credential.secret"/></credential>
+    </secure-deployment>
   </xsl:template>
 
   <!-- //*[local-name()='secure-deployment'] is an xPath's 1.0 way of saying of xPath's 2.0 prefix-less selector //*:secure-deployment  -->
