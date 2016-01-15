@@ -42,6 +42,7 @@
     <hawkular.checkstyle.excludes>
       release.properties,
       **/*.d.ts,
+      **/scripts/*.babelrc,
       **/vendor/**/*.js,
       **/vendor/**/*.css,
       **/vendor/fonts/*.*,
