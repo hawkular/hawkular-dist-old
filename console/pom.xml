@@ -130,6 +130,7 @@
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
           <excludes combine.children="append">
+            <exclude>**/scripts/**/.babelrc</exclude>
             <exclude>**/vendor/**/*.js</exclude>
             <exclude>**/vendor/**/*.css</exclude>
             <exclude>**/vendor/fonts/*.*</exclude>
