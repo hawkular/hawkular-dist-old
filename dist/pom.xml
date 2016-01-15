@@ -44,9 +44,9 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.hawkular.agent</groupId>
-      <artifactId>hawkular-wildfly-agent-feature-pack</artifactId>
-      <version>${version.org.hawkular.agent}</version>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-feature-pack</artifactId>
+      <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
       <exclusions>
@@ -58,36 +58,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.agent</groupId>
-      <artifactId>hawkular-wildfly-agent-feature-pack</artifactId>
-      <version>${version.org.hawkular.agent}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-feature-pack</artifactId>
-      <version>${version.org.hawkular.accounts}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-feature-pack</artifactId>
-      <version>${version.org.hawkular.accounts}</version>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-feature-pack</artifactId>
+      <version>${project.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

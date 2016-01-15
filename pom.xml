@@ -57,6 +57,7 @@
     <module>modules/pinger</module>
     <module>modules/avail-creator</module>
     <module>modules/hawkular-api-parent</module>
+    <module>feature-pack</module>
     <module>dist</module>
     <module>modules/end-to-end-test</module>
   </modules>
