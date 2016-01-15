@@ -44,9 +44,9 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.hawkular.agent</groupId>
-      <artifactId>hawkular-wildfly-agent-feature-pack</artifactId>
-      <version>${version.org.hawkular.agent}</version>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-feature-pack</artifactId>
+      <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
       <exclusions>
@@ -58,36 +58,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular.agent</groupId>
-      <artifactId>hawkular-wildfly-agent-feature-pack</artifactId>
-      <version>${version.org.hawkular.agent}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-feature-pack</artifactId>
-      <version>${version.org.hawkular.accounts}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-feature-pack</artifactId>
-      <version>${version.org.hawkular.accounts}</version>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-feature-pack</artifactId>
+      <version>${project.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
@@ -340,6 +313,7 @@
       <!-- [FIXME metrics 1/2] A temporary fix that can be removed once metrics war has
            its jboss-deployment-structure.xml fixed to depend on bus rather than nest WF module -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
@@ -435,7 +409,6 @@
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>docker-maven-plugin</artifactId>
-        <version>0.2.12</version>
         <configuration>
           <imageName>hawkular:snapshot</imageName>
           <dockerDirectory>docker</dockerDirectory>
@@ -485,6 +458,7 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
             <configuration>
               <finalName>hawkular-${project.version}</finalName>
