@@ -384,7 +384,7 @@
               <arguments>
                 <argument>--target-location=${project.build.directory}/${project.build.finalName}</argument>
                 <argument>--module-dist=${project.build.directory}/${project.build.finalName}/standalone/configuration/hawkular-wildfly-agent-wf-extension.zip</argument>
-                <argument>--server-url=http://localhost:8080</argument>
+                <argument>--server-url=http://${jboss.bind.address:127.0.0.1}:8080</argument>
                 <argument>--username=${agent.username}</argument>
                 <argument>--password=${agent.password}</argument>
                 <argument>--enabled=${agent.enabled}</argument>
