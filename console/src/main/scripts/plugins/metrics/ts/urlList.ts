@@ -532,7 +532,7 @@ module HawkularMetrics {
       let filterObj = this.resourceList;
       this['search'] = '';
       filters.forEach( (filter) => {
-        filterObj = filterObj.filter((item) => {
+        filterObj = filterObj.filter((item:any) => {
           if (filter.value === 'All') {
             return true;
           }
