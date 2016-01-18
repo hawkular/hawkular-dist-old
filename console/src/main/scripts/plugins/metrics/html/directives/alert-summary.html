@@ -23,7 +23,7 @@
     <strong>Non Heap Memory</strong>: The Non Heap memory usage was {{alert.avg / 1024 / 1024 | number:2}} MB.
   </div>
   <div ng-switch-when="GARBA">
-    <strong>Garbage collection</strong>: The GC averaged more than {{alert.avg | number:2}} ms per minute.
+    <strong>Garbage collection</strong>: The GC averaged more than {{alert.avg | number:0}} ms per minute.
   </div>
   <div ng-switch-when="DSCONN">
     <strong>Available Connections</strong>: The number of available connections was {{alert.avg}}.
