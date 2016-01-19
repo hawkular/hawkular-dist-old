@@ -240,6 +240,8 @@
 
   <xsl:template match="//messaging:subsystem/*[local-name()='server' and @name='default']">
     <xsl:copy>
+      <xsl:attribute name="name">default</xsl:attribute>
+      <statistics enabled="true"/>
       <xsl:apply-templates select="@*|node()"/>
       <jms-topic name="HawkularInventoryChanges" entries="java:/topic/HawkularInventoryChanges"/>
       <jms-topic name="HawkularAlertData" entries="java:/topic/HawkularAlertData"/>
@@ -249,7 +251,6 @@
       <jms-topic name="HawkularAvailData" entries="java:/topic/HawkularAvailData"/>
       <jms-topic name="HawkularCommandEvent" entries="java:/topic/HawkularCommandEvent"/>
       <jms-topic name="HawkularAlertsActionsTopic" entries="java:/topic/HawkularAlertsActionsTopic"/>
-      <statistics enabled="true"/>
     </xsl:copy>
   </xsl:template>
 
