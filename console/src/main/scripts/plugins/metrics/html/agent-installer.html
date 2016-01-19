@@ -1,6 +1,7 @@
 <div ng-controller="AgentInstallerController as aic" class="hk-agent-installer">
+
   <div class="hk-heading">
-    <h1 class="text-center">Agent Installer</h1>
+    <h1 class="text-center">Wildfly Agent Installer</h1>
   </div>
 
   <div class="container">
@@ -9,13 +10,14 @@
         <div class="col-xs-12">
           <div class="card-pf">
             <div class="card-pf-body">
+              <div class="download-header text-center">
+                <i class="fa fa-download download-agent-icon"></i>
+                <h3>Customize &amp; Download Installer</h3>
+                <p class="download-instructions">All form fields are optional. The more that you provide, the more customized your installer will be. If you pass no data, you either have to pass it on the command line or edit the config of the target server afterwards.</p>
+              </div>
 
               <form class="form-horizontal">
                 <fieldset>
-                  <legend>Optional
-                    <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
-                    popover-placement="top" popover-trigger="mouseover mouseout"
-                    popover="Neither of those fields are required. You can provide or override the parameters on the command line when running the jar file."><i class="fa fa-info-circle"></i></a></legend>
                     <div class="form-group">
                     <div class="row">
                       <label class="col-sm-3 control-label" for="server-name">Server Name
@@ -48,6 +50,7 @@
                       </div>
                     </div>
                   </div>
+
                   <div class="form-group">
                     <div class="row">
                       <label class="col-sm-3 control-label" for="username">Username
@@ -63,7 +66,13 @@
                         </div>
                       </div>
                     </div>
+                    <div class="row">
+                      <div class="col-sm-5 col-sm-offset-3">
+                        <i> * Advanced Option: use <strong>Token</strong> <code>--security-key</code> instead</i>
+                      </div>
+                    </div>
                   </div>
+
                   <div class="form-group">
                     <div class="row">
                       <label class="col-sm-3 control-label" for="password">Password
@@ -79,17 +88,19 @@
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="hk-form-actions-separator text-right">
-                  <div class="col-md-8"><i>
-                  Pro tip: rather than using the username password, it's better to generate token <a href="/hawkular-ui/tokens">here</a> and use it with <code>--security-key</code> <code>--security-code</code> when running the jar installer.
-                  </i></div><br/>
-                    <button type="button" class="btn btn-primary" ng-click="aic.download()"
-                            ng-disabled="!aic.requiredFieldsFilled(hawkularServerUrl, wildflyHome)">
-                      Download Installer
-                    </button>
+                    <div class="row">
+                      <div class="col-sm-5 col-sm-offset-3">
+                        <i> * Advanced Option: use <strong>Token</strong> <code>--security-code</code> instead</i>
+                      </div>
+                    </div>
                   </div>
                 </fieldset>
+                <div class="download-button-container text-center">
+                  <button type="button" class="btn btn-primary" ng-click="aic.download()"
+                          ng-disabled="!aic.requiredFieldsFilled(hawkularServerUrl, wildflyHome)">
+                    Download Installer
+                  </button>
+                </div>
                 <div class="code-snippet" ng-show="aic.codeSnippetShown">
                   To install the wildfly agent, run following command:
                   <div clipboard class="clipboard" on-copied="aic.copySuccess()" on-error="aic.copyFail(err)"
