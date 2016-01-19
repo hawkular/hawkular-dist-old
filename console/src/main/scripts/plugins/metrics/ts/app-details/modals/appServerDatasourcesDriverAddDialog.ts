@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,18 +81,18 @@ module HawkularMetrics {
       });
 
       $scope.$on('JDBCDriverAddSuccess', (event, data) => {
-        //this.$log.info('Deployment Add Succeeded!');
-        this.driverData.uploading = false;
-        this.driverData.hasDeployedSuccessfully = true;
-        this.driverData.hasDeploymentError = false;
-
+        this.$timeout(() => {
+          this.driverData.uploading = false;
+          this.driverData.hasDeployedSuccessfully = true;
+          this.driverData.hasDeploymentError = false;
+        });
       });
       $scope.$on('JDBCDriverAddError', (event, data) => {
-        //this.$log.warn('Deployment Add Failed!');
-        //this.$log.warn(data);
-        this.driverData.uploading = false;
-        this.driverData.hasDeploymentError = true;
-        this.driverData.hasDeployedSuccessfully = false;
+        this.$timeout(() => {
+          this.driverData.uploading = false;
+          this.driverData.hasDeploymentError = true;
+          this.driverData.hasDeployedSuccessfully = false;
+        });
       });
 
     }

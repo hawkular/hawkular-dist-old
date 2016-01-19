@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,18 +86,21 @@ module HawkularMetrics {
       });
 
       $scope.$on('DeploymentAddSuccess', (event, data) => {
-        this.$log.info('Deployment Add Succeeded!');
-        this.deploymentData.uploading = false;
-        this.deploymentData.hasDeployedSuccessfully = true;
-        this.deploymentData.hasDeploymentError = false;
-
+        this.$timeout(() => {
+          this.$log.info('Deployment Add Succeeded!');
+          this.deploymentData.uploading = false;
+          this.deploymentData.hasDeployedSuccessfully = true;
+          this.deploymentData.hasDeploymentError = false;
+        });
       });
       $scope.$on('DeploymentAddError', (event, data) => {
-        this.$log.warn('Deployment Add Failed!');
-        this.$log.warn(data);
-        this.deploymentData.uploading = false;
-        this.deploymentData.hasDeploymentError = true;
-        this.deploymentData.hasDeployedSuccessfully = false;
+        this.$timeout(() => {
+          this.$log.warn('Deployment Add Failed!');
+          this.$log.warn(data);
+          this.deploymentData.uploading = false;
+          this.deploymentData.hasDeploymentError = true;
+          this.deploymentData.hasDeployedSuccessfully = false;
+        });
       });
 
     }
