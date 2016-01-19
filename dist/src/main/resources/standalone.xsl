@@ -251,6 +251,15 @@
     </xsl:copy>
   </xsl:template>
 
+  <!-- A temporary fix to avoid WARN AMQ212053: CompletionListener/SendAcknowledgementHandler used with confirmationWindowSize=-1. ...
+    This can be removed with the Accounts version comming after 2.0.11.Final  -->
+  <xsl:template match="//*[local-name()='subsystem']/*[local-name()='server' and @name='default']/*[local-name()='connection-factory' and @name='InVmConnectionFactory']">
+    <xsl:copy>
+      <xsl:apply-templates select="@*|node()"/>
+      <xsl:attribute name="confirmation-window-size">10024</xsl:attribute>
+    </xsl:copy>
+  </xsl:template>
+
   <!-- copy everything else as-is -->
   <xsl:template match="node()|@*">
     <xsl:copy>
