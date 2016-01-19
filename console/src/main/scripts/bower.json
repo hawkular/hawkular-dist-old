@@ -30,7 +30,7 @@
     "hawtio-template-cache": "2.0.4",
     "hawtio-utilities": "2.0.25",
     "hawtio-extension-service": "2.0.3",
-    "hawtio-oauth": "2.0.33",
+    "hawtio-oauth": "2.0.37",
     "lodash": "3.2.0",
     "moment": "2.11.1",
     "patternfly": "2.8.0",
