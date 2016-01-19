@@ -18,7 +18,6 @@
     "angular-bootstrap": "0.13.4",
     "angular-md5": "0.1.10",
     "angular-momentjs": "0.2.2",
-    "angular-patternfly": "2.8.1",
     "angular-scroll": "0.6.5",
     "angular-ui-select": "0.11.2",
     "angular-toastr": "1.6.0",
@@ -34,7 +33,8 @@
     "hawtio-oauth": "2.0.33",
     "lodash": "3.2.0",
     "moment": "2.11.1",
-    "patternfly": "2.7.0",
+    "patternfly": "2.8.0",
+    "angular-patternfly": "2.8.1",
     "keycloak": "1.3.1",
     "angular-wizard": "0.6.1",
     "angular-clipboard": "1.3.0"
