@@ -388,6 +388,7 @@
                 <argument>--username=${agent.username}</argument>
                 <argument>--password=${agent.password}</argument>
                 <argument>--enabled=${agent.enabled}</argument>
+                <argument>--feed-id=${hawkular.agent.feedid:autogenerate}</argument>
               </arguments>
             </configuration>
           </execution>

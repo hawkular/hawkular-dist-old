@@ -90,7 +90,7 @@
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
 
     <version.org.hawkular.accounts>2.0.11.Final</version.org.hawkular.accounts>
-    <version.org.hawkular.agent>0.15.5.Final</version.org.hawkular.agent>
+    <version.org.hawkular.agent>0.15.6.Final</version.org.hawkular.agent>
     <version.org.hawkular.alerts>0.8.2.Final</version.org.hawkular.alerts>
     <version.org.hawkular.cmdgw>0.10.9.Final</version.org.hawkular.cmdgw>
     <version.org.hawkular.commons>0.3.4.Final</version.org.hawkular.commons>
