@@ -60,7 +60,7 @@ module HawkularMetrics {
                 private $routeParams:any,
                 private $interval:ng.IIntervalService,
                 private $q:ng.IQService,
-                private $route:any,
+                private $filter:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
                 private HawkularNav:any,
@@ -508,7 +508,7 @@ module HawkularMetrics {
         let used = data.inUseCount.value / (data.inUseCount.value + data.availableCount.value) * 100 || 0;
         data.chartConfig = {
           multiLineTitle: [
-            {text:used+'%', dy:-10, classed: 'donut-title-big-pf'},
+            {text: this.$filter('number')(used, used ? 1 : 0) + '%', dy:-10, classed: 'donut-title-big-pf'},
             {text:'Connections', dy:20, classed: 'donut-title-small-pf'},
             {text:'Used', dy:15, classed: 'donut-title-small-pf'}
           ],
@@ -533,7 +533,7 @@ module HawkularMetrics {
             type: 'donut',
             columns: [
               ['Used', used],
-              ['Available', 100]
+              ['Available', 100 - used]
             ],
             groups: [
               ['used', 'available']
