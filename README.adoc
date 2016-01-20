@@ -18,7 +18,15 @@ Sub-projects are currently:
 * https://github.com/hawkular/hawkular-alerts[Hawkular-alerts]: alerting on events.
 * Hawkular UI Console (a https://github.com/hawtio[hawt.io 2 plugin])
 ** https://github.com/hawkular/hawkular-ui-services[Hawkular-ui-services]: common services and ngResource wrappers for Hawkular REST Apis.
+
+image::https://www.bithound.io/github/hawkular/hawkular-ui-services/badges/score.svg[link="https://www.bithound.io/github/hawkular/hawkular-ui-services"] 
+image::https://www.bithound.io/github/hawkular/hawkular-ui-services/badges/dependencies.svg[link="https://www.bithound.io/github/hawkular/hawkular-ui-services/master/dependencies/npm"]
+
 ** https://github.com/hawkular/hawkular-charts[Hawkular-charts]: Charts and other Angular visualization components used to graphically render data in _Hawkular._
+
+image::https://www.bithound.io/github/hawkular/hawkular-charts/badges/score.svg[link="https://www.bithound.io/github/hawkular/hawkular-charts"] 
+image::https://www.bithound.io/github/hawkular/hawkular-charts/badges/dependencies.svg[link="https://www.bithound.io/github/hawkular/hawkular-chars/master/dependencies/npm"]
+
 * https://github.com/hawkular/hawkular-build-tools[Hawkular build tools]: Helpers and definitions to build Hawkular
 
 == About this repository
