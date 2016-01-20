@@ -20,7 +20,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:ds="urn:jboss:domain:datasources:3.0" xmlns:ra="urn:jboss:domain:resource-adapters:3.0" xmlns:ejb3="urn:jboss:domain:ejb3:3.0"
   xmlns:logging="urn:jboss:domain:logging:3.0" xmlns:undertow="urn:jboss:domain:undertow:3.0" xmlns:tx="urn:jboss:domain:transactions:3.0"
-  version="2.0" exclude-result-prefixes="xalan ds ra ejb3 logging undertow tx">
+  xmlns:messaging="urn:jboss:domain:messaging-activemq:1.0"
+  version="2.0" exclude-result-prefixes="xalan ds ra ejb3 logging undertow tx messaging">
 
   <!-- will indicate if this is a "dev" build or "production" build -->
   <xsl:param name="kettle.build.type" />
@@ -237,8 +238,10 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="//*[local-name()='subsystem']/*[local-name()='server' and @name='default']">
+  <xsl:template match="//messaging:subsystem/*[local-name()='server' and @name='default']">
     <xsl:copy>
+      <xsl:attribute name="name">default</xsl:attribute>
+      <statistics enabled="true"/>
       <xsl:apply-templates select="@*|node()"/>
       <jms-topic name="HawkularInventoryChanges" entries="java:/topic/HawkularInventoryChanges"/>
       <jms-topic name="HawkularAlertData" entries="java:/topic/HawkularAlertData"/>
