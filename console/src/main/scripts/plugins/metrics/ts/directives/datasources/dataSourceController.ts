@@ -29,7 +29,6 @@ module HawkularMetrics {
     public endTimeStamp:TimestampInMillis;
 
     private feedId:FeedId;
-    private currentPersona:IPersona;
     public chartAvailData:any;
     public resolvedAvailData:any;
     public chartRespData:any;
@@ -44,7 +43,6 @@ module HawkularMetrics {
                 private HawkularInventory:any,
                 private $interval:ng.IIntervalService) {
       this.feedId = this.$routeParams.feedId;
-      this.currentPersona = this.$rootScope.currentPersona;
       this.datasourceId = this.$routeParams.datasourceId;
 
       this.$rootScope.$on('ChartTimeRangeChanged', (event, data:Date[]) => {
@@ -59,16 +57,28 @@ module HawkularMetrics {
       });
 
       this.initDateTimes();
-      this.getDatasrouce()
-        .then((data) => {
-          this.datasource = data;
-          this.registerAlerts();
-          this.refresh();
-          this.autoRefresh(20);
-        });
+
+      if ($rootScope.currentPersona) {
+        this.getDatasource().then((data) => {
+            this.datasource = data;
+            this.registerAlerts();
+            this.refresh();
+            this.autoRefresh(20);
+          });
+      } else {
+        /// currentPersona hasn't been injected to the rootScope yet, wait for it..
+        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
+        this.getDatasource().then((data) => {
+            this.datasource = data;
+            this.registerAlerts();
+            this.refresh();
+            this.autoRefresh(20);
+          }));
+      }
+
     }
 
-    private getDatasrouce():ng.IPromise<any> {
+    private getDatasource():ng.IPromise<any> {
       const resourceId = this.$routeParams.resourceId + '~~';
 
       return this.HawkularInventory.ResourceUnderFeed.get({
@@ -184,7 +194,7 @@ module HawkularMetrics {
      */
     public getAvailablePromise():ng.IPromise<IChartDataPoint[]> {
       return this.MetricsService.retrieveGaugeMetrics(
-        this.currentPersona.id,
+        this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.datasource.id, 'Datasource Pool Metrics~Available Count'),
         this.startTimeStamp,
         this.endTimeStamp,
@@ -197,7 +207,7 @@ module HawkularMetrics {
      */
     public getInUsePromise():ng.IPromise<IChartDataPoint[]> {
       return this.MetricsService.retrieveGaugeMetrics(
-        this.currentPersona.id,
+        this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.datasource.id, 'Datasource Pool Metrics~In Use Count'),
         this.startTimeStamp,
         this.endTimeStamp,
@@ -210,7 +220,7 @@ module HawkularMetrics {
      */
     public getTimedOutPromise():ng.IPromise<IChartDataPoint[]> {
       return this.MetricsService.retrieveGaugeMetrics(
-        this.currentPersona.id,
+        this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.datasource.id, 'Datasource Pool Metrics~Timed Out'),
         this.startTimeStamp,
         this.endTimeStamp,
@@ -223,7 +233,7 @@ module HawkularMetrics {
      */
     public getAvgGetTimePromise():ng.IPromise<IChartDataPoint[]> {
       return this.MetricsService.retrieveGaugeMetrics(
-        this.currentPersona.id,
+        this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M',
           this.feedId,
           this.datasource.id,
@@ -238,7 +248,7 @@ module HawkularMetrics {
      * @returns {ng.IPromise<IChartDataPoint[]>} constructed promise with data point for response chart.
      */
     public getAvgCreateTimePromise():ng.IPromise<IChartDataPoint[]> {
-      return this.MetricsService.retrieveGaugeMetrics(this.currentPersona.id,
+      return this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M',
           this.feedId,
           this.datasource.id,
