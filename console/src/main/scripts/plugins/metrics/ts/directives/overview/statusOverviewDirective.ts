@@ -23,6 +23,7 @@ module HawkularMetrics {
 
     public initPie(data) {
       let used = data.inUseCount.value / (data.inUseCount.value + data.availableCount.value) * 100 || 0;
+      used = Math.round(used * 100) / 100;
       data.chartConfig = {
         type: 'donut',
         donut: {
@@ -33,7 +34,7 @@ module HawkularMetrics {
           width: 10
         },
         size: {
-          height: 75
+          height: 85
         },
         legend: {
           show: false
@@ -72,24 +73,6 @@ module HawkularMetrics {
     });
   };
 
-  export class HkOverviewSparkLineChart {
-    public replace = 'true';
-    public scope = {
-      title: '@',
-      usageGraph: '=',
-      usage: '='
-    };
-    public templateUrl = 'plugins/metrics/html/directives/overview/spark-line-chart.html';
-    public static Factory() {
-      let directive = () => {
-        return new HkOverviewSparkLineChart();
-      };
-
-      directive['$inject'] = [];
-      return directive;
-    }
-  }
-
   export class HkOverviewDonutChart {
     public replace = 'true';
     public link:any = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
@@ -126,6 +109,25 @@ module HawkularMetrics {
     }
   }
 
+  export class HkStatusOverviewItem {
+    public replace = 'true';
+    public transclude = true;
+    public scope = {
+      metricTitle: '@',
+      metricCount: '=',
+      metricInfo: '@'
+    };
+    public templateUrl = 'plugins/metrics/html/directives/overview/status-overview-item.html';
+    public static Factory() {
+      let directive = () => {
+        return new HkStatusOverviewItem();
+      };
+
+      directive['$inject'] = [];
+      return directive;
+    }
+  }
+
   export class HkStatusOverview {
     public link:any;
     public controller = StatusOverviewController;
@@ -154,7 +156,7 @@ module HawkularMetrics {
   }
 
   _module.controller('StatusOverviewController', StatusOverviewController);
-  _module.directive('hkOverviewSparkLineChart', [HawkularMetrics.HkOverviewSparkLineChart.Factory()]);
   _module.directive('hkOverviewDonutChart', [HawkularMetrics.HkOverviewDonutChart.Factory()]);
   _module.directive('hkStatusOverview', [HawkularMetrics.HkStatusOverview.Factory()]);
+  _module.directive('hkStatusOverviewItem', [HawkularMetrics.HkStatusOverviewItem.Factory()]);
 }

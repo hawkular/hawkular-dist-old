@@ -9,46 +9,43 @@
 
       <!-- Alerts -->
       <div class="col-sm-6 hk-dashboard-block">
-        <div ng-show="alertInfo && alertInfo.graphData">
-          <hk-overview-spark-line-chart
-            title="Alerts"
-            usage-graph="alertInfo.graphData"
-            usage="alertInfo.alertCount">
-          </hk-overview-spark-line-chart>
-        </div>
+        <hk-status-overview-item metric-title="Alerts"
+                                 metric-count="alertInfo.alertCount"
+                                 metric-info="Open Alerts">
+          <hawkular-sparkline-chart data="alertInfo.graphData"
+                                    show-x-axis-values="true"
+                                    show-y-axis-values="true">
+          </hawkular-sparkline-chart>
+        </hk-status-overview-item>
       </div>
-
-      <!-- Heap usage -->
       <div class="col-sm-6 hk-dashboard-block">
-        <div ng-show="overviewInfo && overviewInfo.heapUsage">
-          <hk-overview-spark-line-chart
-            title="JVM (Average Heap Usage per MB)"
-            usage-graph="overviewInfo.heapUsage.graph"
-            usage="overviewInfo.heapUsage.last / 1024 / 1024 | number : 0">
-          </hk-overview-spark-line-chart>
-        </div>
+        <hk-status-overview-item metric-title="JVM Heap Usage"
+                                 metric-count="overviewInfo.heapUsage.last / 1024 / 1024 | number : 0"
+                                 metric-info="JVM Heap Usage">
+          <hawkular-sparkline-chart data="overviewInfo.heapUsage.graph"
+                                    show-x-axis-values="true"
+                                    show-y-axis-values="true">
+          </hawkular-sparkline-chart>
+        </hk-status-overview-item>
       </div>
-
-      <!-- DS connections -->
-      <div ng-repeat="datasource in datasourceInfo track by $index">
-        <div class="col-sm-6 hk-dashboard-block">
+      <div ng-repeat="datasource in datasourceInfo track by $index" class="col-sm-6 hk-dashboard-block">
+        <hk-status-overview-item metric-title="Used Connections"
+                                 metric-count="datasource.inUseCount.value"
+                                 metric-info="{{datasource.name}} {{datasource.type.name}}">
           <div ng-show="datasource && datasource.chartConfig">
-            <hk-overview-donut-chart
-              graph-title="Used Connections for {{datasource.name}}"
-              graph-id="datasource-{{$index}}"
-              chart-config="datasource.chartConfig"
-              usage="0">
+            <hk-overview-donut-chart graph-id="datasource-{{$index}}"
+                                     chart-config="datasource.chartConfig">
             </hk-overview-donut-chart>
           </div>
-        </div>
+        </hk-status-overview-item>
       </div>
 
       <!-- Deployment Status -->
       <div class="col-sm-6 hk-dashboard-block">
-        <div class="hk-data-info">
-          <div class="hk-data" ng-show="overviewInfo.deployments">{{overviewInfo.deployments.length}}</div>
-          <div class="hk-info">
-            <p class="card-pf-aggregate-status-notifications">
+        <hk-status-overview-item metric-title="Deployment Status"
+                                 metric-count="overviewInfo.deployments.length"
+                                 metric-info="Deployments">
+          <p class="card-pf-aggregate-status-notifications">
               <span class="card-pf-aggregate-status-notification">
                 <i class="fa fa-times-circle-o" tooltip-trigger tooltip="Failed"></i>
                 <span ng-show="overviewInfo.deployments">
@@ -67,22 +64,20 @@
                   {{ (overviewInfo.deployments | filter:{state:'up'}).length }}
                 </span>
               </span>
-              <!--{{ overviewInfo.deployments }}-->
-            </p>
-          </div>
-        </div>
-        <div class="hk-block-title">Deployment status</div>
+          </p>
+        </hk-status-overview-item>
       </div>
-
-      <!-- Active Web Sessions -->
       <div class="col-sm-6 hk-dashboard-block">
-        <div ng-if="overviewInfo && overviewInfo.activeWebSessions">
-          <hk-overview-spark-line-chart
-            title="Active Web Sessions"
-            usage-graph="overviewInfo.activeWebSessions.graph"
-            usage="overviewInfo.activeWebSessions.last">
-          </hk-overview-spark-line-chart>
-        </div>
+        <hk-status-overview-item metric-title="Web Sessions"
+                                 metric-count="overviewInfo.activeWebSessions.last"
+                                 metric-info="active sessions">
+          <div ng-if="overviewInfo && overviewInfo.activeWebSessions">
+            <hawkular-sparkline-chart data="overviewInfo.activeWebSessions.graph"
+                                      show-x-axis-values="true"
+                                      show-y-axis-values="true">
+            </hawkular-sparkline-chart>
+          </div>
+        </hk-status-overview-item>
       </div>
 
     </div>

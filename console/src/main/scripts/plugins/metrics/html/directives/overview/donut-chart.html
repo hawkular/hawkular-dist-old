@@ -1,6 +1,6 @@
 <div>
   <div class="hk-data-info">
-    <div class="hk-data" ng-if="usage">{{usage}}</div>
+    <div class="hk-data" ng-show="usage">{{usage}}</div>
     <div class="hk-info">
       <div ng-if="chartConfig">
         <div class="hk-donut-chart" pf-c3-chart id="{{graphId}}"  config="chartConfig"></div>

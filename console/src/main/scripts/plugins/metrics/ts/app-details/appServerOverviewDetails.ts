@@ -92,7 +92,7 @@ module HawkularMetrics {
       this.feedId = this.$routeParams.feedId;
       this.resourceId = this.$routeParams.resourceId + '~~';
       let selectedTime = $routeParams.timeOffset || 3600000;
-      this.alertRound = selectedTime/AppServerOverviewDetailsController.ALERTS_PER_PAGE;
+      this.alertRound = selectedTime / AppServerOverviewDetailsController.ALERTS_PER_PAGE;
       this.startTimeStamp = +moment().subtract(selectedTime, 'milliseconds');
       this.endTimeStamp = +moment();
       $scope.vm = this;
@@ -108,7 +108,7 @@ module HawkularMetrics {
         $rootScope.$watch('currentPersona',
           (currentPersona) => currentPersona && this.refresh());
       }
-      this.autoRefresh(20);
+      //this.autoRefresh(20);
     }
     refresh():void {
       this.alertList = [];
