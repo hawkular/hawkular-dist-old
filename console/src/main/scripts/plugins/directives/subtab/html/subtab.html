@@ -8,9 +8,8 @@
             <a ng-show="isUrlPage()" href="/hawkular-ui/url/url-list/{{hkParams.timeOffset}}" class="back">« All URLs</a>
             <a ng-show="isAlertsCenterDetailPage()" href="/hawkular-ui/alerts-center-detail/{{hkParams.timeOffset}}" class="back">« All Alerts</a>
           </li>
-          <li>
-            <a ng-show="isDataSourceDetail()"
-               href="/hawkular-ui/app/app-details/{{hkParams.feedId}}/{{hkParams.resourceId}}/{{hkParams.tabId}}/{{hkParams.timeOffset}}"
+          <li ng-show="isDataSourceDetail()">
+            <a href="/hawkular-ui/app/app-details/{{hkParams.feedId}}/{{hkParams.resourceId}}/{{hkParams.tabId}}/{{hkParams.timeOffset}}"
                class="back">
               « Datasources
             </a>
