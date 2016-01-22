@@ -160,29 +160,29 @@
                   </div>
                 </div>
                 <div class="panel panel-default hk-graph" ng-if="os.resolvedChartFileSystemData[fs.id]">
-                  <h2>Availability</h2>
+                  <h2>File System Usage</h2>
                   <div class="hk-graph-container hk-graph-metrics">
                     <hawkular-chart
                       multi-data="os.chartFileSystemData[fs.id]"
                       chart-type="multiline"
-                      y-axis-units="FS Usage (MB)"
+                      y-axis-units="Disk Space (MB)"
                       chart-height="250">
                     </hawkular-chart>
                   </div>
                   <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
                     <div class="col-md-12">
-                      <h4>Connection Availability</h4>
+                      <h4>Disk Space</h4>
                       <div class="hk-graphselector hk-orange">
-                        <input id="connavail_{{$index}}" type="checkbox"
+                        <input id="disktotal_{{$index}}" type="checkbox"
                                ng-checked="!os.skipChartData[fs.id + '_Total']"
                                ng-click="os.toggleChartData(fs.id + '_Total')">
-                        <label for="connavail_{{$index}}"><span>Total space</span></label>
+                        <label for="disktotal_{{$index}}"><span>Total space</span></label>
                       </div>
                       <div class="hk-graphselector hk-blue">
-                        <input id="conninuse_{{$index}}" type="checkbox"
+                        <input id="diskfree_{{$index}}" type="checkbox"
                                ng-checked="!os.skipChartData[fs.id + '_Free']"
                                ng-click="os.toggleChartData(fs.id + '_Free')">
-                        <label for="conninuse_{{$index}}"><span>Free space</span></label>
+                        <label for="diskfree_{{$index}}"><span>Free space</span></label>
                       </div>
                     </div>
                   </div>
