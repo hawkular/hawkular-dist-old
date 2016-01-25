@@ -13,6 +13,40 @@
         <input type="text" class="form-control" id="name" ng-model="newModal.organizationNew.name" autofocus>
       </div>
     </div>
+
+    <div class="form-group">
+      <div class="col-md-4">
+        <input
+          type="radio"
+          class="form-control"
+          id="visibility_private"
+          ng-model="newModal.organizationNew.visibility"
+          value="PRIVATE"/>
+      </div>
+      <div class="col-md-6">
+        <label for="visibility_private">
+          Private: Will not be listed and users cannot actively try to join.
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-md-4">
+        <input
+          type="radio"
+          class="form-control"
+          id="visibility_apply"
+          ng-model="newModal.organizationNew.visibility"
+          value="APPLY"/>
+      </div>
+      <div class="col-md-6">
+        <label for="visibility_apply">
+          Public: Users can send a request to join the organization. Will be listed in the public organization
+          directory.
+        </label>
+      </div>
+
+    </div>
   </form>
 </div>
 

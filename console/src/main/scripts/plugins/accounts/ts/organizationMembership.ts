@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ module HawkularAccounts {
 
     // backend data related to this controller
     public memberships:Array<IOrganizationMembership>;
+    public joinRequests:Array<IJoinRequest>;
     public organization:IOrganization;
     public pending:Array<IInvitation>;
     public role:IRole;
@@ -31,13 +32,16 @@ module HawkularAccounts {
 
     // state control, for easier UI consumption
     public loading:boolean;
+    public loadingJoinRequests:boolean;
     public foundOrganization:boolean;
     public isAllowedToInvite:boolean = false;
     public isAllowedToListPending:boolean = false;
     public isAllowedToTransferOrganization:boolean = false;
     public isAllowedToChangeRoleOfMembers:boolean = false;
+    public isAllowedToApproveMember:boolean = false;
     public isOrganization:boolean = false;
     public membershipsToUpdate:{ [id: string]: PersistenceState; } = {};
+    public joinRequestsToUpdate:{ [id: string]: PersistenceState; } = {};
 
     constructor(private $log:ng.ILogService,
                 private $rootScope:any,
@@ -59,6 +63,7 @@ module HawkularAccounts {
       let organizationId = this.$routeParams.organizationId;
       this.$scope.$on('OrganizationLoaded', () => {
         this.loadMemberships(organizationId);
+        this.loadJoinRequests(organizationId);
       });
 
       this.$scope.$on('PermissionToListPendingLoaded', () => {
@@ -77,6 +82,10 @@ module HawkularAccounts {
         this.loadPossibleRoles();
       });
 
+      this.$scope.$on('JoinRequestApproved', () => {
+        this.loadMemberships(organizationId);
+      });
+
       this.$rootScope.$on('SwitchedPersona', (event:any, persona:IPersona) => {
         this.isOrganization = persona.id !== this.$rootScope.userDetails.id;
       });
@@ -84,11 +93,13 @@ module HawkularAccounts {
 
     public loadData():void {
       this.loading = true;
+      this.loadingJoinRequests = true;
       let organizationId = this.$routeParams.organizationId;
       this.loadOrganization(organizationId);
       this.loadPermissionToInvite(organizationId);
       this.loadPermissionToListPending(organizationId);
       this.loadPermissionToChangeRoleOfMembers(organizationId);
+      this.loadPermissionToApproveMember(organizationId);
       this.loadPossibleRoles();
     }
 
@@ -171,6 +182,20 @@ module HawkularAccounts {
       );
     }
 
+    public loadPermissionToApproveMember(organizationId:string):void {
+      const operationName:string = 'organization-invite';
+      this.loadPermission(organizationId, operationName,
+        (response:IPermissionResponse) => {
+          this.isAllowedToApproveMember = response.permitted;
+          this.$scope.$broadcast('PermissionToListPendingLoaded');
+          this.$log.debug(`Finished checking if we can approve join requests. Response: ${response.permitted}`);
+        },
+        (error:IErrorPayload) => {
+          this.$log.debug(`Error checking if we can approve join requests. Response: ${error.data.message}`);
+        }
+      );
+    }
+
     public loadPermissionToTransferOrganization(organizationId:string):void {
       const operationName:string = 'organization-transfer';
       this.loadPermission(organizationId, operationName,
@@ -209,6 +234,14 @@ module HawkularAccounts {
         successCallback,
         errorCallback
       );
+    }
+
+    public loadJoinRequests(organizationId) {
+      this.joinRequests = this.HawkularAccount.OrganizationJoinRequest.query({organizationId:organizationId}, () => {
+        this.loadingJoinRequests = false;
+      }, (error:IErrorPayload) => {
+        this.$log.debug(`Error loading the join requests for this organization. Response: ${error.data.message}`);
+      });
     }
 
     public showInviteModal():void {
@@ -286,6 +319,41 @@ module HawkularAccounts {
         // the modal was dismissed, get the original data for this membership
         membership.$get();
       });
+    }
+
+    public approveRequest(joinRequest:IJoinRequest):void {
+      joinRequest.decision = 'ACCEPT';
+      this.updateJoinRequest(joinRequest, (response:IJoinRequest) => {
+        this.joinRequestsToUpdate[joinRequest.id] = PersistenceState.SUCCESS;
+        this.NotificationsService.success('Join request successfully approved.');
+        this.joinRequests.splice(this.joinRequests.indexOf(joinRequest), 1);
+        this.$scope.$broadcast('JoinRequestApproved');
+      }, (error:IErrorPayload) => {
+        this.joinRequestsToUpdate[joinRequest.id] = PersistenceState.ERROR;
+        this.NotificationsService.error('An error occurred while trying to accept the join request.');
+        this.$log.error(`Error while trying to accept join request: ${error.data.message}`);
+      });
+    }
+
+    public rejectRequest(joinRequest:IJoinRequest):void {
+      joinRequest.decision = 'REJECT';
+      this.updateJoinRequest(joinRequest, (response:IJoinRequest) => {
+        this.joinRequestsToUpdate[joinRequest.id] = PersistenceState.SUCCESS;
+        this.NotificationsService.success('Join request successfully rejected.');
+        this.joinRequests.splice(this.joinRequests.indexOf(joinRequest), 1);
+      }, (error:IErrorPayload) => {
+        this.joinRequestsToUpdate[joinRequest.id] = PersistenceState.ERROR;
+        this.NotificationsService.error('An error occurred while trying to reject the join request.');
+        this.$log.error(`Error while trying to reject join request: ${error.data.message}`);
+      });
+    }
+
+    public updateJoinRequest(joinRequest:IJoinRequest,
+                             successCallback: (response:IJoinRequest) => void,
+                             errorCallback: (error:IErrorPayload) => void):void {
+      joinRequest.joinRequestId = joinRequest.id;
+      this.joinRequestsToUpdate[joinRequest.id] = PersistenceState.PERSISTING;
+      joinRequest.$update({organizationId: this.organization.id}, successCallback, errorCallback);
     }
   }
 

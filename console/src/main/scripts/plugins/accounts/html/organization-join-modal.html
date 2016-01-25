@@ -1,0 +1,21 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="joinModal.cancel()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Join Organization</h4>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <p class="primary-message">
+      Are you sure you want to join the organization <strong>{{joinModal.joinRequest.organization.name}}</strong>?
+    </p>
+    <p>
+      A request will be sent to the owner of the organization for approval.
+      Once it's approved, you'll be able to use Hawkular as this organization.
+    </p>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="joinModal.cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" ng-click="joinModal.submit()">Join</button>
+</div>
