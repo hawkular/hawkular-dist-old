@@ -36,11 +36,15 @@ module HawkularAccounts {
     id:  string;
     key: string;
     secret: string;
+    expiresAt: string;
     createdAt: string;
     updatedAt: string;
     attributes: { [key:string]:string; };
+    $update(options:{},
+            success?:(success:IToken) => void,
+            failure?:(error:IErrorPayload) => void);
     $remove(options:{},
-            success?:(success:IOrganization) => void,
+            success?:(success:IToken) => void,
             failure?:(error:IErrorPayload) => void);
   }
 
@@ -172,4 +176,5 @@ module HawkularAccounts {
   }
 
   export enum PersistenceState {PERSISTING, SUCCESS, ERROR};
+  export enum EditState {READ, EDIT};
 }
