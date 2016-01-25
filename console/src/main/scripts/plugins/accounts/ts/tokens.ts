@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,6 +67,7 @@ module HawkularAccounts {
 
     public create():void {
       this.$window.location.href = '/secret-store/v1/tokens/create?'
+        + 'scope=offline_access&'
         + 'Hawkular-Persona=' + encodeURI(this.$rootScope.currentPersona.id);
     }
 
