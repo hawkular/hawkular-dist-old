@@ -130,6 +130,12 @@
 
       <dependency>
         <groupId>org.hawkular.alerts</groupId>
+        <artifactId>hawkular-alerts-api</artifactId>
+        <version>${version.org.hawkular.alerts}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.alerts</groupId>
         <artifactId>hawkular-alerts-rest</artifactId>
         <version>${version.org.hawkular.alerts}</version>
         <type>war</type>
@@ -157,6 +163,12 @@
       <dependency>
         <groupId>org.hawkular.inventory</groupId>
         <artifactId>hawkular-inventory-api</artifactId>
+        <version>${version.org.hawkular.inventory}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.inventory</groupId>
+        <artifactId>hawkular-inventory-bus-api</artifactId>
         <version>${version.org.hawkular.inventory}</version>
       </dependency>
 
