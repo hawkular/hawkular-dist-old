@@ -53,8 +53,7 @@
              popover-placement="top" popover-trigger="click" popover="Specifies the Driver Name for the datasource">
             <i class="fa fa-info-circle"></i></a>
         </label>
-        <div class="col-sm-8">
-          <!--<input type="text" id="driver" class="form-control" ng-model="mvm.datasource.driverName">-->
+        <div class="col-sm-8" ng-if="mvm.driversList.length">
           <select pf-select ng-model="mvm.datasource.driverName" id="driver"
                   ng-options="driver.name as driver.name for driver in mvm.driversList"></select>
         </div>
