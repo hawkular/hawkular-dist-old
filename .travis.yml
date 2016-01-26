@@ -33,8 +33,8 @@ script:
 notifications:
   email: false
 env:
-  - CXX=g++-4.8
   global:
+  - CXX=g++-4.8
   - secure: h2UBs+L83eGd8+vTvd4B5sh+ixjp67JB/5Ko/zGAEt6a3hIgrhqyjiXJmaEH3+jzJZKXUcUC6uOuxXHwZ4ODeF+McHViOjqqUGEynJ7AsLXqSr5SSBKZuY/pb69phQnh7Br5w2D+5IFHWEcjrSo/kHDbeZBVAMFRDeGVwpHy2yA=
   - secure: BADgz+otMMO+gUlFNduU/mgFm1dOfv2ZWAYD3nO1nEwu7Y1QVUsqimHdlqntUcinILDVeD33oT27kElERvr7KyjfDEPSDAVUg5Y/5soezg/tBu0zi3iodAP2GynOMohS/Rfm4+3ajWuEe/Y2SYjFXgldMR9qjP+/31FsVtW8Op0=
   - secure: "BiNdt5chVhT3StF2MK/z8nB/jAM/5feOMEAeY0bmhcQQUwzxrOb8G3G26rDBPL1FApCHOP1yjyCgxruboRik4ZmweXnelBV4q1K2m6hSV8GSNQvcVhlozA6KYt9CMFOIZo5WPpXBp6Kg7ftsMft2qxzyJRYjPqPhtOct8MNDMgY="
