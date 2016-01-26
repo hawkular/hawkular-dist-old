@@ -1,0 +1,20 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="qrCodeModal.close()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Token's QR Code</h4>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <p class="primary-message hk-align-center">
+      <img
+        ng-src="/secret-store/qrcode?tokenId={{qrCodeModal.token.id}}&size=250"
+        align="center"
+        height="250"
+        width="250"/>
+    </p>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="qrCodeModal.close()">Close</button>
+</div>

@@ -24,6 +24,11 @@ module HawkularAccounts {
     ];
     public tokens:Array<IToken>;
     public personas:Array<IPersona>;
+    public editState:{ [id: string]: EditState; } = {};
+    public tokensToUpdate:{ [id: string]: PersistenceState; } = {};
+    public newNames:{ [id: string]: string; } = {};
+    public newDescriptions:{ [id: string]: string; } = {};
+    public newExpirations:{ [id: string]: string; } = {};
     public loading:boolean = true;
 
     constructor(private $window:any,
@@ -115,6 +120,57 @@ module HawkularAccounts {
           });
         });
     }
+
+    public showQRCode(token:IToken):void {
+      this.$modal.open({
+        controller: 'HawkularAccounts.TokenQRCodeController as qrCodeModal',
+        templateUrl: 'plugins/accounts/html/token-qrcode-modal.html',
+        resolve: {
+          token: () => token
+        }
+      });
+    }
+
+    public edit(token:IToken):void {
+      this.newNames[token.id] = token.attributes['name'];
+      this.newDescriptions[token.id] = token.attributes['description'];
+      this.newExpirations[token.id] = token.expiresAt;
+      this.editState[token.id] = EditState.EDIT;
+    }
+
+    public discard(token:IToken):void {
+      this.newNames[token.id] = '';
+      this.newDescriptions[token.id] = '';
+      this.newExpirations[token.id] = '';
+      this.editState[token.id] = EditState.READ;
+    }
+
+    public confirm(token:IToken):void {
+      token.attributes['name'] = this.newNames[token.id];
+      token.attributes['description'] = this.newDescriptions[token.id];
+
+      // this datepicker has a different context as Angular, so, binding doesn't work here...
+      let date = $(`#dateFor${token.id}`).val();
+      if (date) {
+        let offset = new Date().getTimezoneOffset() * 60 * 1000; // getTimezoneOffset is in minutes
+        let d = new Date((new Date(date).valueOf() + offset));
+        token.expiresAt = d.toISOString();
+      }
+      this.newNames[token.id] = '';
+      this.newDescriptions[token.id] = '';
+      this.editState[token.id] = EditState.READ;
+
+      token.$update(null, (response:IToken) => {
+        this.tokensToUpdate[token.id] = PersistenceState.SUCCESS;
+      }, (error:IErrorPayload) => {
+        this.tokensToUpdate[token.id] = PersistenceState.ERROR;
+        this.$log.debug(`Error changing the name for token ${token.id}. Response: ${error.data.message}`);
+      });
+    }
+
+    public inEditMode(token:IToken):boolean {
+      return this.editState[token.id] === EditState.EDIT;
+    }
   }
 
   export class TokenRevokeController {
@@ -134,6 +190,20 @@ module HawkularAccounts {
     }
   }
 
+  export class TokenQRCodeController {
+    public static $inject = ['$scope', '$modalInstance', 'token'];
+
+    constructor(private $scope:any,
+                private $modalInstance:any,
+                private token:IToken) {
+    }
+
+    public close():void {
+      this.$modalInstance.dismiss('close');
+    }
+  }
+
   _module.controller('HawkularAccounts.TokensController', TokensController);
   _module.controller('HawkularAccounts.TokenRevokeController', TokenRevokeController);
+  _module.controller('HawkularAccounts.TokenQRCodeController', TokenQRCodeController);
 }

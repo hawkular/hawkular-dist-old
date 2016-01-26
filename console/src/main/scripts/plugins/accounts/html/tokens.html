@@ -28,34 +28,98 @@
         Create Token
       </button>
     </div>
-    <div class="hk-table-container" ng-show="controller.tokens.length && !controller.loading">
-      <table class="table table-bordered hk-table-clean">
-        <thead>
-        <tr>
-          <th>Key</th>
-          <th>Secret</th>
-          <th>Persona</th>
-          <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="token in controller.tokens">
-          <td>{{token.id}}</td>
-          <td>{{token.secret}}</td>
-          <td>{{controller.personaForToken(token)}}</td>
-          <td class="hk-actions-one">
-            <button type="button"
-                    class="btn btn-link"
-                    tooltip-trigger
-                    tooltip-placement="top"
-                    tooltip="Revoke"
-                    ng-click="controller.revoke(token)">
-              <i class="fa fa-trash-o"></i>
-            </button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+
+    <div class="container-fluid container-cards-pf" ng-show="controller.tokens.length && !controller.loading">
+      <div class="row row-cards-pf">
+        <div class="col-xs-12 col-sm-12 col-md-6" ng-repeat="token in controller.tokens">
+          <div class="card-pf">
+            <h2 class="card-pf-title">
+              <div ng-hide="controller.inEditMode(token)">
+                <span ng-show="token.attributes.name">{{token.attributes.name}}</span>
+                <span ng-hide="token.attributes.name">Token generated at {{(token.createdAt | date:'medium')}}</span>
+                <button class="btn btn-default pull-right"
+                        tooltip-trigger
+                        tooltip="Rename"
+                        ng-click="controller.edit(token)">
+                  <i class="fa fa-pencil"></i>
+                </button>
+              </div>
+              <div ng-show="controller.inEditMode(token)">
+                <input ng-model="controller.newNames[token.id]" placeholder="Name" class="form-control"/>
+                <button class="btn btn-default pull-right"
+                        tooltip-trigger
+                        tooltip="Discard"
+                        type="reset"
+                        ng-click="controller.discard(token)">
+                  <i class="fa fa-close"></i>
+                </button>
+
+                <button class="btn btn-default pull-right"
+                        tooltip-trigger
+                        tooltip="Confirm"
+                        type="submit"
+                        ng-click="controller.confirm(token)">
+                  <i class="fa fa-check"></i>
+                </button>
+              </div>
+            </h2>
+            <div class="card-pf-body">
+              <div ng-hide="controller.inEditMode(token)">
+                <h3 ng-show="token.attributes.description">{{token.attributes.description}}</h3>
+                <h3 ng-hide="token.attributes.description">No description.</h3>
+              </div>
+              <div ng-show="controller.inEditMode(token)">
+                <input ng-model="controller.newDescriptions[token.id]" placeholder="Description" class="form-control"/>
+              </div>
+
+              <img
+                height="50"
+                width="50"
+                class="pull-right"
+                ng-src="/secret-store/qrcode?tokenId={{token.id}}&size=50"
+                ng-click="controller.showQRCode(token)"/>
+
+              <p>
+                <small><b>Key:</b> {{token.id}}</small><br/>
+                <small><b>Secret:</b> {{token.secret}}</small><br/>
+                <small><b>Persona:</b> {{controller.personaForToken(token)}}</small><br/>
+              </p>
+
+            </div>
+            <div class="card-pf-footer">
+              <button type="button"
+                      class="btn btn-link pull-right"
+                      tooltip-trigger
+                      tooltip-placement="top"
+                      tooltip="Revoke"
+                      ng-click="controller.revoke(token)">
+                <i class="fa fa-trash-o"></i>
+              </button>
+
+              <p>
+                Expiration date:
+                <abbr
+                  ng-hide="controller.inEditMode(token)"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="This date is shown in your timezone.">
+                  {{(token.expiresAt | date:'mediumDate') || "&infin;"}}
+                </abbr>
+              <div class="input-group date" ng-show="controller.inEditMode(token)">
+                <input
+                  type="text"
+                  id="dateFor{{token.id}}"
+                  class="form-control bootstrap-datepicker"
+                  ng-model="controller.newExpirations[token.id]"
+                  data-date-format="yyyy-mm-dd"
+                  data-provide="datepicker"/>
+                <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
+              </div>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div><!-- /row -->
+    </div><!-- /container -->
   </div>
 </div>
