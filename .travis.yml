@@ -46,10 +46,14 @@ addons:
     packages:
       - g++-4.8
 before_cache:
-# keep the cached local repo small by removing files older than 10 days
-- find $HOME/.m2/repository -type d -ctime +10 -exec rm -rf {} \;
-- df -h
-- du -sh $HOME/.m2/repository
+# Clean the cached directories once their size exceeds the space left on the partition.
+# This is important because Travis zips the chached directories to a temporary file on the same partition.
+- availBytes=$(df -P . | tail -1 | awk '{print $4}')
+- cachedBytes=$(du -cs "$HOME/.m2/repository" | tail -1 | awk '{print $1}')
+- if [ "${cachedBytes}" -gt "${availBytes}" ] ; then
+    echo "Cleaning the cached dirs (${cachedBytes} Bytes) because their size exceeds the free space (${availBytes} Bytes) left on the current partition"
+    rm -Rf "$HOME/.m2"
+  fi
 after_success:
 - PROJECT_VERSION=`mvn --batch-mode org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
 - if [[ "${PROJECT_VERSION}" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
