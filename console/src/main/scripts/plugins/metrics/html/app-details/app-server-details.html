@@ -13,18 +13,7 @@
 
   </hawkular-subtab>
 
-  <div ng-repeat="tab in tabs.availableTabs">{{tab.controller}}</div>
-
   <ng-include ng-repeat="tab in tabs.availableTabs" src="tab.src" ng-if="tabs.activeTab === tab.id"
               ng-controller="tab.controller"></ng-include>
-
-  <div ng-if="tabs.activeTab !== 'overview'">
-    <div class="hk-nav-tabs-container">
-      <button type="button" class="btn btn-primary" ng-click="tabs.requestExportJDR()"
-              ng-disabled="tabs.jdrGenerating">
-        Export JDR
-      </button>
-    </div>
-  </div>
 
 </div>
