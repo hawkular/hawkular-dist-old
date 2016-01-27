@@ -16,8 +16,10 @@
  */
 package org.hawkular.glue.bus.listener;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.ActivationConfigProperty;
@@ -28,9 +30,12 @@ import javax.jms.MessageListener;
 import javax.naming.InitialContext;
 
 import org.hawkular.alerts.api.model.Severity;
+import org.hawkular.alerts.api.model.condition.CompareCondition;
 import org.hawkular.alerts.api.model.condition.Condition;
+import org.hawkular.alerts.api.model.condition.RateCondition;
 import org.hawkular.alerts.api.model.condition.ThresholdCondition;
 import org.hawkular.alerts.api.model.condition.ThresholdCondition.Operator;
+import org.hawkular.alerts.api.model.condition.ThresholdRangeCondition;
 import org.hawkular.alerts.api.model.dampening.Dampening;
 import org.hawkular.alerts.api.model.trigger.Mode;
 import org.hawkular.alerts.api.model.trigger.Trigger;
@@ -91,11 +96,209 @@ public class InventoryEventListener extends InventoryEventMessageListener {
 
             String tenantId = event.getTenant().getId();
             ResourceType rt = event.getObject();
-            String groupTriggerId = "URL_Response";
             switch (rt.getId()) {
-                case "URL":
+                case "Wildfly Server": {
+                    // JVM HEAP
+                    String groupTriggerId = "JVM_HeapUsed";
+                    Trigger group = new Trigger(tenantId, groupTriggerId, "JVM Heap Used");
+                    group.setDescription("JVM Heap Used of Heap Max");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.MEDIUM);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "PHEAP");
+                    group.addContext("resourceType", "App Server");
+                    group.addContext("triggerType", "RangeByPercent");
+                    group.addContext("triggerTypeProperty1", "heapMaxId");
+                    group.addContext("triggerTypeProperty2", "Heap Max");
+
+                    Dampening dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
+
+                    Map<String, String> conditionContext = new HashMap<>(2);
+                    conditionContext.put("description", "Heap Used");
+                    conditionContext.put("unit", "B");
+                    Condition cFiring1 = new CompareCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "WildFly Memory Metrics~Heap Used", CompareCondition.Operator.GT, 0.80,
+                            "WildFly Memory Metrics~Heap Max");
+                    cFiring1.setContext(conditionContext);
+                    Condition cFiring2 = new CompareCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "WildFly Memory Metrics~Heap Used", CompareCondition.Operator.LT, 0.20,
+                            "WildFly Memory Metrics~Heap Max");
+                    List<Condition> conditions = new ArrayList<>(2);
+                    conditions.add(cFiring1);
+                    conditions.add(cFiring2);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+
+                    // JVM NON-HEAP
+                    groupTriggerId = "JVM_NonHeapUsed";
+                    group = new Trigger(tenantId, groupTriggerId, "JVM Non Heap Used");
+                    group.setDescription("JVM Non Heap Used of Heap Max");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.HIGH);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "NHEAP");
+                    group.addContext("resourceType", "App Server");
+                    group.addContext("triggerType", "RangeByPercent");
+                    group.addContext("triggerTypeProperty1", "heapMaxId");
+                    group.addContext("triggerTypeProperty2", "Heap Max");
+
+                    dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
+
+                    conditionContext.clear();
+                    conditionContext.put("description", "Non Heap Used");
+                    conditionContext.put("unit", "B");
+                    cFiring1 = new CompareCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "WildFly Memory Metrics~NonHeap Used", CompareCondition.Operator.GT, 0.80,
+                            "WildFly Memory Metrics~Heap Max");
+                    cFiring1.setContext(conditionContext);
+                    cFiring2 = new CompareCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "WildFly Memory Metrics~NonHeap Used", CompareCondition.Operator.LT, 0.20,
+                            "WildFly Memory Metrics~Heap Max");
+                    conditions.clear();
+                    conditions.add(cFiring1);
+                    conditions.add(cFiring2);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+
+                    // Accumulated GC Time
+                    // Note that the GC metric is a counter, an ever-increasing value reflecting the total time the JVM
+                    // has spent doing GC.  'Accumulated' here reflects that we are combining the totals for 4
+                    // different GCs in the VM, each a counter itself, and reporting a single metric value for total
+                    // GC time spent. So, from an alerting perspective we want to alert when GC is taking unacceptably
+                    // long. That means we need to alert on high *deltas* in the metric values reported, which reflect
+                    // a lot of time spent in GC between readings.  We'll start with 200ms per minute for 5 minutes.
+                    // TODO: 'Rate' This should likely be a new triggerType but for now we'll treat it like threshold.
+                    groupTriggerId = "JVM_GC";
+                    group = new Trigger(tenantId, groupTriggerId, "JVM Accumulated GC Duration");
+                    group.setDescription("Accumulated GC Duration");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.HIGH);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "GARBA");
+                    group.addContext("resourceType", "App Server");
+                    group.addContext("triggerType", "Threshold");
+
+                    dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 5 * MINUTE);
+
+                    conditionContext.clear();
+                    conditionContext.put("description", "GC Duration");
+                    conditionContext.put("unit", "ms");
+                    cFiring1 = new RateCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "WildFly Memory Metrics~Accumulated GC Duration", RateCondition.Direction.INCREASING,
+                            RateCondition.Period.MINUTE, RateCondition.Operator.GT, 200.0);
+                    cFiring1.setContext(conditionContext);
+                    conditions.clear();
+                    conditions.add(cFiring1);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+
+                    // WEB SESSION TRIGGERS
+                    // ACTIVE SESSIONS
+                    groupTriggerId = "Web_SessionsActive";
+                    group = new Trigger(tenantId, groupTriggerId, "Web Sessions Active");
+                    group.setDescription("Active Web Sessions");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.MEDIUM);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "ACTIVE_SESSIONS");
+                    group.addContext("resourceType", "App Server");
+                    group.addContext("triggerType", "Range");
+
+                    dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
+
+                    conditionContext.clear();
+                    conditionContext.put("description", "Active Web Sessions");
+                    conditionContext.put("unit", "sessions");
+                    cFiring1 = new ThresholdRangeCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "WildFly Aggregated Web Metrics~Aggregated Active Web Sessions",
+                            ThresholdRangeCondition.Operator.INCLUSIVE, ThresholdRangeCondition.Operator.INCLUSIVE,
+                            20.0, 5000.0, false);
+                    cFiring1.setContext(conditionContext);
+                    conditions.clear();
+                    conditions.add(cFiring1);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+
+                    // EXPIRED SESSIONS
+                    groupTriggerId = "Web_SessionsExpired";
+                    group = new Trigger(tenantId, groupTriggerId, "Web Sessions Expired");
+                    group.setDescription("Expired Web Sessions");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.LOW);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "EXPIRED_SESSIONS");
+                    group.addContext("resourceType", "App Server");
+                    group.addContext("triggerType", "Threshold");
+
+                    dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 5 * MINUTE);
+
+                    conditionContext.clear();
+                    conditionContext.put("description", "Expired Web Sessions");
+                    conditionContext.put("unit", "sessions");
+                    cFiring1 = new RateCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions",
+                            RateCondition.Direction.INCREASING, RateCondition.Period.MINUTE,
+                            RateCondition.Operator.GT,
+                            15.0);
+                    cFiring1.setContext(conditionContext);
+                    conditions.clear();
+                    conditions.add(cFiring1);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+
+                    // REJECTED SESSIONS
+                    groupTriggerId = "Web_SessionsRejected";
+                    group = new Trigger(tenantId, groupTriggerId, "Web Sessions Rejected");
+                    group.setDescription("Rejected Web Sessions");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.LOW);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "REJECTED_SESSIONS");
+                    group.addContext("resourceType", "App Server");
+                    group.addContext("triggerType", "Threshold");
+
+                    dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 5 * MINUTE);
+
+                    conditionContext.clear();
+                    conditionContext.put("description", "Expired Web Sessions");
+                    conditionContext.put("unit", "sessions");
+                    cFiring1 = new RateCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions",
+                            RateCondition.Direction.INCREASING, RateCondition.Period.MINUTE,
+                            RateCondition.Operator.GT,
+                            15.0);
+                    cFiring1.setContext(conditionContext);
+                    conditions.clear();
+                    conditions.add(cFiring1);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+
+                    break;
+                }
+                case "URL": {
+                    String groupTriggerId = "URL_Response";
+
                     Trigger group = new Trigger(tenantId, groupTriggerId, "URL Response");
                     group.setDescription("Response Time for URL");
+                    group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setAutoResolve(true); // Support AUTORESOLVE mode as an inverse of the firing conditions
                     group.setSeverity(Severity.HIGH);
@@ -123,8 +326,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupDampening(tenantId, dResolve);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING,
                             Collections.singleton(cFiring), null);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.AUTORESOLVE,
+                            Collections.singleton(cResolve), null);
                     break;
-
+                }
                 default:
                     return; // no alerting
             }
@@ -145,6 +350,14 @@ public class InventoryEventListener extends InventoryEventMessageListener {
 
             switch (r.getType().getId()) {
                 case "URL":
+                    Map<String, String> dataIdMap = new HashMap<>();
+                    //tags: {
+                    //  resourceId: resourceId
+                    //},
+                    //context: {
+                    //  resourceName: url,
+                    //  resourcePath: resourcePath,
+
                 default:
                     return; // no alerting
             }
