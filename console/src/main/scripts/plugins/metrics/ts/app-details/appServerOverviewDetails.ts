@@ -108,7 +108,7 @@ module HawkularMetrics {
         $rootScope.$watch('currentPersona',
           (currentPersona) => currentPersona && this.refresh());
       }
-      //this.autoRefresh(20);
+      this.autoRefresh(20);
     }
     refresh():void {
       this.alertList = [];

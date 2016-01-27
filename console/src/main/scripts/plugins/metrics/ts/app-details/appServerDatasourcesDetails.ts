@@ -103,7 +103,7 @@ module HawkularMetrics {
         this.getDatasources(currentPersona.id));
       }
 
-      //this.autoRefresh(20);
+      this.autoRefresh(20);
     }
 
     public showDriverAddDialog():void {
@@ -116,7 +116,7 @@ module HawkularMetrics {
       });
 
       driverAddDialog.result.then((modalValue) => {
-        // handle any returned modalValue if required
+        this.refresh();
       }, (reason) => {
         // handle any returned cancel reason if required
       });
@@ -132,8 +132,10 @@ module HawkularMetrics {
       });
 
       datasourceAddDialog.result.then((modalValue) => {
-        // handle any returned modalValue if required
+        console.log('sdfsdf');
+        this.refresh();
       }, (reason) => {
+        console.log('sdfsdf');
         // handle any returned cancel reason if required
       });
     }
@@ -160,7 +162,7 @@ module HawkularMetrics {
       });
 
       datasourceDeleteDialog.result.then((modalValue) => {
-        // handle any returned modalValue if required
+        this.refresh();
       }, (reason) => {
         // handle any returned cancel reason if required
       });
@@ -506,6 +508,7 @@ module HawkularMetrics {
     public initPie(data) {
       if (data && data.inUseCount) {
         let used = data.inUseCount.value / (data.inUseCount.value + data.availableCount.value) * 100 || 0;
+        used = Math.round(used * 100) / 100;
         data.chartConfig = {
           multiLineTitle: [
             {text: this.$filter('number')(used, used ? 1 : 0) + '%', dy:-10, classed: 'donut-title-big-pf'},
