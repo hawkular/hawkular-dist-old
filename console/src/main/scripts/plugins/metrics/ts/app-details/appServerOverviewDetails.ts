@@ -67,7 +67,7 @@ module HawkularMetrics {
   export class AppServerOverviewDetailsController implements IRefreshable {
     private static ALL_STATUSES = 'OPEN,ACKNOWLEDGED,RESOLVED';
     private static ALERTS_PER_PAGE = 20;
-    //private autoRefreshPromise: ng.IPromise<number>;
+    private autoRefreshPromise: ng.IPromise<number>;
     public startTimeStamp: HawkularMetrics.TimestampInMillis;
     public endTimeStamp: HawkularMetrics.TimestampInMillis;
     public alertList: any[] = [];
@@ -350,15 +350,15 @@ module HawkularMetrics {
       }).$promise);
     }
 
-    //private autoRefresh(intervalInSeconds: number): void {
-    //  this.autoRefreshPromise = this.$interval(() => {
-    //    this.refresh();
-    //  }, intervalInSeconds * 1000);
-    //
-    //  this.$scope.$on('$destroy', () => {
-    //    this.$interval.cancel(this.autoRefreshPromise);
-    //  });
-    //}
+    private autoRefresh(intervalInSeconds: number): void {
+      this.autoRefreshPromise = this.$interval(() => {
+        this.refresh();
+      }, intervalInSeconds * 1000);
+
+      this.$scope.$on('$destroy', () => {
+        this.$interval.cancel(this.autoRefreshPromise);
+      });
+    }
 
   }
 
