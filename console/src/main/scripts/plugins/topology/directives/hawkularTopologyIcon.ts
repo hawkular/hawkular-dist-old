@@ -25,8 +25,8 @@ module HawkularTopology {
       transclude: true,
       template: '<ng-transclude></ng-transclude>',
       link: ($scope, element, attrs) => {
-        var kind = attrs.kind;
-        var value = $scope.vm.kinds[kind];
+        let kind = attrs.kind;
+        let value = $scope.vm.kinds[kind];
 
         $scope.$watchCollection('kinds', () => element.toggleClass('active', kind in $scope.vm.kinds));
 

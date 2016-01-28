@@ -17,14 +17,13 @@
 
 /// <reference path='topologyGlobals.ts'/>
 
-
 module HawkularTopology {
 
   _module.config(
-    ($routeProvider, HawtioNavBuilderProvider:HawtioMainNav.BuilderFactory) => {
+    ($routeProvider, HawtioNavBuilderProvider: HawtioMainNav.BuilderFactory) => {
 
       $routeProvider
-      .when(
+        .when(
         '/hawkular-ui/topology/view',
         { templateUrl: HawtioNavBuilderProvider.join(HawkularTopology.templatePath, 'index.html') }
         );
@@ -33,7 +32,7 @@ module HawkularTopology {
   export class TopologyController {
     private data: any;
     private requestPending: boolean;
-    private index = 0;
+    //private index = 0;
     private kinds: any;
     private typeToKind: Object;
     private kindToType: Object;
@@ -101,9 +100,11 @@ module HawkularTopology {
     }
 
     private getResourcesForResType(feedId: string, resourceType: string) {
-      return this.HawkularInventory.ResourceOfTypeUnderFeed.query({ environmentId: globalEnvironmentId,
+      return this.HawkularInventory.ResourceOfTypeUnderFeed.query({
+        environmentId: globalEnvironmentId,
         feedId: feedId,
-        resourceTypeId: resourceType }).$promise;
+        resourceTypeId: resourceType
+      }).$promise;
     }
 
     public getDataForOneFeed(feedId: string): ng.IPromise<any> {
@@ -112,13 +113,15 @@ module HawkularTopology {
     }
 
     public getServerMetadata(feedId: string, serverId: string, metadata: any) {
-      this.HawkularInventory.ResourceUnderFeed.getData({ environmentId: globalEnvironmentId,
+      this.HawkularInventory.ResourceUnderFeed.getData({
+        environmentId: globalEnvironmentId,
         feedId: feedId,
-        resourcePath: serverId }, (data) => {
-          metadata.metadata.ip = data.value['Bound Address'];
-          metadata.metadata.hostname = data.value.Hostname;
-          metadata.metadata.version = data.value.Version;
-        });
+        resourcePath: serverId
+      }, (data) => {
+        metadata.metadata.ip = data.value['Bound Address'];
+        metadata.metadata.hostname = data.value.Hostname;
+        metadata.metadata.version = data.value.Version;
+      });
     }
 
     public getData(): any {
@@ -130,7 +133,7 @@ module HawkularTopology {
         return feedChunk.length === 1 && feedChunk[0] ? feedChunk[0].slice(2) : 'localhost';
       };
 
-      this.HawkularInventory.Feed.query({environmentId:globalEnvironmentId}, (aFeedList) => {
+      this.HawkularInventory.Feed.query({ environmentId: globalEnvironmentId }, (aFeedList) => {
         if (!aFeedList.length) {
           this.requestPending = false;
           return;
@@ -152,7 +155,7 @@ module HawkularTopology {
           }
           let previousServerId;
           angular.forEach(flatResources, (res) => {
-            const feedId =  extractFeedId(res.path);
+            const feedId = extractFeedId(res.path);
             const newItem = {
               kind: this.typeToKind[res.type.id],
               id: res.id,
@@ -179,7 +182,7 @@ module HawkularTopology {
                 });
               }
             } else {
-                this.getServerMetadata(feedId, res.id, newItem);
+              this.getServerMetadata(feedId, res.id, newItem);
             }
             newData.items[res.id] = newItem;
           });

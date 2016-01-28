@@ -23,13 +23,13 @@ module HawkularMetrics {
   /**
    *
    */
-  _module.directive('hkValidFile', function () {
+  _module.directive('hkValidFile', function() {
     return {
       require: 'ngModel',
-      link: function (scope, el, attrs, ngModel) {
+      link: function(scope, el, attrs, ngModel) {
         //change event is fired when file is selected
-        el.bind('change', function () {
-          scope.$apply(function () {
+        el.bind('change', function() {
+          scope.$apply(function() {
             ngModel.$setViewValue(el.val());
             ngModel.$render();
           });

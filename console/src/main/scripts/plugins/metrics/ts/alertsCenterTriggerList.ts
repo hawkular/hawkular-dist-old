@@ -22,39 +22,41 @@
 
 module HawkularMetrics {
 
+  /* tslint:disable:variable-name */
+
   export class AlertsCenterTriggerController {
 
-    public static  $inject = ['$scope', 'HawkularAlertsManager',
+    public static $inject = ['$scope', 'HawkularAlertsManager',
       'ErrorsManager', '$log', '$q', '$rootScope', '$interval', '$filter', '$routeParams',
       'HkHeaderParser', '$location', '$modal'];
 
     public isWorking = false;
-    public lastUpdateDate:Date = new Date();
+    public lastUpdateDate: Date = new Date();
 
-    public triggersList:IAlertTrigger[];
-    public selectedItems:IAlertTrigger[];
+    public triggersList: IAlertTrigger[];
+    public selectedItems: IAlertTrigger[];
     public triggersPerPage = 10;
     public triggersCurPage = 0;
-    public headerLinks:any = {};
+    public headerLinks: any = {};
     public selectCount = 0;
-    public hasEnabledSelectedItems:boolean = false;
-    public hasDisabledSelectedItems:boolean = false;
-    public sortField:string = 'name';
-    public sortAsc:boolean = true;
+    public hasEnabledSelectedItems: boolean = false;
+    public hasDisabledSelectedItems: boolean = false;
+    public sortField: string = 'name';
+    public sortAsc: boolean = true;
     public search: string;
 
-    constructor(private $scope:any,
-                private HawkularAlertsManager:IHawkularAlertsManager,
-                private ErrorsManager:IErrorsManager,
-                private $log:ng.ILogService,
-                private $q:ng.IQService,
-                private $rootScope:IHawkularRootScope,
-                private $interval:ng.IIntervalService,
-                private $filter:ng.IFilterService,
-                private $routeParams:any,
-                private HkHeaderParser:any,
-                private $location:ng.ILocationService,
-                private $modal:any) {
+    constructor(private $scope: any,
+      private HawkularAlertsManager: IHawkularAlertsManager,
+      private ErrorsManager: IErrorsManager,
+      private $log: ng.ILogService,
+      private $q: ng.IQService,
+      private $rootScope: IHawkularRootScope,
+      private $interval: ng.IIntervalService,
+      private $filter: ng.IFilterService,
+      private $routeParams: any,
+      private HkHeaderParser: any,
+      private $location: ng.ILocationService,
+      private $modal: any) {
       $scope.ac = this;
 
       // store this route so we can come back to it when canceling out of trigger detail
@@ -67,14 +69,14 @@ module HawkularMetrics {
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
         $rootScope.$watch('currentPersona', (currentPersona) =>
-        currentPersona && this.getTriggers());
+          currentPersona && this.getTriggers());
       }
 
       $scope.$on('SwitchedPersona', () => this.getTriggers());
     }
 
-    private autoRefresh(intervalInSeconds:number):void {
-      let autoRefreshPromise = this.$interval(()  => {
+    private autoRefresh(intervalInSeconds: number): void {
+      let autoRefreshPromise = this.$interval(() => {
         this.$log.debug('autoRefresh .... ' + new Date());
         this.getTriggers();
       }, intervalInSeconds * 1000);
@@ -84,15 +86,15 @@ module HawkularMetrics {
       });
     }
 
-    public getTriggers():void {
+    public getTriggers(): void {
 
       let ordering = 'asc';
       if (!this.sortAsc) {
         ordering = 'desc';
       }
 
-      let resourceId:string = this.$routeParams.resourceId ?  this.decodeResourceId(this.$routeParams.resourceId) : '';
-      let tagValue = resourceId ?resourceId : '*';
+      let resourceId: string = this.$routeParams.resourceId ? this.decodeResourceId(this.$routeParams.resourceId) : '';
+      let tagValue = resourceId ? resourceId : '*';
       this.HawkularAlertsManager.queryTriggers({
         tags: 'resourceId|' + tagValue,
         currentPage: this.triggersCurPage,
@@ -114,11 +116,11 @@ module HawkularMetrics {
         });
     }
 
-    public enableSelected():void {
+    public enableSelected(): void {
       this.$log.debug('Enable Selected Triggers');
 
       // Error notification done with callback function on error
-      let errorCallback = (error:any, msg:string) => {
+      let errorCallback = (error: any, msg: string) => {
         this.$log.error('Error:' + error);
       };
 
@@ -128,7 +130,7 @@ module HawkularMetrics {
 
       let updateTriggersPromises = this.updateSelected(true, errorCallback);
 
-      this.$q.all(updateTriggersPromises).finally(()=> {
+      this.$q.all(updateTriggersPromises).finally(() => {
         this.isWorking = false;
         this.resetAllUnselected();
         this.getTriggers();
@@ -139,11 +141,11 @@ module HawkularMetrics {
       });
     }
 
-    public disableSelected():void {
+    public disableSelected(): void {
       this.$log.debug('Disable Selected Triggers');
 
       // Error notification done with callback function on error
-      let errorCallback = (error:any, msg:string) => {
+      let errorCallback = (error: any, msg: string) => {
         this.$log.error('Error:' + error);
       };
 
@@ -153,7 +155,7 @@ module HawkularMetrics {
 
       let updateTriggersPromises = this.updateSelected(false, errorCallback);
 
-      this.$q.all(updateTriggersPromises).finally(()=> {
+      this.$q.all(updateTriggersPromises).finally(() => {
         this.isWorking = false;
         this.resetAllUnselected();
         this.getTriggers();
@@ -164,11 +166,11 @@ module HawkularMetrics {
       });
     }
 
-    updateSelected(enabled, errorCallback):Array<ng.IPromise<any>> {
+    public updateSelected(enabled, errorCallback): Array<ng.IPromise<any>> {
 
       let promises = [];
 
-      this.triggersList.forEach((triggerItem:IAlertTrigger) => {
+      this.triggersList.forEach((triggerItem: IAlertTrigger) => {
         if (triggerItem.selected && (triggerItem.enabled !== enabled)) {
           let triggerDefinition = {};
           let triggerBackup = {};
@@ -183,24 +185,24 @@ module HawkularMetrics {
       return promises;
     }
 
-    public getDetailRoute(trigger:IAlertTrigger):string {
+    public getDetailRoute(trigger: IAlertTrigger): string {
       let route = 'unknown-trigger-type';
       let encodedId = this.encodeResourceId(trigger.id);
 
       switch (trigger.context.triggerType) {
-        case 'Availability' :
+        case 'Availability':
           route = '/hawkular-ui/alerts-center-triggers-availability/' + encodedId;
           break;
-        case 'Event' :
+        case 'Event':
           route = '/hawkular-ui/alerts-center-triggers-event/' + encodedId;
           break;
-        case 'Range' :
+        case 'Range':
           route = '/hawkular-ui/alerts-center-triggers-range/' + encodedId;
           break;
-        case 'RangeByPercent' :
+        case 'RangeByPercent':
           route = '/hawkular-ui/alerts-center-triggers-range-percent/' + encodedId;
           break;
-        case 'Threshold' :
+        case 'Threshold':
           route = '/hawkular-ui/alerts-center-triggers-threshold/' + encodedId;
           break;
       }
@@ -208,25 +210,25 @@ module HawkularMetrics {
       return route;
     }
 
-    public getResourceRoute(trigger:IAlertTrigger):string {
+    public getResourceRoute(trigger: IAlertTrigger): string {
       let route = 'unknown-resource-type';
-      let encodedId = this.encodeResourceId(trigger.id);
+      // let encodedId = this.encodeResourceId(trigger.id);
 
       switch (trigger.context.resourceType) {
-        case 'App Server' :
+        case 'App Server':
           route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/jvm';
           break;
-        case 'App Server Deployment' :
+        case 'App Server Deployment':
           route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/deployments';
           break;
-        case 'DataSource' :
+        case 'DataSource':
           let resIdPart = trigger.context.resourceName.split('~/')[0];
           route = '/hawkular-ui/app/app-details/' + resIdPart + '/datasources';
           break;
-        case 'URL' :
+        case 'URL':
           let parts = trigger.id.split('_trigger_');
-          let resourceId = parts[0];
-          let segment = ( parts[1] === 'thres' ) ? 'response-time' : 'availability';
+          //let resourceId = parts[0];
+          let segment = (parts[1] === 'thres') ? 'response-time' : 'availability';
           route = '/hawkular-ui/url/' + segment + '/' + trigger.id.split('_trigger_')[0];
           break;
       }
@@ -234,45 +236,45 @@ module HawkularMetrics {
       return route;
     }
 
-    public setPage(page:number):void {
+    public setPage(page: number): void {
       this.triggersCurPage = page;
       this.getTriggers();
     }
 
-    public selectItem(item:IAlertTrigger):void {
+    public selectItem(item: IAlertTrigger): void {
       item.selected = !item.selected;
       this.selectedItems = _.filter(this.triggersList, 'selected');
       this.selectCount = this.selectedItems.length;
-      this.hasEnabledSelectedItems = _.some(this.selectedItems, {'enabled': true});
-      this.hasDisabledSelectedItems = _.some(this.selectedItems, {'enabled': false});
+      this.hasEnabledSelectedItems = _.some(this.selectedItems, { 'enabled': true });
+      this.hasDisabledSelectedItems = _.some(this.selectedItems, { 'enabled': false });
     }
 
     private resetAllUnselected() {
       this.selectCount = 0;
       this.hasEnabledSelectedItems = false;
       this.hasDisabledSelectedItems = false;
-      this.triggersList.forEach((item:IAlertTrigger) => {
+      this.triggersList.forEach((item: IAlertTrigger) => {
         item.selected = false;
       });
     }
 
-    public selectAll():void {
+    public selectAll(): void {
       let filteredList = this.$filter('filter')(this.triggersList, this.search);
       let toggleTo = this.selectCount !== filteredList.length;
-      _.forEach(filteredList, (item:any) => {
+      _.forEach(filteredList, (item: any) => {
         item.selected = toggleTo;
       });
       this.selectCount = toggleTo ? filteredList.length : 0;
     }
 
-    public sortBy(field:string):void {
+    public sortBy(field: string): void {
       this.sortField = field;
       this.sortAsc = !this.sortAsc;
       this.getTriggers();
       this.$log.debug('Sorting by ' + field + ' ascending ' + this.sortAsc + ' ' + new Date());
     }
 
-    private encodeResourceId(resourceId:string):string {
+    private encodeResourceId(resourceId: string): string {
       // for some reason using standard encoding is not working correctly in the route. So do something dopey...
       //let encoded = encodeURIComponent(resourceId);
       let encoded = resourceId;
@@ -282,7 +284,7 @@ module HawkularMetrics {
       return encoded;
     }
 
-    private decodeResourceId(encodedResourceId:string):string {
+    private decodeResourceId(encodedResourceId: string): string {
       // for some reason using standard encoding is not working correctly in the route. So do something dopey...
       //let decoded = decodeURIComponent(encodedResourceId);
       let decoded = encodedResourceId;
@@ -296,4 +298,3 @@ module HawkularMetrics {
 
   _module.controller('AlertsCenterTriggerController', AlertsCenterTriggerController);
 }
-

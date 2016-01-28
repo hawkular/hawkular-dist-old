@@ -31,8 +31,8 @@ module HawkularMetrics {
     binaryFile: any;
 
     uploading: boolean;
-    hasDeploymentError:boolean;
-    hasDeployedSuccessfully:boolean;
+    hasDeploymentError: boolean;
+    hasDeployedSuccessfully: boolean;
   }
 
   export class AppServerDatasourcesDriverAddDialogController {
@@ -40,7 +40,7 @@ module HawkularMetrics {
     public static $inject = ['$rootScope', '$scope', '$q', '$timeout', '$log', 'HawkularOps',
       '$modalInstance', 'NotificationsService', '$routeParams', 'HawkularInventory'];
 
-    public driverData:IDriverData =
+    public driverData: IDriverData =
     {
       resourcePath: '',
       filePath: '',
@@ -57,17 +57,16 @@ module HawkularMetrics {
       hasDeployedSuccessfully: false
     };
 
-    constructor(private $rootScope:IHawkularRootScope,
-                private $scope:ng.IScope,
-                private $q:ng.IQService,
-                private $timeout:ng.ITimeoutService,
-                private $log:ng.ILogService,
-                private HawkularOps:any,
-                private $modalInstance:any,
-                private NotificationsService:INotificationsService,
-                private $routeParams:any,
-                private HawkularInventory:any) {
-
+    constructor(private $rootScope: IHawkularRootScope,
+      private $scope: ng.IScope,
+      private $q: ng.IQService,
+      private $timeout: ng.ITimeoutService,
+      private $log: ng.ILogService,
+      private HawkularOps: any,
+      private $modalInstance: any,
+      private NotificationsService: INotificationsService,
+      private $routeParams: any,
+      private HawkularInventory: any) {
 
       /// make sure our WS socket is open
       HawkularOps.init(this.NotificationsService);
@@ -76,7 +75,7 @@ module HawkularMetrics {
         environmentId: globalEnvironmentId,
         feedId: this.$routeParams.feedId,
         resourcePath: this.$routeParams.resourceId + '~~'
-      }, (resource:IResourcePath) => {
+      }, (resource: IResourcePath) => {
         this.driverData.resourcePath = resource.path;
       });
 
@@ -97,25 +96,25 @@ module HawkularMetrics {
 
     }
 
-    private cleanFilePath(filePath:string):string {
-      return filePath.replace('C:\\fakepath\\','');
+    private cleanFilePath(filePath: string): string {
+      return filePath.replace('C:\\fakepath\\', '');
     }
 
-    public onClose():void {
+    public onClose(): void {
       this.$modalInstance.close('ok');
     }
 
-    public exitStepFileSelect():void {
+    public exitStepFileSelect(): void {
       this.driverData.filePath = this.cleanFilePath(this.driverData.filePath);
     }
 
-    public exitStepDefineParameters():void {
+    public exitStepDefineParameters(): void {
       this.driverData.uploading = false;
       this.driverData.hasDeploymentError = false;
       this.driverData.hasDeployedSuccessfully = false;
     }
 
-    public addDriver():void {
+    public addDriver(): void {
       this.driverData.uploading = true;
       this.HawkularOps.performAddJDBCDriverOperation(this.driverData.resourcePath,
         this.driverData.filePath,
@@ -129,7 +128,7 @@ module HawkularMetrics {
         this.$rootScope.currentPersona.id);
     }
 
-    public finishedAddDriverWizard():void {
+    public finishedAddDriverWizard(): void {
       //this.$log.log('Finished add jdbc driver wizard');
       this.$modalInstance.close('ok');
     }

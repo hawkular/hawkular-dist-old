@@ -27,18 +27,18 @@ module HawkularMetrics {
     private static RESPONSE_TIME_URL = UrlItemController.BASE_URL + 'response-time/';
     private static MILIS_IN_SECONDS = 1000;
 
-    public resourceId:string = '';
-    public resource:any;
+    public resourceId: string = '';
+    public resource: any;
     public alerts = [];
-    private autoRefreshPromise:ng.IPromise<number>;
-    public startTimeStamp:TimestampInMillis;
-    public endTimeStamp:TimestampInMillis;
-    private initialStartTime:TimestampInMillis;
+    private autoRefreshPromise: ng.IPromise<number>;
+    public startTimeStamp: TimestampInMillis;
+    public endTimeStamp: TimestampInMillis;
+    private initialStartTime: TimestampInMillis;
 
-    constructor(private $location:ng.ILocationService,
-                private $routeParams:any,
-                private HawkularAlertRouterManager: IHawkularAlertRouterManager,
-                private $interval:ng.IIntervalService) {
+    constructor(private $location: ng.ILocationService,
+      private $routeParams: any,
+      private HawkularAlertRouterManager: IHawkularAlertRouterManager,
+      private $interval: ng.IIntervalService) {
       this.initialStartTime = this.$routeParams.timeOffset || 3600000;
       this.resourceId = this.resource.id;
       this.initStartTimeStamp();
@@ -56,23 +56,23 @@ module HawkularMetrics {
       );
     }
 
-    public filterAlerts(data:IHawkularAlertQueryResult) {
-      _.remove(data.alertList, (item:IAlert) => {
+    public filterAlerts(data: IHawkularAlertQueryResult) {
+      _.remove(data.alertList, (item: IAlert) => {
         switch (item.context.alertType) {
-          case 'PINGRESPONSE' :
+          case 'PINGRESPONSE':
             item.alertType = item.context.alertType;
             return false;
-          case 'PINGAVAIL' :
+          case 'PINGAVAIL':
             item.alertType = item.context.alertType;
             return false;
-          default :
+          default:
             return true; // ignore non-response-time alert
         }
       });
       this.alerts = data.alertList;
     }
 
-    private autoRefresh(intervalInSeconds:number):void {
+    private autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.refresh();
       }, intervalInSeconds * UrlItemController.MILIS_IN_SECONDS);
@@ -86,7 +86,7 @@ module HawkularMetrics {
       this.getAlerts();
     }
 
-    private getAlerts():void {
+    private getAlerts(): void {
       this.HawkularAlertRouterManager.getAlertsForResourceId(
         this.resourceId,
         this.startTimeStamp,
@@ -101,7 +101,7 @@ module HawkularMetrics {
     public removeUrl($event) {
       $event.stopPropagation();
       if (this.hasOwnProperty('deleteResource')) {
-        this['deleteResource']({res:this.resource});
+        this['deleteResource']({ res: this.resource });
       }
     }
 
@@ -109,15 +109,15 @@ module HawkularMetrics {
       this.$location.path(this.getAvailabilityUrl(resourceId));
     }
 
-    public getAlertUrl(resourceId):string {
+    public getAlertUrl(resourceId): string {
       return UrlItemController.ALERT_URL + resourceId + '/' + this.initialStartTime;
     }
 
-    public getResponseTimeUrl(resourceId):string {
+    public getResponseTimeUrl(resourceId): string {
       return UrlItemController.RESPONSE_TIME_URL + resourceId + '/' + this.initialStartTime;
     }
 
-    public getAvailabilityUrl(resourceId):string {
+    public getAvailabilityUrl(resourceId): string {
       return UrlItemController.AVAILABILITY_URL + resourceId + '/' + this.initialStartTime;
     }
   }

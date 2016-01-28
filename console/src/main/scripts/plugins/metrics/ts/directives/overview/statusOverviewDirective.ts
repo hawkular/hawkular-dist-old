@@ -40,7 +40,7 @@ module HawkularMetrics {
           show: false
         },
         color: {
-          pattern: ['#0088CE','#D1D1D1']
+          pattern: ['#0088CE', '#D1D1D1']
         },
         data: {
           type: 'donut',
@@ -63,7 +63,7 @@ module HawkularMetrics {
     }
   }
 
-  let statusOverviewLink = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+  let statusOverviewLink = ($scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
     $scope.$watch('datasourceInfo', (newDatasourceInfo) => {
       if (newDatasourceInfo) {
         angular.forEach(newDatasourceInfo, (item) => {
@@ -75,7 +75,7 @@ module HawkularMetrics {
 
   export class HkOverviewDonutChart {
     public replace = 'true';
-    public link:any = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+    public link: any = ($scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
       $scope.$on(EventNames.DONUT_CHART_RENDERED, function() {
         if ($scope.chartConfig && $scope.chartConfig.bindto) {
           const donutChart = d3.select($scope.chartConfig.bindto);
@@ -129,7 +129,7 @@ module HawkularMetrics {
   }
 
   export class HkStatusOverview {
-    public link:any;
+    public link: any;
     public controller = StatusOverviewController;
     public controllerAs = 'vm';
     public replace = 'true';

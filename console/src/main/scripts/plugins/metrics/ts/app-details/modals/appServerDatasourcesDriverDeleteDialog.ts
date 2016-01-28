@@ -21,15 +21,16 @@ module HawkularMetrics {
 
   export class AppServerDatasourcesDriverDeleteDialogController {
 
-    static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularOps', 'NotificationsService', 'driver'];
+    public static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularOps',
+      'NotificationsService', 'driver'];
 
-    constructor(private $scope:any,
-                private $rootScope:any,
-                private $modalInstance:any,
-                private $q:ng.IQService,
-                private HawkularOps,
-                private NotificationsService:INotificationsService,
-                public driver) {
+    constructor(private $scope: any,
+      private $rootScope: any,
+      private $modalInstance: any,
+      private $q: ng.IQService,
+      private HawkularOps,
+      private NotificationsService: INotificationsService,
+      public driver) {
 
       /// make sure our WS socket is open
       HawkularOps.init(this.NotificationsService);

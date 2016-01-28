@@ -17,8 +17,7 @@
 
 module HawkularMetrics {
 
-
-/// NOTE: this pattern is used because enums cant be used with strings
+  /// NOTE: this pattern is used because enums cant be used with strings
   export class EventNames {
 
     public static CHART_TIMERANGE_CHANGED = new EventNames('ChartTimeRangeChanged');
@@ -36,15 +35,13 @@ module HawkularMetrics {
     public static IDLE_START = new EventNames('IdleStart');
     public static IDLE_END = new EventNames('IdleEnd');
 
-
-    constructor(public value:string) {
+    constructor(public value: string) {
       // empty
     }
 
-    public toString():string {
+    public toString(): string {
       return this.value;
     }
   }
-
 
 }

@@ -20,21 +20,21 @@
 
 module HawkularMetrics {
   export interface ICommonTask {
-    icon:string;
-    title:string;
-    text:string;
-    direction:string;
-    action:string;
+    icon: string;
+    title: string;
+    text: string;
+    direction: string;
+    action: string;
   }
 
   export class CommonTask implements ICommonTask {
-    public action:string;
-    public icon:string;
-    public title:string;
-    public text:string;
-    public direction:string;
+    public action: string;
+    public icon: string;
+    public title: string;
+    public text: string;
+    public direction: string;
 
-    constructor(icon:string, title:string, text:string, direction:string, action:string) {
+    constructor(icon: string, title: string, text: string, direction: string, action: string) {
       this.icon = icon;
       this.title = title;
       this.text = text;
@@ -44,18 +44,18 @@ module HawkularMetrics {
   }
 
   export class CommonTasksController {
-    public tasksList:ICommonTask[] = [];
-    public resourceId:string = '';
-    public selectedTime:any;
-    constructor(private $route:any, private $routeParams:any) {
+    public tasksList: ICommonTask[] = [];
+    public resourceId: string = '';
+    public selectedTime: any;
+    constructor(private $route: any, private $routeParams: any) {
       this.selectedTime = $routeParams.timeOffset || 3600000;
       this.resourceId = $routeParams.resourceId;
       this.initTasks();
     }
 
-    public goToPage(url:string, action: string) {
+    public goToPage(url: string, action: string) {
       if (url !== '') {
-        this.$route.updateParams({tabId: url, action: action});
+        this.$route.updateParams({ tabId: url, action: action });
       }
     }
 
@@ -85,9 +85,9 @@ module HawkularMetrics {
   }
 
   export class HkCommonTasks {
-    public link:(scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
-    public controller:any = CommonTasksController;
-    public controllerAs:string = 'vm';
+    public link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+    public controller: any = CommonTasksController;
+    public controllerAs: string = 'vm';
     public replace = 'true';
     public scope = {
     };

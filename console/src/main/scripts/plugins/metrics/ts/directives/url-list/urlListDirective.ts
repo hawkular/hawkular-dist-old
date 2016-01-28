@@ -19,7 +19,7 @@
 /// <reference path="../../../includes.ts"/>
 module HawkularMetrics {
 
-  let itemLink = (scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+  let itemLink = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
     if (typeof scope.alerts === 'undefined') {
       scope.alerts = [];
     }
@@ -29,7 +29,7 @@ module HawkularMetrics {
   };
 
   export class SummaryDirective implements ng.IDirective {
-    public replace:boolean = true;
+    public replace: boolean = true;
     public scope = {
       resourceList: '=',
       deleteResource: '&'
@@ -47,7 +47,7 @@ module HawkularMetrics {
 
   export class ItemDirective implements ng.IDirective {
     public link = itemLink;
-    public replace:boolean = true;
+    public replace: boolean = true;
     public scope = {};
     public controller = UrlItemController;
     public controllerAs = 'vm';

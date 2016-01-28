@@ -19,7 +19,6 @@
 
 module HawkularMetrics {
 
-
   export interface IDeploymentData {
     resourcePath: string;
     filePath: string;
@@ -27,17 +26,17 @@ module HawkularMetrics {
     binaryFile: any;
     dontEnableDuringDeployment: boolean;
     uploading: boolean;
-    hasDeploymentError:boolean;
-    hasDeployedSuccessfully:boolean;
+    hasDeploymentError: boolean;
+    hasDeployedSuccessfully: boolean;
     editDeploymentFiles: boolean;
   }
 
   export interface IResourcePath {
-    id:ResourceId;
-    tenantId:TenantId;
+    id: ResourceId;
+    tenantId: TenantId;
     path: PathId;
-    environmentId:Environment;
-    feedId:FeedId;
+    environmentId: Environment;
+    feedId: FeedId;
   }
 
   export class AppServerDeploymentsAddDialogController {
@@ -45,8 +44,7 @@ module HawkularMetrics {
     public static $inject = ['$rootScope', '$scope', '$q', '$timeout', '$log', 'HawkularOps',
       '$modalInstance', 'NotificationsService', '$routeParams', 'HawkularInventory'];
 
-
-    public deploymentData:IDeploymentData =
+    public deploymentData: IDeploymentData =
     {
       resourcePath: '',
       runtimeFileName: '',
@@ -59,20 +57,19 @@ module HawkularMetrics {
       editDeploymentFiles: false
     };
 
-    public editableDeploymentData:IDeploymentData;
-    public originalDeploymentData:IDeploymentData;
+    public editableDeploymentData: IDeploymentData;
+    public originalDeploymentData: IDeploymentData;
 
-    constructor(private $rootScope:IHawkularRootScope,
-                private $scope:ng.IScope,
-                private $q:ng.IQService,
-                private $timeout:ng.ITimeoutService,
-                private $log:ng.ILogService,
-                private HawkularOps:any,
-                private $modalInstance:any,
-                private NotificationsService:INotificationsService,
-                private $routeParams:any,
-                private HawkularInventory:any) {
-
+    constructor(private $rootScope: IHawkularRootScope,
+      private $scope: ng.IScope,
+      private $q: ng.IQService,
+      private $timeout: ng.ITimeoutService,
+      private $log: ng.ILogService,
+      private HawkularOps: any,
+      private $modalInstance: any,
+      private NotificationsService: INotificationsService,
+      private $routeParams: any,
+      private HawkularInventory: any) {
 
       /// make sure our WS socket is open
       HawkularOps.init(this.NotificationsService);
@@ -81,7 +78,7 @@ module HawkularMetrics {
         environmentId: globalEnvironmentId,
         feedId: this.$routeParams.feedId,
         resourcePath: this.$routeParams.resourceId + '~~'
-      }, (resource:IResourcePath) => {
+      }, (resource: IResourcePath) => {
         this.deploymentData.resourcePath = resource.path;
       });
 
@@ -105,22 +102,22 @@ module HawkularMetrics {
 
     }
 
-    private cleanFilePath(filePath:string):string {
-      return filePath.replace('C:\\fakepath\\','');
+    private cleanFilePath(filePath: string): string {
+      return filePath.replace('C:\\fakepath\\', '');
     }
 
-    public onClose():void {
+    public onClose(): void {
       this.$modalInstance.close('ok');
     }
 
-    public exitStep1():void {
+    public exitStep1(): void {
       this.$log.log('Exit Step 1 for resourceId: ' + this.$routeParams.resourceId);
       this.deploymentData.editDeploymentFiles = false;
       this.deploymentData.filePath = this.cleanFilePath(this.deploymentData.filePath);
       this.deploymentData.runtimeFileName = this.deploymentData.filePath;
     }
 
-    public exitStep2():void {
+    public exitStep2(): void {
       this.deploymentData.uploading = true;
       this.$log.log('Deploying file: ' + this.deploymentData.runtimeFileName);
       this.HawkularOps.performAddDeployOperation(this.deploymentData.resourcePath,
@@ -132,22 +129,22 @@ module HawkularMetrics {
 
     }
 
-    public editVerifyFile():void {
+    public editVerifyFile(): void {
       this.deploymentData.editDeploymentFiles = true;
       this.editableDeploymentData = angular.copy(this.deploymentData);
       this.originalDeploymentData = angular.copy(this.deploymentData);
     }
 
-    public saveVerifyFile():void {
+    public saveVerifyFile(): void {
       this.deploymentData = angular.copy(this.editableDeploymentData);
       this.deploymentData.editDeploymentFiles = false;
     }
 
-    public resetVerifyFile():void {
+    public resetVerifyFile(): void {
       this.editableDeploymentData = angular.copy(this.originalDeploymentData);
     }
 
-    public finishDeployWizard():void {
+    public finishDeployWizard(): void {
       this.$log.log('Finished deploy add wizard');
       this.$modalInstance.close('ok');
     }

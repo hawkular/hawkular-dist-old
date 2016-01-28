@@ -18,7 +18,6 @@
 /// <reference path="../metricsPlugin.ts"/>
 /// <reference path="../../includes.ts"/>
 
-
 module HawkularMetrics {
 
   _module.filter('firstUpper', () => {

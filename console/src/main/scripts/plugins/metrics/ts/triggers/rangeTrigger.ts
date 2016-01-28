@@ -24,7 +24,7 @@ module HawkularMetrics {
 
   export class RangeTriggerSetupController extends TriggerSetupController {
 
-    loadTrigger(triggerId:string):Array<ng.IPromise<any>> {
+    public loadTrigger(triggerId: string): Array<ng.IPromise<any>> {
 
       let triggerPromise = this.HawkularAlertsManager.getTrigger(triggerId).then(
         (triggerData) => {
@@ -52,7 +52,7 @@ module HawkularMetrics {
       return [triggerPromise];
     }
 
-    saveTrigger(errorCallback):Array<ng.IPromise<any>> {
+    public saveTrigger(errorCallback): Array<ng.IPromise<any>> {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);
       updatedFullTrigger.trigger.enabled = this.adm.trigger.enabled;
@@ -66,7 +66,7 @@ module HawkularMetrics {
       updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
 
       // time == 0 is a flag for default dampening (i.e. Strict(1))
-      if ( this.adm.trigger.evalTimeSetting === 0 ) {
+      if (this.adm.trigger.evalTimeSetting === 0) {
         updatedFullTrigger.dampenings[0].type = 'STRICT';
         updatedFullTrigger.dampenings[0].evalTrueSetting = 1;
         updatedFullTrigger.dampenings[0].evalTimeSetting = null;

@@ -23,43 +23,45 @@ module HawkularMetrics {
 
   export class AppServerDetailsController {
     /// for minification only
-    public static  $inject = ['$rootScope', '$scope', '$route', '$routeParams', '$q', '$timeout', 'HawkularOps',
+    public static $inject = ['$rootScope', '$scope', '$route', '$routeParams', '$q', '$timeout', 'HawkularOps',
       'NotificationsService', 'HawkularInventory', 'HawkularAlertsManager', '$log', '$location', 'HawkularAlert'];
 
     public static LT = 'LT'; /// blue
     public static GT = 'GT'; /// blue
-    public resourcePath:string;
-    public jdrGenerating:boolean;
-    public hasGeneratedSuccessfully:boolean;
-    public hasGeneratedError:boolean;
+    public resourcePath: string;
+    public jdrGenerating: boolean;
+    public hasGeneratedSuccessfully: boolean;
+    public hasGeneratedError: boolean;
 
-    private defaultEmail:string;
-    private defaultAction:any;
-    private feedId:FeedId;
-    private resourceId:ResourceId;
+    private defaultEmail: string;
+    private defaultAction: any;
+    private feedId: FeedId;
+    private resourceId: ResourceId;
 
-    constructor(private $rootScope:any,
-                private $scope:any,
-                private $route:any,
-                private $routeParams:any,
-                private $q:ng.IQService,
-                private $timeout:ng.ITimeoutService,
-                private HawkularOps:any,
-                private NotificationsService:INotificationsService,
-                private HawkularInventory:any,
-                private HawkularAlertsManager:any,
-                private $log:ng.ILogService,
-                private $location:ng.ILocationService,
-                private HawkularAlert:any,
-                public availableTabs:any,
-                public activeTab:any) {
+    /* tslint:disable:variable-name */
+
+    constructor(private $rootScope: any,
+      private $scope: any,
+      private $route: any,
+      private $routeParams: any,
+      private $q: ng.IQService,
+      private $timeout: ng.ITimeoutService,
+      private HawkularOps: any,
+      private NotificationsService: INotificationsService,
+      private HawkularInventory: any,
+      private HawkularAlertsManager: any,
+      private $log: ng.ILogService,
+      private $location: ng.ILocationService,
+      private HawkularAlert: any,
+      public availableTabs: any,
+      public activeTab: any) {
 
       HawkularOps.init(this.NotificationsService);
 
       this.defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
       this.feedId = this.$routeParams.feedId;
       this.resourceId = this.$routeParams.feedId + '/' + this.$routeParams.resourceId;
-      this.defaultAction = {email: [this.defaultEmail]};
+      this.defaultAction = { email: [this.defaultEmail] };
       $scope.$on('$routeUpdate', (action, newRoute) => {
         if (newRoute.params.action && newRoute.params.action === 'export-jdr') {
           $scope.tabs.requestExportJDR();
@@ -72,7 +74,7 @@ module HawkularMetrics {
       HawkularInventory.ResourceUnderFeed.get({
         feedId: this.$routeParams.feedId,
         resourcePath: this.$routeParams.resourceId + '~~'
-      }, (resource:IResourcePath) => {
+      }, (resource: IResourcePath) => {
         this.resourcePath = resource.path;
         this.$rootScope.resourcePath = this.resourcePath;
 
@@ -158,8 +160,8 @@ module HawkularMetrics {
 
     }
 
-    public updateTab(newTabId:string) {
-      this.$route.updateParams({tabId: newTabId});
+    public updateTab(newTabId: string) {
+      this.$route.updateParams({ tabId: newTabId });
     }
 
     public requestExportJDR() {
@@ -171,7 +173,7 @@ module HawkularMetrics {
       );
     }
 
-    private loadTriggers():void {
+    private loadTriggers(): void {
       // Check if triggers exist on controller creation. If not, create the triggers before continuing.
 
       let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(this.defaultEmail);
@@ -180,9 +182,9 @@ module HawkularMetrics {
       // each resource is prefixed with the managedServerName.  But when dealing with multiple Wildfly-agent feeds
       // a resource ID is not guaranteed to be unique.  So, we further qualify the resource ID with the feed ID and
       // use this qualifiedResourceId in the trigger definition.
-      let qualifiedResourceId:string = this.$routeParams.feedId + '/' + this.$routeParams.resourceId;
-      let metPrefix:string = MetricsService.getMetricId('M', this.$routeParams.feedId,
-        this.$routeParams.resourceId + '~~','');
+      let qualifiedResourceId: string = this.$routeParams.feedId + '/' + this.$routeParams.resourceId;
+      let metPrefix: string = MetricsService.getMetricId('M', this.$routeParams.feedId,
+        this.$routeParams.resourceId + '~~', '');
 
       // JVM TRIGGERS
 
@@ -190,12 +192,12 @@ module HawkularMetrics {
         this.$log.debug('Heap Used trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
-        let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
-        let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
+        //let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
+        //let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
 
-        let triggerId:string = qualifiedResourceId + '_jvm_pheap';
-        let dataId:string = metPrefix + 'WildFly Memory Metrics~Heap Used';
-        let heapMaxId:string = metPrefix + 'WildFly Memory Metrics~Heap Max';
+        let triggerId: string = qualifiedResourceId + '_jvm_pheap';
+        let dataId: string = metPrefix + 'WildFly Memory Metrics~Heap Used';
+        let heapMaxId: string = metPrefix + 'WildFly Memory Metrics~Heap Max';
 
         let fullTrigger = {
           trigger: {
@@ -206,7 +208,7 @@ module HawkularMetrics {
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             severity: 'MEDIUM',
-            actions: {email: [this.defaultEmail]},
+            actions: { email: [this.defaultEmail] },
             firingMatch: 'ANY',
             tags: {
               resourceId: qualifiedResourceId
@@ -264,146 +266,146 @@ module HawkularMetrics {
 
       let nonHeapTriggerPromise = this.HawkularAlertsManager.existTrigger(qualifiedResourceId + '_jvm_nheap')
         .then(() => {
-        this.$log.debug('Non Heap Used trigger exists, nothing to do');
-      }, () => {
-        // Jvm trigger doesn't exist, need to create one
-        let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
-        let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
+          this.$log.debug('Non Heap Used trigger exists, nothing to do');
+        }, () => {
+          // Jvm trigger doesn't exist, need to create one
+          //let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
+          //let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
 
-        let triggerId:string = qualifiedResourceId + '_jvm_nheap';
-        let dataId:string = metPrefix + 'WildFly Memory Metrics~NonHeap Used';
-        let heapMaxId:string = metPrefix + 'WildFly Memory Metrics~Heap Max';
+          let triggerId: string = qualifiedResourceId + '_jvm_nheap';
+          let dataId: string = metPrefix + 'WildFly Memory Metrics~NonHeap Used';
+          let heapMaxId: string = metPrefix + 'WildFly Memory Metrics~Heap Max';
 
-        let fullTrigger = {
-          trigger: {
-            name: 'JVM Non Heap Used',
-            id: triggerId,
-            description: 'JVM Non Heap Used for ' + qualifiedResourceId,
-            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
-            autoEnable: true, // Enable trigger once an alert is resolved
-            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-            severity: 'HIGH',
-            actions: {email: [this.defaultEmail]},
-            firingMatch: 'ANY',
-            tags: {
-              resourceId: qualifiedResourceId
-            },
-            context: {
-              alertType: 'NHEAP',
-              resourceType: 'App Server',
-              resourceName: qualifiedResourceId,
-              resourcePath: this.$rootScope.resourcePath,
-              triggerType: 'RangeByPercent',
-              triggerTypeProperty1: heapMaxId,
-              triggerTypeProperty2: 'Heap Max'
-            }
-          },
-          dampenings: [
-            {
-              triggerId: triggerId,
-              evalTimeSetting: 7 * 60000,
-              triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
-            }
-          ],
-          conditions: [
-            {
-              triggerId: triggerId,
-              type: 'COMPARE',
-              dataId: dataId,
-              data2Id: heapMaxId,
-              operator: 'GT',
-              data2Multiplier: 0.80,  // 80%
+          let fullTrigger = {
+            trigger: {
+              name: 'JVM Non Heap Used',
+              id: triggerId,
+              description: 'JVM Non Heap Used for ' + qualifiedResourceId,
+              autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+              autoEnable: true, // Enable trigger once an alert is resolved
+              autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+              severity: 'HIGH',
+              actions: { email: [this.defaultEmail] },
+              firingMatch: 'ANY',
+              tags: {
+                resourceId: qualifiedResourceId
+              },
               context: {
-                description: 'Non Heap Used',
-                unit: 'B'
+                alertType: 'NHEAP',
+                resourceType: 'App Server',
+                resourceName: qualifiedResourceId,
+                resourcePath: this.$rootScope.resourcePath,
+                triggerType: 'RangeByPercent',
+                triggerTypeProperty1: heapMaxId,
+                triggerTypeProperty2: 'Heap Max'
               }
             },
-            {
-              triggerId: triggerId,
-              type: 'COMPARE',
-              dataId: dataId,
-              data2Id: heapMaxId,
-              operator: 'LT',
-              data2Multiplier: 0.20, // 20%
-              context: {
-                description: 'Non Heap Used',
-                unit: 'B'
+            dampenings: [
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 7 * 60000,
+                triggerMode: 'FIRING',
+                type: 'STRICT_TIME'
               }
-            }
-          ]
-        };
+            ],
+            conditions: [
+              {
+                triggerId: triggerId,
+                type: 'COMPARE',
+                dataId: dataId,
+                data2Id: heapMaxId,
+                operator: 'GT',
+                data2Multiplier: 0.80,  // 80%
+                context: {
+                  description: 'Non Heap Used',
+                  unit: 'B'
+                }
+              },
+              {
+                triggerId: triggerId,
+                type: 'COMPARE',
+                dataId: dataId,
+                data2Id: heapMaxId,
+                operator: 'LT',
+                data2Multiplier: 0.20, // 20%
+                context: {
+                  description: 'Non Heap Used',
+                  unit: 'B'
+                }
+              }
+            ]
+          };
 
-        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-          this.$log.error('Error on Trigger creation for ' + triggerId);
+          return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+            this.$log.error('Error on Trigger creation for ' + triggerId);
+          });
         });
-      });
 
       let garbageTriggerPromise = this.HawkularAlertsManager.existTrigger(qualifiedResourceId + '_jvm_garba')
         .then(() => {
-        this.$log.debug('GC trigger exists, nothing to do');
-      }, () => {
-        // Jvm trigger doesn't exist, need to create one
-        let triggerId:string = qualifiedResourceId + '_jvm_garba';
-        let dataId:string = metPrefix + 'WildFly Memory Metrics~Accumulated GC Duration';
+          this.$log.debug('GC trigger exists, nothing to do');
+        }, () => {
+          // Jvm trigger doesn't exist, need to create one
+          let triggerId: string = qualifiedResourceId + '_jvm_garba';
+          let dataId: string = metPrefix + 'WildFly Memory Metrics~Accumulated GC Duration';
 
-        // Note that the GC metric is a counter, an ever-increasing value reflecting the total time the JVM
-        // has spent doing GC.  'Accumulated' here reflects that we are combining the totals for 4 different GCs in
-        // the VM, each a counter itself, and reporting a single metric value for total GC time spent. So, from
-        // an alerting perspective we want to alert when GC is taking unacceptably long. That means we need to
-        // alert on high *deltas* in the metric values reported, which reflect a lot of time spent in GC between
-        // readings.  We'll start with 200ms per minute for 5 minutes.
-        // TODO: 'Rate' This should likely be a new triggerType but for now we'll treat it like threshold.
-        let fullTrigger = {
-          trigger: {
-            name: 'JVM Accumulated GC Duration',
-            id: triggerId,
-            description: 'Accumulated GC Duration for ' + qualifiedResourceId,
-            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
-            autoEnable: true, // Enable trigger once an alert is resolved
-            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-            severity: 'HIGH',
-            actions: {email: [this.defaultEmail]},
-            tags: {
-              resourceId: qualifiedResourceId
-            },
-            context: {
-              alertType: 'GARBA',
-              resourceType: 'App Server',
-              resourceName: qualifiedResourceId,
-              resourcePath: this.$rootScope.resourcePath,
-              triggerType: 'Threshold'
-            }
-          },
-          dampenings: [
-            {
-              triggerId: triggerId,
-              evalTimeSetting: 5 * 60000,
-              triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
-            }
-          ],
-          conditions: [
-            {
-              triggerId: triggerId,
-              type: 'RATE',
-              dataId: dataId,
-              direction: 'INCREASING',
-              period: 'MINUTE',
-              threshold: 200,
-              operator: 'GT',
+          // Note that the GC metric is a counter, an ever-increasing value reflecting the total time the JVM
+          // has spent doing GC.  'Accumulated' here reflects that we are combining the totals for 4 different GCs in
+          // the VM, each a counter itself, and reporting a single metric value for total GC time spent. So, from
+          // an alerting perspective we want to alert when GC is taking unacceptably long. That means we need to
+          // alert on high *deltas* in the metric values reported, which reflect a lot of time spent in GC between
+          // readings.  We'll start with 200ms per minute for 5 minutes.
+          // TODO: 'Rate' This should likely be a new triggerType but for now we'll treat it like threshold.
+          let fullTrigger = {
+            trigger: {
+              name: 'JVM Accumulated GC Duration',
+              id: triggerId,
+              description: 'Accumulated GC Duration for ' + qualifiedResourceId,
+              autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+              autoEnable: true, // Enable trigger once an alert is resolved
+              autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+              severity: 'HIGH',
+              actions: { email: [this.defaultEmail] },
+              tags: {
+                resourceId: qualifiedResourceId
+              },
               context: {
-                description: 'GC Duration',
-                unit: 'ms'
+                alertType: 'GARBA',
+                resourceType: 'App Server',
+                resourceName: qualifiedResourceId,
+                resourcePath: this.$rootScope.resourcePath,
+                triggerType: 'Threshold'
               }
-            }
-          ]
-        };
+            },
+            dampenings: [
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 5 * 60000,
+                triggerMode: 'FIRING',
+                type: 'STRICT_TIME'
+              }
+            ],
+            conditions: [
+              {
+                triggerId: triggerId,
+                type: 'RATE',
+                dataId: dataId,
+                direction: 'INCREASING',
+                period: 'MINUTE',
+                threshold: 200,
+                operator: 'GT',
+                context: {
+                  description: 'GC Duration',
+                  unit: 'ms'
+                }
+              }
+            ]
+          };
 
-        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-          this.$log.error('Error on Trigger creation for ' + triggerId);
+          return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+            this.$log.error('Error on Trigger creation for ' + triggerId);
+          });
         });
-      });
 
       // WEB SESSION TRIGGERS
 
@@ -413,8 +415,8 @@ module HawkularMetrics {
         }, () => {
           // Active Web Sessions trigger doesn't exist, need to create one
 
-          let triggerId:string = qualifiedResourceId + '_web_active_sessions';
-          let dataId:string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Active Web Sessions';
+          let triggerId: string = qualifiedResourceId + '_web_active_sessions';
+          let dataId: string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Active Web Sessions';
 
           let fullTrigger = {
             trigger: {
@@ -425,7 +427,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'MEDIUM',
-              actions: {email: [this.defaultEmail]},
+              actions: { email: [this.defaultEmail] },
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -474,8 +476,8 @@ module HawkularMetrics {
         }, () => {
           // Active Web Sessions trigger doesn't exist, need to create one
 
-          let triggerId:string = qualifiedResourceId + '_web_expired_sessions';
-          let dataId:string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions';
+          let triggerId: string = qualifiedResourceId + '_web_expired_sessions';
+          let dataId: string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions';
 
           let fullTrigger = {
             trigger: {
@@ -486,7 +488,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'LOW',
-              actions: {email: [this.defaultEmail]},
+              actions: { email: [this.defaultEmail] },
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -526,15 +528,14 @@ module HawkularMetrics {
           });
         });
 
-
       let rejectedSessionsTriggerPromise = this.HawkularAlertsManager
         .existTrigger(qualifiedResourceId + '_web_rejected_sessions').then(() => {
           this.$log.debug('Rejected Web Sessions trigger exists, nothing to do');
         }, () => {
           // Rejected Web Sessions trigger doesn't exist, need to create one
 
-          let triggerId:string = qualifiedResourceId + '_web_rejected_sessions';
-          let dataId:string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions';
+          let triggerId: string = qualifiedResourceId + '_web_rejected_sessions';
+          let dataId: string = metPrefix + 'WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions';
 
           let fullTrigger = {
             trigger: {
@@ -545,7 +546,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'LOW',
-              actions: {email: [this.defaultEmail]},
+              actions: { email: [this.defaultEmail] },
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -593,12 +594,12 @@ module HawkularMetrics {
         }, () => {
           // Failed Deployment trigger doesn't exist, need to create one
 
-          let triggerId:string = qualifiedResourceId + '_failed_deployment';
+          let triggerId: string = qualifiedResourceId + '_failed_deployment';
 
           // Note that this dataId does not map to a metric, it maps to Events being generated by
           // the CommandEventListener in HK Alerts' Bus module.  Any change here *must* have an analogous
           // change there or the condition will not match the actual events.
-          let dataId:string = qualifiedResourceId + '_DeployApplicationResponse';
+          let dataId: string = qualifiedResourceId + '_DeployApplicationResponse';
 
           let fullTrigger = {
             trigger: {
@@ -609,7 +610,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'MEDIUM',
-              actions: {email: [this.defaultEmail]},
+              actions: { email: [this.defaultEmail] },
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -640,8 +641,6 @@ module HawkularMetrics {
           });
         });
 
-      let log = this.$log;
-
       let promises = [defaultEmailPromise];
       promises.push(heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise); //JVM
       promises.push(activeSessionsTriggerPromise, expiredSessionsTriggerPromise, rejectedSessionsTriggerPromise); //WEB
@@ -654,7 +653,7 @@ module HawkularMetrics {
       });
     }
 
-    private registerAvailableCpuAlerts():any {
+    private registerAvailableCpuAlerts(): any {
       let procesorPromises = [];
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         environmentId: globalEnvironmentId,
@@ -665,7 +664,7 @@ module HawkularMetrics {
           const triggerId = this.$routeParams.feedId + '_cpu_usage_' + resource['id'];
 
           this.HawkularAlertsManager.existTrigger(triggerId).then(() => {
-            this.$log.debug('Usage of CPU trigger for "' + triggerId+ '" exists, nothing to do');
+            this.$log.debug('Usage of CPU trigger for "' + triggerId + '" exists, nothing to do');
           }, () => {
             procesorPromises.push(this.HawkularAlertsManager.createTrigger(
               this.createCpuTrigger(resource, triggerId), () => {
@@ -677,7 +676,7 @@ module HawkularMetrics {
       return procesorPromises;
     }
 
-    private createCpuTrigger(cpuResource, triggerId):IAlertDefinition {
+    private createCpuTrigger(cpuResource, triggerId): IAlertDefinition {
       const dataId = MetricsService.getMetricId('M', this.feedId, cpuResource['id'], 'CPU Usage');
       const description = 'Usage of CPU ' + cpuResource['name'] + ' outside bounds';
       return {
@@ -686,14 +685,14 @@ module HawkularMetrics {
           .withName('CPU usage')
           .withDescription(description)
           .withActions(this.defaultAction)
-          .withTags({resourceId: this.feedId, resourceName:cpuResource['name']})
+          .withTags({ resourceId: this.feedId, resourceName: cpuResource['name'] })
           .withContext(
-            new AlertDefinitionContextBuilder(AlertDefinitionContext.TRESHOLD_TRIGGER_TYPE)
-              .withAlertType('CPU_USAGE_EXCEED')
-              .withResourceType('CPU')
-              .withResourceName(this.feedId)
-              .withResourcePath(this.$rootScope.resourcePath)
-              .build()
+          new AlertDefinitionContextBuilder(AlertDefinitionContext.TRESHOLD_TRIGGER_TYPE)
+            .withAlertType('CPU_USAGE_EXCEED')
+            .withResourceType('CPU')
+            .withResourceName(this.feedId)
+            .withResourcePath(this.$rootScope.resourcePath)
+            .build()
           )
           .build(),
         dampenings: AppServerDetailsController.defaultDampenings(triggerId),
@@ -712,7 +711,7 @@ module HawkularMetrics {
       };
     }
 
-    private registerAvailableMemoryAlert():any {
+    private registerAvailableMemoryAlert(): any {
       const memoryResourceId = AppServerPlatformDetailsController.getMemoryResourceId(this.$routeParams.feedId);
       const dataId = MetricsService.getMetricId('M', this.$routeParams.feedId, memoryResourceId, 'Available Memory');
       const totalMemoryId = MetricsService.getMetricId('M', this.$routeParams.feedId, memoryResourceId, 'Total Memory');
@@ -732,26 +731,26 @@ module HawkularMetrics {
 
       return this.HawkularAlertsManager
         .existTrigger(triggerId).then(() => {
-          this.$log.debug('Available memory trigger for "'+this.$routeParams.feedId+'" exists, nothing to do');
+          this.$log.debug('Available memory trigger for "' + this.$routeParams.feedId + '" exists, nothing to do');
         }, () => {
-          let fullTrigger:IAlertDefinition = {
+          let fullTrigger: IAlertDefinition = {
             trigger: new AlertDefinitionTriggerBuilder()
               .withId(triggerId)
               .withName('Available memory')
               .withDescription(description)
-              .withTags({resourceId: this.feedId})
+              .withTags({ resourceId: this.feedId })
               .withActions(this.defaultAction)
               .withContext(
-                new AlertDefinitionContextBuilder(AlertDefinitionContext.RANGE_PERCENT_TRIGGER_TYPE)
-                  .withAlertType('AVAILABLE_MEMORY')
-                  .withResourceType('Memory')
-                  .withResourceName(this.feedId)
-                  .withResourcePath(this.$rootScope.resourcePath)
-                  .withTriggerTypeProperty1(totalMemoryId)
-                  .withTriggerTypeProperty2('Total memory').build()
+              new AlertDefinitionContextBuilder(AlertDefinitionContext.RANGE_PERCENT_TRIGGER_TYPE)
+                .withAlertType('AVAILABLE_MEMORY')
+                .withResourceType('Memory')
+                .withResourceName(this.feedId)
+                .withResourcePath(this.$rootScope.resourcePath)
+                .withTriggerTypeProperty1(totalMemoryId)
+                .withTriggerTypeProperty2('Total memory').build()
               ).build(),
             dampenings: AppServerDetailsController.defaultDampenings(triggerId),
-            conditions : [
+            conditions: [
               new AlertDefinitionConditionBuilder(AlertDefinitionCondition.DEFAULT_COMPARE_TYPE)
                 .withTriggerId(triggerId)
                 .withDataId(dataId)
@@ -773,7 +772,7 @@ module HawkularMetrics {
         });
     }
 
-    private static defaultDampenings(triggerId):AlertDefinitionDampening[] {
+    private static defaultDampenings(triggerId): AlertDefinitionDampening[] {
       return [
         new AlertDefinitionDampeningBuilder().withTriggerId(triggerId).build()
       ];

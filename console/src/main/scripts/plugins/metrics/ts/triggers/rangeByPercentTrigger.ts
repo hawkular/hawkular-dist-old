@@ -24,9 +24,9 @@ module HawkularMetrics {
 
   export class RangeByPercentTriggerSetupController extends TriggerSetupController {
 
-    public ceiling:number;
+    public ceiling: number;
 
-    loadTrigger(triggerId:string):Array<ng.IPromise<any>> {
+    public loadTrigger(triggerId: string): Array<ng.IPromise<any>> {
       //function floor2Dec(doubleValue) {
       //  return Math.floor(doubleValue * 100) / 100;
       //}
@@ -47,7 +47,6 @@ module HawkularMetrics {
           //this.adm.trigger['maxThreshold'] = triggerData.conditions[0].thresholdHigh;
           //this.adm.trigger['minThreshold'] = triggerData.conditions[0].thresholdLow;
 
-
           this.adm.trigger['email'] = triggerData.trigger.actions.email[0];
           this.adm.trigger['evalTimeSetting'] = triggerData.dampenings[0].evalTimeSetting;
 
@@ -67,7 +66,7 @@ module HawkularMetrics {
       return [triggerPromise];
     }
 
-    saveTrigger(errorCallback):Array<ng.IPromise<any>> {
+    public saveTrigger(errorCallback): Array<ng.IPromise<any>> {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);
       updatedFullTrigger.trigger.enabled = this.adm.trigger.enabled;
@@ -78,7 +77,7 @@ module HawkularMetrics {
       updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
 
       // time == 0 is a flag for default dampening (i.e. Strict(1))
-      if ( this.adm.trigger.evalTimeSetting === 0 ) {
+      if (this.adm.trigger.evalTimeSetting === 0) {
         updatedFullTrigger.dampenings[0].type = 'STRICT';
         updatedFullTrigger.dampenings[0].evalTrueSetting = 1;
         updatedFullTrigger.dampenings[0].evalTimeSetting = null;

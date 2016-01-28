@@ -32,7 +32,7 @@ module HawkularMetrics {
     public static $inject = ['$log', 'toastr'];
 
     constructor(private $log: ng.ILogService,
-                private toastr: any) {
+      private toastr: any) {
     }
 
     private toastrPop(message, type): void {
@@ -58,9 +58,11 @@ module HawkularMetrics {
 
     public alertSettingsSaved(): void {
       //this.toastrPop('Alert settings successfully saved', 'error');
-      this.toastr.success('Alert settings successfully saved','',
-        {timeOut: 5000, closeButton: true,
-          showEasing: 'easeOutBounce', hideEasing: 'easeInBack', closeEasing: 'easeInBack'});
+      this.toastr.success('Alert settings successfully saved', '',
+        {
+          timeOut: 5000, closeButton: true,
+          showEasing: 'easeOutBounce', hideEasing: 'easeInBack', closeEasing: 'easeInBack'
+        });
     }
   }
 

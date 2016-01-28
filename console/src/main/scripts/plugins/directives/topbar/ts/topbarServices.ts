@@ -24,20 +24,19 @@ module Topbar {
 
     public static $inject = ['$rootScope', '$route', '$routeParams', 'HawkularInventory'];
 
-
-    constructor(private $rootScope:any,
-                private $route:any,
-                private $routeParams:any,
-                private HawkularInventory:any) {
+    constructor(private $rootScope: any,
+      private $route: any,
+      private $routeParams: any,
+      private HawkularInventory: any) {
       $rootScope.hkParams = $routeParams ? angular.copy($routeParams) : [];
 
       // default time period set to 12 hours
       let defaultOffset = 12 * 60 * 60 * 1000;
 
-      let init = (tenantId?:string) => {
-        HawkularInventory.Resource.query({environmentId: globalEnvironmentId}, (resourceList) => {
+      let init = (tenantId?: string) => {
+        HawkularInventory.Resource.query({ environmentId: globalEnvironmentId }, (resourceList) => {
           $rootScope.hkResources = resourceList;
-          for (var i = 0; i < resourceList.length; i++) {
+          for (let i = 0; i < resourceList.length; i++) {
             if (resourceList[i].id === $rootScope.hkParams.resourceId) {
               $rootScope.selectedResource = resourceList[i];
             }
@@ -68,17 +67,17 @@ module Topbar {
       }
     }
 
-    public setTimestamp(offset:number, end ?:number) {
-      this.$route.updateParams({timeOffset: offset, endTime: end});
+    public setTimestamp(offset: number, end?: number) {
+      this.$route.updateParams({ timeOffset: offset, endTime: end });
       this.$rootScope.hkParams.timeOffset = offset;
       this.$rootScope.hkEndTimestamp = end;
       this.$rootScope.hkStartTimestamp = moment().subtract(this.$rootScope.hkParams.timeOffset,
         'milliseconds').valueOf();
     }
 
-    public setTimestampStartEnd(start:number, end:number) {
+    public setTimestampStartEnd(start: number, end: number) {
       let offset = end - start;
-      this.$route.updateParams({timeOffset: offset, endTime: end});
+      this.$route.updateParams({ timeOffset: offset, endTime: end });
       this.$rootScope.hkParams.timeOffset = offset;
       this.$rootScope.hkEndTimestamp = end;
       this.$rootScope.hkStartTimestamp = start;

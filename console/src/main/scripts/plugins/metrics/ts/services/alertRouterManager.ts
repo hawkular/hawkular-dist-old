@@ -51,14 +51,14 @@ module HawkularMetrics {
      * @param alertType type of alert which is being registered.
      * @param processFunction Function which will be called when alerts are queried.
      */
-    registerForAlerts(resourceId:string,alertType:string, processFunction:Function): void;
+    registerForAlerts(resourceId: string, alertType: string, processFunction: Function): void;
 
-      /**
-       * @name getAlertsForCurrentResource
-       * @desc get alerts for currently opened resource @see {@link getAlertsForResourceId}
-       * @param startTime poll the server starting this time.
-       * @param endTime poll the server with ending this time.
-       */
+    /**
+     * @name getAlertsForCurrentResource
+     * @desc get alerts for currently opened resource @see {@link getAlertsForResourceId}
+     * @param startTime poll the server starting this time.
+     * @param endTime poll the server with ending this time.
+     */
     getAlertsForCurrentResource(startTime: TimestampInMillis, endTime: TimestampInMillis): void;
 
     /**
@@ -69,7 +69,7 @@ module HawkularMetrics {
      * @param endTime poll the server with ending this time.
      */
     getAlertsForResourceId(
-      resourceId:string,
+      resourceId: string,
       startTime: TimestampInMillis,
       endTime: TimestampInMillis): ng.IPromise<any>;
   }
@@ -78,27 +78,28 @@ module HawkularMetrics {
    * This class is for registering functions for listening when alerts ar received from server.
    */
   export class HawkularAlertRouterManager implements IHawkularAlertRouterManager {
-    registeredForAlerts:any;
-    fullAlertData:any;
+    public registeredForAlerts: any;
+    public fullAlertData: any;
+
     constructor(private $routeParams,
-                private HawkularAlertsManager:IHawkularAlertsManager,
-                private ErrorsManager:IErrorsManager,
-                private $q:ng.IQService) {
+      private HawkularAlertsManager: IHawkularAlertsManager,
+      private ErrorsManager: IErrorsManager,
+      private $q: ng.IQService) {
       this.registeredForAlerts = {};
     }
 
-    public registerForAlerts(resourceId:string, alertType:string, processFunction:Function):void {
+    public registerForAlerts(resourceId: string, alertType: string, processFunction: Function): void {
       if (this.registeredForAlerts[resourceId] === undefined) {
         this.registeredForAlerts[resourceId] = {};
       }
       this.registeredForAlerts[resourceId][alertType] = processFunction;
     }
 
-    public getAlertsForCurrentResource(startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+    public getAlertsForCurrentResource(startTime: TimestampInMillis, endTime: TimestampInMillis): void {
       this.getAlertsForResourceId(this.$routeParams.feedId + '/' + this.$routeParams.resourceId, startTime, endTime);
     }
 
-    public getAlertsForResourceId(resourceId, startTime, endTime):ng.IPromise<any> {
+    public getAlertsForResourceId(resourceId, startTime, endTime): ng.IPromise<any> {
       let fullAlertData = {};
 
       let promise = this.HawkularAlertsManager.queryAlerts({
@@ -106,7 +107,7 @@ module HawkularMetrics {
         tags: 'resourceId|' + resourceId,
         startTime: startTime,
         endTime: endTime
-      }).then((alertData:IHawkularAlertQueryResult) => {
+      }).then((alertData: IHawkularAlertQueryResult) => {
         let registeredObjects = this.registeredForAlerts[resourceId];
         let filteredAlerts;
         for (let key in registeredObjects) {
@@ -119,7 +120,7 @@ module HawkularMetrics {
       }, (error) => {
         return this.ErrorsManager.errorHandler(error, 'Error fetching alerts.');
       });
-      this.$q.all([promise]).finally(()=> {
+      this.$q.all([promise]).finally(() => {
         this.fullAlertData = fullAlertData;
       });
       return promise;

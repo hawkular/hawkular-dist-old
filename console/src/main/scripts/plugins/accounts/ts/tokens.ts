@@ -22,22 +22,22 @@ module HawkularAccounts {
       '$window', '$rootScope', '$scope',
       '$modal', '$log', 'HawkularAccount', 'NotificationsService'
     ];
-    public tokens:Array<IToken>;
-    public personas:Array<IPersona>;
-    public editState:{ [id: string]: EditState; } = {};
-    public tokensToUpdate:{ [id: string]: PersistenceState; } = {};
-    public newNames:{ [id: string]: string; } = {};
-    public newDescriptions:{ [id: string]: string; } = {};
-    public newExpirations:{ [id: string]: string; } = {};
-    public loading:boolean = true;
+    public tokens: Array<IToken>;
+    public personas: Array<IPersona>;
+    public editState: { [id: string]: EditState; } = {};
+    public tokensToUpdate: { [id: string]: PersistenceState; } = {};
+    public newNames: { [id: string]: string; } = {};
+    public newDescriptions: { [id: string]: string; } = {};
+    public newExpirations: { [id: string]: string; } = {};
+    public loading: boolean = true;
 
-    constructor(private $window:any,
-                private $rootScope:any,
-                private $scope:any,
-                private $modal:any,
-                private $log:ng.ILogService,
-                private HawkularAccount:any,
-                private NotificationsService:INotificationsService) {
+    constructor(private $window: any,
+      private $rootScope: any,
+      private $scope: any,
+      private $modal: any,
+      private $log: ng.ILogService,
+      private HawkularAccount: any,
+      private NotificationsService: INotificationsService) {
       this.prepareListeners();
       this.loadData();
     }
@@ -48,21 +48,21 @@ module HawkularAccounts {
       });
     }
 
-    public loadData():void {
+    public loadData(): void {
       this.loading = true;
       this.tokens = this.HawkularAccount.Token.query({},
-        (response:Array<IToken>) => {
+        (response: Array<IToken>) => {
           this.personas = this.HawkularAccount.Persona.query({},
-            (response:Array<IPersona>) => {
+            (response: Array<IPersona>) => {
               this.loading = false;
-            }, (error:IErrorPayload) => {
+            }, (error: IErrorPayload) => {
               let message = `Failed to retrieve the list of possible personas: ${error.data.message}`;
               this.NotificationsService.error(message);
               this.$log.warn(message);
               this.loading = false;
             }
           );
-        }, (error:IErrorPayload) => {
+        }, (error: IErrorPayload) => {
           this.$log.warn(`List of tokens could NOT be retrieved: ${error.data.message}`);
           this.NotificationsService.warning(`List of tokens could NOT be retrieved: ${error.data.message}`);
           this.loading = false;
@@ -70,13 +70,13 @@ module HawkularAccounts {
       );
     }
 
-    public create():void {
+    public create(): void {
       this.$window.location.href = '/secret-store/v1/tokens/create?'
         + 'scope=offline_access&'
         + 'Hawkular-Persona=' + encodeURI(this.$rootScope.currentPersona.id);
     }
 
-    public personaForToken(token:IToken):string {
+    public personaForToken(token: IToken): string {
       if (this.loading) {
         return token.id;
       }
@@ -91,7 +91,7 @@ module HawkularAccounts {
       }
 
       let personaName = id;
-      angular.forEach(this.personas, (persona:IPersona) => {
+      angular.forEach(this.personas, (persona: IPersona) => {
         if (persona.id === id) {
           personaName = persona.name;
         }
@@ -100,20 +100,20 @@ module HawkularAccounts {
       return personaName;
     }
 
-    public revoke(token:IToken):void {
+    public revoke(token: IToken): void {
       this.$modal.open({
-          controller: 'HawkularAccounts.TokenRevokeController as removeModal',
-          templateUrl: 'plugins/accounts/html/token-revoke-modal.html',
-          resolve: {
-            token: () => token
-          }
-        })
+        controller: 'HawkularAccounts.TokenRevokeController as removeModal',
+        templateUrl: 'plugins/accounts/html/token-revoke-modal.html',
+        resolve: {
+          token: () => token
+        }
+      })
         .result
         .then(() => {
           token.$remove({}, () => {
             this.NotificationsService.success('Token successfully revoked.');
             this.tokens.splice(this.tokens.indexOf(token), 1);
-          }, (error:IErrorPayload) => {
+          }, (error: IErrorPayload) => {
             let message = `Failed to revoke the token ${token.id}: ${error.data.message}`;
             this.$log.warn(message);
             this.NotificationsService.error(message);
@@ -121,7 +121,7 @@ module HawkularAccounts {
         });
     }
 
-    public showQRCode(token:IToken):void {
+    public showQRCode(token: IToken): void {
       this.$modal.open({
         controller: 'HawkularAccounts.TokenQRCodeController as qrCodeModal',
         templateUrl: 'plugins/accounts/html/token-qrcode-modal.html',
@@ -131,21 +131,21 @@ module HawkularAccounts {
       });
     }
 
-    public edit(token:IToken):void {
+    public edit(token: IToken): void {
       this.newNames[token.id] = token.attributes['name'];
       this.newDescriptions[token.id] = token.attributes['description'];
       this.newExpirations[token.id] = token.expiresAt;
       this.editState[token.id] = EditState.EDIT;
     }
 
-    public discard(token:IToken):void {
+    public discard(token: IToken): void {
       this.newNames[token.id] = '';
       this.newDescriptions[token.id] = '';
       this.newExpirations[token.id] = '';
       this.editState[token.id] = EditState.READ;
     }
 
-    public confirm(token:IToken):void {
+    public confirm(token: IToken): void {
       token.attributes['name'] = this.newNames[token.id];
       token.attributes['description'] = this.newDescriptions[token.id];
 
@@ -160,15 +160,15 @@ module HawkularAccounts {
       this.newDescriptions[token.id] = '';
       this.editState[token.id] = EditState.READ;
 
-      token.$update(null, (response:IToken) => {
+      token.$update(null, (response: IToken) => {
         this.tokensToUpdate[token.id] = PersistenceState.SUCCESS;
-      }, (error:IErrorPayload) => {
+      }, (error: IErrorPayload) => {
         this.tokensToUpdate[token.id] = PersistenceState.ERROR;
         this.$log.debug(`Error changing the name for token ${token.id}. Response: ${error.data.message}`);
       });
     }
 
-    public inEditMode(token:IToken):boolean {
+    public inEditMode(token: IToken): boolean {
       return this.editState[token.id] === EditState.EDIT;
     }
   }
@@ -176,16 +176,16 @@ module HawkularAccounts {
   export class TokenRevokeController {
     public static $inject = ['$scope', '$modalInstance', 'token'];
 
-    constructor(private $scope:any,
-                private $modalInstance:any,
-                private token:IToken) {
+    constructor(private $scope: any,
+      private $modalInstance: any,
+      private token: IToken) {
     }
 
-    public cancel():void {
+    public cancel(): void {
       this.$modalInstance.dismiss('cancel');
     }
 
-    public revoke():void {
+    public revoke(): void {
       this.$modalInstance.close();
     }
   }
@@ -193,12 +193,12 @@ module HawkularAccounts {
   export class TokenQRCodeController {
     public static $inject = ['$scope', '$modalInstance', 'token'];
 
-    constructor(private $scope:any,
-                private $modalInstance:any,
-                private token:IToken) {
+    constructor(private $scope: any,
+      private $modalInstance: any,
+      private token: IToken) {
     }
 
-    public close():void {
+    public close(): void {
       this.$modalInstance.dismiss('close');
     }
   }

@@ -20,12 +20,14 @@
 
 module HawkularMetrics {
 
+  /* tslint:disable:variable-name */
+
   export let _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ngAnimate', 'ui.select',
     'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr',
     'infinite-scroll', 'mgo-angular-wizard', 'hawkular.charts', 'angular-clipboard', 'patternfly.filters',
     'patternfly.charts']);
 
-  _module.config(['$compileProvider', function ($compileProvider) {
+  _module.config(['$compileProvider', function($compileProvider) {
     //disable debug info
     //@TOOD: turn this debug info back off before production
     //NOTE: tools like Batarang and Protractor may not work properly with this debug info off
@@ -52,18 +54,18 @@ module HawkularMetrics {
 
   _module.config(['$routeProvider', ($routeProvider) => {
     $routeProvider.
-      when('/hawkular-ui/url/url-list/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/url-list.html'}).
+      when('/hawkular-ui/url/url-list/:timeOffset?/:endTime?', { templateUrl: 'plugins/metrics/html/url-list.html' }).
       when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {
         templateUrl: 'plugins/metrics/html/url-response-time.html',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
+          resource: ($route, $location, HawkularInventory, NotificationsService: INotificationsService) => {
             let p = HawkularInventory.Resource.get({
               environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
             }).$promise;
-            p.then((response:any) => {
-                return response.properties.url;
-              },
+            p.then((response: any) => {
+              return response.properties.url;
+            },
               (error) => {
                 NotificationsService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
@@ -76,13 +78,13 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/url-availability.html',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
+          resource: ($route, $location, HawkularInventory, NotificationsService: INotificationsService) => {
             let p = HawkularInventory.Resource.get({
               environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
             }).$promise;
-            p.then((response:any) => {
-                return response.properties.url;
-              },
+            p.then((response: any) => {
+              return response.properties.url;
+            },
               (error) => {
                 NotificationsService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
@@ -95,13 +97,13 @@ module HawkularMetrics {
         templateUrl: 'plugins/metrics/html/url-alerts.html',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
+          resource: ($route, $location, HawkularInventory, NotificationsService: INotificationsService) => {
             let p = HawkularInventory.Resource.get({
               environmentId: globalEnvironmentId, resourcePath: $route.current.params.resourceId
             }).$promise;
-            p.then((response:any) => {
-                return response.properties.url;
-              },
+            p.then((response: any) => {
+              return response.properties.url;
+            },
               (error) => {
                 NotificationsService.info('You were redirected to this page because you requested an invalid URL.');
                 $location.path('/');
@@ -111,12 +113,12 @@ module HawkularMetrics {
         }
       }).
       when('/hawkular-ui/app/app-list/:timeOffset?/:endTime?',
-      {templateUrl: 'plugins/metrics/html/app-server-list.html'}).
+      { templateUrl: 'plugins/metrics/html/app-server-list.html' }).
       when('/hawkular-ui/app/app-details/:feedId/:resourceId/:tabId/:timeOffset?/:endTime?', {
         templateUrl: 'plugins/metrics/html/app-details/app-server-details.html',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
+          resource: ($route, $location, HawkularInventory, NotificationsService: INotificationsService) => {
             let redirectMissingAppServer = () => {
               NotificationsService.info('You were redirected to this page because you requested an invalid ' +
                 'Application Server.');
@@ -128,8 +130,8 @@ module HawkularMetrics {
                 resourcePath: $route.current.params.resourceId + '~~'
               }).$promise;
               p.then((response) => {
-                  return response;
-                },
+                return response;
+              },
                 (error) => redirectMissingAppServer()
               );
               return p;
@@ -144,7 +146,7 @@ module HawkularMetrics {
         controllerAs: 'vm',
         reloadOnSearch: false,
         resolve: {
-          resource: ($route, $location, HawkularInventory, NotificationsService:INotificationsService) => {
+          resource: ($route, $location, HawkularInventory, NotificationsService: INotificationsService) => {
             let redirectMissingDatasource = () => {
               NotificationsService.info('You were redirected to this page because you requested an invalid ' +
                 'Datasource.');
@@ -160,8 +162,8 @@ module HawkularMetrics {
                 resourcePath: resourceId + '/' + $route.current.params.datasourceId.replace(/\$/g, '%2F')
               }).$promise;
               p.then((response) => {
-                  return response;
-                },
+                return response;
+              },
                 (error) => redirectMissingDatasource()
               );
               return p;
@@ -213,8 +215,8 @@ module HawkularMetrics {
         controller: 'EventTriggerSetupController',
         controllerAs: 'tc'
       }).
-      when('/hawkular-ui/agent-installer/view', {templateUrl: 'plugins/metrics/html/agent-installer.html'}).
-      otherwise({redirectTo: '/hawkular-ui/app/app-list'});
+      when('/hawkular-ui/agent-installer/view', { templateUrl: 'plugins/metrics/html/agent-installer.html' }).
+      otherwise({ redirectTo: '/hawkular-ui/app/app-list' });
   }]);
 
   // so the same scroll doesn't trigger multiple times

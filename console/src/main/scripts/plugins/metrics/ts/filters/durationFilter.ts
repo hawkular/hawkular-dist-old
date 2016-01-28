@@ -22,6 +22,8 @@
 
 module HawkularMetrics {
 
+  /* tslint:disable:variable-name */
+
   _module.filter('duration', () => {
 
     let DURATION_FORMATS_SPLIT = /((?:[^ydhms']+)|(?:'(?:[^']|'')*')|(?:y+|d+|h+|m+|s+))(.*)/;
@@ -71,7 +73,6 @@ module HawkularMetrics {
       }
     };
 
-
     function _parseFormat(string) {
       // @inspiration AngularJS date filter
       let parts = [];
@@ -94,7 +95,6 @@ module HawkularMetrics {
       return parts;
     }
 
-
     function _formatDuration(timestamp, format) {
       let text = '';
       let values = {};
@@ -108,7 +108,7 @@ module HawkularMetrics {
         } else {
           return format;
         }
-      }).filter((format, index, arr)=> { // remove duplicates
+      }).filter((format, index, arr) => { // remove duplicates
         return (arr.indexOf(format) === index);
       }).map((format) => { // get format configurations with values
         return angular.extend({
@@ -138,13 +138,11 @@ module HawkularMetrics {
       return text;
     }
 
-
     function _padNumber(number, len) {
       return ((new Array(len + 1)).join('0') + number).slice(-len);
     }
 
-
-    return function (value, format) {
+    return function(value, format) {
       if (typeof value !== 'number') {
         return value;
       }
