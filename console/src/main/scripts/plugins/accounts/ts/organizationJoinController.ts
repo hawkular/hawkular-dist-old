@@ -20,16 +20,16 @@ module HawkularAccounts {
   export class OrganizationJoinController {
     public static $inject = ['$rootScope', '$scope', '$modal', '$log', 'HawkularAccount', 'NotificationsService'];
 
-    public organizations:Array<IOrganization>;
-    public loading:boolean = true;
-    public isOrganization:boolean = false;
+    public organizations: Array<IOrganization>;
+    public loading: boolean = true;
+    public isOrganization: boolean = false;
 
-    constructor(private $rootScope:any,
-                private $scope:any,
-                private $modal:any,
-                private $log:ng.ILogService,
-                private HawkularAccount:any,
-                private NotificationsService:INotificationsService) {
+    constructor(private $rootScope: any,
+      private $scope: any,
+      private $modal: any,
+      private $log: ng.ILogService,
+      private HawkularAccount: any,
+      private NotificationsService: INotificationsService) {
       this.prepareListeners();
       this.loadData();
 
@@ -39,18 +39,18 @@ module HawkularAccounts {
     }
 
     public prepareListeners() {
-      this.$rootScope.$on('SwitchedPersona', (event:any, persona:IPersona) => {
+      this.$rootScope.$on('SwitchedPersona', (event: any, persona: IPersona) => {
         this.loadData();
         this.isOrganization = persona.id !== this.$rootScope.userDetails.id;
       });
     }
 
-    public loadData():void {
+    public loadData(): void {
       this.loading = true;
       this.organizations = this.HawkularAccount.Organization.listToJoin({},
-        (response:Array<IOrganization>) => {
+        (response: Array<IOrganization>) => {
           this.loading = false;
-        }, (error:IErrorPayload) => {
+        }, (error: IErrorPayload) => {
           this.$log.warn(`List of organizations could NOT be retrieved: ${error.data.message}`);
           this.NotificationsService.warning(`List of organizations could NOT be retrieved: ${error.data.message}`);
           this.loading = false;
@@ -58,7 +58,7 @@ module HawkularAccounts {
       );
     }
 
-    public joinRequest(organization:IOrganization):void {
+    public joinRequest(organization: IOrganization): void {
       let joinRequest = new this.HawkularAccount.OrganizationJoinRequest();
       joinRequest.organization = organization;
       joinRequest.organizationId = organization.id;
@@ -75,7 +75,7 @@ module HawkularAccounts {
           joinRequest.$save({}, () => {
             this.NotificationsService.success('Join request successfully submitted.');
             this.organizations.splice(this.organizations.indexOf(organization), 1);
-          }, (error:IErrorPayload) => {
+          }, (error: IErrorPayload) => {
             let message = `Failed to send join request to the organization ${organization.name}: ${error.data.message}`;
             this.$log.warn(message);
             this.NotificationsService.error(message);
@@ -87,16 +87,16 @@ module HawkularAccounts {
   export class OrganizationJoinConfirmationController {
     public static $inject = ['$scope', '$modalInstance', 'joinRequest'];
 
-    constructor(private $scope:any,
-                private $modalInstance:any,
-                private joinRequest:IJoinRequest) {
+    constructor(private $scope: any,
+      private $modalInstance: any,
+      private joinRequest: IJoinRequest) {
     }
 
-    public cancel():void {
+    public cancel(): void {
       this.$modalInstance.dismiss('cancel');
     }
 
-    public submit():void {
+    public submit(): void {
       this.$modalInstance.close();
     }
   }

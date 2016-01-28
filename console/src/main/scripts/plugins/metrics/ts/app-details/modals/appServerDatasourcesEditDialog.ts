@@ -21,59 +21,61 @@ module HawkularMetrics {
 
   export class AppServerDatasourcesEditDialogController {
 
-    static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', '$routeParams', 'HawkularOps',
+    public static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', '$routeParams', 'HawkularOps',
       'NotificationsService', 'HawkularInventory', 'datasource'];
 
     public tmpDSProperties: any[];
     public driversList: any[];
 
-    constructor(private $scope:any,
-                private $rootScope:any,
-                private $modalInstance:any,
-                private $q:ng.IQService,
-                private $routeParams:any,
-                private HawkularOps,
-                private NotificationsService:INotificationsService,
-                private HawkularInventory:any,
-                public datasource) {
+    constructor(private $scope: any,
+      private $rootScope: any,
+      private $modalInstance: any,
+      private $q: ng.IQService,
+      private $routeParams: any,
+      private HawkularOps,
+      private NotificationsService: INotificationsService,
+      private HawkularInventory: any,
+      public datasource) {
 
       /// make sure our WS socket is open
       HawkularOps.init(this.NotificationsService);
 
       let dsPath = datasource.path;
-      let feedId = dsPath.substring(dsPath.lastIndexOf('/f;')+3, dsPath.indexOf('/r;'));
+      let feedId = dsPath.substring(dsPath.lastIndexOf('/f;') + 3, dsPath.indexOf('/r;'));
       let resourcePath = datasource.path.split('/r;').splice(1).join('/');
 
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         environmentId: globalEnvironmentId, feedId: this.$routeParams.feedId,
-        resourceTypeId: 'JDBC Driver'}, (aResourceList, getResponseHeaders) => {
+        resourceTypeId: 'JDBC Driver'
+      }, (aResourceList, getResponseHeaders) => {
         this.driversList = aResourceList;
       });
 
       this.HawkularInventory.ResourceUnderFeed.getData({
         feedId: feedId,
-        resourcePath: resourcePath}, (resource) => {
-          this.datasource.datasourceName = this.datasource.name;
-          this.datasource.connectionUrl = resource.value['Connection URL'];
-          this.datasource.driverClass = resource.value['Driver Class'];
-          this.datasource.driverName = resource.value['Driver Name'];
-          this.datasource.datasourceClass = resource.value['Datasource Class'];
-          this.datasource.xaDatasourceClass = resource.value['XA Datasource Class'];
-          this.datasource.xaDatasource = !!this.datasource.xaDatasourceClass;
-          this.tmpDSProperties = [];
-          if (resource.value['Datasource Properties']) {
-            var dsProps = JSON.parse(resource.value['Datasource Properties']);
-            _.forEach(dsProps, function(propValue, propName) {
-              this.tmpDSProperties.push({name: propName, value: propValue});
-            }, this);
-          }
-          this.datasource.enabled = resource.value['Enabled'];
-          this.datasource.jndiName = resource.value['JNDI Name'];
-          this.datasource.conn = {
-            username: resource.value['Username'],
-            password: resource.value['Password'],
-            securityDomain: resource.value['Security Domain']
-          };
+        resourcePath: resourcePath
+      }, (resource) => {
+        this.datasource.datasourceName = this.datasource.name;
+        this.datasource.connectionUrl = resource.value['Connection URL'];
+        this.datasource.driverClass = resource.value['Driver Class'];
+        this.datasource.driverName = resource.value['Driver Name'];
+        this.datasource.datasourceClass = resource.value['Datasource Class'];
+        this.datasource.xaDatasourceClass = resource.value['XA Datasource Class'];
+        this.datasource.xaDatasource = !!this.datasource.xaDatasourceClass;
+        this.tmpDSProperties = [];
+        if (resource.value['Datasource Properties']) {
+          let dsProps = JSON.parse(resource.value['Datasource Properties']);
+          _.forEach(dsProps, function(propValue, propName) {
+            this.tmpDSProperties.push({ name: propName, value: propValue });
+          }, this);
+        }
+        this.datasource.enabled = resource.value['Enabled'];
+        this.datasource.jndiName = resource.value['JNDI Name'];
+        this.datasource.conn = {
+          username: resource.value['Username'],
+          password: resource.value['Password'],
+          securityDomain: resource.value['Security Domain']
+        };
       });
 
       $scope.$on('DatasourceUpdateSuccess', (event, data) => {
@@ -91,7 +93,7 @@ module HawkularMetrics {
     }
 
     public addDSProperty(): void {
-      this.tmpDSProperties.push({name:'', value:''});
+      this.tmpDSProperties.push({ name: '', value: '' });
     }
 
     public updateDatasource(): void {

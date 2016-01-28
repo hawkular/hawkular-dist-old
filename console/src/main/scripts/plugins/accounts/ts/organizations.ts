@@ -20,20 +20,20 @@ module HawkularAccounts {
   export class OrganizationsController {
     public static $inject = ['$rootScope', '$scope', '$modal', '$log', 'HawkularAccount', 'NotificationsService'];
 
-    public organizations:Array<IOrganization>;
-    public joinRequests:Array<IJoinRequest>;
-    public loading:boolean = true;
-    public loadedJoinRequests:boolean = true;
-    public loadedOrganizations:boolean = true;
-    public isOrganization:boolean = false;
-    public hasData:boolean = false;
+    public organizations: Array<IOrganization>;
+    public joinRequests: Array<IJoinRequest>;
+    public loading: boolean = true;
+    public loadedJoinRequests: boolean = true;
+    public loadedOrganizations: boolean = true;
+    public isOrganization: boolean = false;
+    public hasData: boolean = false;
 
-    constructor(private $rootScope:any,
-                private $scope:any,
-                private $modal:any,
-                private $log:ng.ILogService,
-                private HawkularAccount:any,
-                private NotificationsService:INotificationsService) {
+    constructor(private $rootScope: any,
+      private $scope: any,
+      private $modal: any,
+      private $log: ng.ILogService,
+      private HawkularAccount: any,
+      private NotificationsService: INotificationsService) {
       this.prepareListeners();
       this.loadData();
 
@@ -43,33 +43,33 @@ module HawkularAccounts {
     }
 
     public prepareListeners() {
-      this.$rootScope.$on('SwitchedPersona', (event:any, persona:IPersona) => {
+      this.$rootScope.$on('SwitchedPersona', (event: any, persona: IPersona) => {
         this.loadData();
         this.isOrganization = persona.id !== this.$rootScope.userDetails.id;
       });
     }
 
-    public loadData():void {
+    public loadData(): void {
       this.loading = true;
 
-      this.joinRequests = this.HawkularAccount.OrganizationJoinRequest.query({}, (response:Array<IJoinRequest>) => {
+      this.joinRequests = this.HawkularAccount.OrganizationJoinRequest.query({}, (response: Array<IJoinRequest>) => {
         this.loadedJoinRequests = true;
         if (this.joinRequests.length > 0) {
           this.hasData = true;
         }
         this.$log.debug(`Loaded Join Requests`);
-      }, (error:IErrorPayload) => {
+      }, (error: IErrorPayload) => {
         this.$log.debug(`Error loading the join requests for this user. Response: ${error.data.message}`);
       });
 
       this.organizations = this.HawkularAccount.Organization.query({},
-        (response:Array<IOrganization>) => {
+        (response: Array<IOrganization>) => {
           if (this.organizations.length > 0) {
             this.hasData = true;
           }
           this.loadedOrganizations = true;
           this.loading = !(this.loadedJoinRequests && this.loadedOrganizations);
-        }, (error:IErrorPayload) => {
+        }, (error: IErrorPayload) => {
           this.$log.warn(`List of organizations could NOT be retrieved: ${error.data.message}`);
           this.NotificationsService.warning(`List of organizations could NOT be retrieved: ${error.data.message}`);
           this.loading = false;
@@ -77,22 +77,22 @@ module HawkularAccounts {
       );
     }
 
-    public showCreateForm():void {
+    public showCreateForm(): void {
       this.$modal.open({
         controller: 'HawkularAccounts.OrganizationNewController as newModal',
         templateUrl: 'plugins/accounts/html/organization-new.html'
       })
         .result
-        .then((organization:IOrganization) => {
+        .then((organization: IOrganization) => {
           this.hasData = true;
           this.NotificationsService.success('Organization successfully created.');
           this.organizations.unshift(organization);
-        }, (error:IErrorPayload) => {
+        }, (error: IErrorPayload) => {
           this.NotificationsService.error(`Error while creating organization: ${error.data.message}`);
         });
     }
 
-    public remove(organization:IOrganization):void {
+    public remove(organization: IOrganization): void {
       this.$modal.open({
         controller: 'HawkularAccounts.OrganizationRemoveController as removeModal',
         templateUrl: 'plugins/accounts/html/organization-remove-modal.html',
@@ -107,7 +107,7 @@ module HawkularAccounts {
             this.$rootScope.$broadcast('OrganizationRemoved');
             this.organizations.splice(this.organizations.indexOf(organization), 1);
             this.hasData = this.joinRequests.length > 0 || this.organizations.length > 0;
-          }, (error:IErrorPayload) => {
+          }, (error: IErrorPayload) => {
             let message = `Failed to remove the organization ${organization.name}: ${error.data.message}`;
             this.$log.warn(message);
             this.NotificationsService.error(message);
@@ -117,28 +117,28 @@ module HawkularAccounts {
   }
 
   export class OrganizationNewController {
-    public organizationNew:IOrganization;
+    public organizationNew: IOrganization;
 
     public static $inject = ['$rootScope', '$scope', '$modalInstance', '$log', 'HawkularAccount'];
 
-    constructor(private $rootScope:any,
-                private $scope:any,
-                private $modalInstance:any,
-                private $log:ng.ILogService,
-                private HawkularAccount:any) {
+    constructor(private $rootScope: any,
+      private $scope: any,
+      private $modalInstance: any,
+      private $log: ng.ILogService,
+      private HawkularAccount: any) {
       this.organizationNew = new HawkularAccount.Organization();
     }
 
-    public cancel():void {
+    public cancel(): void {
       this.$modalInstance.dismiss('cancel');
     }
 
-    public persist():void {
+    public persist(): void {
       this.organizationNew.$save({},
-        (organization:IOrganization) => {
+        (organization: IOrganization) => {
           this.$rootScope.$broadcast('OrganizationCreated');
           this.$modalInstance.close(organization);
-        }, (error:IErrorPayload) => {
+        }, (error: IErrorPayload) => {
           this.$log.debug(`Organization could NOT be added: ${error.data.message}`);
           this.$modalInstance.dismiss(error);
         });
@@ -148,16 +148,16 @@ module HawkularAccounts {
   export class OrganizationRemoveController {
     public static $inject = ['$scope', '$modalInstance', 'organization'];
 
-    constructor(private $scope:any,
-                private $modalInstance:any,
-                private organization:IOrganization) {
+    constructor(private $scope: any,
+      private $modalInstance: any,
+      private organization: IOrganization) {
     }
 
-    public cancel():void {
+    public cancel(): void {
       this.$modalInstance.dismiss('cancel');
     }
 
-    public remove():void {
+    public remove(): void {
       this.$modalInstance.close();
     }
   }

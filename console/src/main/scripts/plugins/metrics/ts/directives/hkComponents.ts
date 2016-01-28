@@ -22,7 +22,7 @@ module HawkularMetrics {
 
   export class HkSwitch {
 
-    public link:(scope:any, element:any, attrs:any) => void;
+    public link: (scope: any, element: any, attrs: any) => void;
     public restrict = 'E';
     public replace = 'true';
     public scope = {
@@ -36,14 +36,14 @@ module HawkularMetrics {
     public templateUrl = 'plugins/metrics/html/directives/hk-switch.html';
 
     constructor() {
-      this.link = (scope:any, element:any, attrs:any) => {
+      this.link = (scope: any, element: any, attrs: any) => {
         element.removeAttr('name');
         element.removeAttr('id');
 
         scope.hkOnText = attrs.onText || 'ON';
         scope.hkOffText = attrs.offText || 'OFF';
 
-        element.bind('keydown', function (e) {
+        element.bind('keydown', function(e) {
           let code = e.keyCode || e.which;
           if (code === 32 || code === 13) {
             e.stopImmediatePropagation();
@@ -69,7 +69,7 @@ module HawkularMetrics {
 
   export class HkTimeInput {
 
-    public link:(scope:any, attrs:any, element:any) => void;
+    public link: (scope: any, attrs: any, element: any) => void;
     public replace = 'true';
     public restrict = 'E';
     public scope = {
@@ -81,8 +81,8 @@ module HawkularMetrics {
     };
     public templateUrl = 'plugins/metrics/html/directives/time-input.html';
 
-    constructor(private hkTimeUnit:any) {
-      this.link = (scope:any, element:any, attrs:any) => {
+    constructor(private hkTimeUnit: any) {
+      this.link = (scope: any, element: any, attrs: any) => {
         element.removeAttr('id');
 
         let localChange = false;
@@ -90,13 +90,13 @@ module HawkularMetrics {
         scope.timeUnits = hkTimeUnit.timeUnits;
         scope.timeUnitsDict = hkTimeUnit.timeUnitDictionary;
 
-        scope.durationChange = ():void => {
+        scope.durationChange = (): void => {
           localChange = true;
           scope.hkDuration = scope.hkConvertedDuration * scope.responseUnit;
           scope.hkChange();
         };
 
-        scope.computeTimeInUnits = ():void => {
+        scope.computeTimeInUnits = (): void => {
           scope.hkConvertedDuration = scope.hkDuration / scope.responseUnit;
         };
 
@@ -112,7 +112,7 @@ module HawkularMetrics {
     }
 
     public static Factory() {
-      let directive = (hkTimeUnit:any) => {
+      let directive = (hkTimeUnit: any) => {
         return new HkTimeInput(hkTimeUnit);
       };
 
@@ -126,23 +126,23 @@ module HawkularMetrics {
 
   export class HkAutofocus {
 
-    public link:(scope:any, element:any[], attrs:any) => void;
+    public link: (scope: any, element: any[], attrs: any) => void;
 
     public restrict = 'A';
 
     constructor($timeout: any) {
-      this.link = (scope:any, element:any, attrs:any) => {
-        scope.$watch( () => { return element.is(':visible'); },
-            (value) => {
-              if(value) {
-                $timeout(() => {
-                  element[0].focus();
-                  if (attrs.hkAutofocus === 'select' && element[0].select) {
-                    element[0].select();
-                  }
-                });
-              }
+      this.link = (scope: any, element: any, attrs: any) => {
+        scope.$watch(() => { return element.is(':visible'); },
+          (value) => {
+            if (value) {
+              $timeout(() => {
+                element[0].focus();
+                if (attrs.hkAutofocus === 'select' && element[0].select) {
+                  element[0].select();
+                }
+              });
             }
+          }
         );
       };
     }

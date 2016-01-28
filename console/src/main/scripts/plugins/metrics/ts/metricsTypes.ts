@@ -19,15 +19,14 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="services/errorsManager.ts"/>
 
-
 module HawkularMetrics {
 
-/// Typescript 1.4 introduces type aliases:
-/// http://blogs.msdn.com/b/typescript/archive/2015/01/16/announcing-typescript-1-4.aspx
-/// Some Type aliases to make things more type safe than just string or number. Implies how it is being used and is
-/// especially useful for refactoring.
+  /// Typescript 1.4 introduces type aliases:
+  /// http://blogs.msdn.com/b/typescript/archive/2015/01/16/announcing-typescript-1-4.aspx
+  /// Some Type aliases to make things more type safe than just string or number. Implies how it is being used and is
+  /// especially useful for refactoring.
 
-/// ID types
+  /// ID types
   export type TenantId = string;
   export type FeedId = string;
   export type Environment = string;
@@ -45,64 +44,62 @@ module HawkularMetrics {
   export type PersonaId = string;
   export type Persona = IPersona;
 
-/// Value types
+  /// Value types
   export type TimestampInMillis = number;
   export type IntervalInSeconds = number;
   export type AuthenticationToken = string;
   export type IColor = string;
 
-
-/// Interface Definitions
+  /// Interface Definitions
   export interface IPersona {
-    id:  PersonaId;
+    id: PersonaId;
     name: string;
     createdAt: string;
     updatedAt: string;
   }
 
   export interface IUserDetails {
-    email:string;
+    email: string;
     emailVerified: boolean;
-    enabled:boolean;
-    firstName:string;
-    id:string;
-    lastName:string;
-    token:string;
+    enabled: boolean;
+    firstName: string;
+    id: string;
+    lastName: string;
+    token: string;
     totp: boolean;
-    username:string;
+    username: string;
   }
 
-  export enum PersistenceState {PERSISTING, SUCCESS, ERROR}
-  ;
+  export enum PersistenceState { PERSISTING, SUCCESS, ERROR }
 
   export interface IhkParams {
-    timeOffset:number;
+    timeOffset: number;
     resourceId: ResourceId;
   }
 
   export interface IMultipleChartData {
-    key:String;
-    color:String;
-    values:IChartDataPoint[];
+    key: String;
+    color: String;
+    values: IChartDataPoint[];
   }
 
   export interface IHawkularRootScope extends ng.IRootScopeService {
 
-    currentPersona:IPersona;
-    userDetails:IUserDetails;
-    PersistenceState:PersistenceState; // workaround, so that this enum can be accessed from the templates
-    hkStartTimestamp:TimestampInMillis;
-    hkEndTimestamp:TimestampInMillis;
-    hkParams:IhkParams;
-    resourcePath:ResourcePath;
-    isExperimental:boolean;
-    prevLocation:string; // not guaranteed to be set, use as needed.
+    currentPersona: IPersona;
+    userDetails: IUserDetails;
+    PersistenceState: PersistenceState; // workaround, so that this enum can be accessed from the templates
+    hkStartTimestamp: TimestampInMillis;
+    hkEndTimestamp: TimestampInMillis;
+    hkParams: IhkParams;
+    resourcePath: ResourcePath;
+    isExperimental: boolean;
+    prevLocation: string; // not guaranteed to be set, use as needed.
   }
 
   export interface IRefreshable {
-    startTimeStamp:TimestampInMillis;
-    endTimeStamp:TimestampInMillis;
-    refresh():void;
+    startTimeStamp: TimestampInMillis;
+    endTimeStamp: TimestampInMillis;
+    refresh(): void;
   }
 
   export interface IResourceProperties {
@@ -152,7 +149,7 @@ module HawkularMetrics {
   }
 
   // Alerts
-  export  interface IAlertContext {
+  export interface IAlertContext {
     alertType: string;
     resourceName: string;
     resourcePath: ResourcePath;
@@ -185,7 +182,7 @@ module HawkularMetrics {
     enabled: boolean;
     firingMatch: string; /// @todo: change to enum
     group: boolean;
-    id:  TriggerId;
+    id: TriggerId;
     name: string;
     orphan: boolean;
     severity: string; /// @todo: change to enum
@@ -214,7 +211,7 @@ module HawkularMetrics {
     tenantId: TenantId;
     triggerId: TriggerId;
 
-    context:IAlertContext;
+    context: IAlertContext;
     trigger: IAlertTrigger;
     // @todo: fillin Dampening and EvalSets
 
@@ -223,7 +220,7 @@ module HawkularMetrics {
     selected?: boolean;
 
     // UI stores an 'alertType' to benefit display
-    alertType:string;
+    alertType: string;
 
     // UI calculates start, end time and duration
     start?: TimestampInMillis;
@@ -233,41 +230,41 @@ module HawkularMetrics {
 
   export class ServerStatus {
 
-    constructor(public value:string, public state:string, public icon:string) {
+    constructor(public value: string, public state: string, public icon: string) {
     }
 
-    static SERVER_UP = new ServerStatus('Up', 'up', 'fa-arrow-up');
-    static SERVER_DOWN = new ServerStatus('Down', 'down', 'fa-arrow-down');
-    static SERVER_UNKNOW = new ServerStatus('Unknown', 'unknown', 'fa-chain-broken');
-    static SERVER_STARTING = new ServerStatus('Starting', 'starting', 'fa-spinner');
-    static SERVER_RESTART_REQUIRED = new ServerStatus('Restart Required', 'restart required', 'fa-repeat');
+    public static SERVER_UP = new ServerStatus('Up', 'up', 'fa-arrow-up');
+    public static SERVER_DOWN = new ServerStatus('Down', 'down', 'fa-arrow-down');
+    public static SERVER_UNKNOW = new ServerStatus('Unknown', 'unknown', 'fa-chain-broken');
+    public static SERVER_STARTING = new ServerStatus('Starting', 'starting', 'fa-spinner');
+    public static SERVER_RESTART_REQUIRED = new ServerStatus('Restart Required', 'restart required', 'fa-repeat');
 
-    toString = () => {
+    public toString = () => {
       return this.value;
     };
   }
 
   export class DatasourceStatus {
-    constructor (public value:string, public isUp: boolean) {
+    constructor(public value: string, public isUp: boolean) {
     }
 
-    static DATA_SOURCE_UP = new DatasourceStatus('Up', true);
-    static DATA_SOURCE_DOWN = new DatasourceStatus('Down', false);
-    static DATA_SOURCE_UNKNOW = new DatasourceStatus('Unknown', null);
+    public static DATA_SOURCE_UP = new DatasourceStatus('Up', true);
+    public static DATA_SOURCE_DOWN = new DatasourceStatus('Down', false);
+    public static DATA_SOURCE_UNKNOW = new DatasourceStatus('Unknown', null);
 
-    toString = () => {
+    public toString = () => {
       return this.value;
     };
   }
 
   export class ServerType {
-    constructor(public value:string, public type:string) {
+    constructor(public value: string, public type: string) {
     }
 
-    static SERVER_EAP = new ServerType('EAP', 'eap');
-    static SERVER_WILDFLY = new ServerType('WildFly', 'wildfly');
+    public static SERVER_EAP = new ServerType('EAP', 'eap');
+    public static SERVER_WILDFLY = new ServerType('WildFly', 'wildfly');
 
-    toString = () => {
+    public toString = () => {
       return this.value;
     };
   }

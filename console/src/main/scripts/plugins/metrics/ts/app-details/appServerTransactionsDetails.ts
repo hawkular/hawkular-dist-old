@@ -23,8 +23,8 @@ module HawkularMetrics {
 
   export class AppServerTransactionsDetailsController {
 
-    public startTimeStamp:TimestampInMillis;
-    public endTimeStamp:TimestampInMillis;
+    public startTimeStamp: TimestampInMillis;
+    public endTimeStamp: TimestampInMillis;
 
     public alertList: any[] = [];
 
@@ -43,8 +43,8 @@ module HawkularMetrics {
     // will contain in the format: 'metric name' : true | false
     public skipChartData = {};
 
-    private feedId:FeedId;
-    private resourceId:ResourceId;
+    private feedId: FeedId;
+    private resourceId: ResourceId;
 
     private TX_PFX = 'Transactions Metrics~Number of ';
 
@@ -54,20 +54,24 @@ module HawkularMetrics {
     public ABORTED_TX = { metricName: this.TX_PFX + 'Aborted Transactions', key: 'Aborted', color: '#515252' };
     public TIMEDOUT_TX = { metricName: this.TX_PFX + 'Timed Out Transactions', key: 'Timed Out', color: '#95489c' };
     public HEURISTIC_TX = { metricName: this.TX_PFX + 'Heuristics', key: 'Heuristics', color: '#49a547' };
-    public APP_ROLLBACK = { metricName: this.TX_PFX + 'Application Rollbacks', key: 'Application Rollbacks',
-      color: '#f57f20' };
-    public RES_ROLLBACK = { metricName: this.TX_PFX + 'Resource Rollbacks', key: 'Resource Rollbacks',
-      color: '#e12226' };
+    public APP_ROLLBACK = {
+      metricName: this.TX_PFX + 'Application Rollbacks', key: 'Application Rollbacks',
+      color: '#f57f20'
+    };
+    public RES_ROLLBACK = {
+      metricName: this.TX_PFX + 'Resource Rollbacks', key: 'Resource Rollbacks',
+      color: '#e12226'
+    };
 
-    constructor(private $scope:any,
-                private $rootScope:IHawkularRootScope,
-                private $interval:ng.IIntervalService,
-                private $routeParams:any,
-                private $log:ng.ILogService,
-                private HawkularNav:any,
-                private HawkularAlertRouterManager:IHawkularAlertRouterManager,
-                private MetricsService:IMetricsService,
-                private $q:ng.IQService) {
+    constructor(private $scope: any,
+      private $rootScope: IHawkularRootScope,
+      private $interval: ng.IIntervalService,
+      private $routeParams: any,
+      private $log: ng.ILogService,
+      private HawkularNav: any,
+      private HawkularAlertRouterManager: IHawkularAlertRouterManager,
+      private MetricsService: IMetricsService,
+      private $q: ng.IQService) {
       $scope.vm = this;
 
       this.feedId = this.$routeParams.feedId;
@@ -88,16 +92,15 @@ module HawkularMetrics {
       }
 
       // handle drag ranges on charts to change the time range
-      this.$scope.$on(EventNames.CHART_TIMERANGE_CHANGED, (event, data:Date[]) => {
+      this.$scope.$on(EventNames.CHART_TIMERANGE_CHANGED, (event, data: Date[]) => {
         this.changeTimeRange(data);
       });
 
       // handle drag ranges on charts to change the time range
-      this.$scope.$on('ContextChartTimeRangeChanged', (event, data:Date[]) => {
+      this.$scope.$on('ContextChartTimeRangeChanged', (event, data: Date[]) => {
         this.$log.debug('Received ContextChartTimeRangeChanged event' + data);
         this.changeTimeRange(data);
       });
-
 
       this.HawkularAlertRouterManager.registerForAlerts(
         this.$routeParams.feedId + '/' + this.$routeParams.resourceId,
@@ -109,7 +112,7 @@ module HawkularMetrics {
 
     private autoRefreshPromise: ng.IPromise<number>;
 
-    private autoRefresh(intervalInSeconds: number):void {
+    private autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.refresh();
       }, intervalInSeconds * 1000);
@@ -127,7 +130,7 @@ module HawkularMetrics {
       this.getAlerts();
     }
 
-    private changeTimeRange(data:Date[]):void {
+    private changeTimeRange(data: Date[]): void {
       this.startTimeStamp = data[0].getTime();
       this.endTimeStamp = data[1].getTime();
       this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
@@ -136,12 +139,12 @@ module HawkularMetrics {
 
     public filterAlerts(alertData: IHawkularAlertQueryResult) {
       let alertList = alertData.alertList;
-      _.remove(alertList, (item:IAlert) => {
+      _.remove(alertList, (item: IAlert) => {
         switch (item.context.alertType) {
-          case 'TX' : // FIXME: use correct types
+          case 'TX': // FIXME: use correct types
             item.alertType = item.context.alertType;
             return false;
-          default :
+          default:
             return true;
         }
       });
@@ -172,7 +175,7 @@ module HawkularMetrics {
       let tmpChartTxData = [];
       let txPromises = [];
 
-      if(!this.skipChartData[this.COMMITTED_TX.key]) {
+      if (!this.skipChartData[this.COMMITTED_TX.key]) {
         let txCommittedPromise = this.MetricsService.retrieveCounterRateMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId, this.COMMITTED_TX.metricName),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -185,7 +188,7 @@ module HawkularMetrics {
           });
         });
       }
-      if(!this.skipChartData[this.ABORTED_TX.key]) {
+      if (!this.skipChartData[this.ABORTED_TX.key]) {
         let txAbortedPromise = this.MetricsService.retrieveCounterRateMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId, this.ABORTED_TX.metricName),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -198,7 +201,7 @@ module HawkularMetrics {
           });
         });
       }
-      if(!this.skipChartData[this.APP_ROLLBACK.key]) {
+      if (!this.skipChartData[this.APP_ROLLBACK.key]) {
         let appRollbackPromise = this.MetricsService.retrieveCounterRateMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId, this.APP_ROLLBACK.metricName),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -211,7 +214,7 @@ module HawkularMetrics {
           });
         });
       }
-      if(!this.skipChartData[this.RES_ROLLBACK.key]) {
+      if (!this.skipChartData[this.RES_ROLLBACK.key]) {
         let resRollbackPromise = this.MetricsService.retrieveCounterRateMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId, this.RES_ROLLBACK.metricName),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -224,7 +227,7 @@ module HawkularMetrics {
           });
         });
       }
-      if(!this.skipChartData[this.TIMEDOUT_TX.key]) {
+      if (!this.skipChartData[this.TIMEDOUT_TX.key]) {
         let txTimedoutPromise = this.MetricsService.retrieveCounterRateMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId, this.TIMEDOUT_TX.metricName),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -237,7 +240,7 @@ module HawkularMetrics {
           });
         });
       }
-      if(!this.skipChartData[this.HEURISTIC_TX.key]) {
+      if (!this.skipChartData[this.HEURISTIC_TX.key]) {
         let txHeuristicPromise = this.MetricsService.retrieveCounterRateMetrics(this.$rootScope.currentPersona.id,
           MetricsService.getMetricId('M', this.feedId, this.resourceId, this.HEURISTIC_TX.metricName),
           this.startTimeStamp, this.endTimeStamp, 60);
@@ -250,7 +253,7 @@ module HawkularMetrics {
           });
         });
       }
-      this.$q.all(txPromises).finally(()=> {
+      this.$q.all(txPromises).finally(() => {
         this.chartTxData = tmpChartTxData;
       });
     }
@@ -287,7 +290,7 @@ module HawkularMetrics {
 
     }
 
-    public toggleChartData(name):void {
+    public toggleChartData(name): void {
       this.skipChartData[name] = !this.skipChartData[name];
       this.getTxChartData();
     }

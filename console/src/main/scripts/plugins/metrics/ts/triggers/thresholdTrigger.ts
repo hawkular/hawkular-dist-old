@@ -24,7 +24,7 @@ module HawkularMetrics {
 
   export class ThresholdTriggerSetupController extends TriggerSetupController {
 
-    loadTrigger(triggerId:string):Array<ng.IPromise<any>> {
+    public loadTrigger(triggerId: string): Array<ng.IPromise<any>> {
 
       let triggerPromise = this.HawkularAlertsManager.getTrigger(triggerId).then(
         (triggerData) => {
@@ -52,7 +52,7 @@ module HawkularMetrics {
       return [triggerPromise];
     }
 
-    saveTrigger(errorCallback):Array<ng.IPromise<any>> {
+    public saveTrigger(errorCallback): Array<ng.IPromise<any>> {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);
       updatedFullTrigger.trigger.enabled = this.adm.trigger.enabled;
@@ -64,9 +64,9 @@ module HawkularMetrics {
 
       // When using AutoResolve the settings are implicit. We use the same dampening as for Firing mode.
       // So, update both the firing and, if it exists, AR dampening.
-      updatedFullTrigger.dampenings.forEach((dampening:any) => {
+      updatedFullTrigger.dampenings.forEach((dampening: any) => {
         // time == 0 is a flag for default dampening (i.e. Strict(1))
-        if ( this.adm.trigger.evalTimeSetting === 0 ) {
+        if (this.adm.trigger.evalTimeSetting === 0) {
           dampening.type = 'STRICT';
           dampening.evalTrueSetting = 1;
           dampening.evalTimeSetting = null;
@@ -80,7 +80,7 @@ module HawkularMetrics {
       // When using AutoResolve the settings are implicit. We use the same setting as for Firing mode,
       // the only difference is the operation (LTE for AR, GT for Firing). So, update both the firing and,
       // if it exists, AR condition.
-      updatedFullTrigger.conditions.forEach((condition:any) => {
+      updatedFullTrigger.conditions.forEach((condition: any) => {
         condition.threshold = this.adm.trigger.conditionThreshold;
       });
 

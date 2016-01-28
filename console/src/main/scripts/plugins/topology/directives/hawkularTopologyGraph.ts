@@ -32,36 +32,36 @@ module HawkularTopology {
         link: ($scope, element, attributes) => {
           element.css('display', 'block');
 
-          var graph;
+          let graph;
           function notify(item) {
-            var event = $scope.$emit('select', item);
+            let event = $scope.$emit('select', item);
             if (attributes['selection'] === undefined && !event.defaultPrevented) {
               graph.select(item);
             }
           }
 
-          function icon(d) {
-            var text;
-            var kinds = $scope.kinds;
-            if (kinds) {
-              text = kinds[d.item.kind];
-            }
-            return text || '';
-          }
+          //function icon(d) {
+          //  let text;
+          //  let kinds = $scope.kinds;
+          //  if (kinds) {
+          //    text = kinds[d.item.kind];
+          //  }
+          //  return text || '';
+          //}
 
           function weak(d) {
-            var status = d.item.status;
+            let status = d.item.status;
             return status && status.phase && status.phase !== 'Running';
           }
 
-          function title(d) {
-            return d.item.metadata.name;
-          }
+          //function title(d) {
+          //  return d.item.metadata.name;
+          //}
 
           function render(args) {
-            var vertices = args[0];
-            var added = args[1];
-            var event = $scope.$emit('render', vertices, added);
+            let vertices = args[0];
+            let added = args[1];
+            let event = $scope.$emit('render', vertices, added);
             if (!event.defaultPrevented) {
               added.attr('class', (d) => d.item.kind);
               added.append('circle').attr('r', 15);
@@ -76,7 +76,7 @@ module HawkularTopology {
 
               added.append('title');
               vertices.selectAll('title')
-              .text((d) => d.item.metadata.name);
+                .text((d) => d.item.metadata.name);
               vertices.classed('weak', weak);
             }
           }

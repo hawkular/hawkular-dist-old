@@ -19,46 +19,46 @@
 
 module HawkularAccounts {
   export let pluginName = 'hawkular-accounts';
-  export let log:Logging.Logger = Logger.get(pluginName);
+  export let log: Logging.Logger = Logger.get(pluginName);
   export let templatePath = 'plugins/accounts/html';
   export let _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
   export type PersonaId = string;
 
   // simple data objects
   export interface IPersona {
-    id:  PersonaId;
+    id: PersonaId;
     name: string;
     createdAt: string;
     updatedAt: string;
   }
 
   export interface IToken {
-    id:  string;
+    id: string;
     key: string;
     secret: string;
     expiresAt: string;
     createdAt: string;
     updatedAt: string;
-    attributes: { [key:string]:string; };
-    $update(options:{},
-            success?:(success:IToken) => void,
-            failure?:(error:IErrorPayload) => void);
-    $remove(options:{},
-            success?:(success:IToken) => void,
-            failure?:(error:IErrorPayload) => void);
+    attributes: { [key: string]: string; };
+    $update(options: {},
+      success?: (success: IToken) => void,
+      failure?: (error: IErrorPayload) => void);
+    $remove(options: {},
+      success?: (success: IToken) => void,
+      failure?: (error: IErrorPayload) => void);
   }
 
   export interface IOrganization extends IPersona {
     owner: IPersona;
-    $update(options:{},
-            success?:(success:IOrganization) => void,
-            failure?:(error:IErrorPayload) => void);
-    $save(options:{},
-            success?:(success:IOrganization) => void,
-            failure?:(error:IErrorPayload) => void);
-    $remove(options:{},
-            success?:(success:IOrganization) => void,
-            failure?:(error:IErrorPayload) => void);
+    $update(options: {},
+      success?: (success: IOrganization) => void,
+      failure?: (error: IErrorPayload) => void);
+    $save(options: {},
+      success?: (success: IOrganization) => void,
+      failure?: (error: IErrorPayload) => void);
+    $remove(options: {},
+      success?: (success: IOrganization) => void,
+      failure?: (error: IErrorPayload) => void);
   }
 
   export interface IJoinRequest {
@@ -66,13 +66,13 @@ module HawkularAccounts {
     decision: string;
     joinRequestId: string;
     id: string;
-    organizationId:string;
-    $update(options:{},
-            success?:(success:IJoinRequest) => void,
-            failure?:(error:IErrorPayload) => void);
-    $save(options:{},
-            success?:(success:IJoinRequest) => void,
-            failure?:(error:IErrorPayload) => void);
+    organizationId: string;
+    $update(options: {},
+      success?: (success: IJoinRequest) => void,
+      failure?: (error: IErrorPayload) => void);
+    $save(options: {},
+      success?: (success: IJoinRequest) => void,
+      failure?: (error: IErrorPayload) => void);
   }
 
   export interface IInvitation {
@@ -104,22 +104,22 @@ module HawkularAccounts {
     organization: IOrganization;
     member: IPersona;
     role: IRole;
-    $update(options?:{},
-            success?:(success:ISuccessPayload) => void,
-            failure?:(error:IErrorPayload) => void);
-    $get(options?:{},
-            success?:(success:ISuccessPayload) => void,
-            failure?:(error:IErrorPayload) => void);
+    $update(options?: {},
+      success?: (success: ISuccessPayload) => void,
+      failure?: (error: IErrorPayload) => void);
+    $get(options?: {},
+      success?: (success: ISuccessPayload) => void,
+      failure?: (error: IErrorPayload) => void);
   }
 
   export interface IUserSettings {
     id: string;
-    $update(options?:{},
-            success?:(success:IUserSettings) => void,
-            failure?:(error:IErrorPayload) => void);
-    $get(options?:{},
-            success?:(success:IUserSettings) => void,
-            failure?:(error:IErrorPayload) => void);
+    $update(options?: {},
+      success?: (success: IUserSettings) => void,
+      failure?: (error: IErrorPayload) => void);
+    $get(options?: {},
+      success?: (success: IUserSettings) => void,
+      failure?: (error: IErrorPayload) => void);
   }
 
   // specialized payloads, requests and responses
@@ -141,7 +141,7 @@ module HawkularAccounts {
 
   export interface IInvitationRequest {
     emails: string;
-    $save(success?:(success:ISuccessPayload) => void, failure?:(error:IErrorPayload) => void):void;
+    $save(success?: (success: ISuccessPayload) => void, failure?: (error: IErrorPayload) => void): void;
   }
 
   export interface INotificationsService {
@@ -152,29 +152,29 @@ module HawkularAccounts {
   }
 
   export class Invitation implements IInvitation {
-    id:string;
-    token:string;
-    email:string;
-    organization:HawkularAccounts.IOrganization;
-    role:HawkularAccounts.IRole;
-    acceptedAt:Date;
+    public id: string;
+    public token: string;
+    public email: string;
+    public organization: HawkularAccounts.IOrganization;
+    public role: HawkularAccounts.IRole;
+    public acceptedAt: Date;
 
-    constructor(email:string, role:HawkularAccounts.IRole) {
+    constructor(email: string, role: HawkularAccounts.IRole) {
       this.email = email;
       this.role = role;
     }
   }
 
   export class Role implements IRole {
-    id:string;
-    name:string;
-    description:string;
+    public id: string;
+    public name: string;
+    public description: string;
 
-    constructor(name:string) {
+    constructor(name: string) {
       this.name = name;
     }
   }
 
-  export enum PersistenceState {PERSISTING, SUCCESS, ERROR};
-  export enum EditState {READ, EDIT};
+  export enum PersistenceState { PERSISTING, SUCCESS, ERROR };
+  export enum EditState { READ, EDIT };
 }
