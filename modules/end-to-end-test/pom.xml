@@ -31,6 +31,10 @@
   <name>Hawkular: End-To-End integration tests</name>
   <description>A module for some End-To-End integration tests on Rest-API level</description>
 
+  <properties>
+    <hawkular.backend>embedded_cassandra</hawkular.backend>
+  </properties>
+
   <dependencies>
 
     <dependency>
@@ -205,6 +209,7 @@
                 <javaOpt>-Djboss.socket.binding.port-offset=${hawkular.port.offset}</javaOpt>
                 <javaOpt>-Dkeycloak.import=${project.build.directory}/wildfly-run/hawkular-${project.version}/standalone/configuration/hawkular-realm-for-dev.json</javaOpt>
                 <javaOpt>-Dhawkular.agent.enabled=${hawkular.agent.enabled}</javaOpt>
+                <javaOpt>-Dhawkular.backend=${hawkular.backend}</javaOpt>
                 <javaOpt>-Dhawkular.log=${hawkular.log}</javaOpt>
                 <javaOpt>-Dhawkular.log.accounts=${hawkular.log.accounts}</javaOpt>
                 <javaOpt>-Dhawkular.log.agent=${hawkular.log.agent}</javaOpt>
