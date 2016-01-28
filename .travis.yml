@@ -5,8 +5,9 @@ sudo: false
 
 # manage the caches here https://travis-ci.org/hawkular/hawkular/caches
 cache:
-  directories:
+  directories: # keep in sync with CACHED_DIRECTORIES below
   - $HOME/.m2/repository
+  - $HOME/cassandra-downloads
 jdk:
 - oraclejdk8
 install:
@@ -18,15 +19,16 @@ before_script:
 - ulimit -u 4096
 - ulimit -s 65535
 - ulimit -a
+- bash .travis.install.cassandra.sh
 script:
 - PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v '\['`
 - if [[ "${PROJECT_VERSION}" =~ .*SNAPSHOT ]] && [[ "${TRAVIS_BRANCH}" = "master" ]] && [[ "${TRAVIS_PULL_REQUEST}" = "false" ]];
   then
    echo "Building with deployment" ;
-   mvn -fae -s .travis.maven.settings.xml -Pitest clean deploy -DdeployAtEnd=true ;
+   mvn -fae -s .travis.maven.settings.xml -Pitest clean deploy -DdeployAtEnd=true -Dhawkular.backend=remote ;
   else
    echo "Building without deployment" ;
-   mvn -fae -s .travis.maven.settings.xml -Pitest clean install ;
+   mvn -fae -s .travis.maven.settings.xml -Pitest clean install -Dhawkular.backend=remote ;
   fi
 notifications:
   email: false
@@ -46,8 +48,10 @@ addons:
 before_cache:
 # Clean the cached directories once their size exceeds the space left on the partition.
 # This is important because Travis zips the chached directories to a temporary file on the same partition.
+# Note that while we consider the summed size of all cached dirs, we remove only those ones that tend to grow over time
+- CACHED_DIRECTORIES=("$HOME/.m2/repository" "$HOME/cassandra-downloads")
 - availBytes=$(df -P . | tail -1 | awk '{print $4}')
-- cachedBytes=$(du -cs "$HOME/.m2/repository" | tail -1 | awk '{print $1}')
+- cachedBytes=$(du -cs "${CACHED_DIRECTORIES[@]}" | tail -1 | awk '{print $1}')
 - echo "Checking if the size of directories to cache ${cachedBytes} Bytes exceeds the free space ${availBytes} Bytes left on the current partition"
 - if [ "${cachedBytes}" -gt "${availBytes}" ] ; then
     echo "Cleaning the cached dirs (${cachedBytes} Bytes) because their size exceeds the free space (${availBytes} Bytes) left on the current partition"
