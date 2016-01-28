@@ -22,6 +22,8 @@
 
 module HawkularMetrics {
 
+  /* tslint:disable:variable-name */
+
   _module.filter('duration', () => {
 
     let DURATION_FORMATS_SPLIT = /((?:[^ydhms']+)|(?:'(?:[^']|'')*')|(?:y+|d+|h+|m+|s+))(.*)/;

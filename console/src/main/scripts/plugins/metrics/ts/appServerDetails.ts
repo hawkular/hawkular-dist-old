@@ -38,6 +38,8 @@ module HawkularMetrics {
     private feedId: FeedId;
     private resourceId: ResourceId;
 
+    /* tslint:disable:variable-name */
+
     constructor(private $rootScope: any,
       private $scope: any,
       private $route: any,
@@ -190,8 +192,8 @@ module HawkularMetrics {
         this.$log.debug('Heap Used trigger exists, nothing to do');
       }, () => {
         // Jvm trigger doesn't exist, need to create one
-        let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
-        let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
+        //let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
+        //let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
 
         let triggerId: string = qualifiedResourceId + '_jvm_pheap';
         let dataId: string = metPrefix + 'WildFly Memory Metrics~Heap Used';
@@ -267,8 +269,8 @@ module HawkularMetrics {
           this.$log.debug('Non Heap Used trigger exists, nothing to do');
         }, () => {
           // Jvm trigger doesn't exist, need to create one
-          let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
-          let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
+          //let low = AppServerJvmDetailsController.MAX_HEAP * 0.2;
+          //let high = AppServerJvmDetailsController.MAX_HEAP * 0.8;
 
           let triggerId: string = qualifiedResourceId + '_jvm_nheap';
           let dataId: string = metPrefix + 'WildFly Memory Metrics~NonHeap Used';
@@ -638,8 +640,6 @@ module HawkularMetrics {
             this.$log.error('Error on Trigger creation for ' + triggerId);
           });
         });
-
-      let log = this.$log;
 
       let promises = [defaultEmailPromise];
       promises.push(heapTriggerPromise, nonHeapTriggerPromise, garbageTriggerPromise); //JVM

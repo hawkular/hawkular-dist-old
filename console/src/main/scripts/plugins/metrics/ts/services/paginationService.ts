@@ -28,7 +28,7 @@ module HawkularMetrics {
     public static $inject = [];
 
     private PARAMETER_EXPRESSION = /(rel)="(\w+)"/;
-    private total = 0;
+    //private total = 0;
 
     private parseLinkHeader(value): any {
       let relationLinks = {};

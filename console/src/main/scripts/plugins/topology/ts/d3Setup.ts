@@ -22,28 +22,28 @@ module HawkularTopology {
   _module.run(($rootScope, $location) => {
 
     /* A cache to prevent jumping when rapidly toggling views */
-    var cache = {};
+    let cache = {};
 
-    var initGraph = (selector, force, notify) => {
-      var outer = d3.select(selector);
+    let initGraph = (selector, force, notify) => {
+      let outer = d3.select(selector);
 
       /* Kinds of objects to show */
-      var kinds = null;
+      let kinds = null;
 
       /* Data we've been fed */
-      var items = {};
-      var relations = [];
+      let items = {};
+      let relations = [];
 
       /* Graph information */
-      var width;
-      var height;
-      var radius = 20;
-      var timeout;
-      var nodes = [];
-      var links = [];
-      var lookup = {};
-      var selection = null;
-      var isDragging = false;
+      let width;
+      let height;
+      let radius = 20;
+      let timeout;
+      let nodes = [];
+      let links = [];
+      let lookup = {};
+      let selection = null;
+      let isDragging = false;
 
       /* Allow the force to be passed in, default if not */
       if (!force) {
@@ -103,7 +103,7 @@ module HawkularTopology {
           // d3.selectAll('g').classed('fixed', true);
         })
         .on('dragend', (d) => {
-          var moved = true;
+          let moved = true;
           isDragging = false;
           if (d.floatpoint) {
             moved = (d.x < d.floatpoint[0] - 5 || d.x > d.floatpoint[0] + 5) ||
@@ -165,7 +165,7 @@ module HawkularTopology {
           .on('mouseover', (d, i) => !isDragging && tip.show(d, i))
           .on('mouseout', tip.hide)
           .on('dblclick', (n) => {
-            var path;
+            let path;
             switch (n.item.kind) {
               case 'Server':
                 path = '/hawkular-ui/app/app-details/' + n.item.metadata.feedId
@@ -202,15 +202,15 @@ module HawkularTopology {
       }
 
       function digest() {
-        var pnodes = nodes;
-        var plookup = lookup;
+        let pnodes = nodes;
+        let plookup = lookup;
 
         /* The actual data for the graph */
         nodes = [];
         links = [];
         lookup = {};
 
-        var item, id, kind, node;
+        let kind, node;
         angular.forEach(items, (item, id) => {
           kind = item.kind;
 
@@ -235,8 +235,8 @@ module HawkularTopology {
           nodes.push(node);
         });
 
-        var i, len, relation, s, t;
-        for (i = 0, len = relations.length; i < len; i++) {
+        let relation, s, t;
+        for (let i = 0, len = relations.length; i < len; i++) {
           relation = relations[i];
 
           s = lookup[relation.source];
@@ -270,13 +270,13 @@ module HawkularTopology {
         select: select,
         kinds: (value) => {
           kinds = value;
-          var added = digest();
+          let added = digest();
           return [vertices, added];
         },
         data: (new_items, new_relations) => {
           items = new_items || {};
           relations = new_relations || [];
-          var added = digest();
+          let added = digest();
           return [vertices, added];
         },
         close: () => {
@@ -287,7 +287,7 @@ module HawkularTopology {
            * Keep the positions of these items cached,
            * in case we are asked to make the same graph again.
            */
-          var id, node;
+          let node;
           cache = {};
           angular.forEach(lookup, (value, id) => {
             node = nodes[lookup[id]];

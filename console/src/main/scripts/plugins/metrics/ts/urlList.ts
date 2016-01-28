@@ -40,16 +40,16 @@ module HawkularMetrics {
   }
 
   export class UrlChartDataPoint implements IChartDataPoint {
-    date: Date;
-    min: number;
-    max: number;
-    percentile95th: number;
-    median: number;
-    timestamp: number;
-    value: number;
-    avg: number;
-    empty: boolean;
-    start: number;
+    public date: Date;
+    public min: number;
+    public max: number;
+    public percentile95th: number;
+    public median: number;
+    public timestamp: number;
+    public value: number;
+    public avg: number;
+    public empty: boolean;
+    public start: number;
 
     constructor(value, timestamp) {
       this.start = timestamp;
@@ -98,6 +98,7 @@ module HawkularMetrics {
     public sorting: any;
     public currentSortIndex: number = 0;
     public startTimeStamp: TimestampInMillis;
+
     constructor(private $location: ng.ILocationService,
       private $scope: any,
       private $rootScope: any,
@@ -149,7 +150,7 @@ module HawkularMetrics {
       this.sortUrls();
     }
 
-    sortUrls() {
+    public sortUrls() {
       switch (this.currentSortIndex) {
         case 1:
           this.filteredResourceList = this.sortFilteredResourceList().reverse();
@@ -551,8 +552,8 @@ module HawkularMetrics {
 
   class DeleteResourceModalController {
 
-    static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularInventory', 'HawkularAlertsManager',
-      'NotificationsService', 'resource'];
+    public static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularInventory',
+      'HawkularAlertsManager', 'NotificationsService', 'resource'];
 
     constructor(private $scope: any,
       private $rootScope: any,
@@ -565,7 +566,7 @@ module HawkularMetrics {
       $scope.vm = this;
     }
 
-    deleteResource() {
+    public deleteResource() {
       let metricsIds: string[] = [this.resource.id + '.status.duration', this.resource.id + '.status.code'];
       let triggerIds: string[] = [this.resource.id + '_trigger_thres', this.resource.id + '_trigger_avail'];
       let deleteMetric = (metricId: string) =>

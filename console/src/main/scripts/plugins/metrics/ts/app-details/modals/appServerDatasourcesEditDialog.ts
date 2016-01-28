@@ -21,7 +21,7 @@ module HawkularMetrics {
 
   export class AppServerDatasourcesEditDialogController {
 
-    static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', '$routeParams', 'HawkularOps',
+    public static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', '$routeParams', 'HawkularOps',
       'NotificationsService', 'HawkularInventory', 'datasource'];
 
     public tmpDSProperties: any[];
@@ -64,7 +64,7 @@ module HawkularMetrics {
         this.datasource.xaDatasource = !!this.datasource.xaDatasourceClass;
         this.tmpDSProperties = [];
         if (resource.value['Datasource Properties']) {
-          var dsProps = JSON.parse(resource.value['Datasource Properties']);
+          let dsProps = JSON.parse(resource.value['Datasource Properties']);
           _.forEach(dsProps, function(propValue, propName) {
             this.tmpDSProperties.push({ name: propName, value: propValue });
           }, this);

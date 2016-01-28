@@ -34,6 +34,7 @@ module HawkularMetrics {
     public chartRespData: any;
     public resolvedRespData: any;
     public alertList: any;
+
     constructor(private $q: ng.IQService,
       private $rootScope: IHawkularRootScope,
       private MetricsService: IMetricsService,
@@ -297,7 +298,7 @@ module HawkularMetrics {
       );
     }
 
-    private changeTimeRange(data: Date[]): void {
+    public changeTimeRange(data: Date[]): void {
       this.startTimeStamp = data[0].getTime();
       this.endTimeStamp = data[1].getTime();
       this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);

@@ -31,7 +31,9 @@ module HawkularMetrics {
     private password: string;
 
     private codeSnippetShown: boolean;
-    private snippetToCopy: string = 'java -jar hawkular-wildfly-agent-installer.jar';
+    public snippetToCopy: string = 'java -jar hawkular-wildfly-agent-installer.jar';
+
+    /* tslint:disable:variable-name */
 
     constructor(private $location: ng.ILocationService,
       private $scope: any,

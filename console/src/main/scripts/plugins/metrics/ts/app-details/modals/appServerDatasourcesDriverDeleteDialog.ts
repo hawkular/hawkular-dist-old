@@ -21,7 +21,8 @@ module HawkularMetrics {
 
   export class AppServerDatasourcesDriverDeleteDialogController {
 
-    static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularOps', 'NotificationsService', 'driver'];
+    public static $inject = ['$scope', '$rootScope', '$modalInstance', '$q', 'HawkularOps',
+      'NotificationsService', 'driver'];
 
     constructor(private $scope: any,
       private $rootScope: any,

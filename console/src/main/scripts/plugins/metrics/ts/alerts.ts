@@ -22,6 +22,8 @@
 
 module HawkularMetrics {
 
+  /* tslint:disable:variable-name */
+
   export class AlertSetupController {
 
     public static $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager', 'NotificationsService',
@@ -101,11 +103,11 @@ module HawkularMetrics {
       this.$modalInstance.dismiss('cancel');
     }
 
-    loadTriggers(): Array<ng.IPromise<any>> {
+    public loadTriggers(): Array<ng.IPromise<any>> {
       throw new Error('This method is abstract');
     }
 
-    saveTriggers(errorCallback): Array<ng.IPromise<any>> {
+    public saveTriggers(errorCallback): Array<ng.IPromise<any>> {
       throw new Error('This method is abstract');
     }
   }
@@ -219,11 +221,11 @@ module HawkularMetrics {
       return route;
     }
 
-    loadTrigger(triggerId: string): Array<ng.IPromise<any>> {
+    public loadTrigger(triggerId: string): Array<ng.IPromise<any>> {
       throw new Error('This method is abstract');
     }
 
-    saveTrigger(errorCallback): Array<ng.IPromise<any>> {
+    public saveTrigger(errorCallback): Array<ng.IPromise<any>> {
       throw new Error('This method is abstract');
     }
 
@@ -364,7 +366,7 @@ module HawkularMetrics {
 
   export class AlertUrlAvailabilitySetupController extends AlertSetupController {
 
-    loadTriggers(): Array<ng.IPromise<any>> {
+    public loadTriggers(): Array<ng.IPromise<any>> {
       let availabilityTriggerId = this.$routeParams.resourceId + '_trigger_avail';
 
       let availabilityTriggerPromise = this.HawkularAlertsManager.getTrigger(availabilityTriggerId)
@@ -381,7 +383,7 @@ module HawkularMetrics {
       return [availabilityTriggerPromise];
     }
 
-    saveTriggers(errorCallback): Array<ng.IPromise<any>> {
+    public saveTriggers(errorCallback): Array<ng.IPromise<any>> {
       // Set the actual object to save
       let availabilityTrigger = angular.copy(this.triggerDefinition.avail);
       availabilityTrigger.trigger.actions.email[0] = this.adm.avail.email;
@@ -399,7 +401,8 @@ module HawkularMetrics {
   _module.controller('AlertUrlAvailabilitySetupController', AlertUrlAvailabilitySetupController);
 
   export class AlertUrlResponseSetupController extends AlertSetupController {
-    loadTriggers(): Array<ng.IPromise<any>> {
+
+    public loadTriggers(): Array<ng.IPromise<any>> {
       let responseTriggerId = this.$routeParams.resourceId + '_trigger_thres';
 
       let responseTriggerPromise = this.HawkularAlertsManager.getTrigger(responseTriggerId).then(
@@ -417,7 +420,7 @@ module HawkularMetrics {
       return [responseTriggerPromise];
     }
 
-    saveTriggers(errorCallback): Array<ng.IPromise<any>> {
+    public saveTriggers(errorCallback): Array<ng.IPromise<any>> {
       // Set the actual object to save
       let responseTrigger = angular.copy(this.triggerDefinition.thres);
       responseTrigger.trigger.enabled = this.adm.thres.conditionEnabled;
