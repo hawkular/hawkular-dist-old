@@ -92,14 +92,17 @@ public class InventoryEventListener extends InventoryEventMessageListener {
     private void handleResourceTypeEvent(ResourceTypeEvent event) {
         try {
             init();
-            log.warn("*********** " + event.toString());
+            log.warn("\n*********** " + event.toString());
 
             String tenantId = event.getTenant().getId();
             ResourceType rt = event.getObject();
-            switch (rt.getId()) {
-                case "Wildfly Server": {
+            //String type = URLDecoder.decode(rt.getId(), "UTF-8");
+            String type = rt.getId();
+            switch (type) {
+                case "WildFly Server": {
                     // JVM HEAP
                     String groupTriggerId = "JVM_HeapUsed";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "JVM Heap Used");
                     group.setDescription("JVM Heap Used of Heap Max");
                     group.setAutoDisable(true); // Disable trigger when fired
@@ -131,9 +134,11 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
 
                     // JVM NON-HEAP
                     groupTriggerId = "JVM_NonHeapUsed";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "JVM Non Heap Used");
                     group.setDescription("JVM Non Heap Used of Heap Max");
                     group.setAutoDisable(true); // Disable trigger when fired
@@ -165,6 +170,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
 
                     // Accumulated GC Time
                     // Note that the GC metric is a counter, an ever-increasing value reflecting the total time the JVM
@@ -175,8 +181,9 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // a lot of time spent in GC between readings.  We'll start with 200ms per minute for 5 minutes.
                     // TODO: 'Rate' This should likely be a new triggerType but for now we'll treat it like threshold.
                     groupTriggerId = "JVM_GC";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "JVM Accumulated GC Duration");
-                    group.setDescription("Accumulated GC Duration");
+                    group.setDescription("Accumulated GC Duration Per-Minute");
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
@@ -200,10 +207,12 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
 
                     // WEB SESSION TRIGGERS
                     // ACTIVE SESSIONS
                     groupTriggerId = "Web_SessionsActive";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Web Sessions Active");
                     group.setDescription("Active Web Sessions");
                     group.setAutoDisable(true); // Disable trigger when fired
@@ -226,13 +235,16 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     cFiring1.setContext(conditionContext);
                     conditions.clear();
                     conditions.add(cFiring1);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
 
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
 
                     // EXPIRED SESSIONS
                     groupTriggerId = "Web_SessionsExpired";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Web Sessions Expired");
                     group.setDescription("Expired Web Sessions");
                     group.setAutoDisable(true); // Disable trigger when fired
@@ -260,9 +272,11 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
 
                     // REJECTED SESSIONS
                     groupTriggerId = "Web_SessionsRejected";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Web Sessions Rejected");
                     group.setDescription("Rejected Web Sessions");
                     group.setAutoDisable(true); // Disable trigger when fired
@@ -290,13 +304,14 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
 
                     break;
                 }
                 case "URL": {
                     String groupTriggerId = "URL_Response";
-
-                    Trigger group = new Trigger(tenantId, groupTriggerId, "URL Response");
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    Trigger group = new Trigger(tenantId, groupTriggerId, groupTriggerId);
                     group.setDescription("Response Time for URL");
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
@@ -328,9 +343,12 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                             Collections.singleton(cFiring), null);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.AUTORESOLVE,
                             Collections.singleton(cResolve), null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+
                     break;
                 }
                 default:
+                    log.infof("\n*********** Group Trigger Not Created for type [%s] ", type);
                     return; // no alerting
             }
 
@@ -342,21 +360,150 @@ public class InventoryEventListener extends InventoryEventMessageListener {
     private void handleResourceEvent(ResourceEvent event) {
         try {
             init();
-            log.warn("*********** " + event.toString());
+            log.warn("\n*********** " + event.toString());
 
             String tenantId = event.getTenant().getId();
             Resource r = event.getObject();
-            String groupTriggerId = "URL_Response";
 
             switch (r.getType().getId()) {
+                case "WildFly Server": {
+                    // The Wildfly agent generates resource IDs unique among the app servers it is monitoring because
+                    // each resource is prefixed with the managedServerName.  But when dealing with multiple
+                    // Wildfly-agent feeds a resource ID is not guaranteed to be unique.  So, we further qualify
+                    // the resource ID with the feed ID and use this qualifiedResourceId in the trigger definition.
+
+                    // common to members
+                    String feedId = r.getPath().ids().getFeedId();
+                    String resourceId = r.getId();
+                    String qualifiedResourceId = feedId + "/" + resourceId;
+                    Map<String, String> memberContext = new HashMap<>(2);
+                    memberContext.put("resourceName", qualifiedResourceId);
+                    memberContext.put("resourcePath", event.getHeaders().get("path"));
+                    Map<String, String> memberTags = new HashMap<>(1);
+                    memberTags.put("resourceId", qualifiedResourceId);
+
+                    // JVM HEAP
+                    String groupTriggerId = "JVM_HeapUsed";
+                    String memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    String memberDescription = "JVM Heap Used of Heap Max for " + resourceId;
+                    Map<String, String> dataIdMap = new HashMap<>(2);
+                    String dataId1 = "WildFly Memory Metrics~Heap Used";
+                    String dataId2 = "WildFly Memory Metrics~Heap Max";
+                    String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    String memberDataId2 = getMetricId(dataId2, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    dataIdMap.put(dataId2, memberDataId2);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
+                            memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    // JVM NON-HEAP
+                    groupTriggerId = "JVM_NonHeapUsed";
+                    memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    memberDescription = "JVM Non Heap Used of Heap Max for " + resourceId;
+                    dataIdMap.clear();
+                    dataId1 = "WildFly Memory Metrics~NonHeap Used";
+                    dataId2 = "WildFly Memory Metrics~Heap Max";
+                    memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    memberDataId2 = getMetricId(dataId2, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    dataIdMap.put(dataId2, memberDataId2);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
+                            memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    // Accumulated GC Time
+                    // Note that the GC metric is a counter, an ever-increasing value reflecting the total time the JVM
+                    // has spent doing GC.  'Accumulated' here reflects that we are combining the totals for 4
+                    // different GCs in the VM, each a counter itself, and reporting a single metric value for total
+                    // GC time spent. So, from an alerting perspective we want to alert when GC is taking unacceptably
+                    // long. That means we need to alert on high *deltas* in the metric values reported, which reflect
+                    // a lot of time spent in GC between readings.  We'll start with 200ms per minute for 5 minutes.
+                    // TODO: 'Rate' This should likely be a new triggerType but for now we'll treat it like threshold.
+                    groupTriggerId = "JVM_GC";
+                    memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    memberDescription = "Accumulated GC Duration Per-Minute for " + resourceId;
+                    dataIdMap.clear();
+                    dataId1 = "WildFly Memory Metrics~Accumulated GC Duration";
+                    memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,
+                            memberDescription, memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    // WEB SESSION TRIGGERS
+                    // ACTIVE SESSIONS
+                    groupTriggerId = "Web_SessionsActive";
+                    memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    memberDescription = "Active Web Sessions for " + resourceId;
+                    dataIdMap.clear();
+                    dataId1 = "WildFly Aggregated Web Metrics~Aggregated Active Web Sessions";
+                    memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,
+                            memberDescription, memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    // EXPIRED SESSIONS
+                    groupTriggerId = "Web_SessionsExpired";
+                    memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    memberDescription = "Expired Web Sessions Per-Minute for " + resourceId;
+                    dataIdMap.clear();
+                    dataId1 = "WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions";
+                    memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,
+                            memberDescription, memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    // REJECTED SESSIONS
+                    groupTriggerId = "Web_SessionsRejected";
+                    memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    memberDescription = "Rejected Web Sessions Per-Minute for " + resourceId;
+                    dataIdMap.clear();
+                    dataId1 = "WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions";
+                    memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,
+                            memberDescription, memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    break;
+                }
+
                 case "URL":
-                    Map<String, String> dataIdMap = new HashMap<>();
-                    //tags: {
-                    //  resourceId: resourceId
-                    //},
-                    //context: {
-                    //  resourceName: url,
-                    //  resourcePath: resourcePath,
+                    // common to members
+                    String feedId = r.getPath().ids().getFeedId();
+                    String url = event.getHeaders().get("url");
+                    //String resourceId = String.valueOf(MessageDigest.getInstance("MD5").digest(
+                    //        r.getId().getBytes("UTF-8")));
+                    String resourceId = r.getId();
+                    //String qualifiedResourceId = feedId + "/" + resourceId;
+                    Map<String, String> memberContext = new HashMap<>(2);
+                    memberContext.put("resourceName", url);
+                    memberContext.put("resourcePath", event.getHeaders().get("path"));
+                    Map<String, String> memberTags = new HashMap<>(1);
+                    memberTags.put("resourceId", resourceId);
+
+                    // Response Time
+                    String groupTriggerId = "URL_Response";
+                    String memberId = groupTriggerId + "_" + resourceId;
+                    String memberName = "URL Response [" + url + "]";
+                    String memberDescription = "Response Time for URL " + url;
+                    Map<String, String> dataIdMap = new HashMap<>(2);
+                    String dataId1 = "status.duration";
+                    String memberDataId1 = resourceId + ".status.duration";
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
+                            memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
 
                 default:
                     return; // no alerting
@@ -364,6 +511,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
         } catch (Exception e) {
             log.errorf("Error processing inventory bus event %s : %s", event, e);
         }
+    }
+
+    private String getMetricId(String groupDataId, String feedId, String resId) {
+        return "MI~R~[" + feedId + "/" + resId + "~~]~MT~" + groupDataId;
     }
 
     private synchronized void init() throws Exception {
