@@ -24,37 +24,37 @@ module HawkularMetrics {
 
   export class AlertsCenterDetailsController {
 
-    public static  $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager',
+    public static $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager',
       '$log', '$q', '$rootScope', '$routeParams', '$location', 'MetricsService', 'NotificationsService'];
 
-    private _alertId:AlertId;
-    public feedId:FeedId;
-    public detailAlert:IAlert;
-    public description:string;
-    public comments:string;
-    public status:string;
+    private _alertId: AlertId;
+    public feedId: FeedId;
+    public detailAlert: IAlert;
+    public description: string;
+    public comments: string;
+    public status: string;
     public statuses;
 
-    public endTimeStamp:TimestampInMillis;
-    public startTimeStamp:TimestampInMillis;
+    public endTimeStamp: TimestampInMillis;
+    public startTimeStamp: TimestampInMillis;
 
-    public alertsTimeStart:TimestampInMillis;
-    public alertsTimeEnd:TimestampInMillis;
-    public alertsTimeOffset:TimestampInMillis;
+    public alertsTimeStart: TimestampInMillis;
+    public alertsTimeEnd: TimestampInMillis;
+    public alertsTimeOffset: TimestampInMillis;
     public isWorking: boolean = false;
 
     public actionsHistory;
 
-    constructor(private $scope:any,
-                private HawkularAlertsManager:IHawkularAlertsManager,
-                private ErrorsManager:IErrorsManager,
-                private $log:ng.ILogService,
-                private $q:ng.IQService,
-                private $rootScope:IHawkularRootScope,
-                private $routeParams:any,
-                private $location:ng.ILocationService,
-                private MetricsService:IMetricsService,
-                private NotificationsService:INotificationsService) {
+    constructor(private $scope: any,
+      private HawkularAlertsManager: IHawkularAlertsManager,
+      private ErrorsManager: IErrorsManager,
+      private $log: ng.ILogService,
+      private $q: ng.IQService,
+      private $rootScope: IHawkularRootScope,
+      private $routeParams: any,
+      private $location: ng.ILocationService,
+      private MetricsService: IMetricsService,
+      private NotificationsService: INotificationsService) {
       $scope.acd = this;
       this._alertId = $routeParams.alertId;
 
@@ -70,14 +70,14 @@ module HawkularMetrics {
       this.getActions(this._alertId);
     }
 
-    public getAlert(alertId:AlertId) {
-      return this.HawkularAlertsManager.queryAlerts({alertIds: alertId}).then((alerts) => {
+    public getAlert(alertId: AlertId) {
+      return this.HawkularAlertsManager.queryAlerts({ alertIds: alertId }).then((alerts) => {
         let alert = alerts.alertList[0];
         this.detailAlert = alert;
         this.description = alert.trigger.description;
         let resourcePath = alert.context.resourcePath;
         this.feedId = resourcePath.indexOf('/f;') === -1 ? '' :
-          resourcePath.substring(resourcePath.lastIndexOf('/f;')+3, resourcePath.indexOf('/r;'));
+          resourcePath.substring(resourcePath.lastIndexOf('/f;') + 3, resourcePath.indexOf('/r;'));
         this.status = alert.status;
         if (this.status === 'OPEN') {
           this.statuses = ['OPEN', 'ACKNOWLEDGED', 'RESOLVED'];
@@ -93,15 +93,15 @@ module HawkularMetrics {
       });
     }
 
-    public getActions(alertId:AlertId) {
-      return this.HawkularAlertsManager.queryActionsHistory({alertIds: alertId, sort: 'ctime', thin: false})
+    public getActions(alertId: AlertId) {
+      return this.HawkularAlertsManager.queryActionsHistory({ alertIds: alertId, sort: 'ctime', thin: false })
         .then((queriedActions) => {
-        console.dir(queriedActions);
-        this.actionsHistory = queriedActions.actionsList;
-      });
+          console.dir(queriedActions);
+          this.actionsHistory = queriedActions.actionsList;
+        });
     }
 
-    public cancel():void {
+    public cancel(): void {
       //let timeOffset = this.alertsTimeOffset;
       //let endTime = this.alertsTimeEnd;
       //this.$location.url(`/hawkular-ui/alerts-center/${timeOffset}/${endTime}`);
@@ -122,7 +122,7 @@ module HawkularMetrics {
       }
     }
 
-    public notes():void {
+    public notes(): void {
       this.isWorking = true;
 
       let newComment = {
@@ -138,7 +138,7 @@ module HawkularMetrics {
       });
     }
 
-    public resolve():void {
+    public resolve(): void {
       this.$log.log('ResolveDetail: ' + this._alertId);
       this.isWorking = true;
 
@@ -197,4 +197,3 @@ module HawkularMetrics {
 
   _module.controller('AlertsCenterDetailsController', AlertsCenterDetailsController);
 }
-

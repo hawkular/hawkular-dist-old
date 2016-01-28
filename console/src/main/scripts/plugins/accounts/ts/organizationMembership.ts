@@ -23,33 +23,33 @@ module HawkularAccounts {
       'HawkularAccount', 'NotificationsService'];
 
     // backend data related to this controller
-    public memberships:Array<IOrganizationMembership>;
-    public joinRequests:Array<IJoinRequest>;
-    public organization:IOrganization;
-    public pending:Array<IInvitation>;
-    public role:IRole;
-    public possibleRoles:Array<Role>;
+    public memberships: Array<IOrganizationMembership>;
+    public joinRequests: Array<IJoinRequest>;
+    public organization: IOrganization;
+    public pending: Array<IInvitation>;
+    public role: IRole;
+    public possibleRoles: Array<Role>;
 
     // state control, for easier UI consumption
-    public loading:boolean;
-    public loadingJoinRequests:boolean;
-    public foundOrganization:boolean;
-    public isAllowedToInvite:boolean = false;
-    public isAllowedToListPending:boolean = false;
-    public isAllowedToTransferOrganization:boolean = false;
-    public isAllowedToChangeRoleOfMembers:boolean = false;
-    public isAllowedToApproveMember:boolean = false;
-    public isOrganization:boolean = false;
-    public membershipsToUpdate:{ [id: string]: PersistenceState; } = {};
-    public joinRequestsToUpdate:{ [id: string]: PersistenceState; } = {};
+    public loading: boolean;
+    public loadingJoinRequests: boolean;
+    public foundOrganization: boolean;
+    public isAllowedToInvite: boolean = false;
+    public isAllowedToListPending: boolean = false;
+    public isAllowedToTransferOrganization: boolean = false;
+    public isAllowedToChangeRoleOfMembers: boolean = false;
+    public isAllowedToApproveMember: boolean = false;
+    public isOrganization: boolean = false;
+    public membershipsToUpdate: { [id: string]: PersistenceState; } = {};
+    public joinRequestsToUpdate: { [id: string]: PersistenceState; } = {};
 
-    constructor(private $log:ng.ILogService,
-                private $rootScope:any,
-                private $scope:any,
-                private $routeParams:any,
-                private $modal:any,
-                private HawkularAccount:any,
-                private NotificationsService:INotificationsService) {
+    constructor(private $log: ng.ILogService,
+      private $rootScope: any,
+      private $scope: any,
+      private $routeParams: any,
+      private $modal: any,
+      private HawkularAccount: any,
+      private NotificationsService: INotificationsService) {
       this.foundOrganization = false;
       this.prepareListeners();
       this.loadData();
@@ -59,7 +59,7 @@ module HawkularAccounts {
       }
     }
 
-    public prepareListeners():void {
+    public prepareListeners(): void {
       let organizationId = this.$routeParams.organizationId;
       this.$scope.$on('OrganizationLoaded', () => {
         this.loadMemberships(organizationId);
@@ -86,12 +86,12 @@ module HawkularAccounts {
         this.loadMemberships(organizationId);
       });
 
-      this.$rootScope.$on('SwitchedPersona', (event:any, persona:IPersona) => {
+      this.$rootScope.$on('SwitchedPersona', (event: any, persona: IPersona) => {
         this.isOrganization = persona.id !== this.$rootScope.userDetails.id;
       });
     }
 
-    public loadData():void {
+    public loadData(): void {
       this.loading = true;
       this.loadingJoinRequests = true;
       let organizationId = this.$routeParams.organizationId;
@@ -103,7 +103,7 @@ module HawkularAccounts {
       this.loadPossibleRoles();
     }
 
-    public loadPossibleRoles():void {
+    public loadPossibleRoles(): void {
       let organizationId = this.$routeParams.organizationId;
       this.possibleRoles = [
         new Role('Monitor'),
@@ -117,26 +117,26 @@ module HawkularAccounts {
       this.loadPermissionToTransferOrganization(organizationId);
     }
 
-    public loadOrganization(organizationId:string):void {
-      this.organization = this.HawkularAccount.Organization.get({id: organizationId},
+    public loadOrganization(organizationId: string): void {
+      this.organization = this.HawkularAccount.Organization.get({ id: organizationId },
         () => {
           this.foundOrganization = true;
           this.$scope.$broadcast('OrganizationLoaded');
         },
-        (error:IErrorPayload) => {
+        (error: IErrorPayload) => {
           this.$log.warn(`Error while loading the organization: ${error.data.message}`);
           this.loading = false;
         }
       );
     }
 
-    public loadMemberships(organizationId:string):void {
-      this.memberships = this.HawkularAccount.OrganizationMembership.query({organizationId:organizationId},
+    public loadMemberships(organizationId: string): void {
+      this.memberships = this.HawkularAccount.OrganizationMembership.query({ organizationId: organizationId },
         () => {
           this.loading = false;
           this.$log.debug(`Finished loading members. Size: ${this.memberships.length}`);
         },
-        (error:IErrorPayload) => {
+        (error: IErrorPayload) => {
           this.NotificationsService.error('List of memberships could NOT be retrieved.');
           this.$log.warn(`List of memberships could NOT be retrieved: ${error.data.message}`);
           this.loading = false;
@@ -144,122 +144,122 @@ module HawkularAccounts {
       );
     }
 
-    public loadPendingInvitations(organizationId:string):void {
-      this.pending = this.HawkularAccount.OrganizationInvitation.query({organizationId:organizationId},
+    public loadPendingInvitations(organizationId: string): void {
+      this.pending = this.HawkularAccount.OrganizationInvitation.query({ organizationId: organizationId },
         () => {
           this.$log.debug(`Finished loading pending invitations. Size: ${this.pending.length}`);
         },
-        (error:IErrorPayload) => {
+        (error: IErrorPayload) => {
           this.$log.debug(`Error while trying to load the pending invitations: ${error.data.message}`);
         }
       );
     }
 
-    public loadPermissionToInvite(organizationId:string):void {
-      const operationName:string = 'organization-invite';
+    public loadPermissionToInvite(organizationId: string): void {
+      const operationName: string = 'organization-invite';
       this.loadPermission(organizationId, operationName,
-        (response:IPermissionResponse) => {
+        (response: IPermissionResponse) => {
           this.isAllowedToInvite = response.permitted;
           this.$log.debug(`Finished checking if we can invite other users. Response: ${response.permitted}`);
         },
-        (error:IErrorPayload) => {
+        (error: IErrorPayload) => {
           this.$log.debug(`Error checking if we can invite other users. Response: ${error.data.message}`);
         }
       );
     }
 
-    public loadPermissionToListPending(organizationId:string):void {
-      const operationName:string = 'organization-list-invitations';
+    public loadPermissionToListPending(organizationId: string): void {
+      const operationName: string = 'organization-list-invitations';
       this.loadPermission(organizationId, operationName,
-        (response:IPermissionResponse) => {
+        (response: IPermissionResponse) => {
           this.isAllowedToListPending = response.permitted;
           this.$scope.$broadcast('PermissionToListPendingLoaded');
           this.$log.debug(`Finished checking if we can list the pending invitations. Response: ${response.permitted}`);
         },
-        (error:IErrorPayload) => {
+        (error: IErrorPayload) => {
           this.$log.debug(`Error checking if we can list the pending invitations. Response: ${error.data.message}`);
         }
       );
     }
 
-    public loadPermissionToApproveMember(organizationId:string):void {
-      const operationName:string = 'organization-invite';
+    public loadPermissionToApproveMember(organizationId: string): void {
+      const operationName: string = 'organization-invite';
       this.loadPermission(organizationId, operationName,
-        (response:IPermissionResponse) => {
+        (response: IPermissionResponse) => {
           this.isAllowedToApproveMember = response.permitted;
           this.$scope.$broadcast('PermissionToListPendingLoaded');
           this.$log.debug(`Finished checking if we can approve join requests. Response: ${response.permitted}`);
         },
-        (error:IErrorPayload) => {
+        (error: IErrorPayload) => {
           this.$log.debug(`Error checking if we can approve join requests. Response: ${error.data.message}`);
         }
       );
     }
 
-    public loadPermissionToTransferOrganization(organizationId:string):void {
-      const operationName:string = 'organization-transfer';
+    public loadPermissionToTransferOrganization(organizationId: string): void {
+      const operationName: string = 'organization-transfer';
       this.loadPermission(organizationId, operationName,
-        (response:IPermissionResponse) => {
+        (response: IPermissionResponse) => {
           this.isAllowedToTransferOrganization = response.permitted;
           this.$scope.$broadcast('PermissionToTransferOrganizationLoaded');
           this.$log.debug(`Finished checking if we can transfer this organization. Response: ${response.permitted}`);
         },
-        (error:IErrorPayload) => {
+        (error: IErrorPayload) => {
           this.$log.debug(`Error checking if we can transfer this organization. Response: ${error.data.message}`);
         }
       );
     }
 
-    public loadPermissionToChangeRoleOfMembers(organizationId:string):void {
-      const operationName:string = 'organization-change-role-of-members';
+    public loadPermissionToChangeRoleOfMembers(organizationId: string): void {
+      const operationName: string = 'organization-change-role-of-members';
       this.loadPermission(organizationId, operationName,
-        (response:IPermissionResponse) => {
+        (response: IPermissionResponse) => {
           this.isAllowedToChangeRoleOfMembers = response.permitted;
           this.$log.debug(`Finished checking if we can change the role of members. Response: ${response.permitted}`);
         },
-        (error:IErrorPayload) => {
+        (error: IErrorPayload) => {
           this.$log.debug(`Error checking if we can change the role of members. Response: ${error.data.message}`);
         }
       );
     }
 
     public loadPermission(
-      resourceId:string,
-      operationName:string,
-      successCallback: (response:IPermissionResponse) => void,
-      errorCallback: (error:IErrorPayload) => void
-    ):void {
+      resourceId: string,
+      operationName: string,
+      successCallback: (response: IPermissionResponse) => void,
+      errorCallback: (error: IErrorPayload) => void
+    ): void {
       return this.HawkularAccount.Permission.get(
-        {resourceId:resourceId, operation:operationName},
+        { resourceId: resourceId, operation: operationName },
         successCallback,
         errorCallback
       );
     }
 
     public loadJoinRequests(organizationId) {
-      this.joinRequests = this.HawkularAccount.OrganizationJoinRequest.query({organizationId:organizationId}, () => {
+      this.joinRequests = this.HawkularAccount.OrganizationJoinRequest.query({ organizationId: organizationId }, () => {
         this.loadingJoinRequests = false;
-      }, (error:IErrorPayload) => {
+      }, (error: IErrorPayload) => {
         this.$log.debug(`Error loading the join requests for this organization. Response: ${error.data.message}`);
       });
     }
 
-    public showInviteModal():void {
+    public showInviteModal(): void {
       let createFormModal = this.$modal.open({
         controller: 'HawkularAccounts.OrganizationInviteModalController as inviteModal',
         templateUrl: 'plugins/accounts/html/organization-invite.html'
       });
 
-      createFormModal.result.then((emails:Array<string>) => {
+      createFormModal.result.then((emails: Array<string>) => {
         emails.forEach((email) => {
-          let invitation:IInvitation = new Invitation(email, new Role('Monitor'));
+          let invitation: IInvitation = new Invitation(email, new Role('Monitor'));
           this.pending.unshift(invitation);
         });
       });
 
     }
 
-    public changeRole(membership:IOrganizationMembership):void {
+    public changeRole(membership: IOrganizationMembership): void {
       if (membership.role === null) {
         return;
       }
@@ -271,20 +271,20 @@ module HawkularAccounts {
 
       this.membershipsToUpdate[membership.id] = PersistenceState.PERSISTING;
 
-      membership.$update(null, (response:ISuccessPayload) => {
+      membership.$update(null, (response: ISuccessPayload) => {
         this.membershipsToUpdate[membership.id] = PersistenceState.SUCCESS;
         // just for a moment, until we re-evaluate if the user still has the permission
         this.isAllowedToChangeRoleOfMembers = false;
         this.loadPermissionToChangeRoleOfMembers(this.organization.id);
 
-      }, (error:IErrorPayload) => {
+      }, (error: IErrorPayload) => {
         this.membershipsToUpdate[membership.id] = PersistenceState.ERROR;
         this.$log.debug(`Error changing role for membership. Response: ${error.data.message}`);
       });
 
     }
 
-    public transferOwnership(membership:IOrganizationMembership):void {
+    public transferOwnership(membership: IOrganizationMembership): void {
       if (!this.isAllowedToTransferOrganization) {
         this.NotificationsService.error('Error: You don\'t have the permissions to transfer this organization.');
         return;
@@ -302,7 +302,7 @@ module HawkularAccounts {
       transferOrgModal.result.then(() => {
         this.organization.owner = membership.member;
         this.membershipsToUpdate[membership.id] = PersistenceState.PERSISTING;
-        this.organization.$update(null, (response:IOrganization) => {
+        this.organization.$update(null, (response: IOrganization) => {
           this.$scope.$broadcast('OwnershipChanged');
           this.membershipsToUpdate[membership.id] = PersistenceState.SUCCESS;
           this.organization = response;
@@ -311,7 +311,7 @@ module HawkularAccounts {
           this.memberships = [];
           this.loading = true;
           this.loadMemberships(this.organization.id);
-        }, (error:IErrorPayload) => {
+        }, (error: IErrorPayload) => {
           this.membershipsToUpdate[membership.id] = PersistenceState.ERROR;
           this.$log.debug(`Error changing role for membership. Response: ${error.data.message}`);
         });
@@ -321,71 +321,70 @@ module HawkularAccounts {
       });
     }
 
-    public approveRequest(joinRequest:IJoinRequest):void {
+    public approveRequest(joinRequest: IJoinRequest): void {
       joinRequest.decision = 'ACCEPT';
-      this.updateJoinRequest(joinRequest, (response:IJoinRequest) => {
+      this.updateJoinRequest(joinRequest, (response: IJoinRequest) => {
         this.joinRequestsToUpdate[joinRequest.id] = PersistenceState.SUCCESS;
         this.NotificationsService.success('Join request successfully approved.');
         this.joinRequests.splice(this.joinRequests.indexOf(joinRequest), 1);
         this.$scope.$broadcast('JoinRequestApproved');
-      }, (error:IErrorPayload) => {
+      }, (error: IErrorPayload) => {
         this.joinRequestsToUpdate[joinRequest.id] = PersistenceState.ERROR;
         this.NotificationsService.error('An error occurred while trying to accept the join request.');
         this.$log.error(`Error while trying to accept join request: ${error.data.message}`);
       });
     }
 
-    public rejectRequest(joinRequest:IJoinRequest):void {
+    public rejectRequest(joinRequest: IJoinRequest): void {
       joinRequest.decision = 'REJECT';
-      this.updateJoinRequest(joinRequest, (response:IJoinRequest) => {
+      this.updateJoinRequest(joinRequest, (response: IJoinRequest) => {
         this.joinRequestsToUpdate[joinRequest.id] = PersistenceState.SUCCESS;
         this.NotificationsService.success('Join request successfully rejected.');
         this.joinRequests.splice(this.joinRequests.indexOf(joinRequest), 1);
-      }, (error:IErrorPayload) => {
+      }, (error: IErrorPayload) => {
         this.joinRequestsToUpdate[joinRequest.id] = PersistenceState.ERROR;
         this.NotificationsService.error('An error occurred while trying to reject the join request.');
         this.$log.error(`Error while trying to reject join request: ${error.data.message}`);
       });
     }
 
-    public updateJoinRequest(joinRequest:IJoinRequest,
-                             successCallback: (response:IJoinRequest) => void,
-                             errorCallback: (error:IErrorPayload) => void):void {
+    public updateJoinRequest(joinRequest: IJoinRequest,
+      successCallback: (response: IJoinRequest) => void,
+      errorCallback: (error: IErrorPayload) => void): void {
       joinRequest.joinRequestId = joinRequest.id;
       this.joinRequestsToUpdate[joinRequest.id] = PersistenceState.PERSISTING;
-      joinRequest.$update({organizationId: this.organization.id}, successCallback, errorCallback);
+      joinRequest.$update({ organizationId: this.organization.id }, successCallback, errorCallback);
     }
   }
 
-
   export class OrganizationInviteModalController {
     public static $inject = ['$log', '$routeParams', '$modalInstance', 'HawkularAccount', 'NotificationsService'];
-    public invitation:IInvitationRequest;
+    public invitation: IInvitationRequest;
 
-    constructor(private $log:ng.ILogService,
-                private $routeParams:any,
-                private $modalInstance:any,
-                private HawkularAccount:any,
-                private NotificationsService:INotificationsService) {
-      this.invitation = new HawkularAccount.OrganizationInvitation({organizationId: $routeParams.organizationId});
+    constructor(private $log: ng.ILogService,
+      private $routeParams: any,
+      private $modalInstance: any,
+      private HawkularAccount: any,
+      private NotificationsService: INotificationsService) {
+      this.invitation = new HawkularAccount.OrganizationInvitation({ organizationId: $routeParams.organizationId });
     }
 
-    public cancel():void {
+    public cancel(): void {
       this.$modalInstance.dismiss('cancel');
     }
 
-    public invite():void {
+    public invite(): void {
       this.invitation.$save(() => {
         this.NotificationsService.success('Invitation successfully sent.');
         this.$modalInstance.close(
           this.invitation.emails
             .split(/[,\s]/)
-            .filter((entry:string) => {
+            .filter((entry: string) => {
               return entry && entry.length > 0;
             }
-          )
+            )
         );
-      }, (error:IErrorPayload) => {
+      }, (error: IErrorPayload) => {
         this.NotificationsService.error('An error occurred while trying to send the invitations.');
         this.$log.debug(`Error while trying to send invitations: ${error.data.message}`);
         this.$modalInstance.close('error');
@@ -396,20 +395,20 @@ module HawkularAccounts {
   export class OrganizationTransferModalController {
     public static $inject = ['$log', '$routeParams', '$modalInstance', 'organization', 'transferTo'];
 
-    constructor(private $log:ng.ILogService,
-                private $routeParams:any,
-                private $modalInstance:any,
-                private organization:IOrganization,
-                private transferTo:IPersona) {
+    constructor(private $log: ng.ILogService,
+      private $routeParams: any,
+      private $modalInstance: any,
+      private organization: IOrganization,
+      private transferTo: IPersona) {
       this.$log.debug('Organization received: ');
       this.$log.debug(organization);
     }
 
-    public cancel():void {
+    public cancel(): void {
       this.$modalInstance.dismiss('cancel');
     }
 
-    public transfer():void {
+    public transfer(): void {
       this.$modalInstance.close('transfer');
     }
   }

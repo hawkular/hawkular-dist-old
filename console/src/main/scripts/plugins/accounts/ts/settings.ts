@@ -22,16 +22,16 @@ module HawkularAccounts {
     public static $inject = ['$log', '$rootScope', 'HawkularAccount', 'NotificationsService'];
 
     // backend data related to this controller
-    public settings:IUserSettings;
+    public settings: IUserSettings;
 
     // state control, for easier UI consumption
-    public loading:boolean;
-    public isOrganization:boolean;
+    public loading: boolean;
+    public isOrganization: boolean;
 
-    constructor(private $log:ng.ILogService,
-                private $rootScope:any,
-                private HawkularAccount:any,
-                private NotificationsService:INotificationsService) {
+    constructor(private $log: ng.ILogService,
+      private $rootScope: any,
+      private HawkularAccount: any,
+      private NotificationsService: INotificationsService) {
       this.prepareListeners();
       this.loadData();
 
@@ -41,22 +41,22 @@ module HawkularAccounts {
     }
 
     public prepareListeners() {
-      this.$rootScope.$on('SwitchedPersona', (event:any, persona:IPersona) => {
+      this.$rootScope.$on('SwitchedPersona', (event: any, persona: IPersona) => {
         this.isOrganization = persona.id !== this.$rootScope.userDetails.id;
       });
     }
 
-    public loadData():void {
+    public loadData(): void {
       this.loading = true;
       this.loadSettings();
     }
 
-    public loadSettings():void {
+    public loadSettings(): void {
       this.settings = this.HawkularAccount.Settings.get({},
-        (settings:IUserSettings) => {
+        (settings: IUserSettings) => {
           this.loading = false;
         },
-        (error:IErrorPayload) => {
+        (error: IErrorPayload) => {
           this.NotificationsService.warning('User settings could not be loaded.');
           this.$log.warn(`Error while loading the organization: ${error.data.message}`);
           this.loading = false;
@@ -64,10 +64,10 @@ module HawkularAccounts {
       );
     }
 
-    public save():void {
-      this.settings.$update({}, (settings:IUserSettings) => {
+    public save(): void {
+      this.settings.$update({}, (settings: IUserSettings) => {
         this.NotificationsService.success('User settings successfully updated.');
-      }, (error:IErrorPayload) => {
+      }, (error: IErrorPayload) => {
         this.NotificationsService.error('User settings could not be updated.');
       });
     }

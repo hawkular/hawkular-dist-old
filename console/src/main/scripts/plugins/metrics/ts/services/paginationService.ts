@@ -20,7 +20,7 @@
 
 module HawkularMetrics {
   export interface IHkHeaderParser {
-    parse(headers:any): any;
+    parse(headers: any): any;
   }
 
   export class HkHeaderParser implements IHkHeaderParser {
@@ -30,7 +30,7 @@ module HawkularMetrics {
     private PARAMETER_EXPRESSION = /(rel)="(\w+)"/;
     private total = 0;
 
-    private parseLinkHeader(value):any {
+    private parseLinkHeader(value): any {
       let relationLinks = {};
 
       if (!value) {
@@ -71,7 +71,7 @@ module HawkularMetrics {
       return relationLinks;
     }
 
-    public parse(headers:any):any {
+    public parse(headers: any): any {
       return {
         total: headers['x-total-count'],
         rel: this.parseLinkHeader(headers.link)

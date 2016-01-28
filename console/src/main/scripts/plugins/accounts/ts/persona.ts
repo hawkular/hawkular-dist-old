@@ -20,20 +20,20 @@ module HawkularAccounts {
   export class PersonaController {
     public static $inject = ['$rootScope', '$scope', '$log', 'HawkularAccount', 'NotificationsService'];
 
-    public personas:Array<IPersona>;
-    public currentPersona:IPersona;
-    public loading:boolean = true;
+    public personas: Array<IPersona>;
+    public currentPersona: IPersona;
+    public loading: boolean = true;
 
-    constructor(private $rootScope:any,
-                private $scope:any,
-                private $log:ng.ILogService,
-                private HawkularAccount:any,
-                private NotificationsService:INotificationsService) {
+    constructor(private $rootScope: any,
+      private $scope: any,
+      private $log: ng.ILogService,
+      private HawkularAccount: any,
+      private NotificationsService: INotificationsService) {
       this.prepareListeners();
       this.loadData();
     }
 
-    public prepareListeners():void {
+    public prepareListeners(): void {
       this.$rootScope.$on('CurrentPersonaLoaded', () => {
         this.loadPersonas();
       });
@@ -47,7 +47,7 @@ module HawkularAccounts {
       });
     }
 
-    public loadData():void {
+    public loadData(): void {
       this.loading = true;
       let personaToGet = 'current';
 
@@ -59,10 +59,10 @@ module HawkularAccounts {
       this.loadAsCurrentPersona(personaToGet);
     }
 
-    public loadAsCurrentPersona(personaId:string):void {
+    public loadAsCurrentPersona(personaId: string): void {
       this.$log.debug(`Persona ID to load: ${personaId}`);
-      this.currentPersona = this.HawkularAccount.Persona.get({id: personaId},
-        (response:IPersona) => {
+      this.currentPersona = this.HawkularAccount.Persona.get({ id: personaId },
+        (response: IPersona) => {
           if (response.id == null) {
             if (personaId === 'current') {
               // at this point, we were requested to get the personaId , but we got an empty response from the server...
@@ -77,7 +77,7 @@ module HawkularAccounts {
             // we got the persona we wanted!
             this.$rootScope.$broadcast('CurrentPersonaLoaded', response);
           }
-        }, (error:IErrorPayload) => {
+        }, (error: IErrorPayload) => {
           if (personaId === 'current') {
             this.NotificationsService.error(`Failed to retrieve the current persona: ${error.data.message}`);
             this.$log.warn(`Failed to retrieve the current persona: ${error.data.message}`);
@@ -89,11 +89,11 @@ module HawkularAccounts {
       );
     }
 
-    public loadPersonas():void {
+    public loadPersonas(): void {
       this.personas = this.HawkularAccount.Persona.query({},
-        (response:Array<IPersona>) => {
+        (response: Array<IPersona>) => {
           this.loading = false;
-        }, (error:IErrorPayload) => {
+        }, (error: IErrorPayload) => {
           this.NotificationsService.error(`Failed to retrieve the list of possible personas: ${error.data.message}`);
           this.$log.warn(`Failed to retrieve the list of possible personas: ${error.data.message}`);
           this.loading = false;
@@ -101,7 +101,7 @@ module HawkularAccounts {
       );
     }
 
-    public switchPersona(persona:IPersona):void {
+    public switchPersona(persona: IPersona): void {
       this.currentPersona = persona;
       this.$rootScope.$broadcast('SwitchedPersona', persona);
       localStorage.setItem('lastPersona', persona.id);

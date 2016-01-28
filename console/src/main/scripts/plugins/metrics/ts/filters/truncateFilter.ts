@@ -18,7 +18,6 @@
 /// <reference path="../metricsPlugin.ts"/>
 /// <reference path="../../includes.ts"/>
 
-
 module HawkularMetrics {
 
   // {{ "some text" | truncate : <length> : <words> : <left|right|middle> | <separator> }}
@@ -44,7 +43,7 @@ module HawkularMetrics {
       if (keepWords && !right) {
         start = input.lastIndexOf(' ', start);
       }
-      let end = right ? -length + SEP_LENGTH : (left ? input.length : 0-(length - SEP_LENGTH - start));
+      let end = right ? -length + SEP_LENGTH : (left ? input.length : 0 - (length - SEP_LENGTH - start));
       if (keepWords && !left) {
         end = input.indexOf(' ', input.length - Math.abs(end) - 1) + 1;
       }

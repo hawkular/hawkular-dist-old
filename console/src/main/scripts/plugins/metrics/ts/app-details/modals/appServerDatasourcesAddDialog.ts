@@ -32,8 +32,8 @@ module HawkularMetrics {
     conn: IDatasourceConnection;
 
     uploading: boolean;
-    hasOperationFailed:boolean;
-    hasOperationSucceeded:boolean;
+    hasOperationFailed: boolean;
+    hasOperationSucceeded: boolean;
   }
 
   export interface IDatasourceProperty {
@@ -61,17 +61,16 @@ module HawkularMetrics {
     public dsNameChanged: boolean = false;
     public jndiNameChanged: boolean = false;
 
-    constructor(private $rootScope:IHawkularRootScope,
-                private $scope:ng.IScope,
-                private $q:ng.IQService,
-                private $timeout:ng.ITimeoutService,
-                private $log:ng.ILogService,
-                private HawkularOps:any,
-                private $modalInstance:any,
-                private NotificationsService:INotificationsService,
-                private $routeParams:any,
-                private HawkularInventory:any) {
-
+    constructor(private $rootScope: IHawkularRootScope,
+      private $scope: ng.IScope,
+      private $q: ng.IQService,
+      private $timeout: ng.ITimeoutService,
+      private $log: ng.ILogService,
+      private HawkularOps: any,
+      private $modalInstance: any,
+      private NotificationsService: INotificationsService,
+      private $routeParams: any,
+      private HawkularInventory: any) {
 
       /// make sure our WS socket is open
       HawkularOps.init(this.NotificationsService);
@@ -79,7 +78,7 @@ module HawkularMetrics {
       HawkularInventory.ResourceUnderFeed.get({
         feedId: this.$routeParams.feedId,
         resourcePath: this.$routeParams.resourceId + '~~'
-      }, (resource:IResourcePath) => {
+      }, (resource: IResourcePath) => {
         this.dsData.resourcePath = resource.path;
       });
 
@@ -100,7 +99,7 @@ module HawkularMetrics {
 
     }
 
-    public onClose():void {
+    public onClose(): void {
       this.$modalInstance.close('ok');
     }
 
@@ -114,15 +113,16 @@ module HawkularMetrics {
     public onJNDINameChange(): void {
       this.jndiNameChanged = true;
       if (!this.dsNameChanged) {
-        this.dsData.datasourceName = this.dsData.jndiName.replace('java:/','').replace('java:jboss/','');
+        this.dsData.datasourceName = this.dsData.jndiName.replace('java:/', '').replace('java:jboss/', '');
       }
     }
 
-    public exitStepDatasourceAttributes():void {
+    public exitStepDatasourceAttributes(): void {
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         environmentId: globalEnvironmentId, feedId: this.$routeParams.feedId,
-        resourceTypeId: 'JDBC Driver'}, (aResourceList, getResponseHeaders) => {
-          this.driversList = aResourceList;
+        resourceTypeId: 'JDBC Driver'
+      }, (aResourceList, getResponseHeaders) => {
+        this.driversList = aResourceList;
       });
     }
 
@@ -131,23 +131,23 @@ module HawkularMetrics {
     }
 
     public addDSProperty(): void {
-      this.tmpDSProperties.push({name:'', value:''});
+      this.tmpDSProperties.push({ name: '', value: '' });
     }
 
-    public exitStepXAProperties():void {
+    public exitStepXAProperties(): void {
       this.dsData.datasourceProperties = {};
       _.forEach(this.tmpDSProperties, function(prop: IDatasourceProperty) {
         this.dsData.datasourceProperties[prop.name] = prop.value;
       }, this);
     }
 
-    public backStepReview():void {
+    public backStepReview(): void {
       this.dsData.uploading = false;
       this.dsData.hasOperationFailed = false;
       this.dsData.hasOperationSucceeded = false;
     }
 
-    public addDatasource():void {
+    public addDatasource(): void {
       this.dsData.uploading = true;
       this.HawkularOps.performAddDatasourceOperation(this.dsData.resourcePath,
         this.$rootScope.userDetails.token,
@@ -163,10 +163,10 @@ module HawkularMetrics {
         this.dsData.conn.username,
         this.dsData.conn.password,
         this.dsData.conn.securityDomain
-        );
+      );
     }
 
-    public finishedAddDatasourceWizard():void {
+    public finishedAddDatasourceWizard(): void {
       //this.$log.log('Finished add Datasource wizard');
       this.$modalInstance.close('ok');
     }

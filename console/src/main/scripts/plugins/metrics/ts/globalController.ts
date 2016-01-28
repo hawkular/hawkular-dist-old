@@ -22,10 +22,10 @@ module HawkularMetrics {
 
   export class GlobalController {
 
-    constructor(private $scope:any,
-                private $log:ng.ILogService,
-                private $rootScope:IHawkularRootScope,
-                private NotificationsService:INotificationsService
+    constructor(private $scope: any,
+      private $log: ng.ILogService,
+      private $rootScope: IHawkularRootScope,
+      private NotificationsService: INotificationsService
     ) {
       $scope.global = this;
 
@@ -35,7 +35,7 @@ module HawkularMetrics {
      * Turn on experimentalMode which allows for features that are implemented but not officially part
      * of the sanctioned build yet.
      */
-    public experimentalMode():void {
+    public experimentalMode(): void {
       this.$rootScope.isExperimental = !this.$rootScope.isExperimental;
       if (this.$rootScope.isExperimental) {
         this.$log.info('Starting Experimental Mode');
@@ -48,5 +48,3 @@ module HawkularMetrics {
 
   _module.controller('GlobalController', GlobalController);
 }
-
-

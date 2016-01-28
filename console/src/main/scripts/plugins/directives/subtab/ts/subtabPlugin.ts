@@ -22,7 +22,7 @@ module Subtab {
 
   export var _module = angular.module(pluginName, ['duScroll']);
 
-  _module.directive('hawkularSubtab', function () {
+  _module.directive('hawkularSubtab', function() {
     return new Subtab.SubtabDirective();
   });
 

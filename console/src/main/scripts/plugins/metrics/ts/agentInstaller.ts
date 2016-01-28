@@ -33,18 +33,18 @@ module HawkularMetrics {
     private codeSnippetShown: boolean;
     private snippetToCopy: string = 'java -jar hawkular-wildfly-agent-installer.jar';
 
-    constructor(private $location:ng.ILocationService,
-                private $scope:any,
-                private $rootScope:any,
-                private $log:ng.ILogService,
-                private $modal:any,
-                private NotificationsService:INotificationsService) {
+    constructor(private $location: ng.ILocationService,
+      private $scope: any,
+      private $rootScope: any,
+      private $log: ng.ILogService,
+      private $modal: any,
+      private NotificationsService: INotificationsService) {
       $scope.aic = this;
       this.hawkularServerUrl = this.httpUriPart;
     }
 
     public requiredFieldsFilled(hawkularServerUrl: string, wildflyHome: string): boolean {
-        return true;
+      return true;
     }
 
     public copySuccess(): void {

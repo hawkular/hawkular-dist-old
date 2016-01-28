@@ -26,37 +26,37 @@ module HawkularMetrics {
 
     public static MINIMUM_AVAIL_MEM = 100 * 1024 * 1024;
     public math = Math;
-    private autoRefreshPromise:ng.IPromise<number>;
+    private autoRefreshPromise: ng.IPromise<number>;
 
-    public alertList:any[] = [];
+    public alertList: any[] = [];
     public fileStoreList;
     public processorList;
     public processorListNames;
-    public chartCpuData:IChartDataPoint[] = [];
-    public chartCpuDataMulti:IChartDataPoint[][] = [];
+    public chartCpuData: IChartDataPoint[] = [];
+    public chartCpuDataMulti: IChartDataPoint[][] = [];
     public chartFileSystemData = {};
-    public startTimeStamp:TimestampInMillis;
-    public endTimeStamp:TimestampInMillis;
-    public chartMemoryUsageData:IChartDataPoint[];
+    public startTimeStamp: TimestampInMillis;
+    public endTimeStamp: TimestampInMillis;
+    public chartMemoryUsageData: IChartDataPoint[];
     // will contain in the format: 'metric name' : true | false
     public skipChartData = {};
-    public feedId:FeedId;
-    private memoryResourceId:ResourceId;
+    public feedId: FeedId;
+    private memoryResourceId: ResourceId;
 
     public resolvedChartFileSystemData = {};
-    public resolvedMemoryData:boolean = false;
-    public resolvedCPUData:boolean = false;
+    public resolvedMemoryData: boolean = false;
+    public resolvedCPUData: boolean = false;
 
-    constructor(private $scope:any,
-                private $rootScope:IHawkularRootScope,
-                private $interval:ng.IIntervalService,
-                private $log:ng.ILogService,
-                private $routeParams:any,
-                private HawkularNav:any,
-                private HawkularInventory:any,
-                private HawkularMetric:any,
-                private HawkularAlertRouterManager: IHawkularAlertRouterManager,
-                private $q:ng.IQService ) {
+    constructor(private $scope: any,
+      private $rootScope: IHawkularRootScope,
+      private $interval: ng.IIntervalService,
+      private $log: ng.ILogService,
+      private $routeParams: any,
+      private HawkularNav: any,
+      private HawkularInventory: any,
+      private HawkularMetric: any,
+      private HawkularAlertRouterManager: IHawkularAlertRouterManager,
+      private $q: ng.IQService) {
       $scope.os = this;
       this.feedId = this.$routeParams.feedId;
       this.memoryResourceId = AppServerPlatformDetailsController.getMemoryResourceId(this.feedId);
@@ -76,7 +76,7 @@ module HawkularMetrics {
           (currentPersona) => currentPersona && this.setup());
       }
       // handle drag ranges on charts to change the time range
-      this.$scope.$on('ChartTimeRangeChanged', (event, data:Date[]) => {
+      this.$scope.$on('ChartTimeRangeChanged', (event, data: Date[]) => {
         this.startTimeStamp = data[0].getTime();
         this.endTimeStamp = data[1].getTime();
         this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
@@ -91,17 +91,17 @@ module HawkularMetrics {
       this.endTimeStamp = +moment();
     }
 
-    private filterAlerts(alertData:IHawkularAlertQueryResult):IAlert[] {
-      let alertList =  alertData.alertList;
-      _.remove(alertList, (item:IAlert) => {
-        switch( item.context.alertType ) {
-          case 'CPU_USAGE_EXCEED' :
+    private filterAlerts(alertData: IHawkularAlertQueryResult): IAlert[] {
+      let alertList = alertData.alertList;
+      _.remove(alertList, (item: IAlert) => {
+        switch (item.context.alertType) {
+          case 'CPU_USAGE_EXCEED':
             item.alertType = item.context.alertType;
             return false;
-          case 'AVAILABLE_MEMORY' :
+          case 'AVAILABLE_MEMORY':
             item.alertType = item.context.alertType;
             return false;
-          default : return true;
+          default: return true;
         }
       });
       this.alertList = alertList;
@@ -114,7 +114,7 @@ module HawkularMetrics {
       this.getPlatformData();
     }
 
-    public refresh():void {
+    public refresh(): void {
       this.initTimeStamps();
       this.getAlerts();
       this.getPlatformData();
@@ -124,7 +124,7 @@ module HawkularMetrics {
       this.getCpuChartDetailData();
     }
 
-    private getAlerts():void {
+    private getAlerts(): void {
       this.HawkularAlertRouterManager.getAlertsForResourceId(
         this.feedId,
         this.startTimeStamp,
@@ -132,17 +132,17 @@ module HawkularMetrics {
       );
     }
 
-    public getFileSystems():any {
+    public getFileSystems(): any {
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
-          environmentId: globalEnvironmentId,
-          feedId: this.feedId,
-          resourceTypeId: 'File Store'
-        }).$promise.then((aResourceList) => {
-          this.fileStoreList = aResourceList;
-          this.fileStoreList.$resolved = true;
-          this.getFSChartData();
-          return aResourceList;
-        },
+        environmentId: globalEnvironmentId,
+        feedId: this.feedId,
+        resourceTypeId: 'File Store'
+      }).$promise.then((aResourceList) => {
+        this.fileStoreList = aResourceList;
+        this.fileStoreList.$resolved = true;
+        this.getFSChartData();
+        return aResourceList;
+      },
         () => { // error
           if (!this.fileStoreList) {
             this.fileStoreList = [];
@@ -153,26 +153,26 @@ module HawkularMetrics {
     }
 
     // retrieve the list of CPUs
-    public getProcessors():any {
+    public getProcessors(): any {
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
-          environmentId: globalEnvironmentId,
-          feedId: this.feedId,
-          resourceTypeId: 'Processor'
-        }).$promise.then((aResourceList) => {
-          this.processorList = []; // aResourceList;
-          this.processorListNames = [];
-          // Generate metric key from resource id
-          _.forEach(aResourceList, (item) => {
-            const metricId: string = MetricsService.getMetricId('M', this.feedId, item['id'], 'CPU Usage');
-            this.processorList.push(metricId);
-            this.processorListNames[metricId] = item['name'];
-          });
-          this.processorList = _.sortBy(this.processorList);
-          this.getCpuUsage();
-          this.getCPUChartData();
-          this.getCpuChartDetailData();
+        environmentId: globalEnvironmentId,
+        feedId: this.feedId,
+        resourceTypeId: 'Processor'
+      }).$promise.then((aResourceList) => {
+        this.processorList = []; // aResourceList;
+        this.processorListNames = [];
+        // Generate metric key from resource id
+        _.forEach(aResourceList, (item) => {
+          const metricId: string = MetricsService.getMetricId('M', this.feedId, item['id'], 'CPU Usage');
+          this.processorList.push(metricId);
+          this.processorListNames[metricId] = item['name'];
+        });
+        this.processorList = _.sortBy(this.processorList);
+        this.getCpuUsage();
+        this.getCPUChartData();
+        this.getCpuChartDetailData();
         return aResourceList;
-        },
+      },
         () => { // error
           if (!this.processorList) {
             this.processorList = [];
@@ -182,7 +182,7 @@ module HawkularMetrics {
 
     }
 
-    public getPlatformData():void {
+    public getPlatformData(): void {
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: MetricsService.getMetricId('M', this.feedId, this.memoryResourceId, 'Available Memory'),
         start: this.startTimeStamp,
@@ -213,9 +213,9 @@ module HawkularMetrics {
       }
     }
 
-    public getFSChartData():void {
+    public getFSChartData(): void {
       let availPromises = [];
-      angular.forEach(this.fileStoreList, function (res) {
+      angular.forEach(this.fileStoreList, function(res) {
         //Free Space
         if (!this.skipChartData[res.id + '_Free']) {
           availPromises.push(
@@ -225,7 +225,7 @@ module HawkularMetrics {
               end: this.endTimeStamp, buckets: 60
             }).$promise.then((data) => {
               return {
-                fileStoreId : res.id,
+                fileStoreId: res.id,
                 key: 'Usable Space',
                 color: AppServerPlatformDetailsController.USED_COLOR,
                 values: MetricsService.formatBucketedChartOutput(data, 1 / (1024 * 1024))
@@ -243,7 +243,7 @@ module HawkularMetrics {
               buckets: 60
             }).$promise.then((data) => {
               return {
-                fileStoreId : res.id,
+                fileStoreId: res.id,
                 key: 'Total Space',
                 color: AppServerPlatformDetailsController.MAXIMUM_COLOR,
                 values: MetricsService.formatBucketedChartOutput(data, 1 / (1024 * 1024))
@@ -252,7 +252,7 @@ module HawkularMetrics {
           );
         }
       }, this);
-      this.$q.all(availPromises).then((data)=> {
+      this.$q.all(availPromises).then((data) => {
         let tmpChartFileSystemData = {};
         _.forEach(data, (item) => {
           if (!tmpChartFileSystemData[item.fileStoreId]) {
@@ -265,7 +265,7 @@ module HawkularMetrics {
       });
     }
 
-    public getCPUChartData():void {
+    public getCPUChartData(): void {
       if (this.processorList) {
         this.HawkularMetric.GaugeMetricMultipleStats(this.$rootScope.currentPersona.id).get({
           metrics: this.processorList,
@@ -283,9 +283,9 @@ module HawkularMetrics {
       }
     }
 
-    public getCpuChartDetailData():void {
+    public getCpuChartDetailData(): void {
       if (this.processorList) {
-        _.forEach(this.processorList, (res:string) => {
+        _.forEach(this.processorList, (res: string) => {
           this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
             gaugeId: res,
             start: this.startTimeStamp,
@@ -299,7 +299,7 @@ module HawkularMetrics {
       }
     }
 
-    public getMemoryChartData():void {
+    public getMemoryChartData(): void {
       this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
         gaugeId: MetricsService.getMetricId('M', this.feedId, this.memoryResourceId, 'Available Memory'),
         start: this.startTimeStamp,
@@ -314,16 +314,16 @@ module HawkularMetrics {
       });
     }
 
-    public toggleChartData(name):void {
+    public toggleChartData(name): void {
       this.skipChartData[name] = !this.skipChartData[name];
       this.getFSChartData();
     }
 
-    public static getMemoryResourceId(feedId):string {
+    public static getMemoryResourceId(feedId): string {
       return 'platform~/OPERATING_SYSTEM=' + feedId + '_OperatingSystem/MEMORY=Memory';
     }
 
-    private autoRefresh(intervalInSeconds:number):void {
+    private autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.refresh();
       }, intervalInSeconds * 1000);

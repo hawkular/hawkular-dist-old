@@ -22,7 +22,7 @@ module HawkularMetrics {
 
   export class Utility {
 
-    public static encodeResourceId(resourceId:ResourceId):string {
+    public static encodeResourceId(resourceId: ResourceId): string {
       // for some reason using standard encoding is not working correctly in the route. So do something dopey...
       //let encoded = encodeURIComponent(resourceId);
       let encoded = resourceId;

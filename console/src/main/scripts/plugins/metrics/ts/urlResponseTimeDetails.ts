@@ -24,35 +24,35 @@ module HawkularMetrics {
 
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', '$location', '$routeParams',
-       'HawkularNav', 'HawkularAlertsManager', 'ErrorsManager', '$q', 'NotificationsService', 'MetricsService'];
+    public static $inject = ['$scope', '$rootScope', '$interval', '$log', '$location', '$routeParams',
+      'HawkularNav', 'HawkularAlertsManager', 'ErrorsManager', '$q', 'NotificationsService', 'MetricsService'];
 
-    private bucketedDataPoints:IChartDataPoint[] = [];
-    private contextDataPoints:IChartDataPoint[] = [];
-    private autoRefreshPromise:ng.IPromise<number>;
-    private resourceId:ResourceId;
+    private bucketedDataPoints: IChartDataPoint[] = [];
+    private contextDataPoints: IChartDataPoint[] = [];
+    private autoRefreshPromise: ng.IPromise<number>;
+    private resourceId: ResourceId;
 
-    public chartData:IChartData; // essentially the dto for the screen
-    public threshold:TimestampInMillis = 5000; // default to 5 seconds some high number
+    public chartData: IChartData; // essentially the dto for the screen
+    public threshold: TimestampInMillis = 5000; // default to 5 seconds some high number
     public median = 0;
     public percentile95th = 0;
     public average = 0;
     public alertList;
-    public startTimeStamp:TimestampInMillis;
-    public endTimeStamp:TimestampInMillis;
+    public startTimeStamp: TimestampInMillis;
+    public endTimeStamp: TimestampInMillis;
 
-    constructor(private $scope:any,
-                private $rootScope:IHawkularRootScope,
-                private $interval:ng.IIntervalService,
-                private $log:ng.ILogService,
-                private $location:ng.ILocationService,
-                private $routeParams:any,
-                private HawkularNav:any,
-                private HawkularAlertsManager:IHawkularAlertsManager,
-                private ErrorsManager:IErrorsManager,
-                private $q:ng.IQService,
-                private NotificationsService:INotificationsService,
-                private MetricsService:IMetricsService) {
+    constructor(private $scope: any,
+      private $rootScope: IHawkularRootScope,
+      private $interval: ng.IIntervalService,
+      private $log: ng.ILogService,
+      private $location: ng.ILocationService,
+      private $routeParams: any,
+      private HawkularNav: any,
+      private HawkularAlertsManager: IHawkularAlertsManager,
+      private ErrorsManager: IErrorsManager,
+      private $q: ng.IQService,
+      private NotificationsService: INotificationsService,
+      private MetricsService: IMetricsService) {
       $scope.vm = this;
 
       this.startTimeStamp = +moment().subtract(1, 'hours');
@@ -66,11 +66,11 @@ module HawkularMetrics {
       });
 
       // handle drag ranges on charts to change the time range
-      this.$scope.$on(EventNames.CHART_TIMERANGE_CHANGED, (event, data:Date[]) => {
+      this.$scope.$on(EventNames.CHART_TIMERANGE_CHANGED, (event, data: Date[]) => {
         this.changeTimeRange(data);
       });
 
-      let waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
+      let waitForResourceId = () => $scope.$watch('hkParams.resourceId', (resourceId: ResourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
           this.resourceId = resourceId;
@@ -87,28 +87,28 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private changeTimeRange(data:Date[]):void {
+    private changeTimeRange(data: Date[]): void {
       this.startTimeStamp = data[0].getTime();
       this.endTimeStamp = data[1].getTime();
       this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
       this.refreshChartDataNow(this.getMetricId());
     }
 
-    private getAlerts(resourceId:string, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
-      let alertsArray:IAlert[];
+    private getAlerts(resourceId: string, startTime: TimestampInMillis, endTime: TimestampInMillis): void {
+      let alertsArray: IAlert[];
       let promise = this.HawkularAlertsManager.queryAlerts({
         statuses: 'OPEN',
         tags: 'resourceId|' + resourceId, startTime: startTime, endTime: endTime
-      }).then((data:IHawkularAlertQueryResult)=> {
-        _.remove(data.alertList, (item:IAlert) => {
+      }).then((data: IHawkularAlertQueryResult) => {
+        _.remove(data.alertList, (item: IAlert) => {
           switch (item.context.alertType) {
-            case 'PINGRESPONSE' :
+            case 'PINGRESPONSE':
               item.alertType = item.context.alertType;
               return false;
-            case 'PINGAVAIL' :
+            case 'PINGAVAIL':
               item.alertType = item.context.alertType;
               return false;
-            default :
+            default:
               return true; // ignore non-response-time alert
           }
         });
@@ -117,13 +117,13 @@ module HawkularMetrics {
         return this.ErrorsManager.errorHandler(error, 'Error fetching url RT alerts.');
       });
 
-      this.$q.all([promise]).finally(()=> {
+      this.$q.all([promise]).finally(() => {
         this.alertList = alertsArray;
       });
     }
 
-    private autoRefresh(intervalInSeconds:IntervalInSeconds):void {
-      this.autoRefreshPromise = this.$interval(()  => {
+    private autoRefresh(intervalInSeconds: IntervalInSeconds): void {
+      this.autoRefreshPromise = this.$interval(() => {
         this.refreshChartDataNow(this.getMetricId());
       }, intervalInSeconds * 1000);
 
@@ -132,8 +132,7 @@ module HawkularMetrics {
       });
     }
 
-
-    private refreshChartDataNow(metricId:MetricId, startTime?:TimestampInMillis):void {
+    private refreshChartDataNow(metricId: MetricId, startTime?: TimestampInMillis): void {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
@@ -143,19 +142,18 @@ module HawkularMetrics {
       this.retrieveThreshold();
     }
 
-    public getMetricId():MetricId {
+    public getMetricId(): MetricId {
       return this.resourceId + '.status.duration';
     }
 
-    public min(a:number, b:number):number {
+    public min(a: number, b: number): number {
       return Math.min(a, b);
     }
 
-
-    public refreshSummaryData(metricId:MetricId,
-                              startTime?:TimestampInMillis,
-                              endTime?:TimestampInMillis):void {
-      let dataPoints:IChartDataPoint[];
+    public refreshSummaryData(metricId: MetricId,
+      startTime?: TimestampInMillis,
+      endTime?: TimestampInMillis): void {
+      let dataPoints: IChartDataPoint[];
 
       // calling refreshChartData without params use the model values
       if (!endTime) {
@@ -196,10 +194,9 @@ module HawkularMetrics {
         });
     }
 
-
-    public refreshHistoricalChartDataForTimestamp(metricId:MetricId,
-                                                  startTime?:TimestampInMillis,
-                                                  endTime?:TimestampInMillis):void {
+    public refreshHistoricalChartDataForTimestamp(metricId: MetricId,
+      startTime?: TimestampInMillis,
+      endTime?: TimestampInMillis): void {
       /// calling refreshChartData without params use the model values
       if (!endTime) {
         endTime = this.endTimeStamp;

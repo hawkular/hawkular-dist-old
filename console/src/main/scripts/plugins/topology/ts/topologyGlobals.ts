@@ -17,19 +17,18 @@
 
 /// <reference path='../includes.ts'/>
 
-
 module HawkularTopology {
 
   /// some config vars
   export var pluginName = 'hawkular-topology';
 
-  export var log:Logging.Logger = Logger.get(pluginName);
+  export var log: Logging.Logger = Logger.get(pluginName);
 
   export var templatePath = 'plugins/topology/html';
 
   export var _module = angular.module(HawkularTopology.pluginName, ['ngResource', 'ui.select',
     'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'toastr',
-    'infinite-scroll','mgo-angular-wizard']);
+    'infinite-scroll', 'mgo-angular-wizard']);
 
   export var globalEnvironmentId = 'test';
 
