@@ -21,12 +21,13 @@ module HawkularMetrics {
 
   class WebTabType {
 
-    static ACTIVE_SESSIONS = new WebTabType('Aggregated Active Web Sessions', 'Active Sessions', '#49a547');
-    static EXPIRED_SESSIONS = new WebTabType('Aggregated Expired Web Sessions', 'Expired Sessions', '#f57f20');
-    static REJECTED_SESSIONS = new WebTabType('Aggregated Rejected Web Sessions', 'Rejected Sessions', '#e12226');
+    public static ACTIVE_SESSIONS = new WebTabType('Aggregated Active Web Sessions', 'Active Sessions', '#49a547');
+    public static EXPIRED_SESSIONS = new WebTabType('Aggregated Expired Web Sessions', 'Expired Sessions', '#f57f20');
+    public static REJECTED_SESSIONS =
+    new WebTabType('Aggregated Rejected Web Sessions', 'Rejected Sessions', '#e12226');
 
-    static SERVLET_REQUEST_TIME = new WebTabType('Aggregated Servlet Request Time');
-    static SERVLET_REQUEST_COUNT = new WebTabType('Aggregated Servlet Request Count');
+    public static SERVLET_REQUEST_TIME = new WebTabType('Aggregated Servlet Request Time');
+    public static SERVLET_REQUEST_COUNT = new WebTabType('Aggregated Servlet Request Count');
 
     private _key: string;
     private _metricName: string;
@@ -198,18 +199,18 @@ module HawkularMetrics {
         });
     }
 
-    private getWebSessionContextChartData(): void {
-      // because the time range is so much greater here we need more points of granularity
-      const contextStartTimestamp = +moment(this.endTimeStamp).subtract(1, globalContextChartTimePeriod);
-
-      this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-        MetricsService.getMetricId('M', this.feedId, this.resourceId,
-          WebTabType.ACTIVE_SESSIONS.getFullWildflyMetricName()),
-        contextStartTimestamp, this.endTimeStamp, globalNumberOfContextChartDataPoints).then((contextData) => {
-          this.contextChartActiveWebSessionData = MetricsService.formatContextChartOutput(contextData);
-        });
-
-    }
+    //private getWebSessionContextChartData(): void {
+    //  // because the time range is so much greater here we need more points of granularity
+    //  const contextStartTimestamp = +moment(this.endTimeStamp).subtract(1, globalContextChartTimePeriod);
+    //
+    //  this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
+    //    MetricsService.getMetricId('M', this.feedId, this.resourceId,
+    //      WebTabType.ACTIVE_SESSIONS.getFullWildflyMetricName()),
+    //    contextStartTimestamp, this.endTimeStamp, globalNumberOfContextChartDataPoints).then((contextData) => {
+    //      this.contextChartActiveWebSessionData = MetricsService.formatContextChartOutput(contextData);
+    //    });
+    //
+    //}
 
     public getWebChartData(): void {
       let tmpChartWebSessionData = [];

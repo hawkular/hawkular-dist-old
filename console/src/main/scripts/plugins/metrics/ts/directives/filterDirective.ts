@@ -20,6 +20,8 @@
 
 module HawkularMetrics {
 
+  /* tslint:disable:no-unused-variable */
+
   class FilterController {
     public filterConfig: any;
 

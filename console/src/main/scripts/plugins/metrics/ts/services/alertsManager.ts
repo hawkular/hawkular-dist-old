@@ -679,7 +679,6 @@ module HawkularMetrics {
       return this.HawkularAlert.Trigger.query(queryParams, (serverTriggers: any, getHeaders: any) => {
 
         headers = getHeaders();
-        let momentNow = this.$moment();
 
         for (let i = 0; i < serverTriggers.length; i++) {
           let serverTrigger = serverTriggers[i];

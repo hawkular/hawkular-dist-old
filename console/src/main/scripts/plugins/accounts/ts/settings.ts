@@ -18,6 +18,9 @@
 /// <reference path='accountsPlugin.ts'/>
 
 module HawkularAccounts {
+
+  /* tslint:disable:variable-name */
+
   export class UserSettingsController {
     public static $inject = ['$log', '$rootScope', 'HawkularAccount', 'NotificationsService'];
 

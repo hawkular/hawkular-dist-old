@@ -27,9 +27,9 @@ module HawkularMetrics {
   }
 
   export class ServerLabel implements IServerLabel {
-    key: string;
-    value: string;
-    type: string;
+    public key: string;
+    public value: string;
+    public type: string;
 
     constructor(key, value, type?) {
       this.key = key;
@@ -39,16 +39,16 @@ module HawkularMetrics {
   }
 
   export class AlertChartDataPoint implements IChartDataPoint {
-    start: any;
-    date: Date;
-    min: any;
-    max: any;
-    percentile95th: any;
-    median: any;
-    timestamp: number;
-    value: any;
-    avg: any;
-    empty: boolean;
+    public start: any;
+    public date: Date;
+    public min: any;
+    public max: any;
+    public percentile95th: any;
+    public median: any;
+    public timestamp: number;
+    public value: any;
+    public avg: any;
+    public empty: boolean;
 
     constructor(value, timestamp) {
       this.start = timestamp;
@@ -67,7 +67,7 @@ module HawkularMetrics {
   export class AppServerOverviewDetailsController implements IRefreshable {
     private static ALL_STATUSES = 'OPEN,ACKNOWLEDGED,RESOLVED';
     private static ALERTS_PER_PAGE = 20;
-    private autoRefreshPromise: ng.IPromise<number>;
+    //private autoRefreshPromise: ng.IPromise<number>;
     public startTimeStamp: HawkularMetrics.TimestampInMillis;
     public endTimeStamp: HawkularMetrics.TimestampInMillis;
     public alertList: any[] = [];
@@ -110,7 +110,8 @@ module HawkularMetrics {
       }
       this.autoRefresh(20);
     }
-    refresh(): void {
+
+    public refresh(): void {
       this.alertList = [];
       this.getAlerts();
       this.getOverviewInfo();
@@ -349,15 +350,15 @@ module HawkularMetrics {
       }).$promise);
     }
 
-    private autoRefresh(intervalInSeconds: number): void {
-      this.autoRefreshPromise = this.$interval(() => {
-        this.refresh();
-      }, intervalInSeconds * 1000);
-
-      this.$scope.$on('$destroy', () => {
-        this.$interval.cancel(this.autoRefreshPromise);
-      });
-    }
+    //private autoRefresh(intervalInSeconds: number): void {
+    //  this.autoRefreshPromise = this.$interval(() => {
+    //    this.refresh();
+    //  }, intervalInSeconds * 1000);
+    //
+    //  this.$scope.$on('$destroy', () => {
+    //    this.$interval.cancel(this.autoRefreshPromise);
+    //  });
+    //}
 
   }
 

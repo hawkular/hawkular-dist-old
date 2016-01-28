@@ -156,7 +156,6 @@ module HawkularMetrics {
 
     public getResourceRoute(trigger: IAlertTrigger): string {
       let route = 'unknown-resource-type';
-      let encodedId = this.encodeResourceId(trigger.id);
 
       switch (trigger.context.resourceType) {
         case 'App Server':
@@ -171,7 +170,7 @@ module HawkularMetrics {
           break;
         case 'URL':
           let parts = trigger.id.split('_trigger_');
-          let resourceId = parts[0];
+          //let resourceId = parts[0];
           let segment = (parts[1] === 'thres') ? 'response-time' : 'availability';
           route = '/hawkular-ui/url/' + segment + '/' + trigger.id.split('_trigger_')[0];
           break;
@@ -180,15 +179,15 @@ module HawkularMetrics {
       return route;
     }
 
-    private encodeResourceId(resourceId: string): string {
-      // for some reason using standard encoding is not working correctly in the route. So do something dopey...
-      //let encoded = encodeURIComponent(resourceId);
-      let encoded = resourceId;
-      while (encoded.indexOf('/') > -1) {
-        encoded = encoded.replace('/', '$');
-      }
-      return encoded;
-    }
+    //private encodeResourceId(resourceId: string): string {
+    //  // for some reason using standard encoding is not working correctly in the route. So do something dopey...
+    //  //let encoded = encodeURIComponent(resourceId);
+    //  let encoded = resourceId;
+    //  while (encoded.indexOf('/') > -1) {
+    //    encoded = encoded.replace('/', '$');
+    //  }
+    //  return encoded;
+    //}
 
     public ackSelected() {
       this.$log.log('Ack Selected: ' + this.selectCount);

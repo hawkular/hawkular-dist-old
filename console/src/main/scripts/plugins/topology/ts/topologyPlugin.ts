@@ -32,7 +32,7 @@ module HawkularTopology {
   export class TopologyController {
     private data: any;
     private requestPending: boolean;
-    private index = 0;
+    //private index = 0;
     private kinds: any;
     private typeToKind: Object;
     private kindToType: Object;

@@ -22,6 +22,8 @@
 
 module HawkularMetrics {
 
+  /* tslint:disable:variable-name */
+
   export class AlertsCenterTriggerController {
 
     public static $inject = ['$scope', 'HawkularAlertsManager',
@@ -164,7 +166,7 @@ module HawkularMetrics {
       });
     }
 
-    updateSelected(enabled, errorCallback): Array<ng.IPromise<any>> {
+    public updateSelected(enabled, errorCallback): Array<ng.IPromise<any>> {
 
       let promises = [];
 
@@ -210,7 +212,7 @@ module HawkularMetrics {
 
     public getResourceRoute(trigger: IAlertTrigger): string {
       let route = 'unknown-resource-type';
-      let encodedId = this.encodeResourceId(trigger.id);
+      // let encodedId = this.encodeResourceId(trigger.id);
 
       switch (trigger.context.resourceType) {
         case 'App Server':
@@ -225,7 +227,7 @@ module HawkularMetrics {
           break;
         case 'URL':
           let parts = trigger.id.split('_trigger_');
-          let resourceId = parts[0];
+          //let resourceId = parts[0];
           let segment = (parts[1] === 'thres') ? 'response-time' : 'availability';
           route = '/hawkular-ui/url/' + segment + '/' + trigger.id.split('_trigger_')[0];
           break;

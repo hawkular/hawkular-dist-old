@@ -36,7 +36,7 @@ module Topbar {
       let init = (tenantId?: string) => {
         HawkularInventory.Resource.query({ environmentId: globalEnvironmentId }, (resourceList) => {
           $rootScope.hkResources = resourceList;
-          for (var i = 0; i < resourceList.length; i++) {
+          for (let i = 0; i < resourceList.length; i++) {
             if (resourceList[i].id === $rootScope.hkParams.resourceId) {
               $rootScope.selectedResource = resourceList[i];
             }

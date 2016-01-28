@@ -22,6 +22,8 @@
 
 module HawkularMetrics {
 
+  /* tslint:disable:variable-name */
+
   export class AlertsCenterDetailsController {
 
     public static $inject = ['$scope', 'HawkularAlertsManager', 'ErrorsManager',

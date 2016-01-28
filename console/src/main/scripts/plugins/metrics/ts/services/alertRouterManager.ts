@@ -78,8 +78,9 @@ module HawkularMetrics {
    * This class is for registering functions for listening when alerts ar received from server.
    */
   export class HawkularAlertRouterManager implements IHawkularAlertRouterManager {
-    registeredForAlerts: any;
-    fullAlertData: any;
+    public registeredForAlerts: any;
+    public fullAlertData: any;
+
     constructor(private $routeParams,
       private HawkularAlertsManager: IHawkularAlertsManager,
       private ErrorsManager: IErrorsManager,

@@ -140,6 +140,8 @@ module HawkularMetrics {
       });
     }
 
+    /* tslint:disable:no-unused-variable */
+
     public showDatasourceEditDialog(datasource: any): void {
       /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
       let datasourceEditDialog = this.$modal.open({

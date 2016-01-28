@@ -26,7 +26,7 @@ module HawkularMetrics {
 
     public ceiling: number;
 
-    loadTrigger(triggerId: string): Array<ng.IPromise<any>> {
+    public loadTrigger(triggerId: string): Array<ng.IPromise<any>> {
       //function floor2Dec(doubleValue) {
       //  return Math.floor(doubleValue * 100) / 100;
       //}
@@ -66,7 +66,7 @@ module HawkularMetrics {
       return [triggerPromise];
     }
 
-    saveTrigger(errorCallback): Array<ng.IPromise<any>> {
+    public saveTrigger(errorCallback): Array<ng.IPromise<any>> {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);
       updatedFullTrigger.trigger.enabled = this.adm.trigger.enabled;

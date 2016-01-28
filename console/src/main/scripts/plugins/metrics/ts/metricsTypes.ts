@@ -71,7 +71,6 @@ module HawkularMetrics {
   }
 
   export enum PersistenceState { PERSISTING, SUCCESS, ERROR }
-  ;
 
   export interface IhkParams {
     timeOffset: number;
@@ -234,13 +233,13 @@ module HawkularMetrics {
     constructor(public value: string, public state: string, public icon: string) {
     }
 
-    static SERVER_UP = new ServerStatus('Up', 'up', 'fa-arrow-up');
-    static SERVER_DOWN = new ServerStatus('Down', 'down', 'fa-arrow-down');
-    static SERVER_UNKNOW = new ServerStatus('Unknown', 'unknown', 'fa-chain-broken');
-    static SERVER_STARTING = new ServerStatus('Starting', 'starting', 'fa-spinner');
-    static SERVER_RESTART_REQUIRED = new ServerStatus('Restart Required', 'restart required', 'fa-repeat');
+    public static SERVER_UP = new ServerStatus('Up', 'up', 'fa-arrow-up');
+    public static SERVER_DOWN = new ServerStatus('Down', 'down', 'fa-arrow-down');
+    public static SERVER_UNKNOW = new ServerStatus('Unknown', 'unknown', 'fa-chain-broken');
+    public static SERVER_STARTING = new ServerStatus('Starting', 'starting', 'fa-spinner');
+    public static SERVER_RESTART_REQUIRED = new ServerStatus('Restart Required', 'restart required', 'fa-repeat');
 
-    toString = () => {
+    public toString = () => {
       return this.value;
     };
   }
@@ -249,11 +248,11 @@ module HawkularMetrics {
     constructor(public value: string, public isUp: boolean) {
     }
 
-    static DATA_SOURCE_UP = new DatasourceStatus('Up', true);
-    static DATA_SOURCE_DOWN = new DatasourceStatus('Down', false);
-    static DATA_SOURCE_UNKNOW = new DatasourceStatus('Unknown', null);
+    public static DATA_SOURCE_UP = new DatasourceStatus('Up', true);
+    public static DATA_SOURCE_DOWN = new DatasourceStatus('Down', false);
+    public static DATA_SOURCE_UNKNOW = new DatasourceStatus('Unknown', null);
 
-    toString = () => {
+    public toString = () => {
       return this.value;
     };
   }
@@ -262,10 +261,10 @@ module HawkularMetrics {
     constructor(public value: string, public type: string) {
     }
 
-    static SERVER_EAP = new ServerType('EAP', 'eap');
-    static SERVER_WILDFLY = new ServerType('WildFly', 'wildfly');
+    public static SERVER_EAP = new ServerType('EAP', 'eap');
+    public static SERVER_WILDFLY = new ServerType('WildFly', 'wildfly');
 
-    toString = () => {
+    public toString = () => {
       return this.value;
     };
   }

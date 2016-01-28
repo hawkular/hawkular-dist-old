@@ -255,14 +255,11 @@ module HawkularMetrics {
       if (this.downtimeDuration) {
         if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.s.limit) {
           return this.getDurationAux(this.downtimeDuration, 's');
-        }
-        else if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.m.limit) {
+        } else if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.m.limit) {
           return this.getDurationAux(this.downtimeDuration, 'm s');
-        }
-        else if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.h.limit) {
+        } else if (this.downtimeDuration < MetricsAvailabilityController.durationUnits.h.limit) {
           return this.getDurationAux(this.downtimeDuration, 'h m');
-        }
-        else /*if (downtimeDuration >= this.durationLimits.h)*/ {
+        } else /*if (downtimeDuration >= this.durationLimits.h)*/ {
           return this.getDurationAux(this.downtimeDuration, 'd h');
         }
       }
