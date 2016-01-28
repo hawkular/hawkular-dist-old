@@ -34,7 +34,7 @@ module HawkularMetrics {
     public static DEFAULT_WAIT_THRESHOLD = 200; // > 200 ms average wait time
     public static DEFAULT_CREA_THRESHOLD = 200; // > 200 ms average creatiion time
 
-    private autoRefreshPromise:ng.IPromise<number>;
+    private autoRefreshPromise: ng.IPromise<number>;
     private resourceList;
     ///private expandedList;
     public alertList;
@@ -47,30 +47,30 @@ module HawkularMetrics {
     public resolvedAvailData = {};
     public resolvedRespData = {};
 
-    public defaultEmail:string;
+    public defaultEmail: string;
 
-    public startTimeStamp:TimestampInMillis;
-    public endTimeStamp:TimestampInMillis;
+    public startTimeStamp: TimestampInMillis;
+    public endTimeStamp: TimestampInMillis;
 
-    private feedId:FeedId;
-    private resourceId:ResourceId;
+    private feedId: FeedId;
+    private resourceId: ResourceId;
 
-    constructor(private $scope:any,
-                private $rootScope:IHawkularRootScope,
-                private $routeParams:any,
-                private $interval:ng.IIntervalService,
-                private $q:ng.IQService,
-                private $filter:any,
-                private HawkularInventory:any,
-                private HawkularMetric:any,
-                private HawkularNav:any,
-                private HawkularAlertsManager:HawkularMetrics.IHawkularAlertsManager,
-                private HawkularAlertRouterManager:IHawkularAlertRouterManager,
-                private ErrorsManager:IErrorsManager,
-                private MetricsService:IMetricsService,
-                private $log:ng.ILogService,
-                private $location:ng.ILocationService,
-                private $modal:any) {
+    constructor(private $scope: any,
+      private $rootScope: IHawkularRootScope,
+      private $routeParams: any,
+      private $interval: ng.IIntervalService,
+      private $q: ng.IQService,
+      private $filter: any,
+      private HawkularInventory: any,
+      private HawkularMetric: any,
+      private HawkularNav: any,
+      private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
+      private HawkularAlertRouterManager: IHawkularAlertRouterManager,
+      private ErrorsManager: IErrorsManager,
+      private MetricsService: IMetricsService,
+      private $log: ng.ILogService,
+      private $location: ng.ILocationService,
+      private $modal: any) {
       $scope.vm = this;
 
       this.feedId = this.$routeParams.feedId;
@@ -88,7 +88,7 @@ module HawkularMetrics {
       }
 
       // handle drag ranges on charts to change the time range
-      this.$scope.$on('ChartTimeRangeChanged', (event, data:Date[]) => {
+      this.$scope.$on('ChartTimeRangeChanged', (event, data: Date[]) => {
         this.startTimeStamp = data[0].getTime();
         this.endTimeStamp = data[1].getTime();
         this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
@@ -100,13 +100,13 @@ module HawkularMetrics {
       } else {
         /// currentPersona hasn't been injected to the rootScope yet, wait for it..
         $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
-        this.getDatasources(currentPersona.id));
+          this.getDatasources(currentPersona.id));
       }
 
       //this.autoRefresh(20);
     }
 
-    public showDriverAddDialog():void {
+    public showDriverAddDialog(): void {
 
       /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
       let driverAddDialog = this.$modal.open({
@@ -122,7 +122,7 @@ module HawkularMetrics {
       });
     }
 
-    public showDatasourceAddDialog():void {
+    public showDatasourceAddDialog(): void {
 
       /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
       let datasourceAddDialog = this.$modal.open({
@@ -138,7 +138,7 @@ module HawkularMetrics {
       });
     }
 
-    public showDatasourceEditDialog(datasource:any):void {
+    public showDatasourceEditDialog(datasource: any): void {
       /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
       let datasourceEditDialog = this.$modal.open({
         templateUrl: 'plugins/metrics/html/app-details/modals/detail-datasources-edit.html',
@@ -149,7 +149,7 @@ module HawkularMetrics {
       });
     }
 
-    public deleteDatasource(datasource:any):void {
+    public deleteDatasource(datasource: any): void {
       /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
       let datasourceDeleteDialog = this.$modal.open({
         templateUrl: 'plugins/metrics/html/app-details/modals/detail-datasources-delete.html',
@@ -166,7 +166,7 @@ module HawkularMetrics {
       });
     }
 
-    public deleteDriver(driver:any):void {
+    public deleteDriver(driver: any): void {
       /// create a new isolate scope for dialog inherited from current scope instead of default $rootScope
       let driverDeleteDialog = this.$modal.open({
         templateUrl: 'plugins/metrics/html/app-details/modals/detail-datasources-driver-delete.html',
@@ -177,7 +177,7 @@ module HawkularMetrics {
       });
     }
 
-    public autoRefresh(intervalInSeconds:number):void {
+    public autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.getDatasources();
       }, intervalInSeconds * 1000);
@@ -187,39 +187,39 @@ module HawkularMetrics {
       });
     }
 
-    public refresh():void {
+    public refresh(): void {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
       this.getDatasources();
     }
 
-    private getDSMetrics(resourceLists, currentTenantId?:TenantId) {
-      let tenantId:TenantId = currentTenantId || this.$rootScope.currentPersona.id;
+    private getDSMetrics(resourceLists, currentTenantId?: TenantId) {
+      let tenantId: TenantId = currentTenantId || this.$rootScope.currentPersona.id;
       let promises = [];
       let tmpResourceList = [];
 
-      if (!resourceLists.length || _.every(resourceLists, {'length': 0})) {
+      if (!resourceLists.length || _.every(resourceLists, { 'length': 0 })) {
         this.resourceList = [];
         this.resourceList.$resolved = true;
         this['lastUpdateTimestamp'] = new Date();
       }
 
       angular.forEach(resourceLists, (aResourceList) => {
-        angular.forEach(aResourceList, (res:IResource) => {
+        angular.forEach(aResourceList, (res: IResource) => {
           if (res.id.startsWith(this.$routeParams.resourceId + '~/')) {
             res.feedId = this.feedId;
             tmpResourceList.push(res);
             promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
               gaugeId: MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~Available Count'),
               distinct: true
-            }, (data:number[]) => {
+            }, (data: number[]) => {
               res.availableCount = data[0];
             }).$promise);
             promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
               gaugeId: MetricsService.getMetricId('M', this.feedId, res.id, 'Datasource Pool Metrics~In Use Count'),
               distinct: true
-            }, (data:number[]) => {
+            }, (data: number[]) => {
               res.inUseCount = data[0];
             }).$promise);
             this.HawkularAlertRouterManager.registerForAlerts(
@@ -241,7 +241,7 @@ module HawkularMetrics {
       });
     }
 
-    public getDatasources(currentTenantId?:TenantId):void {
+    public getDatasources(currentTenantId?: TenantId): void {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
@@ -262,16 +262,16 @@ module HawkularMetrics {
       this.getDrivers();
     }
 
-    public static filterAlerts(alertData:IHawkularAlertQueryResult, res:IResource) {
+    public static filterAlerts(alertData: IHawkularAlertQueryResult, res: IResource) {
       let currentAlertList = alertData.alertList;
-      _.forEach(currentAlertList, (item:IAlert) => {
+      _.forEach(currentAlertList, (item: IAlert) => {
         item.alertType = item.context.alertType;
       });
       res.alertList = currentAlertList;
       return currentAlertList;
     }
 
-    private getAlerts(res:IResource):void {
+    private getAlerts(res: IResource): void {
       this.HawkularAlertRouterManager.getAlertsForResourceId(
         res.feedId + '/' + res.id,
         this.startTimeStamp,
@@ -279,7 +279,7 @@ module HawkularMetrics {
       );
     }
 
-    public getDrivers(currentTenantId?:TenantId):void {
+    public getDrivers(currentTenantId?: TenantId): void {
       this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         feedId: this.$routeParams.feedId,
         resourceTypeId: 'JDBC Driver'
@@ -289,8 +289,8 @@ module HawkularMetrics {
 
     }
 
-    public loadTriggers(currentTenantId?:TenantId):any {
-      _.forEach(this.resourceList, function (res:IResource, idx) {
+    public loadTriggers(currentTenantId?: TenantId): any {
+      _.forEach(this.resourceList, function(res: IResource, idx) {
         // The Wildfly agent generates resource IDs unique among the app servers it is monitoring because
         // each resource is prefixed with the managedServerName.  But when dealing with multiple Wildfly-agent feeds
         // a resource ID is not guaranteed to be unique.  So, we further qualify the resource ID with the feed ID and
@@ -299,14 +299,14 @@ module HawkularMetrics {
       }, this);
     }
 
-    private loadDatasourceTriggers(qualifiedResourceId:ResourceId, resourcePath:ResourcePath):void {
+    private loadDatasourceTriggers(qualifiedResourceId: ResourceId, resourcePath: ResourcePath): void {
       // Check if trigger exists on alerts setup modal open. If not, create the trigger before opening the modal
 
       let connTriggerPromise = this.HawkularAlertsManager.existTrigger(qualifiedResourceId + '_ds_conn').then(() => {
         this.$log.debug('Datasource connection trigger exists, nothing to do');
       }, () => {
-        let triggerId:string = qualifiedResourceId + '_ds_conn';
-        let dataId:string = 'MI~R~[' + qualifiedResourceId + ']~MT~Datasource Pool Metrics~Available Count';
+        let triggerId: string = qualifiedResourceId + '_ds_conn';
+        let dataId: string = 'MI~R~[' + qualifiedResourceId + ']~MT~Datasource Pool Metrics~Available Count';
         let fullTrigger = {
           trigger: {
             name: 'Datasource Available Connections',
@@ -315,7 +315,7 @@ module HawkularMetrics {
             autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-            actions: {email: [this.defaultEmail]},
+            actions: { email: [this.defaultEmail] },
             tags: {
               resourceId: qualifiedResourceId
             },
@@ -359,8 +359,8 @@ module HawkularMetrics {
         qualifiedResourceId + '_ds_wait').then(() => {
           this.$log.debug('Datasource Wait Time trigger exists, nothing to do');
         }, () => {
-          let triggerId:string = qualifiedResourceId + '_ds_wait';
-          let dataId:string = 'MI~R~[' + qualifiedResourceId + ']~MT~Datasource Pool Metrics~Average Wait Time';
+          let triggerId: string = qualifiedResourceId + '_ds_wait';
+          let dataId: string = 'MI~R~[' + qualifiedResourceId + ']~MT~Datasource Pool Metrics~Average Wait Time';
 
           let fullTrigger = {
             trigger: {
@@ -370,7 +370,7 @@ module HawkularMetrics {
               autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-              actions: {email: [this.defaultEmail]},
+              actions: { email: [this.defaultEmail] },
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -412,58 +412,58 @@ module HawkularMetrics {
 
       let createTimeTriggerPromise = this.HawkularAlertsManager.existTrigger(
         qualifiedResourceId + '_ds_create').then(() => {
-        this.$log.debug('Datasource create time trigger exists, nothing to do');
-      }, () => {
-        let triggerId:string = qualifiedResourceId + '_ds_create';
-        let dataId:string = 'MI~R~[' + qualifiedResourceId + ']~MT~Datasource Pool Metrics~Average Creation Time';
-        let fullTrigger = {
-          trigger: {
-            name: 'Datasource Pool Create Time',
-            id: triggerId,
-            description: 'Pool Create Time Responsiveness for DS ' + qualifiedResourceId,
-            autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
-            autoEnable: true, // Enable trigger once an alert is resolved
-            autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
-            actions: {email: [this.defaultEmail]},
-            tags: {
-              resourceId: qualifiedResourceId
-            },
-            context: {
-              alertType: 'DSCREATE',
-              resourceType: 'DataSource',
-              resourceName: qualifiedResourceId,
-              resourcePath: resourcePath,
-              triggerType: 'Threshold'
-            }
-          },
-          dampenings: [
-            {
-              triggerId: triggerId,
-              evalTimeSetting: 7 * 60000,
-              triggerMode: 'FIRING',
-              type: 'STRICT_TIME'
-            }
-          ],
-          conditions: [
-            {
-              triggerId: triggerId,
-              type: 'THRESHOLD',
-              dataId: dataId,
-              threshold: AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD,
-              operator: 'GT',
+          this.$log.debug('Datasource create time trigger exists, nothing to do');
+        }, () => {
+          let triggerId: string = qualifiedResourceId + '_ds_create';
+          let dataId: string = 'MI~R~[' + qualifiedResourceId + ']~MT~Datasource Pool Metrics~Average Creation Time';
+          let fullTrigger = {
+            trigger: {
+              name: 'Datasource Pool Create Time',
+              id: triggerId,
+              description: 'Pool Create Time Responsiveness for DS ' + qualifiedResourceId,
+              autoDisable: true, // Disable trigger after firing, to not have repeated alerts of same issue
+              autoEnable: true, // Enable trigger once an alert is resolved
+              autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
+              actions: { email: [this.defaultEmail] },
+              tags: {
+                resourceId: qualifiedResourceId
+              },
               context: {
-                description: 'Average Creation Time',
-                unit: 'ms'
+                alertType: 'DSCREATE',
+                resourceType: 'DataSource',
+                resourceName: qualifiedResourceId,
+                resourcePath: resourcePath,
+                triggerType: 'Threshold'
               }
-            }
-          ]
-        };
+            },
+            dampenings: [
+              {
+                triggerId: triggerId,
+                evalTimeSetting: 7 * 60000,
+                triggerMode: 'FIRING',
+                type: 'STRICT_TIME'
+              }
+            ],
+            conditions: [
+              {
+                triggerId: triggerId,
+                type: 'THRESHOLD',
+                dataId: dataId,
+                threshold: AppServerDatasourcesDetailsController.DEFAULT_CREA_THRESHOLD,
+                operator: 'GT',
+                context: {
+                  description: 'Average Creation Time',
+                  unit: 'ms'
+                }
+              }
+            ]
+          };
 
-        return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
-          this.$log.error('Error on Trigger creation for ' + triggerId);
+          return this.HawkularAlertsManager.createTrigger(fullTrigger, () => {
+            this.$log.error('Error on Trigger creation for ' + triggerId);
+          });
+
         });
-
-      });
 
       this.$q.all([connTriggerPromise, waitTimeTriggerPromise, createTimeTriggerPromise]).then(() => {
         // do nothing
@@ -491,7 +491,7 @@ module HawkularMetrics {
       }
     }
 
-    private canRedirect(clickedElement):boolean {
+    private canRedirect(clickedElement): boolean {
       let tags = ['button', 'a'];
       return !(
         tags.indexOf(clickedElement.tagName.toLowerCase()) !== -1 ||
@@ -508,9 +508,9 @@ module HawkularMetrics {
         let used = data.inUseCount.value / (data.inUseCount.value + data.availableCount.value) * 100 || 0;
         data.chartConfig = {
           multiLineTitle: [
-            {text: this.$filter('number')(used, used ? 1 : 0) + '%', dy:-10, classed: 'donut-title-big-pf'},
-            {text:'Connections', dy:20, classed: 'donut-title-small-pf'},
-            {text:'Used', dy:15, classed: 'donut-title-small-pf'}
+            { text: this.$filter('number')(used, used ? 1 : 0) + '%', dy: -10, classed: 'donut-title-big-pf' },
+            { text: 'Connections', dy: 20, classed: 'donut-title-small-pf' },
+            { text: 'Used', dy: 15, classed: 'donut-title-small-pf' }
           ],
           type: 'donut',
           donut: {
@@ -527,7 +527,7 @@ module HawkularMetrics {
             show: false
           },
           color: {
-            pattern: ['#0088CE','#D1D1D1']
+            pattern: ['#0088CE', '#D1D1D1']
           },
           data: {
             type: 'donut',
@@ -547,4 +547,3 @@ module HawkularMetrics {
 
   _module.controller('AppServerDatasourcesDetailsController', AppServerDatasourcesDetailsController);
 }
-

@@ -18,7 +18,6 @@
 /// <reference path='topbarPlugin.ts'/>
 module Topbar {
 
-
   export class TopbarDirective {
 
     public restrict = 'E';
@@ -32,7 +31,7 @@ module Topbar {
     ['$scope', '$rootScope', '$location', 'HawkularNav',
       ($scope, $rootScope, $location, HawkularNav /* keep HawkularNav! */) => {
 
-        $scope.getClass = function (path) {
+        $scope.getClass = function(path) {
           return $location.path().indexOf(path) === 0 ? 'active' : '';
         };
 

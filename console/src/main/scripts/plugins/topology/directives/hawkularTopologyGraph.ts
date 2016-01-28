@@ -76,7 +76,7 @@ module HawkularTopology {
 
               added.append('title');
               vertices.selectAll('title')
-              .text((d) => d.item.metadata.name);
+                .text((d) => d.item.metadata.name);
               vertices.classed('weak', weak);
             }
           }

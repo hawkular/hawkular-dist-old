@@ -31,16 +31,16 @@ module HawkularMetrics {
      */
     private watchResourceList($scope) {
       let _self = this;
-      $scope.$watch(angular.bind(this, function () {
+      $scope.$watch(angular.bind(this, function() {
         return $scope.resourceList;
-      }), function (newResourceList) {
+      }), function(newResourceList) {
         if (newResourceList !== undefined) {
-          $scope.filterBy({filters:_self.filterConfig.appliedFilters});
+          $scope.filterBy({ filters: _self.filterConfig.appliedFilters });
         }
       });
-      $scope.$watch(angular.bind(this, function () {
+      $scope.$watch(angular.bind(this, function() {
         return $scope.filteredResourceList;
-      }), function (newResourceList) {
+      }), function(newResourceList) {
         if (newResourceList !== undefined) {
           _self.filterConfig.resultsCount = newResourceList.length;
         }
@@ -52,28 +52,28 @@ module HawkularMetrics {
      * @param activeFilters:any[] array of filter config objects.
      * @param $scope this hold information about current resourceList and filteredResourceList.
      */
-    private initFilters(activeFilters:any[], $scope) {
+    private initFilters(activeFilters: any[], $scope) {
       let _self = this;
       _self.filterConfig = {
         resultsCount: 0,
         appliedFilters: [],
         fields: activeFilters,
         onFilterChange: function(filters) {
-          $scope.filterBy({filters: filters});
+          $scope.filterBy({ filters: filters });
         }
       };
     }
   }
 
-  let filterLink = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+  let filterLink = ($scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
     $scope.vm.initFilters($scope.activeFilters, $scope);
     $scope.vm.watchResourceList($scope);
   };
 
   export class HkTableFiltersDirective {
-    public controller:any;
-    public controllerAs:string = 'vm';
-    public link:any;
+    public controller: any;
+    public controllerAs: string = 'vm';
+    public link: any;
     public templateUrl = 'plugins/metrics/html/directives/table-filters.html';
     public scope = {
       resourceList: '=',

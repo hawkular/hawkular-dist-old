@@ -21,18 +21,18 @@ module HawkularMetrics {
 
   class WebTabType {
 
-    static ACTIVE_SESSIONS = new WebTabType( 'Aggregated Active Web Sessions','Active Sessions', '#49a547');
-    static EXPIRED_SESSIONS = new WebTabType('Aggregated Expired Web Sessions','Expired Sessions', '#f57f20');
-    static REJECTED_SESSIONS = new WebTabType('Aggregated Rejected Web Sessions','Rejected Sessions', '#e12226');
+    static ACTIVE_SESSIONS = new WebTabType('Aggregated Active Web Sessions', 'Active Sessions', '#49a547');
+    static EXPIRED_SESSIONS = new WebTabType('Aggregated Expired Web Sessions', 'Expired Sessions', '#f57f20');
+    static REJECTED_SESSIONS = new WebTabType('Aggregated Rejected Web Sessions', 'Rejected Sessions', '#e12226');
 
     static SERVLET_REQUEST_TIME = new WebTabType('Aggregated Servlet Request Time');
     static SERVLET_REQUEST_COUNT = new WebTabType('Aggregated Servlet Request Count');
 
-    private _key:string;
-    private _metricName:string;
-    private _color:IColor;
+    private _key: string;
+    private _metricName: string;
+    private _color: IColor;
 
-    constructor(metricName:string, key?: string, color?:IColor) {
+    constructor(metricName: string, key?: string, color?: IColor) {
       this._metricName = metricName;
       this._key = key;
       this._color = color;
@@ -63,31 +63,31 @@ module HawkularMetrics {
     public static DEFAULT_EXPIRED_SESSIONS_THRESHOLD = 15;
     public static DEFAULT_REJECTED_SESSIONS_THRESHOLD = 15;
 
-    public alertList:any[] = [];
-    public activeWebSessions:number = 0;
-    public requestTime:number = 0;
-    public requestCount:number = 0;
-    public startTimeStamp:TimestampInMillis;
-    public endTimeStamp:TimestampInMillis;
+    public alertList: any[] = [];
+    public activeWebSessions: number = 0;
+    public requestTime: number = 0;
+    public requestCount: number = 0;
+    public startTimeStamp: TimestampInMillis;
+    public endTimeStamp: TimestampInMillis;
 
-    public chartWebSessionData:IMultiDataPoint[] = [];
-    public contextChartActiveWebSessionData:IContextChartDataPoint[];
+    public chartWebSessionData: IMultiDataPoint[] = [];
+    public contextChartActiveWebSessionData: IContextChartDataPoint[];
 
     // will contain in the format: 'metric name' : true | false
     public skipChartData = {};
 
-    private feedId:FeedId;
-    private resourceId:ResourceId;
+    private feedId: FeedId;
+    private resourceId: ResourceId;
 
-    constructor(private $scope:any,
-                private $rootScope:IHawkularRootScope,
-                private $interval:ng.IIntervalService,
-                private $log:ng.ILogService,
-                private $routeParams:any,
-                private HawkularNav:any,
-                private HawkularAlertRouterManager:IHawkularAlertRouterManager,
-                private $q:ng.IQService,
-                private MetricsService:IMetricsService) {
+    constructor(private $scope: any,
+      private $rootScope: IHawkularRootScope,
+      private $interval: ng.IIntervalService,
+      private $log: ng.ILogService,
+      private $routeParams: any,
+      private HawkularNav: any,
+      private HawkularAlertRouterManager: IHawkularAlertRouterManager,
+      private $q: ng.IQService,
+      private MetricsService: IMetricsService) {
       $scope.vm = this;
 
       this.feedId = this.$routeParams.feedId;
@@ -104,7 +104,7 @@ module HawkularMetrics {
       }
 
       // handle drag ranges on charts to change the time range
-      this.$scope.$on(EventNames.CHART_TIMERANGE_CHANGED, (event, timeRange:Date[]) => {
+      this.$scope.$on(EventNames.CHART_TIMERANGE_CHANGED, (event, timeRange: Date[]) => {
         this.startTimeStamp = timeRange[0].getTime();
         this.endTimeStamp = timeRange[1].getTime();
         this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
@@ -112,7 +112,7 @@ module HawkularMetrics {
       });
 
       // handle drag ranges on charts to change the time range
-      this.$scope.$on(EventNames.CONTEXT_CHART_TIMERANGE_CHANGED, (event, timeRange:Date[]) => {
+      this.$scope.$on(EventNames.CONTEXT_CHART_TIMERANGE_CHANGED, (event, timeRange: Date[]) => {
         this.$log.debug('Received ContextChartTimeRangeChanged event' + timeRange);
         this.changeTimeRange(timeRange);
       });
@@ -126,9 +126,9 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private autoRefreshPromise:ng.IPromise<number>;
+    private autoRefreshPromise: ng.IPromise<number>;
 
-    private autoRefresh(intervalInSeconds:number):void {
+    private autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.refresh();
       }, intervalInSeconds * 1000);
@@ -138,30 +138,30 @@ module HawkularMetrics {
       });
     }
 
-    private changeTimeRange(timeRange:Date[]):void {
+    private changeTimeRange(timeRange: Date[]): void {
       this.startTimeStamp = timeRange[0].getTime();
       this.endTimeStamp = timeRange[1].getTime();
       this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
       this.refresh();
     }
 
-    public filterAlerts(alertData:IHawkularAlertQueryResult) {
+    public filterAlerts(alertData: IHawkularAlertQueryResult) {
       let webAlerts = alertData.alertList.slice();
-      _.remove(webAlerts, (item:IAlert) => {
+      _.remove(webAlerts, (item: IAlert) => {
         switch (item.context.alertType) {
-          case 'ACTIVE_SESSIONS' :
-          case 'EXPIRED_SESSIONS' :
-          case 'REJECTED_SESSIONS' :
+          case 'ACTIVE_SESSIONS':
+          case 'EXPIRED_SESSIONS':
+          case 'REJECTED_SESSIONS':
             item.alertType = item.context.alertType;
             return false;
-          default :
+          default:
             return true; // ignore non-web alert
         }
       });
       this.alertList = webAlerts;
     }
 
-    public refresh():void {
+    public refresh(): void {
       this.endTimeStamp = this.$routeParams.endTime || +moment();
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
@@ -170,35 +170,35 @@ module HawkularMetrics {
       this.getAlerts();
     }
 
-    private getAlerts():void {
+    private getAlerts(): void {
       this.HawkularAlertRouterManager.getAlertsForCurrentResource(
         this.startTimeStamp,
         this.endTimeStamp
       );
     }
 
-    public getWebData():void {
+    public getWebData(): void {
       this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           WebTabType.ACTIVE_SESSIONS.getFullWildflyMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
-        this.activeWebSessions = resource[0].avg;
-      });
+          this.activeWebSessions = resource[0].avg;
+        });
       this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           WebTabType.SERVLET_REQUEST_TIME.getFullWildflyMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
-        this.requestTime = resource[0].max - resource[0].min;
-      });
+          this.requestTime = resource[0].max - resource[0].min;
+        });
       this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           WebTabType.SERVLET_REQUEST_COUNT.getFullWildflyMetricName()),
         this.startTimeStamp, this.endTimeStamp, 1).then((resource) => {
-        this.requestCount = resource[0].max - resource[0].min;
-      });
+          this.requestCount = resource[0].max - resource[0].min;
+        });
     }
 
-    private getWebSessionContextChartData():void {
+    private getWebSessionContextChartData(): void {
       // because the time range is so much greater here we need more points of granularity
       const contextStartTimestamp = +moment(this.endTimeStamp).subtract(1, globalContextChartTimePeriod);
 
@@ -206,12 +206,12 @@ module HawkularMetrics {
         MetricsService.getMetricId('M', this.feedId, this.resourceId,
           WebTabType.ACTIVE_SESSIONS.getFullWildflyMetricName()),
         contextStartTimestamp, this.endTimeStamp, globalNumberOfContextChartDataPoints).then((contextData) => {
-        this.contextChartActiveWebSessionData = MetricsService.formatContextChartOutput(contextData);
-      });
+          this.contextChartActiveWebSessionData = MetricsService.formatContextChartOutput(contextData);
+        });
 
     }
 
-    public getWebChartData():void {
+    public getWebChartData(): void {
       let tmpChartWebSessionData = [];
       let promises = [];
 
@@ -286,17 +286,16 @@ module HawkularMetrics {
        color: AppServerWebDetailsController.USED_COLOR, values: this.formatCounterChartOutput(data) };
        }, this);
        */
-      this.$q.all(promises).finally(()=> {
+      this.$q.all(promises).finally(() => {
         this.chartWebSessionData = tmpChartWebSessionData;
       });
     }
 
-    public toggleChartData(name):void {
+    public toggleChartData(name): void {
       this.skipChartData[name] = !this.skipChartData[name];
       this.getWebChartData();
     }
   }
-
 
   _module.controller('AppServerWebDetailsController', AppServerWebDetailsController);
 }

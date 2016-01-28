@@ -17,42 +17,42 @@
 
 /// <reference path='accountsGlobals.ts'/>
 module HawkularAccounts {
-  let currentPersona:IPersona = undefined;
+  let currentPersona: IPersona = undefined;
 
   _module.config(['$httpProvider', 'HawtioNavBuilderProvider', '$routeProvider',
-    ($httpProvider:ng.IHttpProvider, builder:HawtioMainNav.BuilderFactory, $routeProvider) => {
+    ($httpProvider: ng.IHttpProvider, builder: HawtioMainNav.BuilderFactory, $routeProvider) => {
 
-      $httpProvider.interceptors.push(['$q',PersonaInterceptorService.Factory]);
+      $httpProvider.interceptors.push(['$q', PersonaInterceptorService.Factory]);
 
       $routeProvider
         .when(
         '/hawkular-ui/organizations',
-        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organizations.html')})
+        { templateUrl: builder.join(HawkularAccounts.templatePath, 'organizations.html') })
 
         .when(
         '/hawkular-ui/organizations/join',
-        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organizations-join.html')})
+        { templateUrl: builder.join(HawkularAccounts.templatePath, 'organizations-join.html') })
 
         .when(
         '/hawkular-ui/organization/:organizationId/memberships',
-        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-memberships.html')})
+        { templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-memberships.html') })
 
         .when(
         '/hawkular-ui/invitation/accept/:token',
-        {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-accept-invitation.html')})
+        { templateUrl: builder.join(HawkularAccounts.templatePath, 'organization-accept-invitation.html') })
 
         .when(
         '/hawkular-ui/tokens',
-        {templateUrl: builder.join(HawkularAccounts.templatePath, 'tokens.html')})
+        { templateUrl: builder.join(HawkularAccounts.templatePath, 'tokens.html') })
 
         .when(
         '/hawkular-ui/tokens/:id',
-        {templateUrl: builder.join(HawkularAccounts.templatePath, 'tokens.html')})
+        { templateUrl: builder.join(HawkularAccounts.templatePath, 'tokens.html') })
 
         .when(
         '/hawkular-ui/settings',
-        {templateUrl: builder.join(HawkularAccounts.templatePath, 'user-settings.html')});
-  }]);
+        { templateUrl: builder.join(HawkularAccounts.templatePath, 'user-settings.html') });
+    }]);
 
   _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails',
     ($rootScope, $log, $modal, $document, userDetails) => {
@@ -76,16 +76,16 @@ module HawkularAccounts {
           keyboard: false,
           windowClass: 'time-out-dialog'
         }).opened.then(() => {
-            HawtioKeycloak.keycloak.clearToken();
-          });
+          HawtioKeycloak.keycloak.clearToken();
+        });
       });
 
-      $rootScope.$on('CurrentPersonaLoaded', (e, persona:IPersona) => {
+      $rootScope.$on('CurrentPersonaLoaded', (e, persona: IPersona) => {
         currentPersona = persona;
         $rootScope.currentPersona = currentPersona;
       });
 
-      $rootScope.$on('SwitchedPersona', (e, persona:IPersona) => {
+      $rootScope.$on('SwitchedPersona', (e, persona: IPersona) => {
         currentPersona = persona;
         $rootScope.currentPersona = currentPersona;
       });
@@ -99,14 +99,14 @@ module HawkularAccounts {
   class PersonaInterceptorService {
     public static $inject = ['$q'];
 
-    public static Factory($q:ng.IQService) {
+    public static Factory($q: ng.IQService) {
       return new PersonaInterceptorService($q);
     }
 
-    constructor(private $q:ng.IQService) {
+    constructor(private $q: ng.IQService) {
     }
 
-    request = (request) => {
+    public request = (request) => {
       if (currentPersona) {
         request.headers['Hawkular-Persona'] = currentPersona.id;
       }

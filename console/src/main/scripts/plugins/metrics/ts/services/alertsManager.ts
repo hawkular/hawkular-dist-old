@@ -84,7 +84,7 @@ module HawkularMetrics {
      * @desc Check if a previous email action exists, or it creates a new one
      * @param email - recipient of the email action
      */
-    addEmailAction(email:EmailType): ng.IPromise<void>;
+    addEmailAction(email: EmailType): ng.IPromise<void>;
 
     /**
      * @name queryAlerts
@@ -92,7 +92,7 @@ module HawkularMetrics {
      * @param criteria - Filter for alerts query
      * @returns {ng.IPromise} with a list of Alerts
      */
-    queryAlerts(criteria?:IHawkularAlertCriteria):
+    queryAlerts(criteria?: IHawkularAlertCriteria):
       ng.IPromise<IHawkularAlertQueryResult>;
 
     /**
@@ -100,14 +100,14 @@ module HawkularMetrics {
      * @desc Single alert fetch
      * @param alertId - Alert to query
      */
-    getAlert(alertId:string): ng.IPromise<IAlert>;
+    getAlert(alertId: string): ng.IPromise<IAlert>;
 
     /**
      * @name queryActionsHistory
      * @desc Fetch Actions from history with different criterias
      * @param criteria - Filter for actions query
      */
-    queryActionsHistory(criteria?:IHawkularActionCriteria): ng.IPromise<any>;
+    queryActionsHistory(criteria?: IHawkularActionCriteria): ng.IPromise<any>;
 
     /**
      * @name resolveAlerts
@@ -122,7 +122,7 @@ module HawkularMetrics {
      *
      * @returns {ng.IPromise}
      */
-    resolveAlerts(resolvedAlerts:any): ng.IPromise<any>;
+    resolveAlerts(resolvedAlerts: any): ng.IPromise<any>;
 
     /**
      * @name addNote
@@ -135,7 +135,7 @@ module HawkularMetrics {
      *    text: the content of the note
      *  }
      */
-    addNote(alertNote:any): ng.IPromise<any>;
+    addNote(alertNote: any): ng.IPromise<any>;
 
     /**
      * @name ackAlerts
@@ -150,7 +150,7 @@ module HawkularMetrics {
      *
      * @returns {ng.IPromise}
      */
-    ackAlerts(ackAlerts:any): ng.IPromise<any>;
+    ackAlerts(ackAlerts: any): ng.IPromise<any>;
 
     // Triggers
 
@@ -160,7 +160,7 @@ module HawkularMetrics {
      * @param {TriggerId} triggerId - The id of the trigger to check
      * @returns {ng.IPromise}
      */
-    existTrigger(triggerId:TriggerId): any;
+    existTrigger(triggerId: TriggerId): any;
 
     /**
      * @name getTrigger
@@ -174,7 +174,7 @@ module HawkularMetrics {
      *      conditions: <List of conditions linked with the trigger>
      *    }
      */
-    getTrigger(triggerId:TriggerId): any;
+    getTrigger(triggerId: TriggerId): any;
 
     /**
      * @name queryTriggers
@@ -182,7 +182,7 @@ module HawkularMetrics {
      * @param criteria - Filter for triggers query
      * @returns {ng.IPromise} with a list of Triggers
      */
-    queryTriggers(criteria?:IHawkularTriggerCriteria):
+    queryTriggers(criteria?: IHawkularTriggerCriteria):
       ng.IPromise<IHawkularTriggerQueryResult>;
 
     /**
@@ -191,7 +191,7 @@ module HawkularMetrics {
      * @param {TriggerId} triggerId - The id of the trigger to fetch Conditions
      * @returns {ng.IPromise} with a list of conditions as a value
      */
-    getTriggerConditions(triggerId:TriggerId): ng.IPromise<any>;
+    getTriggerConditions(triggerId: TriggerId): ng.IPromise<any>;
 
     /**
      * @name createTrigger
@@ -206,14 +206,14 @@ module HawkularMetrics {
      *
      * @param errorCallback - Function to be called on error
      */
-    createTrigger(fullTrigger:any, errorCallback:any): ng.IPromise<void>;
+    createTrigger(fullTrigger: any, errorCallback: any): ng.IPromise<void>;
 
     /**
      * @name deleteTrigger
      * @desc Delete a Trigger with associated Dampenings and Conditions
      * @param {TriggerId} triggerId - The id of the trigger to delete
      */
-    deleteTrigger(triggerId:TriggerId): ng.IPromise<any>;
+    deleteTrigger(triggerId: TriggerId): ng.IPromise<any>;
 
     /**
      * @name updateTrigger
@@ -236,18 +236,18 @@ module HawkularMetrics {
      *      conditions: <List of conditions linked with the trigger>
      *    }
      */
-    updateTrigger(fullTrigger:any, errorCallback:any, backupTrigger?:any): ng.IPromise<any>;
+    updateTrigger(fullTrigger: any, errorCallback: any, backupTrigger?: any): ng.IPromise<any>;
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager {
-    constructor(private HawkularAlert:any,
-                private $q:ng.IQService,
-                private $log:ng.ILogService,
-                private $moment:any,
-                private ErrorsManager:IErrorsManager) {
+    constructor(private HawkularAlert: any,
+      private $q: ng.IQService,
+      private $log: ng.ILogService,
+      private $moment: any,
+      private ErrorsManager: IErrorsManager) {
     }
 
-    public queryAlerts(criteria:IHawkularAlertCriteria):ng.IPromise<IHawkularAlertQueryResult> {
+    public queryAlerts(criteria: IHawkularAlertCriteria): ng.IPromise<IHawkularAlertQueryResult> {
       let alertList = [];
       let headers;
 
@@ -313,14 +313,14 @@ module HawkularMetrics {
         queryParams['order'] = criteria.order;
       }
 
-      return this.HawkularAlert.Alert.query(queryParams, (serverAlerts:any, getHeaders:any) => {
+      return this.HawkularAlert.Alert.query(queryParams, (serverAlerts: any, getHeaders: any) => {
 
         headers = getHeaders();
         let momentNow = this.$moment();
 
         for (let i = 0; i < serverAlerts.length; i++) {
           let serverAlert = serverAlerts[i];
-          let consoleAlert:any = serverAlert;
+          let consoleAlert: any = serverAlert;
 
           consoleAlert.id = serverAlert.id;
 
@@ -332,8 +332,8 @@ module HawkularMetrics {
 
           consoleAlert.end = serverAlert.ctime;
 
-          let sum:number = 0.0;
-          let count:number = 0.0;
+          let sum: number = 0.0;
+          let count: number = 0.0;
 
           if (serverAlert.evalSets) {
 
@@ -363,12 +363,12 @@ module HawkularMetrics {
                   }
                 }
 
-                if ( undefined !== evalItem.rate ) {
+                if (undefined !== evalItem.rate) {
                   // handle rate conditions
                   sum += evalItem.rate;
                 } else {
                   // handle 'value' conditions and also compare conditions ('value1')
-                  sum += ( ( undefined !== evalItem.value ) ? evalItem.value : evalItem.value1 );
+                  sum += ((undefined !== evalItem.value) ? evalItem.value : evalItem.value1);
                 }
                 count++;
               }
@@ -387,19 +387,19 @@ module HawkularMetrics {
         }
       }, (error) => {
         this.$log.debug('querying data error', error);
-      }).$promise.then(():IHawkularAlertQueryResult => {
-          return {
-            alertList: alertList,
-            headers: headers
-          };
-        });
+      }).$promise.then((): IHawkularAlertQueryResult => {
+        return {
+          alertList: alertList,
+          headers: headers
+        };
+      });
     }
 
-    public getAlert(alertId:string):ng.IPromise<IAlert> {
-      return this.HawkularAlert.Alert.get({alertId: alertId}).$promise;
+    public getAlert(alertId: string): ng.IPromise<IAlert> {
+      return this.HawkularAlert.Alert.get({ alertId: alertId }).$promise;
     }
 
-    public queryActionsHistory(criteria?:IHawkularActionCriteria):ng.IPromise<any> {
+    public queryActionsHistory(criteria?: IHawkularActionCriteria): ng.IPromise<any> {
       let actionHistoryList = [];
       let headers;
       let queryParams = {};
@@ -450,46 +450,46 @@ module HawkularMetrics {
         queryParams['order'] = criteria.order;
       }
 
-      return this.HawkularAlert.Action.queryHistory(queryParams, (serverActionsHistory:any, getHeaders:any) => {
+      return this.HawkularAlert.Action.queryHistory(queryParams, (serverActionsHistory: any, getHeaders: any) => {
         headers = getHeaders();
         actionHistoryList = serverActionsHistory;
       }, (error) => {
         this.$log.debug('querying data error', error);
       }).$promise.then(() => {
-          return {
-            actionsList: actionHistoryList,
-            headers: headers
-          };
-        });
+        return {
+          actionsList: actionHistoryList,
+          headers: headers
+        };
+      });
     }
 
-    public resolveAlerts(resolvedAlerts:any):ng.IPromise<any> {
+    public resolveAlerts(resolvedAlerts: any): ng.IPromise<any> {
       return this.HawkularAlert.Alert.resolvemany(resolvedAlerts, {}).$promise;
     }
 
-    public addNote(alertNote:any):ng.IPromise<any> {
+    public addNote(alertNote: any): ng.IPromise<any> {
       return this.HawkularAlert.Alert.note(alertNote).$promise;
     }
 
-    public ackAlerts(ackAlerts:any):ng.IPromise<any> {
+    public ackAlerts(ackAlerts: any): ng.IPromise<any> {
       return this.HawkularAlert.Alert.ackmany(ackAlerts, {}).$promise;
     }
 
-    public existTrigger(triggerId:TriggerId):any {
-      return this.HawkularAlert.Trigger.get({triggerId: triggerId}).$promise;
+    public existTrigger(triggerId: TriggerId): any {
+      return this.HawkularAlert.Trigger.get({ triggerId: triggerId }).$promise;
     }
 
-    public getTrigger(triggerId:TriggerId):any {
+    public getTrigger(triggerId: TriggerId): any {
       let deferred = this.$q.defer();
       let trigger = {};
 
-      this.HawkularAlert.Trigger.get({triggerId: triggerId}).$promise.then((triggerData) => {
+      this.HawkularAlert.Trigger.get({ triggerId: triggerId }).$promise.then((triggerData) => {
         trigger['trigger'] = triggerData;
-        return this.HawkularAlert.Dampening.query({triggerId: triggerId}).$promise;
+        return this.HawkularAlert.Dampening.query({ triggerId: triggerId }).$promise;
       }).then((dampeningData) => {
         trigger['dampenings'] = dampeningData;
-        return this.HawkularAlert.Conditions.query({triggerId: triggerId}).$promise;
-      }).then((conditionData)=> {
+        return this.HawkularAlert.Conditions.query({ triggerId: triggerId }).$promise;
+      }).then((conditionData) => {
         trigger['conditions'] = conditionData;
         deferred.resolve(trigger);
       });
@@ -497,11 +497,11 @@ module HawkularMetrics {
       return deferred.promise;
     }
 
-    public getTriggerConditions(triggerId:TriggerId):ng.IPromise<any> {
-      return this.HawkularAlert.Conditions.query({triggerId: triggerId}).$promise;
+    public getTriggerConditions(triggerId: TriggerId): ng.IPromise<any> {
+      return this.HawkularAlert.Conditions.query({ triggerId: triggerId }).$promise;
     }
 
-    public createTrigger(fullTrigger:any, errorCallback:any):ng.IPromise<void> {
+    public createTrigger(fullTrigger: any, errorCallback: any): ng.IPromise<void> {
 
       let triggerDefaults = {
         description: 'Created on ' + Date(),
@@ -519,7 +519,7 @@ module HawkularMetrics {
         let dampeningPromises = [];
         for (let i = 0; fullTrigger.dampenings && i < fullTrigger.dampenings.length; i++) {
           if (fullTrigger.dampenings[i]) {
-            let dampeningPromise = this.HawkularAlert.Dampening.save({triggerId: savedTrigger.id},
+            let dampeningPromise = this.HawkularAlert.Dampening.save({ triggerId: savedTrigger.id },
               fullTrigger.dampenings[i]).$promise.then(null, (error) => {
                 return this.ErrorsManager.errorHandler(error, 'Error creating dampening.', errorCallback);
               });
@@ -543,9 +543,9 @@ module HawkularMetrics {
         let conditionPromises = [];
         if (firingConditions.length > 0) {
           let conditionPromise = this.HawkularAlert.Conditions.save({
-              triggerId: savedTrigger.id,
-              triggerMode: 'FIRING'
-            },
+            triggerId: savedTrigger.id,
+            triggerMode: 'FIRING'
+          },
             firingConditions).$promise.then(null, (error) => {
               return this.ErrorsManager.errorHandler(error, 'Error creating firing conditions.', errorCallback);
             });
@@ -553,9 +553,9 @@ module HawkularMetrics {
         }
         if (autoResolveConditions.length > 0) {
           let conditionPromise = this.HawkularAlert.Conditions.save({
-              triggerId: savedTrigger.id,
-              triggerMode: 'AUTORESOLVE'
-            },
+            triggerId: savedTrigger.id,
+            triggerMode: 'AUTORESOLVE'
+          },
             autoResolveConditions).$promise.then(null, (error) => {
               return this.ErrorsManager.errorHandler(error, 'Error creating autoresolve conditions.', errorCallback);
             });
@@ -567,18 +567,18 @@ module HawkularMetrics {
 
     }
 
-    public deleteTrigger(triggerId:TriggerId):ng.IPromise<void> {
-      return this.HawkularAlert.Trigger.delete({triggerId: triggerId}).$promise;
+    public deleteTrigger(triggerId: TriggerId): ng.IPromise<void> {
+      return this.HawkularAlert.Trigger.delete({ triggerId: triggerId }).$promise;
     }
 
-    public updateTrigger(fullTrigger:any, errorCallback:any, backupTrigger?:any):ng.IPromise<any> {
+    public updateTrigger(fullTrigger: any, errorCallback: any, backupTrigger?: any): ng.IPromise<any> {
 
-      let emailPromise = this.addEmailAction(fullTrigger.trigger.actions.email[0]).then(()=> {
+      let emailPromise = this.addEmailAction(fullTrigger.trigger.actions.email[0]).then(() => {
         if (angular.equals(fullTrigger.trigger, backupTrigger.trigger) || !fullTrigger.trigger) {
           return;
         }
-        return this.HawkularAlert.Trigger.put({triggerId: fullTrigger.trigger.id}, fullTrigger.trigger).$promise;
-      }, (error)=> {
+        return this.HawkularAlert.Trigger.put({ triggerId: fullTrigger.trigger.id }, fullTrigger.trigger).$promise;
+      }, (error) => {
         return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
       });
 
@@ -588,8 +588,8 @@ module HawkularMetrics {
       for (let i = 0; fullTrigger.dampenings && i < fullTrigger.dampenings.length; i++) {
         if (fullTrigger.dampenings[i] && !angular.equals(fullTrigger.dampenings[i], backupTrigger.dampenings[i])) {
           let dampeningId = fullTrigger.dampenings[i].dampeningId;
-          let dampeningPromise = this.HawkularAlert.Dampening.put({triggerId: triggerId, dampeningId: dampeningId},
-            fullTrigger.dampenings[i]).$promise.then(null, (error)=> {
+          let dampeningPromise = this.HawkularAlert.Dampening.put({ triggerId: triggerId, dampeningId: dampeningId },
+            fullTrigger.dampenings[i]).$promise.then(null, (error) => {
               return this.ErrorsManager.errorHandler(error, 'Error saving dampening.', errorCallback);
             });
 
@@ -613,9 +613,9 @@ module HawkularMetrics {
       let conditionPromises = [];
       if (firingConditions.length > 0) {
         let conditionPromise = this.HawkularAlert.Conditions.save({
-            triggerId: triggerId,
-            triggerMode: 'FIRING'
-          },
+          triggerId: triggerId,
+          triggerMode: 'FIRING'
+        },
           firingConditions).$promise.then(null, (error) => {
             return this.ErrorsManager.errorHandler(error, 'Error creating firing conditions.', errorCallback);
           });
@@ -623,9 +623,9 @@ module HawkularMetrics {
       }
       if (autoResolveConditions.length > 0) {
         let conditionPromise = this.HawkularAlert.Conditions.save({
-            triggerId: triggerId,
-            triggerMode: 'AUTORESOLVE'
-          },
+          triggerId: triggerId,
+          triggerMode: 'AUTORESOLVE'
+        },
           autoResolveConditions).$promise.then(null, (error) => {
             return this.ErrorsManager.errorHandler(error, 'Error creating autoresolve conditions.', errorCallback);
           });
@@ -635,7 +635,7 @@ module HawkularMetrics {
       return this.$q.all(Array.prototype.concat(emailPromise, dampeningPromises, conditionPromises));
     }
 
-    public queryTriggers(criteria:IHawkularTriggerCriteria):ng.IPromise<IHawkularTriggerQueryResult> {
+    public queryTriggers(criteria: IHawkularTriggerCriteria): ng.IPromise<IHawkularTriggerQueryResult> {
       let triggerList = [];
       let headers;
 
@@ -676,35 +676,35 @@ module HawkularMetrics {
         queryParams['order'] = criteria.order;
       }
 
-      return this.HawkularAlert.Trigger.query(queryParams, (serverTriggers:any, getHeaders:any) => {
+      return this.HawkularAlert.Trigger.query(queryParams, (serverTriggers: any, getHeaders: any) => {
 
         headers = getHeaders();
         let momentNow = this.$moment();
 
         for (let i = 0; i < serverTriggers.length; i++) {
           let serverTrigger = serverTriggers[i];
-          let consoleTrigger:any = serverTrigger;
+          let consoleTrigger: any = serverTrigger;
 
           triggerList.push(consoleTrigger);
         }
       }, (error) => {
         this.$log.debug('querying data error', error);
-      }).$promise.then(():IHawkularTriggerQueryResult => {
-          return {
-            triggerList: triggerList,
-            headers: headers
-          };
-        });
+      }).$promise.then((): IHawkularTriggerQueryResult => {
+        return {
+          triggerList: triggerList,
+          headers: headers
+        };
+      });
     }
 
-    private getEmailAction(email:EmailType):ng.IPromise<void> {
+    private getEmailAction(email: EmailType): ng.IPromise<void> {
       return this.HawkularAlert.Action.get({
         pluginId: 'email',
         actionId: email
       }).$promise;
     }
 
-    private createEmailAction(email:EmailType):ng.IPromise<void> {
+    private createEmailAction(email: EmailType): ng.IPromise<void> {
       return this.HawkularAlert.Action.save({
         actionPlugin: 'email',
         actionId: email,
@@ -713,10 +713,10 @@ module HawkularMetrics {
       }).$promise;
     }
 
-    public addEmailAction(email:EmailType):ng.IPromise<void> {
-      return this.getEmailAction(email).then((promiseValue:any) => {
+    public addEmailAction(email: EmailType): ng.IPromise<void> {
+      return this.getEmailAction(email).then((promiseValue: any) => {
         return promiseValue;
-      }, (reason:any) => {
+      }, (reason: any) => {
         // Create a default email action
         if (reason.status === 404) {
           this.$log.debug('Action does not exist, creating one');
@@ -725,7 +725,7 @@ module HawkularMetrics {
       });
     }
 
-    public updateAction(email:EmailType):ng.IPromise<void> {
+    public updateAction(email: EmailType): ng.IPromise<void> {
       return this.HawkularAlert.Action.put({
         actionPlugin: 'email',
         actionId: email,

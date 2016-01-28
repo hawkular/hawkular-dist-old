@@ -20,18 +20,18 @@
 
 module HawkularMetrics {
 
-  declare let FileReader:any;
-  _module.directive('fileread', [function () {
+  declare let FileReader: any;
+  _module.directive('fileread', [function() {
     return {
       scope: {
         fileread: '='
       },
-      link: (scope, element )  => {
+      link: (scope, element) => {
         element.bind('change', (changeEvent) => {
           let theFile = changeEvent.target.files[0];
           let reader = new FileReader();
 
-          reader.onload = (readEvent:any) => {
+          reader.onload = (readEvent: any) => {
             if (readEvent.target.readyState === FileReader.DONE) {
               scope.$apply(() => {
                 scope.fileread = new Uint8Array(readEvent.target.result);
@@ -39,7 +39,7 @@ module HawkularMetrics {
             }
           };
           reader.onerror = (error) => {
-            console.error('Error occurred in fileread directive: '+error);
+            console.error('Error occurred in fileread directive: ' + error);
           };
 
           reader.readAsArrayBuffer(theFile);
@@ -47,6 +47,5 @@ module HawkularMetrics {
       }
     };
   }]);
-
 
 }

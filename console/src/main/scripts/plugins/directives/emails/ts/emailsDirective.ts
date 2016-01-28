@@ -20,8 +20,8 @@ module Emails {
   export class EmailsDirective {
     public require = 'ngModel';
 
-    public link(scope, elm, attrs, ctrl):void {
-      ctrl.$validators.emails = (modelValue, viewValue):boolean => {
+    public link(scope, elm, attrs, ctrl): void {
+      ctrl.$validators.emails = (modelValue, viewValue): boolean => {
         if (ctrl.$isEmpty(modelValue)) {
           // consider empty models to be valid
           return true;
@@ -30,10 +30,10 @@ module Emails {
         let atLeastOneInvalid = true; // until proven otherwise...
         viewValue
           .split(/[,\s]/)
-          .filter((entry:string) => {
+          .filter((entry: string) => {
             return entry && entry.length > 0;
           })
-          .forEach((email:string) => {
+          .forEach((email: string) => {
             const re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
             let valid = re.test(email);
             if (!valid) {

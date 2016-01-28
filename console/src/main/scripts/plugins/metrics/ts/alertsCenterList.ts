@@ -25,35 +25,35 @@ module HawkularMetrics {
   export class AlertsCenterController {
 
     public isWorking = false;
-    public alertsTimeStart:TimestampInMillis;
-    public alertsTimeEnd:TimestampInMillis;
-    public alertsTimeOffset:TimestampInMillis;
-    public lastUpdateDate:Date = new Date();
+    public alertsTimeStart: TimestampInMillis;
+    public alertsTimeEnd: TimestampInMillis;
+    public alertsTimeOffset: TimestampInMillis;
+    public lastUpdateDate: Date = new Date();
 
-    public alertsList:IAlert[];
-    public selectedItems:IAlert[];
+    public alertsList: IAlert[];
+    public selectedItems: IAlert[];
     public alertsPerPage = 10;
     public alertsCurPage = 0;
-    public headerLinks:any = {};
+    public headerLinks: any = {};
     public selectCount = 0;
-    public hasOpenSelectedItems:boolean = false;
-    public hasResolvedAlerts:boolean = false;
-    public alertsStatuses:string = 'OPEN,ACKNOWLEDGED';
-    public sortField:string = 'ctime';
-    public sortAsc:boolean = false;
+    public hasOpenSelectedItems: boolean = false;
+    public hasResolvedAlerts: boolean = false;
+    public alertsStatuses: string = 'OPEN,ACKNOWLEDGED';
+    public sortField: string = 'ctime';
+    public sortAsc: boolean = false;
     public search: string;
 
-    constructor(private $scope:any,
-                private HawkularAlertsManager:IHawkularAlertsManager,
-                private ErrorsManager:IErrorsManager,
-                private $log:ng.ILogService,
-                private $q:ng.IQService,
-                private $rootScope:IHawkularRootScope,
-                private $interval:ng.IIntervalService,
-                private $filter:ng.IFilterService,
-                private $routeParams:any,
-                private HkHeaderParser:any,
-                private $location:ng.ILocationService) {
+    constructor(private $scope: any,
+      private HawkularAlertsManager: IHawkularAlertsManager,
+      private ErrorsManager: IErrorsManager,
+      private $log: ng.ILogService,
+      private $q: ng.IQService,
+      private $rootScope: IHawkularRootScope,
+      private $interval: ng.IIntervalService,
+      private $filter: ng.IFilterService,
+      private $routeParams: any,
+      private HkHeaderParser: any,
+      private $location: ng.ILocationService) {
       $scope.ac = this;
 
       $routeParams.timeOffset = $routeParams.timeOffset || $scope.hkParams.timeOffset || 3600000 * 12;
@@ -70,15 +70,15 @@ module HawkularMetrics {
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
         $rootScope.$watch('currentPersona', (currentPersona) =>
-        currentPersona && this.getAlerts());
+          currentPersona && this.getAlerts());
       }
 
       $scope.$on('SwitchedPersona', () => this.getAlerts());
 
     }
 
-    private autoRefresh(intervalInSeconds:number):void {
-      let autoRefreshPromise = this.$interval(()  => {
+    private autoRefresh(intervalInSeconds: number): void {
+      let autoRefreshPromise = this.$interval(() => {
         this.$log.debug('autoRefresh .... ' + new Date());
         this.getAlerts();
       }, intervalInSeconds * 1000);
@@ -88,7 +88,7 @@ module HawkularMetrics {
       });
     }
 
-    public getAlerts():void {
+    public getAlerts(): void {
 
       this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : Date.now();
       this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
@@ -121,18 +121,18 @@ module HawkularMetrics {
         });
     }
 
-    public showDetailPage(alertId:AlertId):void {
+    public showDetailPage(alertId: AlertId): void {
       //let timeOffset = this.alertsTimeOffset;
       //let endTime = this.alertsTimeEnd;
       //this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}/${timeOffset}/${endTime}`);
       this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}`);
     }
 
-    public resolveSelected():void {
+    public resolveSelected(): void {
       this.$log.log('ResolveSelected: ' + this.selectCount);
       this.isWorking = true;
       let resolveIdList = '';
-      this.alertsList.forEach((alertItem:IAlert) => {
+      this.alertsList.forEach((alertItem: IAlert) => {
         if (alertItem.selected) {
           resolveIdList = resolveIdList + alertItem.id + ',';
         }
@@ -154,25 +154,25 @@ module HawkularMetrics {
       }
     }
 
-    public getResourceRoute(trigger:IAlertTrigger):string {
+    public getResourceRoute(trigger: IAlertTrigger): string {
       let route = 'unknown-resource-type';
       let encodedId = this.encodeResourceId(trigger.id);
 
       switch (trigger.context.resourceType) {
-        case 'App Server' :
+        case 'App Server':
           route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/jvm';
           break;
-        case 'App Server Deployment' :
+        case 'App Server Deployment':
           route = '/hawkular-ui/app/app-details/' + trigger.context.resourceName + '/deployments';
           break;
-        case 'DataSource' :
+        case 'DataSource':
           let resIdPart = trigger.context.resourceName.split('~/')[0];
           route = '/hawkular-ui/app/app-details/' + resIdPart + '/datasources';
           break;
-        case 'URL' :
+        case 'URL':
           let parts = trigger.id.split('_trigger_');
           let resourceId = parts[0];
-          let segment = ( parts[1] === 'thres' ) ? 'response-time' : 'availability';
+          let segment = (parts[1] === 'thres') ? 'response-time' : 'availability';
           route = '/hawkular-ui/url/' + segment + '/' + trigger.id.split('_trigger_')[0];
           break;
       }
@@ -180,7 +180,7 @@ module HawkularMetrics {
       return route;
     }
 
-    private encodeResourceId(resourceId:string):string {
+    private encodeResourceId(resourceId: string): string {
       // for some reason using standard encoding is not working correctly in the route. So do something dopey...
       //let encoded = encodeURIComponent(resourceId);
       let encoded = resourceId;
@@ -194,7 +194,7 @@ module HawkularMetrics {
       this.$log.log('Ack Selected: ' + this.selectCount);
       this.isWorking = true;
       let ackIdList = '';
-      this.alertsList.forEach((alertItem:IAlert) => {
+      this.alertsList.forEach((alertItem: IAlert) => {
         if (alertItem.selected && (alertItem.status !== 'ACKNOWLEDGED' || alertItem.status !== 'RESOLVED')) {
           ackIdList = ackIdList + alertItem.id + ',';
         }
@@ -216,41 +216,41 @@ module HawkularMetrics {
       }
     }
 
-    public setPage(page:number):void {
+    public setPage(page: number): void {
       this.alertsCurPage = page;
       this.getAlerts();
     }
 
-    public selectItem(item:IAlert):void {
+    public selectItem(item: IAlert): void {
       item.selected = !item.selected;
       this.selectedItems = _.filter(this.alertsList, 'selected');
       this.selectCount = this.selectedItems.length;
-      this.hasOpenSelectedItems = _.some(this.selectedItems, {'status': 'OPEN'});
+      this.hasOpenSelectedItems = _.some(this.selectedItems, { 'status': 'OPEN' });
     }
 
-    public hasResolvedItems():boolean {
-      return _.some(this.selectedItems, {'status': 'RESOLVED'});
+    public hasResolvedItems(): boolean {
+      return _.some(this.selectedItems, { 'status': 'RESOLVED' });
     }
 
     private resetAllUnselected() {
       this.selectCount = 0;
       this.hasOpenSelectedItems = false;
-      this.alertsList.forEach((item:IAlert) => {
+      this.alertsList.forEach((item: IAlert) => {
         item.selected = false;
       });
 
     }
 
-    public selectAll():void {
+    public selectAll(): void {
       let filteredList = this.$filter('filter')(this.alertsList, this.search);
       let toggleTo = this.selectCount !== filteredList.length;
-      _.forEach(filteredList, (item:any) => {
+      _.forEach(filteredList, (item: any) => {
         item.selected = toggleTo;
       });
       this.selectCount = toggleTo ? filteredList.length : 0;
     }
 
-    public changeResolvedFilter():void {
+    public changeResolvedFilter(): void {
       if (this.hasResolvedAlerts) {
         this.alertsStatuses = 'OPEN,ACKNOWLEDGED,RESOLVED';
       } else {
@@ -259,7 +259,7 @@ module HawkularMetrics {
       this.getAlerts();
     }
 
-    public sortBy(field:string):void {
+    public sortBy(field: string): void {
       this.sortField = field;
       this.sortAsc = !this.sortAsc;
       this.getAlerts();
@@ -270,4 +270,3 @@ module HawkularMetrics {
 
   _module.controller('AlertsCenterController', AlertsCenterController);
 }
-

@@ -24,7 +24,7 @@ module HawkularMetrics {
 
   export class EventTriggerSetupController extends TriggerSetupController {
 
-    loadTrigger(triggerId:string):Array<ng.IPromise<any>> {
+    loadTrigger(triggerId: string): Array<ng.IPromise<any>> {
 
       let triggerPromise = this.HawkularAlertsManager.getTrigger(triggerId).then(
         (triggerData) => {
@@ -47,7 +47,7 @@ module HawkularMetrics {
       return [triggerPromise];
     }
 
-    saveTrigger(errorCallback):Array<ng.IPromise<any>> {
+    saveTrigger(errorCallback): Array<ng.IPromise<any>> {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);
       updatedFullTrigger.trigger.enabled = this.adm.trigger.enabled;

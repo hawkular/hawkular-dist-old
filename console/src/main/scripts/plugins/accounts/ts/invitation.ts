@@ -21,27 +21,27 @@ module HawkularAccounts {
 
   export class InvitationController {
     public static $inject = ['$log', '$routeParams', 'HawkularAccount', 'NotificationsService'];
-    public invitation:IInvitation;
-    public loading:boolean;
-    public success:boolean;
+    public invitation: IInvitation;
+    public loading: boolean;
+    public success: boolean;
     public error: IErrorPayload;
 
-    constructor(private $log:ng.ILogService,
-                private $routeParams:any,
-                private HawkularAccount:any,
-                private NotificationsService:INotificationsService) {
+    constructor(private $log: ng.ILogService,
+      private $routeParams: any,
+      private HawkularAccount: any,
+      private NotificationsService: INotificationsService) {
 
       this.loading = true;
       this.success = false;
-      HawkularAccount.OrganizationInvitation.update({token: $routeParams.token},
-        (response:IInvitation) => {
+      HawkularAccount.OrganizationInvitation.update({ token: $routeParams.token },
+        (response: IInvitation) => {
           this.invitation = response;
           this.$log.debug('Invitation object available:');
           this.$log.debug(this.invitation);
           this.success = true;
           this.loading = false;
         },
-        (error:IErrorPayload) => {
+        (error: IErrorPayload) => {
           this.error = error;
           this.success = false;
           this.loading = false;
@@ -53,4 +53,3 @@ module HawkularAccounts {
 
   _module.controller('HawkularAccounts.InvitationController', InvitationController);
 }
-

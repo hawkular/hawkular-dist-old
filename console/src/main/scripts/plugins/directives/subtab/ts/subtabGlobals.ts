@@ -20,7 +20,7 @@ module Subtab {
 
   export var pluginName = 'subtab';
 
-  export var log:Logging.Logger = Logger.get(pluginName);
+  export var log: Logging.Logger = Logger.get(pluginName);
 
   export var templatePath = 'plugins/directives/subtab/html/subtab.html';
 

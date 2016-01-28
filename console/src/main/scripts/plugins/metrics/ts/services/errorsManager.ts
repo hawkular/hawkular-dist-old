@@ -17,7 +17,6 @@
 
 /// <reference path="../metricsPlugin.ts"/>
 
-
 module HawkularMetrics {
 
   export interface IErrorsManager {
@@ -29,8 +28,8 @@ module HawkularMetrics {
     public static $inject = ['$q', '$log', 'NotificationsService'];
 
     constructor(private $q: ng.IQService,
-                private $log: ng.ILogService,
-                private NotificationsService: INotificationsService) {
+      private $log: ng.ILogService,
+      private NotificationsService: INotificationsService) {
     }
 
     private errorToastr(error: any, errorMsg: string): void {

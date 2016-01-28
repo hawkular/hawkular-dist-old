@@ -19,9 +19,9 @@
 /// <reference path="../../../includes.ts"/>
 
 module HawkularMetrics {
-/// TODO: use ControllerAs syntax
+  /// TODO: use ControllerAs syntax
 
-  let paginationLink = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+  let paginationLink = ($scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
 
     $scope.currentPageView = $scope.currentPage + 1;
     $scope.pagesNumber = getPagesNumber();
@@ -30,7 +30,7 @@ module HawkularMetrics {
       return $scope.headers && Math.ceil(($scope.headers.total || 1) / $scope.perPage);
     }
 
-    $scope.setPage = (pageNumber:number) => {
+    $scope.setPage = (pageNumber: number) => {
       $scope.pagesNumber = getPagesNumber();
 
       if ($scope.pagesNumber === 1) {
@@ -39,23 +39,23 @@ module HawkularMetrics {
       }
 
       if (pageNumber < 1) {
-        $scope.pageSetter({pageNumber: 0});
+        $scope.pageSetter({ pageNumber: 0 });
         $scope.currentPageView = 1;
       } else if (pageNumber >= $scope.pagesNumber) {
-        $scope.pageSetter({pageNumber: $scope.pagesNumber - 1});
+        $scope.pageSetter({ pageNumber: $scope.pagesNumber - 1 });
         $scope.currentPageView = pageNumber;
       } else {
-        $scope.pageSetter({pageNumber: pageNumber});
+        $scope.pageSetter({ pageNumber: pageNumber });
       }
     };
 
     $scope.goToFirst = () => {
-      $scope.pageSetter({pageNumber: 0});
+      $scope.pageSetter({ pageNumber: 0 });
     };
 
     $scope.goToLast = () => {
       $scope.pagesNumber = getPagesNumber();
-      $scope.pageSetter({pageNumber: $scope.pagesNumber - 1});
+      $scope.pageSetter({ pageNumber: $scope.pagesNumber - 1 });
     };
 
     $scope.goTos = [0];
@@ -72,7 +72,7 @@ module HawkularMetrics {
   };
 
   class HkPagination {
-    public link:($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
+    public link: ($scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
     public templateUrl = 'plugins/metrics/html/url-pagination.html';
     public scope = {
       resourceList: '=',
@@ -100,7 +100,7 @@ module HawkularMetrics {
   }
 
   class HkDataPagination {
-    public link:($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => void;
+    public link: ($scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
     public templateUrl = 'plugins/metrics/html/data-pagination.html';
     public scope = {
       resourceList: '=',

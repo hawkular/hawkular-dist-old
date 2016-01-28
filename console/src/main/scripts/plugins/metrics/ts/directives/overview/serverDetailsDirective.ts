@@ -23,8 +23,8 @@ module HawkularMetrics {
   export class LabelEditorController {
     public currentLabel: any;
     constructor(public index: any,
-                public labels: any,
-                public $modalInstance:any) {
+      public labels: any,
+      public $modalInstance: any) {
       this.currentLabel = this.labels[index];
     }
     public confirmDelete() {
@@ -42,12 +42,12 @@ module HawkularMetrics {
     private feedId: FeedId;
     private resourceId: ResourceId;
     public labels = [];
-    public newLabel:any = {};
+    public newLabel: any = {};
     public isOpen = false;
 
-    constructor(private $routeParams:any,
-                private HawkularInventory: any,
-                private $modal:any) {
+    constructor(private $routeParams: any,
+      private HawkularInventory: any,
+      private $modal: any) {
       this.feedId = this.$routeParams.feedId;
       this.resourceId = this.$routeParams.resourceId + '~~';
     }
@@ -81,10 +81,10 @@ module HawkularMetrics {
       if (this.HawkularInventory.hasOwnProperty('ResourceUnderFeed') &&
         this.HawkularInventory.ResourceUnderFeed.hasOwnProperty('updateProperties')) {
         this.HawkularInventory['ResourceUnderFeed']['updateProperties']({
-            feedId: this.feedId,
-            resourcePath: this.resourceId
-          },
-          {properties}, (result) => {
+          feedId: this.feedId,
+          resourcePath: this.resourceId
+        },
+          { properties }, (result) => {
             this.serverInfo['properties'] = properties;
           });
       }
@@ -117,7 +117,7 @@ module HawkularMetrics {
     }
   }
 
-  let serverDetailLink = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+  let serverDetailLink = ($scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
     $scope.$watch('serverInfo', (newServerInfo) => {
       $scope.vm.serverInfo = newServerInfo;
     });
@@ -144,7 +144,7 @@ module HawkularMetrics {
   }
 
   export class HkDetailLabelEditor {
-    public link = ($scope:any, element:ng.IAugmentedJQuery, attrs:ng.IAttributes) => {
+    public link = ($scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
       $scope.oldLabel = _.clone($scope.label, true);
 
       $scope.closeDropDown = () => {
