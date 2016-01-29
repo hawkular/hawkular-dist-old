@@ -27,10 +27,6 @@
     <param-value>true</param-value>
   </context-param>
 
-  <listener>
-    <listener-class>org.keycloak.secretstore.common.ServletContextEnhancer</listener-class>
-  </listener>
-
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>Installer download endpoint</web-resource-name>

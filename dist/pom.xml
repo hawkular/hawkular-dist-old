@@ -324,6 +324,7 @@
             <configuration>
               <tasks>
                 <replace token="org.hawkular.nest" value="org.hawkular.bus" file="${project.build.directory}/${project.build.finalName}/modules/org/hawkular/nest/main/deployments/hawkular-metrics-component.war//WEB-INF/jboss-deployment-structure.xml" />
+                <replace token="MaxMetaspaceSize=256m" value="MaxMetaspaceSize=512m" file="${project.build.directory}/${project.build.finalName}/bin/standalone.conf" />
               </tasks>
             </configuration>
           </execution>

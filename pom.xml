@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>33</version>
+    <version>35</version>
   </parent>
 
   <artifactId>hawkular</artifactId>
@@ -88,15 +88,15 @@
     <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
     <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
-    <version.org.hawkular.accounts>2.0.18.Final-SRC-revision-0c09a7676792a60db75d6ee8f49500496b8f6d42</version.org.hawkular.accounts>
-    <version.org.hawkular.agent>0.15.6.Final</version.org.hawkular.agent>
-    <version.org.hawkular.alerts>0.8.2.Final</version.org.hawkular.alerts>
-    <version.org.hawkular.cmdgw>0.10.9.Final</version.org.hawkular.cmdgw>
-    <version.org.hawkular.commons>0.3.4.Final</version.org.hawkular.commons>
-    <version.org.hawkular.inventory>0.12.1.Final</version.org.hawkular.inventory>
-    <version.org.hawkular.metrics>0.11.0.Final</version.org.hawkular.metrics>
+    <version.org.hawkular.accounts>2.0.18.Final</version.org.hawkular.accounts>
+    <version.org.hawkular.agent>0.15.7.Final-SRC-revision-f486b356c1cdee2e53982da9b4dfb2f590b24c54</version.org.hawkular.agent>
+    <version.org.hawkular.alerts>0.9.0.Final-SRC-revision-a1532ba2882645d80171d1c8e353320de0ddc31a</version.org.hawkular.alerts>
+    <version.org.hawkular.cmdgw>0.10.11.Final-SRC-revision-6858e69c9543587bcc15da618c6cec80b08dd108</version.org.hawkular.cmdgw>
+    <version.org.hawkular.commons>0.3.5.Final</version.org.hawkular.commons>
+    <version.org.hawkular.inventory>0.13.0.Final-SRC-revision-8030a5aa969e3ff5bab534112ea2b5b91c8088d7</version.org.hawkular.inventory>
+    <version.org.hawkular.metrics>0.13.0-SRC-revision-c9260099383bcaab020b9623dff7baa1a421e73e</version.org.hawkular.metrics>
     <version.org.jboss.weld.se>2.3.2.Final</version.org.jboss.weld.se>
-    <version.org.keycloak.secretstore>1.0.9.Final</version.org.keycloak.secretstore>
+    <version.org.keycloak.secretstore>1.0.12.Final</version.org.keycloak.secretstore>
     <version.rxjava>1.0.16</version.rxjava>
     <version.hystrix-core>1.4.21</version.hystrix-core>
     <version.hystrix-request-servlet>1.1.2</version.hystrix-request-servlet>
@@ -109,12 +109,6 @@
         <groupId>org.hawkular.accounts</groupId>
         <artifactId>hawkular-accounts-api</artifactId>
         <version>${version.org.hawkular.accounts}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.keycloak.secretstore</groupId>
-        <artifactId>secret-store-undertow-filter</artifactId>
-        <version>${version.org.keycloak.secretstore}</version>
       </dependency>
 
       <dependency>

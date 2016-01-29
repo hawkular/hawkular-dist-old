@@ -152,7 +152,7 @@ public class Scenario1ITest extends AbstractTestBase {
         path = "/hawkular/metrics/gauges/" + resourceId + "." + statusCodeId + "/data";
         String query = "?start=" + start + "&end=" + end;
         response = client
-                .newCall(newAuthRequest().addHeader("Hawkular-Tenant", tenantId).url(baseURI + path + query).build())
+                .newCall(newAuthRequest().url(baseURI + path + query).build())
                 .execute();
         String body = response.body().string();
         TypeReference<List<DataPoint<Double>>> dataPointListTypeRef = new TypeReference<List<DataPoint<Double>>>() {};
@@ -163,7 +163,7 @@ public class Scenario1ITest extends AbstractTestBase {
         path = "/hawkular/metrics/gauges/" + resourceId + "." + durationId + "/data";
         query = "?start=" + start + "&end=" + end;
         response = client
-                .newCall(newAuthRequest().addHeader("Hawkular-Tenant", tenantId).url(baseURI + path + query).build())
+                .newCall(newAuthRequest().url(baseURI + path + query).build())
                 .execute();
         body = response.body().string();
         List<DataPoint<Double>> durations = mapper.readValue(body, dataPointListTypeRef);
@@ -196,7 +196,7 @@ public class Scenario1ITest extends AbstractTestBase {
 
         String path = "/hawkular/metrics/gauges/" + tmp + "/data";
         String json = "[{timestamp: " + time + ", value: " + value + "}]";
-        Request request = newAuthRequest().addHeader("Hawkular-Tenant", tenantId).url(baseURI + path)
+        Request request = newAuthRequest().url(baseURI + path)
                 .post(RequestBody.create(MEDIA_TYPE_JSON, json)).build();
         Response response = client.newCall(request).execute();
         Assert.assertEquals(200, response.code());
