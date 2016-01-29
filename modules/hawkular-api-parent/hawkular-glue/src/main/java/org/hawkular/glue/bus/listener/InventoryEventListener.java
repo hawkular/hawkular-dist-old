@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 import org.hawkular.alerts.api.model.Severity;
 import org.hawkular.alerts.api.model.condition.CompareCondition;
 import org.hawkular.alerts.api.model.condition.Condition;
+import org.hawkular.alerts.api.model.condition.EventCondition;
 import org.hawkular.alerts.api.model.condition.RateCondition;
 import org.hawkular.alerts.api.model.condition.ThresholdCondition;
 import org.hawkular.alerts.api.model.condition.ThresholdCondition.Operator;
@@ -306,6 +307,33 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
                     log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
 
+                    // FAILED DEPLOYMENTS
+                    groupTriggerId = "Deployment_Failure";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    group = new Trigger(tenantId, groupTriggerId, "Deployment Failure");
+                    group.setDescription("Deployment failure");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.HIGH);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "DEPLOYMENT_FAIL");
+                    group.addContext("resourceType", "App Server Deployment");
+                    group.addContext("triggerType", "Event");
+
+                    // uses default dampening, fire on every failed deployment
+
+                    conditionContext.clear();
+                    conditionContext.put("description", "Deployment Failure");
+                    cFiring1 = new EventCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "DeployApplicationResponse", "category == 'Hawkular Deployment', text == 'ERROR'");
+                    cFiring1.setContext(conditionContext);
+                    conditions.clear();
+                    conditions.add(cFiring1);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+
                     break;
                 }
                 case "URL": {
@@ -468,6 +496,19 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     dataIdMap.clear();
                     dataId1 = "WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,
+                            memberDescription, memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    // FAILED DEPLOYMENTS
+                    groupTriggerId = "Deployment_Failure";
+                    memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    memberDescription = "Deployment failure for " + resourceId;
+                    dataIdMap.clear();
+                    dataId1 = "DeployApplicationResponse";
+                    memberDataId1 = qualifiedResourceId + "_" + dataId1;
                     dataIdMap.put(dataId1, memberDataId1);
                     log.warn("\n*********** Member : " + memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,

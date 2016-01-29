@@ -83,7 +83,9 @@ module HawkularMetrics {
         // should start automatically when the resource is discovered/created/imported. But, until that approach is
         // in place we'll do it here.  This is still an improvement from before, when the user had to actually
         // click on the 'Alert Settings' link for the resource.
-        this.loadTriggers();
+
+        // THESE HAVE BEEN MIGRATED TO THE SERVER!
+        // this.loadTriggers();
       });
 
       if (!$rootScope.hasOwnProperty('isExperimentalWatch')) {
