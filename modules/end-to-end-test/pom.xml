@@ -38,21 +38,42 @@
   <dependencies>
 
     <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jaxb-annotations</artifactId>
+      <version>${version.com.fasterxml.jackson.core}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-rx</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-jaxb-adapters</artifactId>
+      <version>${version.org.hawkular.accounts}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -68,9 +89,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hawkular</groupId>
-      <artifactId>hawkular-rx</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.hawkular.metrics</groupId>
+      <artifactId>hawkular-metrics-model</artifactId>
+      <version>${version.org.hawkular.metrics}</version>
       <scope>test</scope>
     </dependency>
 
@@ -81,30 +102,17 @@
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.groovy.modules.http-builder</groupId>
-      <artifactId>http-builder</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.jboss.weld.se</groupId>
       <artifactId>weld-se</artifactId>
-      <version>2.3.2.Final</version>
+      <version>${version.org.jboss.weld.se}</version>
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 
