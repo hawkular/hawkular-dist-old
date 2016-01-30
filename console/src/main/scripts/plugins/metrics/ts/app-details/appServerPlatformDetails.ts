@@ -87,8 +87,8 @@ module HawkularMetrics {
     }
 
     private initTimeStamps() {
-      this.startTimeStamp = +moment().subtract((this.$routeParams.timeOffset || 3600000), 'milliseconds');
-      this.endTimeStamp = +moment();
+      this.endTimeStamp = this.$routeParams.endTime || +moment();
+      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
     }
 
     private filterAlerts(alertData: IHawkularAlertQueryResult): IAlert[] {
