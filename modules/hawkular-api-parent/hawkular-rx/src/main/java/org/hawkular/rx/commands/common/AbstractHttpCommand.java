@@ -26,7 +26,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.hawkular.rx.cdi.WithValues;
 
 import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
 
 /**
@@ -35,14 +34,11 @@ import com.netflix.hystrix.HystrixObservableCommand;
 public abstract class AbstractHttpCommand<R> extends HystrixObservableCommand<R> {
 
     private AbstractHttpCommand() {
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Other"))
-                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-                        .withExecutionTimeoutInMilliseconds(2500)));
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Other")));
     }
 
     protected AbstractHttpCommand(HystrixCommandGroupKey group) {
-        super(Setter.withGroupKey(group).andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-                .withExecutionTimeoutInMilliseconds(2500)));
+        super(Setter.withGroupKey(group));
     }
 
     protected AbstractHttpCommand(Setter setter) {

@@ -35,7 +35,6 @@ import org.hawkular.rx.httpclient.RestResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.netflix.hystrix.HystrixCommandProperties;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -77,9 +76,7 @@ public class CreateResourceCommand extends AbstractHttpCommand<String> {
 
     @Inject
     private CreateResourceCommand(InjectionPoint ip) {
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("inventory-resource"))
-                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-                        .withExecutionTimeoutInMilliseconds(2500)));
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("inventory-resource")));
         initialize(ip);
     }
 
