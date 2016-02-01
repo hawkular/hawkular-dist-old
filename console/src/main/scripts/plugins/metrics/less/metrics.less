@@ -2481,11 +2481,12 @@ body {
 }
 
 .hk-sidebar {
+  background-color: white;
+  bottom: 0;
+  left: 0;
+  min-height: 100%;
   position: absolute;
   top: 0;
-  left: 0;
-  bottom: 0;
-  min-height: 100%;
   width: 20em;
 
   @media (max-width: @screen-xs-max) {
@@ -2493,19 +2494,13 @@ body {
   }
 
   > div {
-    background: #3a3f43;
-    color: white;
+    background-color: white;
     padding: 2em;
   }
 
   h4 {
     font-size: ceil(@font-size-base + 1);
     font-style: italic;
-  }
-
-  .btn-link:hover,
-  a:hover {
-    color: @link-color;
   }
 
   .pficon-close {
@@ -2515,21 +2510,35 @@ body {
   .hk-filter-v-block {
     padding: 1.5em 0;
 
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    h4 {
+      margin: 0;
+    }
+
     + .hk-filter-v-block {
-      border-top: 1px solid #888;
+      border-top: 1px solid @table-border-color;
     }
 
     .radio,
     .checkbox {
       margin-left: 1.5em;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
 
     .hk-label-heading {
-      color: white;
       font-weight: bold;
 
       .fa {
-        color: white;
         font-size: @font-size-base;
       }
     }
@@ -2539,10 +2548,30 @@ body {
       margin-top: 1em;
 
       a.selected {
-        color: white;
+        color: @link-hover-color;
         font-weight: bold;
       }
     }
+  }
+}
+
+.hk-filters-selected {
+
+  .hk-filter-selected {
+
+     + .hk-filter-selected {
+      margin-top: 5px;
+    }
+
+    .btn {
+      margin-left: 5px;
+    }
+  }
+
+  .hk-dropdown-footer {
+    background-color: #f5f5f5;
+    margin: 10px -14px -10px;
+    padding: 10px 15px;
   }
 }
 
@@ -2902,7 +2931,6 @@ section {
     }
   }
 }
-
 
 // Tokens screen
 

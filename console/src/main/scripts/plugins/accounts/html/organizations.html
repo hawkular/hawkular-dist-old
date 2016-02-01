@@ -22,8 +22,9 @@
           <button class="btn btn-primary btn-lg" type="button" role="button" ng-click="controller.showCreateForm()">
             Create Organization
           </button>
-          or
-          <a class="btn-default btn-lg" href="/hawkular-ui/organizations/join" role="button">
+        </div>
+        <div class="blank-slate-pf-secondary-action">
+          <a class="btn btn-default" href="/hawkular-ui/organizations/join" role="button">
             Join an organization
           </a>
         </div>
@@ -33,12 +34,12 @@
         <button class="btn btn-primary" type="button" role="button" ng-click="controller.showCreateForm()">
           Create Organization
         </button>
-        <a class="btn-default btn-lg" href="/hawkular-ui/organizations/join" role="button">
+        <a class="btn btn-default" href="/hawkular-ui/organizations/join" role="button">
           Join an organization
         </a>
       </div>
 
-      <div ng-show="controller.joinRequests.length && !controller.loading">
+      <div class="hk-organizations-list" ng-show="controller.joinRequests.length && !controller.loading">
         <h2>Your join requests</h2>
         <div class="hk-table-container">
           <table class="table table-bordered hk-table-clean">
@@ -60,7 +61,7 @@
         </div>
       </div>
 
-      <div ng-show="controller.organizations.length && !controller.loading">
+      <div class="hk-organizations-list" ng-show="controller.organizations.length && !controller.loading">
         <h2>Your organization memberships</h2>
         <div class="hk-table-container">
           <table class="table table-bordered hk-table-clean">

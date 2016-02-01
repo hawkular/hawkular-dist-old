@@ -61,8 +61,8 @@
               <td>{{joinRequest.persona.name}}</td>
               <td align="right">
               <span ng-show="controller.joinRequestsToUpdate[joinRequest.id] !== PersistenceState.PERSISTING">
-                <button class="btn btn-primary" ng-click="controller.approveRequest(joinRequest)">Approve</button>
-                <button class="btn btn-danger" ng-click="controller.rejectRequest(joinRequest)">Decline</button>
+                <button class="btn btn-default" ng-click="controller.approveRequest(joinRequest)">Approve</button>
+                <button class="btn btn-danger" ng-click="controller.rejectRequest(joinRequest)">Reject</button>
               </span>
 
               <span ng-show="controller.joinRequestsToUpdate[joinRequest.id] === PersistenceState.PERSISTING">

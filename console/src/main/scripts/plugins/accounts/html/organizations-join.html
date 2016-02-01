@@ -24,12 +24,11 @@
         </div>
         <h1>No organizations available.</h1>
         <p>
-          There are no organizations available for joining.<br/>
           If you are looking for a specific organization, this might mean that it's marked as 'Private'. In that case,
           you need to be actively invited by an administrator of that organization.
         </p>
         <div class="blank-slate-pf-main-action">
-          <a class="btn btn-lg" ng-href="/hawkular-ui/organizations">Back</a>
+          <a class="btn btn-default btn-lg" ng-href="/hawkular-ui/organizations">Back</a>
         </div>
       </div>
 
@@ -46,12 +45,9 @@
             <td>{{organization.name}}</td>
             <td class="hk-actions-one">
               <button type="button"
-                      class="btn btn-link"
-                      tooltip-trigger
-                      tooltip-placement="top"
-                      tooltip="Join"
+                      class="btn btn-default"
                       ng-click="controller.joinRequest(organization)">
-                <i class="fa fa-sign-in"></i>
+                Join
               </button>
             </td>
           </tr>
@@ -66,8 +62,7 @@
       </div>
       <h1>Only users can join organizations.</h1>
       <p>
-        You are logged in as an organization.
-        At the moment, only users can join organizations. To join an organization, switch to your user account.
+        You are logged in as an organization. To join an organization, switch to your user account.
       </p>
     </div>
   </div>
