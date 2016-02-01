@@ -220,7 +220,7 @@
   <xsl:template match="undertow:subsystem/undertow:server/undertow:host">
     <xsl:copy>
       <xsl:apply-templates select="node()|@*"/>
-      <filter-ref name="gzipFilter" predicate="path-suffix['.css'] or path-suffix['.js']"/>
+      <filter-ref name="gzipFilter" predicate="regex[pattern=&apos;(?:application/javascript|text/css|text/html|application/json)(;.*)?&apos;, value=%{{o,Content-Type}}, full-match=true]"/>
     </xsl:copy>
   </xsl:template>
 
