@@ -85,7 +85,7 @@ module HawkularMetrics {
         // click on the 'Alert Settings' link for the resource.
 
         // THESE HAVE BEEN MIGRATED TO THE SERVER!
-        // this.loadTriggers();
+        this.loadTriggers();
       });
 
       if (!$rootScope.hasOwnProperty('isExperimentalWatch')) {

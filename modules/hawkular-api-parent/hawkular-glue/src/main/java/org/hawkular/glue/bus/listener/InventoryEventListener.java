@@ -30,6 +30,7 @@ import javax.jms.MessageListener;
 import javax.naming.InitialContext;
 
 import org.hawkular.alerts.api.model.Severity;
+import org.hawkular.alerts.api.model.condition.AvailabilityCondition;
 import org.hawkular.alerts.api.model.condition.CompareCondition;
 import org.hawkular.alerts.api.model.condition.Condition;
 import org.hawkular.alerts.api.model.condition.EventCondition;
@@ -100,12 +101,250 @@ public class InventoryEventListener extends InventoryEventMessageListener {
             //String type = URLDecoder.decode(rt.getId(), "UTF-8");
             String type = rt.getId();
             switch (type) {
+                case "Datasource": {
+                    // Available Connections
+                    String groupTriggerId = "DS_Connections";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    Trigger group = new Trigger(tenantId, groupTriggerId, "Datasource Available Connections");
+                    group.setDescription("Available Connection Count for DS");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.MEDIUM);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "DSCONN");
+                    group.addContext("resourceType", "DataSource");
+                    group.addContext("triggerType", "Threshold");
+
+                    Dampening dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
+
+                    Map<String, String> conditionContext = new HashMap<>(2);
+                    conditionContext.put("description", "Available Count");
+                    conditionContext.put("unit", "connections");
+                    Condition cFiring1 = new ThresholdCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "Datasource Pool Metrics~Available Count", ThresholdCondition.Operator.LT, 200.0);
+                    cFiring1.setContext(conditionContext);
+                    List<Condition> conditions = new ArrayList<>(1);
+                    conditions.add(cFiring1);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+
+                    // Wait Time
+                    groupTriggerId = "DS_PoolWait";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    group = new Trigger(tenantId, groupTriggerId, "Datasource Pool Wait Time");
+                    group.setDescription("Pool Wait Time Responsiveness for DS");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.MEDIUM);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "DSRESP");
+                    group.addContext("resourceType", "DataSource");
+                    group.addContext("triggerType", "Threshold");
+
+                    dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
+
+                    conditionContext.clear();
+                    conditionContext.put("description", "Average Wait Time");
+                    conditionContext.put("unit", "ms");
+                    cFiring1 = new ThresholdCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "Datasource Pool Metrics~Average Wait Time", ThresholdCondition.Operator.GT, 200.0);
+                    cFiring1.setContext(conditionContext);
+                    conditions.clear();
+                    conditions.add(cFiring1);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+
+                    // Create Time
+                    groupTriggerId = "DS_PoolCreate";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    group = new Trigger(tenantId, groupTriggerId, "Datasource Pool Create Time");
+                    group.setDescription("Pool Create Time Responsiveness for DS");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.MEDIUM);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "DSCREATE");
+                    group.addContext("resourceType", "DataSource");
+                    group.addContext("triggerType", "Threshold");
+
+                    dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
+
+                    conditionContext.clear();
+                    conditionContext.put("description", "Average Creation Time");
+                    conditionContext.put("unit", "ms");
+                    cFiring1 = new ThresholdCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "Datasource Pool Metrics~Average Creation Time", ThresholdCondition.Operator.GT, 200.0);
+                    cFiring1.setContext(conditionContext);
+                    conditions.clear();
+                    conditions.add(cFiring1);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+
+                    break;
+                }
+                case "Memory": {
+                    // TODO: Verify that this is correct, I'm not sure the UI had this defined as needed
+                    String groupTriggerId = "Memory_Available";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    Trigger group = new Trigger(tenantId, groupTriggerId, "Memory Available");
+                    group.setDescription("Memory Available percent of Total Memory");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.MEDIUM);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "AVAILABLE_MEMORY");
+                    group.addContext("resourceType", "Memory");
+                    group.addContext("triggerType", "RangeByPercent");
+                    group.addContext("triggerTypeProperty1", "Available Memory");
+                    group.addContext("triggerTypeProperty2", "Total Memory");
+
+                    Dampening dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
+
+                    Map<String, String> conditionContext = new HashMap<>(2);
+                    conditionContext.put("description", "Total Memory");
+                    conditionContext.put("unit", "MB");
+                    Condition cFiring1 = new CompareCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "Available Memory", CompareCondition.Operator.GT, 0.80,
+                            "Total Memory");
+                    cFiring1.setContext(conditionContext);
+                    Condition cFiring2 = new CompareCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "Available Memory", CompareCondition.Operator.LT, 0.10,
+                            "Total Memory");
+                    List<Condition> conditions = new ArrayList<>(2);
+                    conditions.add(cFiring1);
+                    conditions.add(cFiring2);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+
+                    break;
+                }
+                case "Processor": {
+                    // TODO: Verify that this is correct, I'm not sure the UI had this defined as needed
+                    String groupTriggerId = "CPU_Usage";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    Trigger group = new Trigger(tenantId, groupTriggerId, "CPU Usage");
+                    group.setDescription("CPU Usage");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setSeverity(Severity.MEDIUM);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "CPU_USAGE_EXCEEDED");
+                    group.addContext("resourceType", "Processor");
+                    group.addContext("triggerType", "Threshold");
+                    group.addContext("triggerTypeProperty1", "CPU Usage");
+
+                    Dampening dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
+
+                    Map<String, String> conditionContext = new HashMap<>(2);
+                    conditionContext.put("description", "CPU Usage");
+                    conditionContext.put("unit", "%");
+                    Condition cFiring1 = new ThresholdCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "CPU Usage", ThresholdCondition.Operator.GT, 0.20);
+                    cFiring1.setContext(conditionContext);
+                    List<Condition> conditions = new ArrayList<>(2);
+                    conditions.add(cFiring1);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+
+                    break;
+                }
+                case "URL": {
+                    // Response Time
+                    String groupTriggerId = "URL_Response";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    Trigger group = new Trigger(tenantId, groupTriggerId, "URL Response");
+                    group.setDescription("Response Time for URL");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setAutoResolve(true); // Support AUTORESOLVE mode as an inverse of the firing conditions
+                    group.setSeverity(Severity.HIGH);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "PINGRESPONSE");
+                    group.addContext("resourceType", "URL");
+                    group.addContext("triggerType", "Threshold");
+
+                    Dampening dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
+                    Dampening dResolve = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.AUTORESOLVE,
+                            5 * MINUTE);
+
+                    Map<String, String> conditionContext = new HashMap<>(2);
+                    conditionContext.put("description", "Response Time");
+                    conditionContext.put("unit", "ms");
+                    Condition cFiring = new ThresholdCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "status.duration", Operator.GT, 1000.0);
+                    cFiring.setContext(conditionContext);
+                    Condition cResolve = new ThresholdCondition(tenantId, groupTriggerId, Mode.AUTORESOLVE,
+                            "status.duration", Operator.LTE, 1000.0);
+                    cResolve.setContext(conditionContext);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.addGroupDampening(tenantId, dResolve);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING,
+                            Collections.singleton(cFiring), null);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.AUTORESOLVE,
+                            Collections.singleton(cResolve), null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+
+                    // Avail
+                    groupTriggerId = "URL_Down";
+                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    group = new Trigger(tenantId, groupTriggerId, "URL Down");
+                    group.setDescription("Availability for URL");
+                    group.setAutoDisable(true); // Disable trigger when fired
+                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
+                    group.setAutoResolve(true); // Support AUTORESOLVE mode as an inverse of the firing conditions
+                    group.setSeverity(Severity.CRITICAL);
+                    group.addAction("email", "[defaultEmail]");
+                    group.addContext("alertType", "PINGAVAIL");
+                    group.addContext("resourceType", "URL");
+                    group.addContext("triggerType", "Availability");
+
+                    dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
+                    dResolve = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.AUTORESOLVE,
+                            5 * MINUTE);
+
+                    conditionContext.clear();
+                    conditionContext.put("description", "Availability");
+                    cFiring = new AvailabilityCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "status.code", AvailabilityCondition.Operator.DOWN);
+                    cFiring.setContext(conditionContext);
+                    cResolve = new AvailabilityCondition(tenantId, groupTriggerId, Mode.FIRING,
+                            "status.code", AvailabilityCondition.Operator.UP);
+                    cResolve.setContext(conditionContext);
+
+                    definitions.addGroupTrigger(tenantId, group);
+                    definitions.addGroupDampening(tenantId, dFiring);
+                    definitions.addGroupDampening(tenantId, dResolve);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING,
+                            Collections.singleton(cFiring), null);
+                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.AUTORESOLVE,
+                            Collections.singleton(cResolve), null);
+                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+
+                    break;
+                }
                 case "WildFly Server": {
                     // JVM HEAP
                     String groupTriggerId = "JVM_HeapUsed";
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "JVM Heap Used");
-                    group.setDescription("JVM Heap Used of Heap Max");
+                    group.setDescription("JVM Heap Used percent of Heap Max");
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
@@ -141,7 +380,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     groupTriggerId = "JVM_NonHeapUsed";
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "JVM Non Heap Used");
-                    group.setDescription("JVM Non Heap Used of Heap Max");
+                    group.setDescription("JVM Non Heap Used percent of Heap Max");
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
@@ -336,45 +575,6 @@ public class InventoryEventListener extends InventoryEventMessageListener {
 
                     break;
                 }
-                case "URL": {
-                    String groupTriggerId = "URL_Response";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
-                    Trigger group = new Trigger(tenantId, groupTriggerId, groupTriggerId);
-                    group.setDescription("Response Time for URL");
-                    group.setAutoDisable(true); // Disable trigger when fired
-                    group.setAutoEnable(true); // Enable trigger once an alert is resolved
-                    group.setAutoResolve(true); // Support AUTORESOLVE mode as an inverse of the firing conditions
-                    group.setSeverity(Severity.HIGH);
-                    group.addAction("email", "[defaultEmail]");
-                    group.addContext("alertType", "PINGRESPONSE");
-                    group.addContext("resourceType", "URL");
-                    group.addContext("triggerType", "Threshold");
-
-                    Dampening dFiring = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.FIRING, 7 * MINUTE);
-                    Dampening dResolve = Dampening.forStrictTime(tenantId, groupTriggerId, Mode.AUTORESOLVE,
-                            5 * MINUTE);
-
-                    Map<String, String> conditionContext = new HashMap<>(2);
-                    conditionContext.put("description", "Response Time");
-                    conditionContext.put("unit", "ms");
-                    Condition cFiring = new ThresholdCondition(tenantId, groupTriggerId, Mode.FIRING,
-                            "status.duration", Operator.GT, 1000.0);
-                    cFiring.setContext(conditionContext);
-                    Condition cResolve = new ThresholdCondition(tenantId, groupTriggerId, Mode.AUTORESOLVE,
-                            "status.duration", Operator.LTE, 1000.0);
-                    cResolve.setContext(conditionContext);
-
-                    definitions.addGroupTrigger(tenantId, group);
-                    definitions.addGroupDampening(tenantId, dFiring);
-                    definitions.addGroupDampening(tenantId, dResolve);
-                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING,
-                            Collections.singleton(cFiring), null);
-                    definitions.setGroupConditions(tenantId, groupTriggerId, Mode.AUTORESOLVE,
-                            Collections.singleton(cResolve), null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
-
-                    break;
-                }
                 default:
                     log.infof("\n*********** Group Trigger Not Created for type [%s] ", type);
                     return; // no alerting
@@ -394,6 +594,152 @@ public class InventoryEventListener extends InventoryEventMessageListener {
             Resource r = event.getObject();
 
             switch (r.getType().getId()) {
+                case "Datasource": {
+                    // Available Connections
+                    String feedId = r.getPath().ids().getFeedId();
+                    String resourceId = r.getId();
+                    String qualifiedResourceId = feedId + "/" + resourceId;
+                    Map<String, String> memberContext = new HashMap<>(2);
+                    memberContext.put("resourceName", qualifiedResourceId);
+                    memberContext.put("resourcePath", event.getHeaders().get("path"));
+                    Map<String, String> memberTags = new HashMap<>(1);
+                    memberTags.put("resourceId", qualifiedResourceId); // TODO: UI had this as feedId
+
+                    String groupTriggerId = "DS_Connections";
+                    String memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    String memberDescription = "Available Connection Count for DS " + resourceId;
+                    Map<String, String> dataIdMap = new HashMap<>(2);
+                    String dataId1 = "Datasource Pool Metrics~Available Count";
+                    String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
+                            memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    // Wait Time
+                    groupTriggerId = "DS_PoolWait";
+                    memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    memberDescription = "Pool Wait Time Responsiveness for DS " + resourceId;
+                    dataIdMap.clear();
+                    dataId1 = "Datasource Pool Metrics~Average Wait Time";
+                    memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
+                            memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    // Create Time
+                    groupTriggerId = "DS_PoolCreate";
+                    memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    memberDescription = "Pool Create Time Responsiveness for DS " + resourceId;
+                    dataIdMap.clear();
+                    dataId1 = "Datasource Pool Metrics~Average Creation Time";
+                    memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
+                            memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+                    break;
+                }
+                case "Memory": {
+                    // TODO: Verify that this is correct, I'm not sure the UI had this defined as needed
+                    String feedId = r.getPath().ids().getFeedId();
+                    String resourceId = r.getId();
+                    String qualifiedResourceId = feedId + "/" + resourceId;
+                    Map<String, String> memberContext = new HashMap<>(2);
+                    memberContext.put("resourceName", qualifiedResourceId); // TODO: UI had this as feedId
+                    memberContext.put("resourcePath", event.getHeaders().get("path"));
+                    Map<String, String> memberTags = new HashMap<>(1);
+                    memberTags.put("resourceId", qualifiedResourceId); // TODO: UI had this as feedId
+
+                    String groupTriggerId = "Memory_Available";
+                    String memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    String memberDescription = "Memory Available percent of Total Memory for " + resourceId;
+                    Map<String, String> dataIdMap = new HashMap<>(2);
+                    String dataId1 = "Available Memory";
+                    String dataId2 = "Total Memory";
+                    String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    String memberDataId2 = getMetricId(dataId2, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    dataIdMap.put(dataId2, memberDataId2);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
+                            memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+                    break;
+                }
+                case "Processor": {
+                    // TODO: Verify that this is correct, I'm not sure the UI had this defined as needed
+                    String feedId = r.getPath().ids().getFeedId();
+                    String resourceId = r.getId();
+                    String qualifiedResourceId = feedId + "/" + resourceId;
+                    Map<String, String> memberContext = new HashMap<>(2);
+                    memberContext.put("resourceName", qualifiedResourceId); // TODO: UI had this as feedId
+                    memberContext.put("resourcePath", event.getHeaders().get("path"));
+                    Map<String, String> memberTags = new HashMap<>(1);
+                    memberTags.put("resourceId", qualifiedResourceId); // TODO: UI had this as feedId
+
+                    String groupTriggerId = "CPU_Usage";
+                    String memberId = groupTriggerId + "_" + qualifiedResourceId;
+                    String memberDescription = "CPU Usage for " + resourceId;
+                    Map<String, String> dataIdMap = new HashMap<>(2);
+                    String dataId1 = "CPU Usage";
+                    String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
+                            memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    break;
+                }
+                case "URL": {
+                    // common to members
+                    String feedId = r.getPath().ids().getFeedId();
+                    String url = event.getHeaders().get("url");
+                    //String resourceId = String.valueOf(MessageDigest.getInstance("MD5").digest(
+                    //        r.getId().getBytes("UTF-8")));
+                    String resourceId = r.getId();
+                    //String qualifiedResourceId = feedId + "/" + resourceId;
+                    Map<String, String> memberContext = new HashMap<>(2);
+                    memberContext.put("resourceName", url);
+                    memberContext.put("resourcePath", event.getHeaders().get("path"));
+                    Map<String, String> memberTags = new HashMap<>(1);
+                    memberTags.put("resourceId", resourceId);
+
+                    // Response Time
+                    String groupTriggerId = "URL_Response";
+                    String memberId = groupTriggerId + "_" + resourceId;
+                    String memberName = "URL Response [" + url + "]";
+                    String memberDescription = "Response Time for URL " + url;
+                    Map<String, String> dataIdMap = new HashMap<>(2);
+                    String dataId1 = "status.duration";
+                    String memberDataId1 = resourceId + ".status.duration";
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
+                            memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    // Avail
+                    groupTriggerId = "URL_Down";
+                    memberId = groupTriggerId + "_" + resourceId;
+                    memberName = "URL Availability [" + url + "]";
+                    memberDescription = "Availability for URL " + url;
+                    dataIdMap.clear();
+                    dataId1 = "status.code";
+                    memberDataId1 = resourceId + ".status.code";
+                    dataIdMap.put(dataId1, memberDataId1);
+                    log.warn("\n*********** Member : " + memberId);
+                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
+                            memberContext, memberTags, dataIdMap);
+                    log.warn("\n*********** Member Created : " + memberId);
+
+                    break;
+                }
                 case "WildFly Server": {
                     // The Wildfly agent generates resource IDs unique among the app servers it is monitoring because
                     // each resource is prefixed with the managedServerName.  But when dealing with multiple
@@ -413,7 +759,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // JVM HEAP
                     String groupTriggerId = "JVM_HeapUsed";
                     String memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    String memberDescription = "JVM Heap Used of Heap Max for " + resourceId;
+                    String memberDescription = "JVM Heap Used percent of Heap Max for " + resourceId;
                     Map<String, String> dataIdMap = new HashMap<>(2);
                     String dataId1 = "WildFly Memory Metrics~Heap Used";
                     String dataId2 = "WildFly Memory Metrics~Heap Max";
@@ -429,7 +775,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // JVM NON-HEAP
                     groupTriggerId = "JVM_NonHeapUsed";
                     memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    memberDescription = "JVM Non Heap Used of Heap Max for " + resourceId;
+                    memberDescription = "JVM Non Heap Used percent of Heap Max for " + resourceId;
                     dataIdMap.clear();
                     dataId1 = "WildFly Memory Metrics~NonHeap Used";
                     dataId2 = "WildFly Memory Metrics~Heap Max";
@@ -517,36 +863,9 @@ public class InventoryEventListener extends InventoryEventMessageListener {
 
                     break;
                 }
-
-                case "URL":
-                    // common to members
-                    String feedId = r.getPath().ids().getFeedId();
-                    String url = event.getHeaders().get("url");
-                    //String resourceId = String.valueOf(MessageDigest.getInstance("MD5").digest(
-                    //        r.getId().getBytes("UTF-8")));
-                    String resourceId = r.getId();
-                    //String qualifiedResourceId = feedId + "/" + resourceId;
-                    Map<String, String> memberContext = new HashMap<>(2);
-                    memberContext.put("resourceName", url);
-                    memberContext.put("resourcePath", event.getHeaders().get("path"));
-                    Map<String, String> memberTags = new HashMap<>(1);
-                    memberTags.put("resourceId", resourceId);
-
-                    // Response Time
-                    String groupTriggerId = "URL_Response";
-                    String memberId = groupTriggerId + "_" + resourceId;
-                    String memberName = "URL Response [" + url + "]";
-                    String memberDescription = "Response Time for URL " + url;
-                    Map<String, String> dataIdMap = new HashMap<>(2);
-                    String dataId1 = "status.duration";
-                    String memberDataId1 = resourceId + ".status.duration";
-                    dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
-                    definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
-                            memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
-
                 default:
+                    log.infof("\n*********** Member Trigger Not Created for resource [%s,%s] ", r.getType().getId(),
+                            r.getId());
                     return; // no alerting
             }
         } catch (Exception e) {
