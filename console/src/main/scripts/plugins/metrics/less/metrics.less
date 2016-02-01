@@ -226,6 +226,10 @@ a:hover {
   background-color: @brand-danger;
 }
 
+.hk-cursor-pointer {
+  cursor: pointer;
+}
+
 // Alerts
 
 .alert-success,
@@ -344,10 +348,15 @@ a:hover {
   }
 }
 
+
 // Cards
 
 .row-cards-pf {
   clear: both;
+}
+
+.card-pf-title {
+  line-height: 1.3;
 }
 
 .row-cards-pf + .container-cards-pf {
@@ -384,6 +393,22 @@ a:hover {
 .card-pf-heading .card-pf-title .label {
   margin-left: 5px;
 }
+
+.hk-card-token {
+
+  .card-pf-body {
+    margin-top: -5px;
+
+    p {
+      margin-top: @grid-gutter-width/2;
+    }
+  }
+
+  .card-pf-title span {
+    margin-right: @grid-gutter-width/4;
+  }
+}
+
 
 // Charts and Legends
 
@@ -687,7 +712,7 @@ a:hover {
   }
 
   .btn + .btn {
-    margin-left: 10px;
+    margin-left: @grid-gutter-width/4;
   }
 
   + .hk-update {
@@ -851,7 +876,7 @@ p + .form-horizontal {
   color: @brand-danger;
 }
 
-.btn + .btn {
+.hk-form-buttons .btn {
   margin-left: @grid-gutter-width/8;
 }
 
@@ -894,6 +919,11 @@ p + .form-horizontal {
     margin-left: 1em;
   }
 }
+
+.hk-form-buttons-offset {
+  width: calc(~"100% - 81px");
+}
+
 
 // Icons
 
@@ -2871,4 +2901,11 @@ section {
       display: block;
     }
   }
+}
+
+
+// Tokens screen
+
+.hk-tokens .row-cards-pf {
+  margin-top: @grid-gutter-width/2;
 }
