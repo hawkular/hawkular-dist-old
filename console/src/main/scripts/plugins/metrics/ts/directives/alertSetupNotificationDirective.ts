@@ -23,7 +23,7 @@ module HawkularMetrics {
   class HkAlertNotification {
 
     public controller: ($scope: any) => void;
-    public templateUrl = 'plugins/metrics/html/alert-setup-notification.html';
+    public templateUrl = 'plugins/metrics/html/directives/alert-setup-notification.html';
     public replace = 'true';
 
     public static Factory() {
