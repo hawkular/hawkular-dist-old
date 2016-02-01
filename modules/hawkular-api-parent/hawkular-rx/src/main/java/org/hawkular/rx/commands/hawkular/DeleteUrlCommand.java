@@ -113,8 +113,8 @@ public class DeleteUrlCommand extends AbstractHttpCommand<String> {
                     // make the first 2 calls in parallel and the third one after they finish
                     observeCmd1
                             .zipWith(observeCmd2, (first, second) -> new ImmutablePair(first, second))
-                            .flatMap((pair) -> observeDeleteResource).buffer(2).subscribe((aggregatedCmdResponse) -> {
-                        observer.onNext(aggregatedCmdResponse.get(1));
+                            .flatMap((pair) -> observeDeleteResource).subscribe((resourceDeletedResponse) -> {
+                        observer.onNext(resourceDeletedResponse);
                         observer.onCompleted();
                     });
 

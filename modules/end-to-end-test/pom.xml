@@ -175,6 +175,7 @@
                 <org.apache.commons.logging.simplelog.log.org.apache.http.wire>
                   ${http.log.wire}
                 </org.apache.commons.logging.simplelog.log.org.apache.http.wire>
+                <hystrix.command.default.execution.timeout.enabled>false</hystrix.command.default.execution.timeout.enabled>
               </systemPropertyVariables>
               <!--<argLine>-Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y</argLine>-->
             </configuration>
@@ -225,7 +226,6 @@
                 <javaOpt>-Dhawkular.log.liquibase=${hawkular.log.liquibase}</javaOpt>
                 <javaOpt>-Dhawkular.log.ejb3=${hawkular.log.ejb3}</javaOpt>
                 <javaOpt>-Dhawkular.log.rewrite=${hawkular.log.rewrite}</javaOpt>
-                <javaOpt>-Dhawkular.log.rewrite=${hawkular.log.rewrite}</javaOpt>
                 <!--<javaOpt>-Xdebug</javaOpt>-->
                 <!--<javaOpt>-Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y</javaOpt>-->
               </javaOpts>
@@ -272,13 +272,6 @@
                                           <version>${version.org.hawkular.inventory}</version>
                                           <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
                                         </artifactItem>-->
-                    <artifactItem>
-                      <groupId>org.hawkular</groupId>
-                      <artifactId>hawkular-end-to-end-tests</artifactId>
-                      <version>${project.version}</version>
-                      <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
-                    </artifactItem>
-
                     <artifactItem>
                       <groupId>org.hawkular</groupId>
                       <artifactId>hawkular-end-to-end-tests</artifactId>

@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.rest;
 
+package org.hawkular.rx.commands.common;
 
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
@@ -26,35 +26,35 @@ import org.jboss.logging.annotations.MessageLogger;
 
 /**
  * Logger definitions for Jboss Logging for the rest api
- * <p/>
- * Code range is 5500-5749
+ * <p>
+ * Code range is 5750-5999
  *
- * @author Heiko W. Rupp
+ * @author Jirka Kremser
  */
 @MessageLogger(projectCode = "HAWKULAR")
-public interface RestApiLogger extends BasicLogger {
+public interface CommandLogger extends BasicLogger {
 
-    RestApiLogger LOGGER = Logger.getMessageLogger(RestApiLogger.class, "org.hawkular.rest");
+    CommandLogger LOGGER = Logger.getMessageLogger(CommandLogger.class, "org.hawkular.rest.rx");
 
-    RestApiLogger REQUESTS_LOGGER = Logger
-            .getMessageLogger(RestApiLogger.class, "org.hawkular.rest.requests");
+    CommandLogger REQUESTS_LOGGER = Logger
+            .getMessageLogger(CommandLogger.class, "org.hawkular.rest.requests");
 
     @LogMessage(level = Logger.Level.INFO)
-    @Message(id = 5500, value = "Hawkular REST Api is starting...") void apiStarting();
+    @Message(id = 5750, value = "Hawkular REST Api is starting...") void apiStarting();
 
     @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5501, value = "Something bad has happened") void warn(@Cause Throwable t);
+    @Message(id = 5751, value = "Something bad has happened") void warn(@Cause Throwable t);
 
     @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5502, value = "Bus Integration initialization failed. Inventory will not notify about changes on " +
+    @Message(id = 5752, value = "Bus Integration initialization failed. Inventory will not notify about changes on " +
             "the Hawkular message bus. Cause: [%s]") void busInitializationFailed(String message);
 
     @LogMessage(level = Logger.Level.WARN)
-    @Message(id = 5503, value = "Security check failed on entity: [%s]") void securityCheckFailed(String entityId,
+    @Message(id = 5753, value = "Security check failed on entity: [%s]") void securityCheckFailed(String entityId,
                                                                                                   @Cause
                                                                                                   Throwable cause);
 
     @LogMessage(level = Logger.Level.DEBUG)
-    @Message(id = 5504, value = "Accepting:\nHTTP %s -> %s\n\nheaders:\n%s\npayload:\n%s\njavaMethod: %s\n")
+    @Message(id = 5754, value = "Accepting:\nHTTP %s -> %s\n\nheaders:\n%s\npayload:\n%s\njavaMethod: %s\n")
     void restCall(String method, String url, String headers, String jsonPayload, String javaMethod);
 }

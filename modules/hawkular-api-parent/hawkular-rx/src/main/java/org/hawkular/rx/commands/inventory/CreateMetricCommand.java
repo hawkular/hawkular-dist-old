@@ -34,7 +34,6 @@ import org.hawkular.rx.httpclient.RestResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.netflix.hystrix.HystrixCommandProperties;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -74,9 +73,7 @@ public class CreateMetricCommand extends AbstractHttpCommand<String> {
 
     @Inject
     private CreateMetricCommand(InjectionPoint ip) {
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("inventory-metric"))
-                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-                        .withExecutionTimeoutInMilliseconds(1500)));
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("inventory-metric")));
         initialize(ip);
     }
 

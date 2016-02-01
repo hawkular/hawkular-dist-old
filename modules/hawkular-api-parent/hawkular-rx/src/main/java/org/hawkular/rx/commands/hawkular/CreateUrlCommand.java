@@ -44,7 +44,6 @@ import org.hawkular.rx.httpclient.HttpClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.netflix.hystrix.HystrixCommandProperties;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -94,9 +93,7 @@ public class CreateUrlCommand extends AbstractHttpCommand<String> {
 
     @Inject
     protected CreateUrlCommand(InjectionPoint ip) {
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("URL"))
-                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-                        .withExecutionTimeoutInMilliseconds(3500)));
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("URL")));
         initialize(ip);
     }
 
@@ -110,6 +107,7 @@ public class CreateUrlCommand extends AbstractHttpCommand<String> {
                     }
                     CreateResourceCommand createResourceCmd =
                             createResourceCommandInjector.select(Initialized.withValues(authToken, persona)).get();
+
 
                     String hashedUrl = md5Hash(url);
                     Resource.Blueprint urlBlueprint = Resource.Blueprint.builder()
