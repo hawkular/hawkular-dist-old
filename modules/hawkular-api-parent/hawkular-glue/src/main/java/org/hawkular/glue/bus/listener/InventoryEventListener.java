@@ -103,10 +103,11 @@ public class InventoryEventListener extends InventoryEventMessageListener {
             switch (type) {
                 case "Datasource": {
                     // Available Connections
-                    String groupTriggerId = "DS_Connections";
+                    String groupTriggerId = "DS_Conn";
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "Datasource Available Connections");
                     group.setDescription("Available Connection Count for DS");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
@@ -136,6 +137,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Datasource Pool Wait Time");
                     group.setDescription("Pool Wait Time Responsiveness for DS");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
@@ -165,6 +167,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Datasource Pool Create Time");
                     group.setDescription("Pool Create Time Responsiveness for DS");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
@@ -197,6 +200,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "Memory Available");
                     group.setDescription("Memory Available percent of Total Memory");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
@@ -236,11 +240,12 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "CPU Usage");
                     group.setDescription("CPU Usage");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
                     group.addAction("email", "[defaultEmail]");
-                    group.addContext("alertType", "CPU_USAGE_EXCEEDED");
+                    group.addContext("alertType", "CPU_USAGE_EXCEED");
                     group.addContext("resourceType", "Processor");
                     group.addContext("triggerType", "Threshold");
                     group.addContext("triggerTypeProperty1", "CPU Usage");
@@ -269,6 +274,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "URL Response");
                     group.setDescription("Response Time for URL");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setAutoResolve(true); // Support AUTORESOLVE mode as an inverse of the firing conditions
@@ -306,6 +312,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "URL Down");
                     group.setDescription("Availability for URL");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setAutoResolve(true); // Support AUTORESOLVE mode as an inverse of the firing conditions
@@ -345,6 +352,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "JVM Heap Used");
                     group.setDescription("JVM Heap Used percent of Heap Max");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
@@ -381,6 +389,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "JVM Non Heap Used");
                     group.setDescription("JVM Non Heap Used percent of Heap Max");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
@@ -424,6 +433,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "JVM Accumulated GC Duration");
                     group.setDescription("Accumulated GC Duration Per-Minute");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
@@ -455,6 +465,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Web Sessions Active");
                     group.setDescription("Active Web Sessions");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
@@ -487,6 +498,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Web Sessions Expired");
                     group.setDescription("Expired Web Sessions");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.LOW);
@@ -519,6 +531,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Web Sessions Rejected");
                     group.setDescription("Rejected Web Sessions");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.LOW);
@@ -551,6 +564,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     log.warn("\n*********** Group Trigger: " + groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Deployment Failure");
                     group.setDescription("Deployment failure");
+                    group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
@@ -749,6 +763,9 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // common to members
                     String feedId = r.getPath().ids().getFeedId();
                     String resourceId = r.getId();
+                    if (resourceId.endsWith("~~")) {
+                        resourceId = resourceId.substring(0, resourceId.length() - 2);
+                    }
                     String qualifiedResourceId = feedId + "/" + resourceId;
                     Map<String, String> memberContext = new HashMap<>(2);
                     memberContext.put("resourceName", qualifiedResourceId);
