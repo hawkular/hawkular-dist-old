@@ -200,6 +200,7 @@ module HawkularMetrics {
           availabilityId: metricId,
           start: startTime,
           end: endTime,
+          order: 'ASC',
           distinct: true
         }).$promise
           .then((response: any[]) => {
