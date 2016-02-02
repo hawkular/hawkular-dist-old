@@ -216,6 +216,21 @@
     <xsl:call-template name="loggers"/>
   </xsl:template>
 
+  <!-- Enable gzip compression when serving javascript and ccs -->
+  <xsl:template match="undertow:subsystem/undertow:server/undertow:host">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+      <filter-ref name="gzipFilter" predicate="regex[pattern=&apos;(?:application/javascript|text/css|text/html|application/json)(;.*)?&apos;, value=%{{o,Content-Type}}, full-match=true]"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="undertow:subsystem/undertow:filters">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+      <gzip name="gzipFilter" />
+    </xsl:copy>
+  </xsl:template>
+
   <!-- Enable Statistics for Undertow, TXs and Datasources -->
   <xsl:template match="undertow:subsystem">
     <xsl:copy>
