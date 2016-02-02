@@ -171,6 +171,8 @@ module HawkularMetrics {
       this.getJvmContextChartData();
       this.getJvmData();
       this.getAlerts();
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     public filterAlerts(alertData: IHawkularAlertQueryResult) {

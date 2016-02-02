@@ -88,7 +88,6 @@ module HawkularMetrics {
     public filteredResourceList: any[] = [];
     public activeFilters: any[] = [];
     public resCurPage = 0;
-    public lastUpdateTimestamp: Date = new Date();
     public headerLinks: any = {};
 
     private updatingList: boolean = false;
@@ -467,7 +466,6 @@ module HawkularMetrics {
               res['downtimeDuration'] = Math.round(resource[0].downtimeDuration / 1000 / 60);
               res['lastDowntime'] = resource[0].lastDowntime;
             });
-            this.lastUpdateTimestamp = new Date();
           }, this);
           this.$q.all(promises).then(() => {
             this.resourceList = aResourceList;
@@ -476,6 +474,8 @@ module HawkularMetrics {
           });
 
         });
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     public deleteResource(resource: any): any {

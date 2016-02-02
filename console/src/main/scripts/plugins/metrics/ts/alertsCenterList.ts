@@ -27,7 +27,6 @@ module HawkularMetrics {
     public isWorking = false;
     public alertsTimeStart: TimestampInMillis;
     public alertsTimeEnd: TimestampInMillis;
-    public alertsTimeOffset: TimestampInMillis;
     public lastUpdateDate: Date = new Date();
 
     public alertsList: IAlert[];
@@ -58,12 +57,6 @@ module HawkularMetrics {
 
       $routeParams.timeOffset = $routeParams.timeOffset || $scope.hkParams.timeOffset || 3600000 * 12;
 
-      this.alertsTimeOffset = $routeParams.timeOffset;
-
-      // If the end time is not specified in URL use current time as end time
-      this.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : Date.now();
-      this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
-
       this.autoRefresh(120);
       if ($rootScope.currentPersona) {
         this.getAlerts();
@@ -90,8 +83,8 @@ module HawkularMetrics {
 
     public getAlerts(): void {
 
-      this.alertsTimeEnd = this.$routeParams.endTime ? this.$routeParams.endTime : Date.now();
-      this.alertsTimeStart = this.alertsTimeEnd - this.alertsTimeOffset;
+      this.alertsTimeEnd = this.$routeParams.endTime || +moment();
+      this.alertsTimeStart = this.alertsTimeEnd - (this.$routeParams.timeOffset || 3600000);
 
       let ordering = 'asc';
       if (!this.sortAsc) {
@@ -122,9 +115,6 @@ module HawkularMetrics {
     }
 
     public showDetailPage(alertId: AlertId): void {
-      //let timeOffset = this.alertsTimeOffset;
-      //let endTime = this.alertsTimeEnd;
-      //this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}/${timeOffset}/${endTime}`);
       this.$location.url(`/hawkular-ui/alerts-center-detail/${alertId}`);
     }
 

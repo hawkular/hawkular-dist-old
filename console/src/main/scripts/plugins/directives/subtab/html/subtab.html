@@ -44,7 +44,9 @@
       </div>
     </div>
     <div class="hk-heading">
-      <h1 ng-init="(isAppServerPage() && !hkParams.hasOwnProperty('datasourceId')) ? getAppServerFromId(hkParams.resourceId) : (!isAlertsPage() && getUrlFromId(hkParams.resourceId))">{{resourceName}}</h1>
+      <span class="hk-update pull-right" tooltip-trigger tooltip="Last update" ng-hide="isAlertsCenterTriggersPage()">
+        <i class="fa fa-clock-o"></i>{{lastUpdateTimestamp | date:'HH:mm:ss'}}</span>
+      <h1 ng-init="(isAppServerPage() && !hkParams.hasOwnProperty('datasourceId')) ? getAppServerFromId(hkParams.resourceId) : (!isAlertsPage() && getUrlFromId(hkParams.resourceId))">{{resourceName || '&nbsp;'}}</h1>
       <h1 ng-show="isAlertsPage()">Alert Center</h1>
     </div>
     <div ng-transclude></div>
