@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,8 +77,19 @@ body.inactivity-modal-open .modal:not(.time-out-dialog)
 
 // Organizations screen
 
-.hk-organizations .text-right .btn-primary {
-  margin-bottom: @grid-gutter-width/4;
+.hk-organizations {
+
+  .hk-heading h1 {
+    margin-bottom: @grid-gutter-width/2;
+  }
+
+  .text-right .btn {
+    margin-bottom: @grid-gutter-width/4;
+  }
+}
+
+.hk-organizations-list {
+  margin-bottom: @grid-gutter-width/4*3;
 }
 
 // Organization memberships screen
