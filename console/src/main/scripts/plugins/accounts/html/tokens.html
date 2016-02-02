@@ -71,20 +71,13 @@
             <input ng-model="controller.newDescriptions[token.id]" placeholder="Description" class="form-control  hk-form-buttons-offset"/>
           </div>
 
-          <img
-            height="50"
-            width="50"
-            class="pull-right hk-cursor-pointer"
-            tooltip-trigger
-            tooltip="Click to expand"
-            ng-src="/secret-store/qrcode?tokenId={{token.id}}&size=50"
-            ng-click="controller.showQRCode(token)"/>
-
           <p>
             <small><b>Key:</b> {{token.id}}</small><br/>
             <small><b>Secret:</b> {{token.secret}}</small><br/>
             <small><b>Persona:</b> {{controller.personaForToken(token)}}</small><br/>
           </p>
+
+          <button class="btn btn-default" ng-click="controller.showQRCode(token)"><i class="fa fa-qrcode"></i> Get QR Code</button>
 
         </div>
         <div class="card-pf-footer">
