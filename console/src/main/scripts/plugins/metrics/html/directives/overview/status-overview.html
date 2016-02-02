@@ -29,9 +29,9 @@
         </hk-status-overview-item>
       </div>
       <div ng-repeat="datasource in datasourceInfo track by $index" class="col-sm-6 hk-dashboard-block">
-        <hk-status-overview-item metric-title="Used Connections"
+        <hk-status-overview-item metric-title="{{datasource.name}} {{datasource.type.name}}"
                                  metric-count="datasource.inUseCount.value"
-                                 metric-info="{{datasource.name}} {{datasource.type.name}}">
+                                 metric-info="Used Connections">
           <div ng-show="datasource && datasource.chartConfig">
             <hk-overview-donut-chart graph-id="datasource-{{$index}}"
                                      chart-config="datasource.chartConfig">

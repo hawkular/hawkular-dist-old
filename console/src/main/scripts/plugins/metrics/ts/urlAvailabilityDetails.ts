@@ -151,6 +151,8 @@ module HawkularMetrics {
         this.refreshAvailChartData(resourceId, this.startTimeStamp, this.endTimeStamp);
         this.getAlerts(resourceId, this.startTimeStamp, this.endTimeStamp);
       }
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     private autoRefreshAvailability(intervalInSeconds: TimestampInMillis): void {

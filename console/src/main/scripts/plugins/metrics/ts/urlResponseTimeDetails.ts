@@ -140,6 +140,8 @@ module HawkularMetrics {
       this.refreshHistoricalChartDataForTimestamp(metricId, this.startTimeStamp, this.endTimeStamp);
       this.getAlerts(this.resourceId, this.startTimeStamp, this.endTimeStamp);
       this.retrieveThreshold();
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     public getMetricId(): MetricId {

@@ -112,6 +112,8 @@ module HawkularMetrics {
       this.getProcessors();
       this.getFileSystems();
       this.getPlatformData();
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     public refresh(): void {
@@ -122,6 +124,8 @@ module HawkularMetrics {
       this.getMemoryChartData();
       this.getFSChartData();
       this.getCpuChartDetailData();
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     private getAlerts(): void {
@@ -147,7 +151,6 @@ module HawkularMetrics {
           if (!this.fileStoreList) {
             this.fileStoreList = [];
             this.fileStoreList.$resolved = true;
-            this['lastUpdateTimestamp'] = new Date();
           }
         });
     }
@@ -176,7 +179,6 @@ module HawkularMetrics {
         () => { // error
           if (!this.processorList) {
             this.processorList = [];
-            this['lastUpdateTimestamp'] = new Date();
           }
         });
 

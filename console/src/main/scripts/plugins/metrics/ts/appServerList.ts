@@ -167,7 +167,6 @@ module HawkularMetrics {
           }, (resource) => {
             res['resourceConfiguration'] = resource;
           }).$promise);
-          this.lastUpdateTimestamp = new Date();
         }, this);
         this.$q.all(promises).then((result) => {
           // FIXME this needs to be revisited, this won't work for removed resources
@@ -179,7 +178,6 @@ module HawkularMetrics {
           if (!this.resourceList) {
             this.resourceList = [];
             this.resourceList.$resolved = true;
-            this['lastUpdateTimestamp'] = new Date();
           }
         });
     }
@@ -196,9 +194,9 @@ module HawkularMetrics {
             // there are no feeds, no app servers
             this.resourceList = [];
             this.resourceList.$resolved = true;
-            this['lastUpdateTimestamp'] = new Date();
           }
         });
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
   }

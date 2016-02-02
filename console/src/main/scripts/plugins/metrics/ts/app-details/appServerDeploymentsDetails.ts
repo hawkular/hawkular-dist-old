@@ -28,7 +28,6 @@ module HawkularMetrics {
     public pendingOps: any = {};
     public alertList: any[] = [];
     public selectCount: number = 0;
-    public lastUpdateTimestamp: Date;
     public startTimeStamp: TimestampInMillis;
     public endTimeStamp: TimestampInMillis;
 
@@ -58,15 +57,12 @@ module HawkularMetrics {
         this.showDeploymentAddDialog();
         $location.search('action', null);
       }
-      this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
-      this.endTimeStamp = +moment();
 
       if ($rootScope.currentPersona) {
-        this.getResourceList(this.$rootScope.currentPersona.id);
+        this.refresh();
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
-        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
-          this.getResourceList(currentPersona.id));
+        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.refresh());
       }
 
       this.HawkularAlertRouterManager.registerForAlerts(
@@ -105,6 +101,8 @@ module HawkularMetrics {
 
       this.getResourceList();
       this.getAlerts();
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     public showDeploymentAddDialog(): void {
@@ -156,7 +154,7 @@ module HawkularMetrics {
         let promises = [];
         let tmpResourceList = [];
         _.forEach(aResourceList, (res: IResource) => {
-          if (res.id.startsWith(this.$routeParams.resourceId + '~/')) {
+          if (res.id.indexOf(this.$routeParams.resourceId + '~/') === 0) {
             tmpResourceList.push(res);
             res.feedId = this.$routeParams.feedId;
             res.selected = _.result(_.find(this.resourceList, { 'id': res.id }), 'selected');
@@ -173,7 +171,6 @@ module HawkularMetrics {
               }
             }).$promise);
           }
-          this.lastUpdateTimestamp = new Date();
         }, this);
         this.$q.all(promises).then((notUsed) => {
           this.resourceList = tmpResourceList;
@@ -184,7 +181,6 @@ module HawkularMetrics {
           if (!this.resourceList) {
             this.resourceList = [];
             this.resourceList.$resolved = true;
-            this.lastUpdateTimestamp = new Date();
           }
         });
     }

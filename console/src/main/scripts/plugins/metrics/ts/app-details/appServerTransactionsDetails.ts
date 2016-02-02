@@ -128,6 +128,8 @@ module HawkularMetrics {
 
       this.getTxData();
       this.getAlerts();
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     private changeTimeRange(data: Date[]): void {

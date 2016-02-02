@@ -58,7 +58,6 @@
           filter-by="vm.filterBy(filters)"
         >
         </table-filters>
-        <span class="hk-update pull-right" ng-class="{'hk-fade-in': vm.resourceList}" ng-show="vm.resourceList.length > 0" tooltip-trigger tooltip-placement="top" tooltip="Last update"><i class="fa fa-clock-o"></i>{{vm.lastUpdateTimestamp | date:'HH:mm:ss'}}</span>
       </div>
       <!--<div class="hk-url-item" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">-->
       <url-list-summary

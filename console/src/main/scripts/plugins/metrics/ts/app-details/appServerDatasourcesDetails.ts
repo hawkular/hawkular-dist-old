@@ -96,11 +96,10 @@ module HawkularMetrics {
       });
 
       if ($rootScope.currentPersona) {
-        this.getDatasources(this.$rootScope.currentPersona.id);
+        this.refresh();
       } else {
         /// currentPersona hasn't been injected to the rootScope yet, wait for it..
-        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona &&
-          this.getDatasources(currentPersona.id));
+        $rootScope.$watch('currentPersona', (currentPersona) => currentPersona && this.refresh());
       }
 
       this.autoRefresh(20);
@@ -183,7 +182,7 @@ module HawkularMetrics {
 
     public autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
-        this.getDatasources();
+        this.refresh();
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -196,6 +195,8 @@ module HawkularMetrics {
       this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
 
       this.getDatasources();
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     private getDSMetrics(resourceLists, currentTenantId?: TenantId) {
@@ -206,12 +207,11 @@ module HawkularMetrics {
       if (!resourceLists.length || _.every(resourceLists, { 'length': 0 })) {
         this.resourceList = [];
         this.resourceList.$resolved = true;
-        this['lastUpdateTimestamp'] = new Date();
       }
 
       angular.forEach(resourceLists, (aResourceList) => {
         angular.forEach(aResourceList, (res: IResource) => {
-          if (res.id.startsWith(this.$routeParams.resourceId + '~/')) {
+          if (res.id.indexOf(this.$routeParams.resourceId + '~/') === 0) {
             res.feedId = this.feedId;
             tmpResourceList.push(res);
             promises.push(this.HawkularMetric.GaugeMetricData(tenantId).queryMetrics({
@@ -246,9 +246,6 @@ module HawkularMetrics {
     }
 
     public getDatasources(currentTenantId?: TenantId): void {
-      this.endTimeStamp = this.$routeParams.endTime || +moment();
-      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
-
       let xaDSsPromise = this.HawkularInventory.ResourceOfTypeUnderFeed.query({
         feedId: this.$routeParams.feedId,
         resourceTypeId: 'XA Datasource'
@@ -477,10 +474,9 @@ module HawkularMetrics {
 
     }
 
+    // FIXME: This should be simplified
     public redirectToDataSource(resource, event) {
       if (this.canRedirect(event.target)) {
-        const timeOffset = (this.$routeParams.timeOffset) ? this.$routeParams.timeOffset : 0;
-        const endTime = (this.$routeParams.endTime) ? this.$routeParams.endTime : 0;
         this.$location.path(
           [
             AppServerDatasourcesDetailsController.BASE_URL,
@@ -488,10 +484,16 @@ module HawkularMetrics {
             this.$routeParams.resourceId,
             this.$routeParams.tabId,
             Utility.encodeResourceId(resource.id),
-            timeOffset,
-            endTime
+            this.$routeParams.timeOffset || 3600000 * 12,
+            this.$routeParams.endTime || +moment()
           ].join('/')
         );
+        //let newLocation = `${AppServerDatasourcesDetailsController.BASE_URL}/${this.$routeParams.feedId}/` +
+        //  `${this.$routeParams.resourceId}/${this.$routeParams.tabId}/${Utility.encodeResourceId(resource.id)}`;
+        //newLocation += this.$routeParams.timeOffset ? `/${this.$routeParams.timeOffset}` : '';
+        //newLocation += this.$routeParams.endTime ? `/${this.$routeParams.endTime}` : '';
+        //console.log(newLocation);
+        //this.$location.path(newLocation);
       }
     }
 

@@ -169,6 +169,8 @@ module HawkularMetrics {
       this.getWebData();
       this.getWebChartData();
       this.getAlerts();
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     private getAlerts(): void {

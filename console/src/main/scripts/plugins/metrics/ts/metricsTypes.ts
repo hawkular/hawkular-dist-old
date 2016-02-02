@@ -94,6 +94,7 @@ module HawkularMetrics {
     resourcePath: ResourcePath;
     isExperimental: boolean;
     prevLocation: string; // not guaranteed to be set, use as needed.
+    lastUpdateTimestamp: Date; // when was last tab data updated
   }
 
   export interface IRefreshable {

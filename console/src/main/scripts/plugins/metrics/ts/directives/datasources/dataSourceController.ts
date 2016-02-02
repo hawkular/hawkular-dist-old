@@ -57,14 +57,11 @@ module HawkularMetrics {
         this.destroy();
       });
 
-      this.initDateTimes();
-
       if ($rootScope.currentPersona) {
         this.getDatasource().then((data) => {
           this.datasource = data;
           this.registerAlerts();
           this.refresh();
-          this.autoRefresh(20);
         });
       } else {
         /// currentPersona hasn't been injected to the rootScope yet, wait for it..
@@ -73,10 +70,10 @@ module HawkularMetrics {
             this.datasource = data;
             this.registerAlerts();
             this.refresh();
-            this.autoRefresh(20);
           }));
       }
 
+      this.autoRefresh(20);
     }
 
     private getDatasource(): ng.IPromise<any> {
@@ -86,20 +83,6 @@ module HawkularMetrics {
         feedId: this.$routeParams.feedId,
         resourcePath: resourceId + '/' + this.datasourceId.replace(/\$/g, '%2F'),
       }).$promise;
-    }
-
-    private initDateTimes() {
-      if (this.$routeParams.endTime && this.$routeParams.endTime !== '0') {
-        this.endTimeStamp = this.$routeParams.endTime;
-      } else {
-        this.endTimeStamp = +moment();
-      }
-
-      if (this.$routeParams.timeOffset && this.$routeParams.timeOffset !== '0') {
-        this.startTimeStamp = this.endTimeStamp - this.$routeParams.timeOffset;
-      } else {
-        this.startTimeStamp = this.endTimeStamp - 3600000;
-      }
     }
 
     public getDatasourceChartData(): void {
@@ -275,9 +258,13 @@ module HawkularMetrics {
     }
 
     public refresh() {
-      this.initDateTimes();
+      this.endTimeStamp = this.$routeParams.endTime || +moment();
+      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
+
       this.getDatasourceChartData();
       this.getAlerts();
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     public getAlerts() {

@@ -79,13 +79,7 @@
       </div>
     </div>
     <div class="col-lg-3">
-      <div class="clearfix">
-
-        <span class="hk-update pull-right hk-in-alert" tooltip-trigger tooltip-placement="top" tooltip="Last update">
-          <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
-        </span>
-      </div>
-      <hk-alert-info list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)"
+      <hk-alert-info class="hk-h2-offset" list="vm.alertList" limit="(vm.showAllAlerts ? 100000 : 3)"
                      resource-id="vm.encodeResourceId(vm.$routeParams.feedId + '/' + vm.datasource.id)"
                      title="Datasource">
       </hk-alert-info>

@@ -121,6 +121,8 @@ module HawkularMetrics {
       this.alertInfo.allAlerts = [];
       this.alertInfo.alertCount = 0;
       this.getAlertsInfo(this.feedId, this.$routeParams.resourceId);
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     private getAlerts(res?: IResource): void {

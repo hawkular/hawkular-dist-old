@@ -40,9 +40,6 @@
     <button class="btn btn-default" type="button" ng-click="vm.showDatasourceAddDialog()">Add Datasource</button>
   </div>
 
-  <span class="hk-update pull-right" tooltip-trigger tooltip-placement="top" tooltip="Last update">
-    <i class="fa fa-clock-o"></i>{{vm.endTimeStamp | date:'HH:mm:ss'}}
-  </span>
   <div class="tiles-view-pf row-cards-pf hk-datasource-tile">
     <div class="row">
       <div class="col-lg-2 col-md-3 col-sm-3" ng-repeat="ds in vm.resourceList | filter:vm.filter | orderBy:'name':vm.sortInv"
