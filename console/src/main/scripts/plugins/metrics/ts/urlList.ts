@@ -457,7 +457,6 @@ module HawkularMetrics {
               availabilityId: res.id, distinct: true,
               start: 1, end: moment().valueOf()
             }, (resource) => {
-              resource.reverse(); // FIXME: HAWKULAR-366
               res['isUp'] = (resource[0] && resource[0].value === 'up');
             }).$promise);
             let availPromise = this.MetricsService.retrieveAvailabilityMetrics(this.$rootScope.currentPersona.id,
