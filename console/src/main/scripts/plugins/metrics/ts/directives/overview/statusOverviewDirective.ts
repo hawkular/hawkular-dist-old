@@ -22,8 +22,7 @@ module HawkularMetrics {
   export class StatusOverviewController {
 
     public initPie(data) {
-      let used = data.inUseCount.value / (data.inUseCount.value + data.availableCount.value) * 100 || 0;
-      used = Math.round(used * 100) / 100;
+      const used = Math.round(data.inUseCount.value / (data.inUseCount.value + data.availableCount.value) * 100 || 0);
       data.chartConfig = {
         type: 'donut',
         donut: {

@@ -270,4 +270,19 @@ module HawkularMetrics {
     };
   }
 
+  export class MessageType {
+    constructor(public value: string, public cssClass: string) {
+    }
+
+    public static SUCCESS = new MessageType('success', 'toast-success');
+    public static WARNING = new MessageType('warning', 'toast-warning');
+    public static ERROR = new MessageType('error', 'toast-danger');
+    public static INFO = new MessageType('info', 'toast-info');
+    public static ACTION = new MessageType('action', 'toast-success');
+    public static LOADING = new MessageType('loading', 'toast-info');
+
+    public toString = () => {
+      return this.value;
+    };
+  }
 }

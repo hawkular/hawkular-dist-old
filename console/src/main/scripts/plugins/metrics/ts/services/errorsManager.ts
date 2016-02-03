@@ -46,6 +46,9 @@ module HawkularMetrics {
 
     public errorHandler(error: any, msg: string, cb?: (error: any, msg: string) => void): ng.IPromise<void> {
       if (error) {
+        const type = 'error';
+        const notificationMessage = new NotificationMessage(msg, type, MessageType[type.toUpperCase()]);
+        this.NotificationsService.storedMessages.unshift(notificationMessage);
         this.errorToastr(error, msg);
         if (cb) {
           cb(error, msg);

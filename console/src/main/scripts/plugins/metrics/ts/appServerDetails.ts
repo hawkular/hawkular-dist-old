@@ -41,27 +41,27 @@ module HawkularMetrics {
     /* tslint:disable:variable-name */
 
     constructor(private $rootScope: any,
-      private $scope: any,
-      private $route: any,
-      private $routeParams: any,
-      private $q: ng.IQService,
-      private $timeout: ng.ITimeoutService,
-      private HawkularOps: any,
-      private NotificationsService: INotificationsService,
-      private HawkularInventory: any,
-      private HawkularAlertsManager: any,
-      private $log: ng.ILogService,
-      private $location: ng.ILocationService,
-      private HawkularAlert: any,
-      public availableTabs: any,
-      public activeTab: any) {
-
+                private $scope: any,
+                private $route: any,
+                private $routeParams: any,
+                private $q: ng.IQService,
+                private $timeout: ng.ITimeoutService,
+                private HawkularOps: any,
+                private NotificationsService: INotificationsService,
+                private HawkularInventory: any,
+                private HawkularAlertsManager: any,
+                private $log: ng.ILogService,
+                private $location: ng.ILocationService,
+                private HawkularAlert: any,
+                public availableTabs: any,
+                public activeTab: any) {
+      $scope.tabs = this;
       HawkularOps.init(this.NotificationsService);
 
       this.defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
       this.feedId = this.$routeParams.feedId;
       this.resourceId = this.$routeParams.feedId + '/' + this.$routeParams.resourceId;
-      this.defaultAction = { email: [this.defaultEmail] };
+      this.defaultAction = {email: [this.defaultEmail]};
       $scope.$on('$routeUpdate', (action, newRoute) => {
         if (newRoute.params.action && newRoute.params.action === 'export-jdr') {
           $scope.tabs.requestExportJDR();
@@ -86,18 +86,18 @@ module HawkularMetrics {
         this.loadTriggers();
       });
 
-      $scope.tabs = this;
-
-      let experimentalTabs = [''];
-      $rootScope.$watch('isExperimental', (isExperimental) => {
-        this.$timeout(() => {
-          _.forEach(this.availableTabs, (tab: any) => {
-            if (experimentalTabs.indexOf(tab.id) !== -1) {
-              tab.enabled = isExperimental;
-            }
+      if (!$rootScope.hasOwnProperty('isExperimentalWatch')) {
+        let experimentalTabs = [''];
+        $rootScope.isExperimentalWatch = $rootScope.$watch('isExperimental', (isExperimental) => {
+          this.$timeout(() => {
+            _.forEach(this.availableTabs, (tab: any) => {
+              if (experimentalTabs.indexOf(tab.id) !== -1) {
+                tab.enabled = isExperimental;
+              }
+            });
           });
         });
-      });
+      }
 
       this.availableTabs = [
         {
@@ -143,29 +143,50 @@ module HawkularMetrics {
       ];
 
       this.activeTab = $routeParams.tabId || 'overview';
+      if (!$rootScope.hasOwnProperty('exportJdrSuccess')) {
+        $rootScope.exportJdrSuccess = $rootScope.$on('ExportJDRSuccess', (event, data) => {
+          if (data && data.hasOwnProperty('jdrResponse') && data.hasOwnProperty('fileName')) {
+            const resourceId = data['jdrResponse'].resourcePath.split(';').last().replace(/~/g, '');
+            const action =
+              `<a href="${data.url}" download="${data.fileName}">Download JDR for server ${resourceId}</a>`;
+            this.NotificationsService.removeFromMessagesByKeyValue('resourcePath', data['jdrResponse'].resourcePath);
+            this.NotificationsService.pushActionMessage(
+              action,
+              `Generated JDR for server ${resourceId}`
+            );
+          }
+          this.$log.info('JDR generated!');
+          this.jdrGenerating = false;
+          this.hasGeneratedSuccessfully = true;
+          this.hasGeneratedError = false;
+        });
+      }
 
-      $scope.$on('ExportJDRSuccess', (event, data) => {
-        this.$log.info('JDR generated!');
-        this.jdrGenerating = false;
-        this.hasGeneratedSuccessfully = true;
-        this.hasGeneratedError = false;
-      });
-
-      $scope.$on('ExportJDRError', (event, data) => {
-        this.$log.info('JDR generation failed!');
-        this.jdrGenerating = false;
-        this.hasGeneratedSuccessfully = false;
-        this.hasGeneratedError = true;
-      });
-
+      if (!$rootScope.hasOwnProperty('exportJdrError')) {
+        $rootScope.exportJdrError = $rootScope.$on('ExportJDRError', (event, data) => {
+          if (data && data.hasOwnProperty('jdrResponse')) {
+            const resourceId = data['jdrResponse'].resourcePath.split(';').last().replace(/~/g, '');
+            this.NotificationsService.removeFromMessagesByKeyValue('resourcePath', data['jdrResponse'].resourcePath);
+            this.NotificationsService.error(`JDR generation for server ${resourceId} failed.`);
+          }
+          this.$log.info('JDR generation failed!');
+          this.jdrGenerating = false;
+          this.hasGeneratedSuccessfully = false;
+          this.hasGeneratedError = true;
+        });
+      }
     }
 
     public updateTab(newTabId: string) {
-      this.$route.updateParams({ tabId: newTabId });
+      this.$route.updateParams({tabId: newTabId});
     }
 
     public requestExportJDR() {
       this.jdrGenerating = true;
+      this.NotificationsService.pushLoadingMessage(
+        `Generating JDR for server ${this.$routeParams.resourceId}`,
+        this.resourcePath
+      );
       this.HawkularOps.performExportJDROperation(
         this.resourcePath,
         this.$rootScope.userDetails.token,
@@ -208,7 +229,7 @@ module HawkularMetrics {
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             severity: 'MEDIUM',
-            actions: { email: [this.defaultEmail] },
+            actions: {email: [this.defaultEmail]},
             firingMatch: 'ANY',
             tags: {
               resourceId: qualifiedResourceId
@@ -285,7 +306,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'HIGH',
-              actions: { email: [this.defaultEmail] },
+              actions: {email: [this.defaultEmail]},
               firingMatch: 'ANY',
               tags: {
                 resourceId: qualifiedResourceId
@@ -365,7 +386,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'HIGH',
-              actions: { email: [this.defaultEmail] },
+              actions: {email: [this.defaultEmail]},
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -427,7 +448,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'MEDIUM',
-              actions: { email: [this.defaultEmail] },
+              actions: {email: [this.defaultEmail]},
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -488,7 +509,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'LOW',
-              actions: { email: [this.defaultEmail] },
+              actions: {email: [this.defaultEmail]},
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -546,7 +567,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'LOW',
-              actions: { email: [this.defaultEmail] },
+              actions: {email: [this.defaultEmail]},
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -610,7 +631,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'MEDIUM',
-              actions: { email: [this.defaultEmail] },
+              actions: {email: [this.defaultEmail]},
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -685,14 +706,14 @@ module HawkularMetrics {
           .withName('CPU usage')
           .withDescription(description)
           .withActions(this.defaultAction)
-          .withTags({ resourceId: this.feedId, resourceName: cpuResource['name'] })
+          .withTags({resourceId: this.feedId, resourceName: cpuResource['name']})
           .withContext(
-          new AlertDefinitionContextBuilder(AlertDefinitionContext.TRESHOLD_TRIGGER_TYPE)
-            .withAlertType('CPU_USAGE_EXCEED')
-            .withResourceType('CPU')
-            .withResourceName(this.feedId)
-            .withResourcePath(this.$rootScope.resourcePath)
-            .build()
+            new AlertDefinitionContextBuilder(AlertDefinitionContext.TRESHOLD_TRIGGER_TYPE)
+              .withAlertType('CPU_USAGE_EXCEED')
+              .withResourceType('CPU')
+              .withResourceName(this.feedId)
+              .withResourcePath(this.$rootScope.resourcePath)
+              .build()
           )
           .build(),
         dampenings: AppServerDetailsController.defaultDampenings(triggerId),
@@ -738,16 +759,16 @@ module HawkularMetrics {
               .withId(triggerId)
               .withName('Available memory')
               .withDescription(description)
-              .withTags({ resourceId: this.feedId })
+              .withTags({resourceId: this.feedId})
               .withActions(this.defaultAction)
               .withContext(
-              new AlertDefinitionContextBuilder(AlertDefinitionContext.RANGE_PERCENT_TRIGGER_TYPE)
-                .withAlertType('AVAILABLE_MEMORY')
-                .withResourceType('Memory')
-                .withResourceName(this.feedId)
-                .withResourcePath(this.$rootScope.resourcePath)
-                .withTriggerTypeProperty1(totalMemoryId)
-                .withTriggerTypeProperty2('Total memory').build()
+                new AlertDefinitionContextBuilder(AlertDefinitionContext.RANGE_PERCENT_TRIGGER_TYPE)
+                  .withAlertType('AVAILABLE_MEMORY')
+                  .withResourceType('Memory')
+                  .withResourceName(this.feedId)
+                  .withResourcePath(this.$rootScope.resourcePath)
+                  .withTriggerTypeProperty1(totalMemoryId)
+                  .withTriggerTypeProperty2('Total memory').build()
               ).build(),
             dampenings: AppServerDetailsController.defaultDampenings(triggerId),
             conditions: [
