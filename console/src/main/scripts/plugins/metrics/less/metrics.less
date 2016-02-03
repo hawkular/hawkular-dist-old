@@ -352,7 +352,6 @@ a:hover {
   }
 }
 
-
 // Cards
 
 .row-cards-pf {
@@ -398,21 +397,28 @@ a:hover {
   margin-left: 5px;
 }
 
-.hk-card-token {
+// Cards Flexbox
 
-  .card-pf-body {
-    margin-top: -5px;
+.hk-row-cards-flexbox {
+  display: flex;
+  flex-wrap: wrap;
 
-    p {
-      margin-top: @grid-gutter-width/2;
-    }
+  &:before,
+  &:after {
+    display: flex;
   }
 
-  .card-pf-title span {
-    margin-right: @grid-gutter-width/4;
+  [class*="col-"] {
+    display: flex;
+    justify-content: center;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .card-pf {
+    width: 100%;
   }
 }
-
 
 // Charts and Legends
 
