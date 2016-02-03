@@ -28,8 +28,13 @@ module HawkularMetrics {
     avg: number;
     min: number;
     max: number;
-    percentile95th?: number;
+    percentiles?: IPercentile[];
     median?: number;
+  }
+
+  export interface IPercentile {
+    quantile: number;
+    value: number;
   }
 
   export interface IContextChartDataPoint {
@@ -45,7 +50,7 @@ module HawkularMetrics {
     date: Date;
     min: number;
     max: number;
-    percentile95th: number;
+    percentiles: IPercentile[];
     median: number;
   }
 
@@ -62,21 +67,25 @@ module HawkularMetrics {
     retrieveGaugeMetrics(personaId: PersonaId, metricId: MetricId,
       startTime?: TimestampInMillis,
       endTime?: TimestampInMillis,
-      buckets?: number): ng.IPromise<IChartDataPoint[]>;
+      buckets?: number,
+      params?: any): ng.IPromise<IChartDataPoint[]>;
     retrieveCounterMetrics(personaId: PersonaId, metricId: MetricId,
       startTime?: TimestampInMillis,
       endTime?: TimestampInMillis,
-      buckets?: number): ng.IPromise<IChartDataPoint[]>;
+      buckets?: number,
+      params?: any): ng.IPromise<IChartDataPoint[]>;
     retrieveCounterRateMetrics(personaId: PersonaId,
       metricId: MetricId,
       startTime?: TimestampInMillis,
       endTime?: TimestampInMillis,
-      buckets?: number): ng.IPromise<IChartDataPoint[]>;
+      buckets?: number,
+      params?: any): ng.IPromise<IChartDataPoint[]>;
     retrieveAvailabilityMetrics(personaId: PersonaId,
       metricId: MetricId,
       startTime?: TimestampInMillis,
       endTime?: TimestampInMillis,
-      buckets?: number): ng.IPromise<IChartDataPoint[]>;
+      buckets?: number,
+      params?: any): ng.IPromise<IChartDataPoint[]>;
   }
 
   export class MetricsService implements IMetricsService {
@@ -120,7 +129,7 @@ module HawkularMetrics {
           avg: (point.empty) ? 0 : point.avg * multiplier,
           min: !angular.isNumber(point.min) ? 0 : point.min * multiplier,
           max: !angular.isNumber(point.max) ? 0 : point.max * multiplier,
-          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th * multiplier,
+          percentiles: _.map(point.percentiles, (v) => { return {value: v.value * multiplier, quantile: v.quantile}; }),
           median: !angular.isNumber(point.median) ? 0 : point.median * multiplier,
           empty: point.empty
         };
@@ -137,7 +146,7 @@ module HawkularMetrics {
           avg: (point.empty) ? 0 : point.avg * multiplier,
           min: !angular.isNumber(point.min) ? 0 : point.min * multiplier,
           max: !angular.isNumber(point.max) ? 0 : point.max * multiplier,
-          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th * multiplier,
+          percentiles: _.map(point.percentiles, (v) => { return {value: v.value * multiplier, quantile: v.quantile}; }),
           median: !angular.isNumber(point.median) ? 0 : point.median * multiplier,
           empty: point.empty
         };
@@ -171,9 +180,11 @@ module HawkularMetrics {
       metricId: MetricId,
       startTime?: TimestampInMillis,
       endTime?: TimestampInMillis,
-      buckets = 120): ng.IPromise<IChartDataPoint[]> {
+      buckets = 120,
+      params?: any): ng.IPromise<IChartDataPoint[]> {
 
-      return this.retrieveMetrics(MetricsService.GAUGE_TYPE, personaId, metricId, startTime, endTime, buckets);
+      return this.retrieveMetrics(MetricsService.GAUGE_TYPE, personaId, metricId, startTime, endTime, buckets, false,
+        params);
     }
 
     /**
@@ -189,9 +200,11 @@ module HawkularMetrics {
       metricId: MetricId,
       startTime?: TimestampInMillis,
       endTime?: TimestampInMillis,
-      buckets = 120): ng.IPromise<IChartDataPoint[]> {
+      buckets = 120,
+      params?: any): ng.IPromise<IChartDataPoint[]> {
 
-      return this.retrieveMetrics(MetricsService.COUNTER_TYPE, personaId, metricId, startTime, endTime, buckets);
+      return this.retrieveMetrics(MetricsService.COUNTER_TYPE, personaId, metricId, startTime, endTime, buckets, false,
+        params);
     }
 
     /**
@@ -207,9 +220,11 @@ module HawkularMetrics {
       metricId: MetricId,
       startTime?: TimestampInMillis,
       endTime?: TimestampInMillis,
-      buckets = 120): ng.IPromise<IChartDataPoint[]> {
+      buckets = 120,
+      params?: any): ng.IPromise<IChartDataPoint[]> {
 
-      return this.retrieveMetrics(MetricsService.COUNTER_TYPE, personaId, metricId, startTime, endTime, buckets, true);
+      return this.retrieveMetrics(MetricsService.COUNTER_TYPE, personaId, metricId, startTime, endTime, buckets, true,
+        params);
     }
 
     /**
@@ -225,9 +240,11 @@ module HawkularMetrics {
       metricId: MetricId,
       startTime?: TimestampInMillis,
       endTime?: TimestampInMillis,
-      buckets = 120): ng.IPromise<IChartDataPoint[]> {
+      buckets = 120,
+      params?: any): ng.IPromise<IChartDataPoint[]> {
 
-      return this.retrieveMetrics(MetricsService.AVAILABILITY_TYPE, personaId, metricId, startTime, endTime, buckets);
+      return this.retrieveMetrics(MetricsService.AVAILABILITY_TYPE, personaId, metricId, startTime, endTime, buckets,
+        false, params);
     }
 
     private retrieveMetrics(metricType: string,
@@ -236,7 +253,8 @@ module HawkularMetrics {
       startTime?: TimestampInMillis,
       endTime?: TimestampInMillis,
       buckets = 120,
-      isRate?): ng.IPromise<IChartDataPoint[]> {
+      isRate?,
+      params?: any): ng.IPromise<IChartDataPoint[]> {
 
       // calling refreshChartData without params use the model values
       if (!endTime) {
@@ -249,14 +267,14 @@ module HawkularMetrics {
       let querySuffix = metricType === MetricsService.AVAILABILITY_TYPE ? '' : 'Metrics';
       let dataType = isRate ? 'Rate' : 'Data';
 
-      return this.HawkularMetric[`${metricType}Metric${dataType}`](personaId)[`query${querySuffix}`]({
+      return this.HawkularMetric[`${metricType}Metric${dataType}`](personaId)[`query${querySuffix}`]($.extend({
         gaugeId: (metricType === MetricsService.GAUGE_TYPE ? metricId : undefined),
         counterId: (metricType === MetricsService.COUNTER_TYPE ? metricId : undefined),
         availabilityId: (metricType === MetricsService.AVAILABILITY_TYPE ? metricId : undefined),
         start: startTime,
         end: endTime,
         buckets: buckets
-      }).$promise;
+      }, params)).$promise;
     }
 
   }

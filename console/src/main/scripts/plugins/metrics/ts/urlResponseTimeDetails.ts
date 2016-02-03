@@ -155,7 +155,6 @@ module HawkularMetrics {
     public refreshSummaryData(metricId: MetricId,
       startTime?: TimestampInMillis,
       endTime?: TimestampInMillis): void {
-      let dataPoints: IChartDataPoint[];
 
       // calling refreshChartData without params use the model values
       if (!endTime) {
@@ -168,14 +167,13 @@ module HawkularMetrics {
       if (metricId) {
 
         this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
-          metricId, startTime, endTime, 1)
+          metricId, startTime, endTime, 1, {percentiles: '95'})
           .then((response) => {
 
-            dataPoints = MetricsService.formatBucketedChartOutput(response);
-
-            this.median = Math.round(_.last(dataPoints).median);
-            this.percentile95th = Math.round(_.last(dataPoints).percentile95th);
-            this.average = Math.round(_.last(dataPoints).avg);
+            let data: any = response[0];
+            this.median = Math.round(data.median);
+            this.percentile95th = Math.round(data.percentiles[0].value);
+            this.average = Math.round(data.avg);
 
           }, (error) => {
             this.NotificationsService.error('Error Loading Chart Data: ' + error);
