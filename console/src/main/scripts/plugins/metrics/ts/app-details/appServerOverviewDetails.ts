@@ -43,7 +43,7 @@ module HawkularMetrics {
     public date: Date;
     public min: any;
     public max: any;
-    public percentile95th: any;
+    public percentiles: IPercentile[];
     public median: any;
     public timestamp: number;
     public value: any;
@@ -55,7 +55,7 @@ module HawkularMetrics {
       this.timestamp = timestamp;
       this.min = value;
       this.max = value;
-      this.percentile95th = value;
+      this.percentiles = []; // FIXME: this should be revisited
       this.median = value;
       this.date = new Date(timestamp);
       this.value = value;
