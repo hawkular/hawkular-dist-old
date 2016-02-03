@@ -108,3 +108,34 @@ body.inactivity-modal-open .modal:not(.time-out-dialog)
     margin-left: @grid-gutter-width/8;
   }
 }
+
+// Tokens screen
+
+.hk-card-token {
+
+  display: flex;
+  flex-direction: column;
+
+  .card-pf-title {
+    margin-bottom: 0;
+
+    .form-control {
+      margin-bottom: 15px;
+    }
+  }
+
+  .btn.pull-right {
+    margin-left: @grid-gutter-width/4;
+  }
+
+  .card-pf-body {
+    flex: 1 0 auto;
+    margin-bottom: 0;
+    margin-top: 0;
+
+    p {
+      margin-bottom: @grid-gutter-width/2;
+      margin-top: 15px;
+    }
+  }
+}
