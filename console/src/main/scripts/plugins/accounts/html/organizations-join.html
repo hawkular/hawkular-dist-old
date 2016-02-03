@@ -37,7 +37,7 @@
           <thead>
           <tr>
             <th>Name</th>
-            <th></th>
+            <th>&nbsp;</th>
           </tr>
           </thead>
           <tbody>
@@ -46,8 +46,18 @@
             <td class="hk-actions-one">
               <button type="button"
                       class="btn btn-default"
+                      ng-disabled="controller.joinRequestsToSubmit[organization.id] === PersistenceState.PERSISTING"
                       ng-click="controller.joinRequest(organization)">
                 Join
+                <span ng-show="controller.joinRequestsToSubmit[organization.id] === PersistenceState.PERSISTING">
+                  <i class="fa fa-spinner fa-spin"></i>
+                </span>
+                <span ng-show="controller.joinRequestsToSubmit[organization.id] === PersistenceState.SUCCESS">
+                  <i class="fa fa-check"></i>
+                </span>
+                <span ng-show="controller.joinRequestsToSubmit[organization.id] === PersistenceState.ERROR">
+                  <i class="fa fa-exclamation"></i>
+                </span>
               </button>
             </td>
           </tr>

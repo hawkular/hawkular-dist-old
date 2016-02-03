@@ -54,7 +54,14 @@
             <tr ng-repeat="joinRequest in controller.joinRequests">
               <td>{{joinRequest.organization.name}}</td>
               <td>{{joinRequest.createdAt | date:'medium'}}</td>
-              <td><span class="label label-default">{{joinRequest.status}}</span></td>
+              <td>
+                <span class="label label-default" ng-show="joinRequest.status != 'REJECTED'">
+                  {{joinRequest.status}}
+                </span>
+                <span class="label label-danger" ng-show="joinRequest.status == 'REJECTED'">
+                  {{joinRequest.status}}
+                </span>
+              </td>
             </tr>
             </tbody>
           </table>
@@ -68,6 +75,7 @@
             <thead>
             <tr>
               <th>Name</th>
+              <th>Visibility</th>
               <th>&nbsp;</th>
             </tr>
             </thead>
@@ -77,6 +85,10 @@
                 <a href="/hawkular-ui/organization/{{organization.id}}/memberships">
                   {{organization.name}}
                 </a>
+              </td>
+              <td>
+                <span ng-show="organization.visibility === 'PRIVATE'">Private</span>
+                <span ng-hide="organization.visibility === 'PRIVATE'">Users can apply</span>
               </td>
               <td class="hk-actions-one">
                 <button type="button"
