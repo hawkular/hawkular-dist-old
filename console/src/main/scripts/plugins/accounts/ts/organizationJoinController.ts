@@ -23,6 +23,7 @@ module HawkularAccounts {
     public organizations: Array<IOrganization>;
     public loading: boolean = true;
     public isOrganization: boolean = false;
+    public joinRequestsToSubmit: { [id: string]: PersistenceState; } = {};
 
     constructor(private $rootScope: any,
       private $scope: any,
@@ -72,10 +73,13 @@ module HawkularAccounts {
       })
         .result
         .then(() => {
+          this.joinRequestsToSubmit[organization.id] = PersistenceState.PERSISTING;
           joinRequest.$save({}, () => {
+            this.joinRequestsToSubmit[organization.id] = PersistenceState.SUCCESS;
             this.NotificationsService.success('Join request successfully submitted.');
             this.organizations.splice(this.organizations.indexOf(organization), 1);
           }, (error: IErrorPayload) => {
+            this.joinRequestsToSubmit[organization.id] = PersistenceState.ERROR;
             let message = `Failed to send join request to the organization ${organization.name}: ${error.data.message}`;
             this.$log.warn(message);
             this.NotificationsService.error(message);
