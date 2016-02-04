@@ -86,7 +86,6 @@
     <!-- - If groupId is not unique, append the property name with ".{artifactId}" -->
     <!-- - Version properties must be sorted alphabetically -->
     <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
-    <version.commons.io>2.4</version.commons.io>
     <version.gnu.getopt>1.0.13</version.gnu.getopt>
     <version.org.hawkular.accounts>2.0.18.Final</version.org.hawkular.accounts>
     <version.org.hawkular.agent>0.15.7.Final-SRC-revision-f486b356c1cdee2e53982da9b4dfb2f590b24c54</version.org.hawkular.agent>
@@ -100,6 +99,16 @@
     <version.rxjava>1.0.16</version.rxjava>
     <version.hystrix-core>1.4.21</version.hystrix-core>
     <version.hystrix-request-servlet>1.1.2</version.hystrix-request-servlet>
+    <version.hystrix-metrics-event-stream>1.4.10</version.hystrix-metrics-event-stream>
+    <version.com.github.tomakehurst.wiremock>1.56</version.com.github.tomakehurst.wiremock>
+
+    <!-- Versions that could be moved to parent: -->
+    <version.org.apache.commons.lang3>3.4</version.org.apache.commons.lang3>
+    <version.com.squareup.okhttp>2.6.0</version.com.squareup.okhttp>
+
+    <!-- Keep in sync with modules/system/layers/base/... of WF/EAP -->
+    <version.commons.io>2.4</version.commons.io>
+    <version.org.apache.httpcomponents>4.5</version.org.apache.httpcomponents>
   </properties>
 
   <dependencyManagement>
@@ -202,6 +211,12 @@
       </dependency>
 
       <dependency>
+        <groupId>com.netflix.hystrix</groupId>
+        <artifactId>hystrix-metrics-event-stream</artifactId>
+        <version>${version.hystrix-metrics-event-stream}</version>
+      </dependency>
+
+      <dependency>
         <groupId>io.reactivex</groupId>
         <artifactId>rxjava</artifactId>
         <version>${version.rxjava}</version>
@@ -213,6 +228,23 @@
         <version>${version.org.wildfly}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${version.org.apache.httpcomponents}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${version.com.google.guava}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okhttp</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>${version.com.squareup.okhttp}</version>
       </dependency>
 
     </dependencies>
