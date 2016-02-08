@@ -55,6 +55,7 @@ public class Scenario1ITest extends AbstractTestBase {
     public void testScenario() throws Throwable {
         Persona persona = getWithRetries("/hawkular/accounts/personas/current", HawkularUser.class, 10, 2000);
         String tenantId = persona.getIdAsUUID().toString();
+        Assert.assertTrue("Cannot get the current tenant id.", tenantId != null && !tenantId.trim().isEmpty());
 
         /* assert the test environment exists */
         /* There is a race condition when WildFly agent is enabled:
@@ -64,21 +65,23 @@ public class Scenario1ITest extends AbstractTestBase {
          */
         String path = "/hawkular/inventory/environments/" + environmentId;
         Environment env = getWithRetries(path, Environment.class, 10, 2000);
-        Assert.assertEquals(environmentId, env.getId());
+        Assert.assertEquals("Unable to get the '" + environmentId + "' environment.", environmentId, env.getId());
 
         /* assert the URL resource type exists */
         path = "/hawkular/inventory/resourceTypes/" + urlTypeId;
         ResourceType resourceType = getWithRetries(path, ResourceType.class, 10, 2000);
-        Assert.assertEquals(urlTypeId, resourceType.getId());
+        Assert.assertEquals("Unable to get the '" + urlTypeId + "' resource type.", urlTypeId, resourceType.getId());
 
         /* assert the metric types exist */
         path = "/hawkular/inventory/metricTypes/" + statusCodeTypeId;
         MetricType statusCodeType = getWithRetries(path, MetricType.class, 10, 2000);
-        Assert.assertEquals(statusCodeTypeId, statusCodeType.getId());
+        Assert.assertEquals("Unable to get the '" + statusCodeTypeId + "' metric type.", statusCodeTypeId,
+                statusCodeType.getId());
 
         path = "/hawkular/inventory/metricTypes/" + durationTypeId;
         MetricType durationType = getWithRetries(path, MetricType.class, 10, 2000);
-        Assert.assertEquals(durationTypeId, durationType.getId());
+        Assert.assertEquals("Unable to get the '" + durationTypeId + "' metric type.", durationTypeId, durationType
+                .getId());
 
         /* create a URL */
         String resourceId = UUID.randomUUID().toString();
@@ -104,7 +107,7 @@ public class Scenario1ITest extends AbstractTestBase {
         Response response = post("/hawkular/inventory/" + environmentId + "/resources/" + resourceId + "/metrics",
                 "[\"/e;" + environmentId + "/m;" + statusCodeId + "\", \"/e;" + environmentId + "/m;" + durationId
                         + "\"]");
-        Assert.assertEquals(204, response.code());
+        Assert.assertEquals("Response msg: " + response.body().string(), 204, response.code());
 
         /* Pinger should start pinging now but we do not want to wait */
 
@@ -137,14 +140,14 @@ public class Scenario1ITest extends AbstractTestBase {
         }
 
         for (int i = -30; i < -3; i++) {
-            postMetricValue(tenantId, resourceId, statusCodeId, 100 + i, i);
-            postMetricValue(tenantId, resourceId, durationId, 200, i);
+            postMetricValue(resourceId, statusCodeId, 100 + i, i);
+            postMetricValue(resourceId, durationId, 200, i);
         }
 
-        postMetricValue(tenantId, resourceId, statusCodeId, 500, -2);
-        postMetricValue(tenantId, resourceId, statusCodeId, 404, -1);
-        postMetricValue(tenantId, resourceId, statusCodeId, 200, 0);
-        postMetricValue(tenantId, resourceId, statusCodeId, 42, 0);
+        postMetricValue(resourceId, statusCodeId, 500, -2);
+        postMetricValue(resourceId, statusCodeId, 404, -1);
+        postMetricValue(resourceId, statusCodeId, 200, 0);
+        postMetricValue(resourceId, statusCodeId, 42, 0);
 
         /* Get values for a chart - last 4h data */
         long end = System.currentTimeMillis();
@@ -180,14 +183,14 @@ public class Scenario1ITest extends AbstractTestBase {
         for (int i = pathsToDelete.size() - 1; i >= 0; i--) {
             String path = pathsToDelete.get(i);
             Response response = client.newCall(newAuthRequest().url(baseURI + path).delete().build()).execute();
-            Assert.assertEquals(204, response.code());
+            Assert.assertEquals("Response msg: " + response.body().string(), 204, response.code());
 
             response = client.newCall(newAuthRequest().url(baseURI + path).build()).execute();
-            Assert.assertEquals(404, response.code());
+            Assert.assertEquals("Response msg: " + response.body().string(), 404, response.code());
         }
     }
 
-    private void postMetricValue(String tenantId, String resourceId, String metricName, int value, int timeSkewMinutes)
+    private void postMetricValue(String resourceId, String metricName, int value, int timeSkewMinutes)
             throws IOException {
         long now = System.currentTimeMillis();
         String tmp = resourceId + "." + metricName;
@@ -199,6 +202,6 @@ public class Scenario1ITest extends AbstractTestBase {
         Request request = newAuthRequest().url(baseURI + path)
                 .post(RequestBody.create(MEDIA_TYPE_JSON, json)).build();
         Response response = client.newCall(request).execute();
-        Assert.assertEquals(200, response.code());
+        Assert.assertEquals("Response msg: " + response.body().string(), 200, response.code());
     }
 }
