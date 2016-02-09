@@ -325,7 +325,7 @@ module HawkularMetrics {
         availabilityId: MetricsService.getMetricId('A', this.feedId, this.resourceId, 'Server Availability~App Server'),
         distinct: true
       }, (resource) => {
-        let latestData = resource[resource.length - 1];
+        let latestData = _.first(resource);
         if (latestData) {
           this.serverInfo['state'] = latestData['value'];
           this.serverInfo['updateTimestamp'] = latestData['timestamp'];
