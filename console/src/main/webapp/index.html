@@ -8,6 +8,11 @@
 
     <!-- bower:css -->
     <!-- endbower -->
+
+    <!-- BTM INTEGRATION START -->
+    <link href="dist/hawkularbtm.css" rel="stylesheet">
+    <!-- BTM INTEGRATION FINISH -->
+
     <link href="dist/hawkular-console.css?v=${hawkular.console.timestamp}" rel="stylesheet">
 
     <!-- ES6/ES6 shim -->
@@ -87,6 +92,11 @@
 
     <!-- add any scripts under dist/ here -->
     <script src="dist/hawkular-console.js?v=${hawkular.console.timestamp}"></script>
+
+    <!-- BTM INTEGRATION START -->
+    <script src="dist/hawkularbtm.js"></script>
+    <!-- BTM INTEGRATION FINISH -->
+
     <script>
       var title = 'HAWKULAR: ' + HawkularVersion;
       document.getElementById("hawkularLogo").title = title;

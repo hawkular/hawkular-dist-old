@@ -109,6 +109,13 @@
         <xsl:with-param name="deployment.name" select="'hawkular-rest-api.war'" />
         <xsl:with-param name="credential.secret" select="*[local-name()='secure-deployment']/*[local-name()='credential' and @name='secret']/text()"/>
       </xsl:call-template>
+
+      <!-- BTM INTEGRATION START -->
+      <xsl:call-template name="secure-deployment">
+        <xsl:with-param name="deployment.name" select="'hawkular-btm-server.war'" />
+        <xsl:with-param name="credential.secret" select="*[local-name()='secure-deployment']/*[local-name()='credential' and @name='secret']/text()"/>
+      </xsl:call-template>
+      <!-- BTM INTEGRATION FINISH -->
     </xsl:copy>
   </xsl:template>
 
@@ -186,6 +193,14 @@
         <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.rest:INFO}</xsl:text></xsl:attribute>
       </level>
     </logger>
+
+    <!-- BTM INTEGRATION START -->
+    <logger category="org.hawkular.btm">
+      <level>
+        <xsl:attribute name="name"><xsl:text disable-output-escaping="yes">${hawkular.log.btm:INFO}</xsl:text></xsl:attribute>
+      </level>
+    </logger>
+    <!-- BTM INTEGRATION FINISH -->
 
     <logger category="com.datastax.driver">
       <level>
@@ -269,6 +284,13 @@
       <jms-queue name="hawkular/metrics/gauges/new" entries="java:/queue/hawkular/metrics/gauges/new"/>
       <jms-queue name="hawkular/metrics/counters/new" entries="java:/queue/hawkular/metrics/counters/new"/>
       <jms-queue name="hawkular/metrics/availability/new" entries="java:/queue/hawkular/metrics/availability/new"/>
+
+      <!-- BTM INTEGRATION START -->
+      <jms-topic name="BusinessTransactions" entries="java:/BusinessTransactions"/>
+      <jms-topic name="CompletionTimes" entries="java:/CompletionTimes"/>
+      <jms-topic name="NodeDetails" entries="java:/NodeDetails"/>
+      <jms-topic name="Notifications" entries="java:/Notifications"/>
+      <!-- BTM INTEGRATION FINISH -->
     </xsl:copy>
   </xsl:template>
 

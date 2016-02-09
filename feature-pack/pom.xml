@@ -58,6 +58,21 @@
       </exclusions>
     </dependency>
 
+    <!-- BTM INTEGRATION START -->
+    <dependency>
+      <groupId>org.hawkular.btm</groupId>
+      <artifactId>hawkular-btm-integrated-feature-pack</artifactId>
+      <version>${version.org.hawkular.btm}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- BTM INTEGRATION FINISH -->
+
   </dependencies>
 
   <build>

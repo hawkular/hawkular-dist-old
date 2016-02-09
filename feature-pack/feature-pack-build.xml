@@ -21,6 +21,10 @@
   <dependencies>
     <artifact name="org.hawkular.accounts:hawkular-accounts-feature-pack" />
     <artifact name="org.hawkular.agent:hawkular-wildfly-agent-feature-pack" />
+
+    <!-- BTM INTEGRATION START -->
+    <artifact name="org.hawkular.btm:hawkular-btm-integrated-feature-pack" />
+    <!-- BTM INTEGRATION FINISH -->
   </dependencies>
 
   <config>
