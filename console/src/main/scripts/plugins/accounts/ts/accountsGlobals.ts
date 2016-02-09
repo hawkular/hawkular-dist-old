@@ -33,9 +33,9 @@ module HawkularAccounts {
   }
 
   export interface IToken {
-    id: string;
     key: string;
     secret: string;
+    principal: string;
     expiresAt: string;
     createdAt: string;
     updatedAt: string;
