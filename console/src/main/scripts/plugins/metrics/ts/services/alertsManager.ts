@@ -583,6 +583,11 @@ module HawkularMetrics {
     // to supply a dataMemberIdMap, instead we can rely on alerts to use the previously
     // supplied mappings for each member (yay!).
     public updateTrigger(fullTrigger: any, errorCallback: any, backupTrigger?: any): ng.IPromise<any> {
+      let groupPromise;
+      let actionPromises = [];
+      let dampeningPromises = [];
+      let conditionPromises = [];
+
       // First, fetch the *full* group trigger, update it if necessary
       let groupId = fullTrigger.trigger.memberOf;
       this.getTrigger(groupId).then((groupTrigger) => {
@@ -598,34 +603,30 @@ module HawkularMetrics {
           groupTrigger.trigger.severity = fullTrigger.trigger.severity;
         }
 
-        let actionPromises = [];
         if ( changedActions ) {
           console.log( '>>>>>>>>>> Updating group Actions...');
           groupTrigger.trigger.actions = fullTrigger.trigger.actions;
           // Ensure the actions exist
           for (let i = 0; groupTrigger.trigger.actions && i < groupTrigger.actions.length; i++) {
             if (groupTrigger.trigger.actions[i]) {
-              let actionPromise = this.addAction(groupTrigger.trigger.actions[i]).$promise.then(null, (error) => {
-                console.log( '>>>>>>>>>> Done Updating group Actions...');
+              let actionPromise = this.addAction(groupTrigger.trigger.actions[i]).then(null, (error) => {
                 return this.ErrorsManager.errorHandler(error, 'Error adding action.', errorCallback);
               });
-
+              console.log( '>>>>>>>>>> Done Updating group Actions...');
               actionPromises.push(actionPromise);
             }
           }
         }
 
-        let groupPromise;
         if (changedAttrs || changedActions) {
           this.$q.all(actionPromises).then(() => {
             console.log( '>>>>>>>>>> Updating group...');
             groupPromise = this.HawkularAlert.Group.put({ groupId: groupId }, groupTrigger.trigger);
           }, (error) => {
-            return this.ErrorsManager.errorHandler(error, 'Error saving action.', errorCallback);
+            return this.ErrorsManager.errorHandler(error, 'Error saving group.', errorCallback);
           });
         }
 
-        let dampeningPromises = [];
         for (let i = 0; fullTrigger.dampenings && i < fullTrigger.dampenings.length; i++) {
           if (fullTrigger.dampenings[i] && !angular.equals(fullTrigger.dampenings[i], backupTrigger.dampenings[i])) {
             fullTrigger.dampenings[i].triggerId = groupTrigger.dampenings[i].triggerId;
@@ -654,7 +655,6 @@ module HawkularMetrics {
           }
         }
 
-        let conditionPromises = [];
         if (firingConditions.length > 0) {
           console.log( '>>>>>>>>>> Updating firing condition...');
           let conditionPromise = this.HawkularAlert.GroupConditions.set({
@@ -677,9 +677,11 @@ module HawkularMetrics {
             });
           conditionPromises.push(conditionPromise);
         }
-
-        return this.$q.all(Array.prototype.concat(groupPromise, dampeningPromises, conditionPromises));
+      }, (error) => {
+        return this.ErrorsManager.errorHandler(error, 'Error fetching group trigger.', errorCallback);
       });
+
+      return this.$q.all(Array.prototype.concat(groupPromise, dampeningPromises, conditionPromises));
     }
 
     public queryTriggers(criteria: IHawkularTriggerCriteria): ng.IPromise<IHawkularTriggerQueryResult> {
@@ -743,20 +745,16 @@ module HawkularMetrics {
       });
     }
 
-    private getAction(actionPlugin: actionPlugin, actionId: actionId): ng.IPromise<void> {
+    private getAction(actionPlugin: ActionPlugin, actionId: ActionId): ng.IPromise<void> {
       return this.HawkularAlert.Action.get({
         pluginId: actionPlugin,
         actionId: actionId
       }).$promise;
     }
 
-    private createAction(action: ITriggerAction): ng.IPromise<void> {
-      return this.HawkularAlert.Action.save({
-        actionPlugin: action.actionPlugin,
-        actionId: action.actionId,
-        description: 'Created on ' + Date(),
-        to: email
-      }).$promise;
+    private createAction(action: IActionDefinition): ng.IPromise<void> {
+      action.properties.description = 'Created on ' + Date();
+      return this.HawkularAlert.Action.save(action).$promise;
     }
 
     public addAction(action: ITriggerAction): ng.IPromise<void> {
@@ -766,12 +764,18 @@ module HawkularMetrics {
         // Create a default email action
         if (reason.status === 404) {
           this.$log.debug('Action does not exist, creating one');
-          return this.createAction(action);
+          let actionDefinition: IActionDefinition;
+          actionDefinition.actionPlugin = action.actionPlugin;
+          actionDefinition.actionId = action.actionId;
+          if (action.actionPlugin === 'email') {
+            actionDefinition.properties.to = action.actionId; // email address
+          }
+          return this.createAction(actionDefinition);
         }
       });
     }
 
-    public updateAction(action: ITriggerAction): ng.IPromise<void> {
+    public updateAction(action: IActionDefinition): ng.IPromise<void> {
       action.properties.description = 'Created on ' + Date();
       return this.HawkularAlert.Action.put({
         actionPlugin: action.actionPlugin,

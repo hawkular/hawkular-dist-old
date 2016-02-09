@@ -40,8 +40,8 @@ module HawkularMetrics {
   export type ConditionId = string;
   export type DampeningId = string;
   export type AlertId = string;
-  export type ActionPluginType = string;
-  export type ActionIdType = string;
+  export type ActionPlugin = string;
+  export type ActionId = string;
   export type PersonaId = string;
   export type Persona = IPersona;
 
@@ -158,9 +158,15 @@ module HawkularMetrics {
     resourceType: string;
   }
 
+  export interface IActionDefinition {
+    actionPlugin: ActionPlugin;
+    actionId: ActionId;
+    properties: any;
+  }
+
   export interface ITriggerAction {
-    actionPlugin: ActionPluginType;
-    actionId: ActionIdType;
+    actionPlugin: ActionPlugin;
+    actionId: ActionId;
   }
 
   export interface ITriggerContext {
