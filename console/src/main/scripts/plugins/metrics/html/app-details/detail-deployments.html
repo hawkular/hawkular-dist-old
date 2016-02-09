@@ -27,14 +27,16 @@
         <div class="col-md-3">
           <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
             <h2 class="card-pf-title">
-              <span class="card-pf-aggregate-status-count">{{vm.resourceList.length || 0}} Enabled</span> Deployments
+              <span class="card-pf-aggregate-status-count">
+                {{(vm.resourceList | filter:{state:'up'}).length || 0}} Enabled</span> Deployments
             </h2>
           </div>
         </div>
         <div class="col-md-3">
           <div class="card-pf card-pf-aggregate-status card-pf-aggregate-status-mini">
             <h2 class="card-pf-title">
-              <span class="card-pf-aggregate-status-count">{{vm.disabledDeployments || 0}} Disabled</span> Deployments
+              <span class="card-pf-aggregate-status-count">
+                {{(vm.resourceList | filter:{state:'down'}).length || 0}} Disabled</span> Deployments
             </h2>
           </div>
         </div>
