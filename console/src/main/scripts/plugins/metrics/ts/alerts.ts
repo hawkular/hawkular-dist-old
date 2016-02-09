@@ -256,6 +256,39 @@ module HawkularMetrics {
       }
       return evalTimeSetting;
     }
+
+    protected updateAction(actions: any, actionPlugin: string, actionId: string) {
+      if ( !actions ) {
+         actions[0].actionPlugin = actionPlugin;
+         actions[0].actionId = actionId;
+         return actions;
+      }
+
+      let i = actions.length;
+      while( i-- ) {
+        if( actions[i] && actions[i].actionPlugin === actionPlugin ) {
+           actions[i].actionId = actionId;
+           return actions;
+        }
+      }
+      actions[actions.length].actionPlugin = actionPlugin;
+      actions[actions.length].actionId = actionId;
+      return actions;
+    }
+
+    protected removeAction(actions: any, actionPlugin: string) {
+      if ( !actions ) {
+         return null;
+      }
+
+      let i = actions.length;
+      while( i-- ) {
+        if( actions[i] && actions[i].actionPlugin === actionPlugin ) {
+           actions.splice(i,1);
+        }
+      }
+      return actions;
+    }
   }
 
   export class MetricsAlertController {

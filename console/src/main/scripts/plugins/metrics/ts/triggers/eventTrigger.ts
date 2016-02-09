@@ -38,7 +38,17 @@ module HawkularMetrics {
           this.adm.trigger['name'] = triggerData.trigger.name;
           this.adm.trigger['severity'] = triggerData.trigger.severity;
 
-          this.adm.trigger['email'] = triggerData.trigger.actions.email[0];
+          if ( triggerData.trigger.actions !== undefined ) {
+            triggerData.trigger.actions.forEach((triggerAction: any) => {
+              this.adm.trigger[triggerAction.actionPlugin] = triggerAction.actionId;
+            });
+          }
+          if ( this.adm.trigger['email'] === undefined || this.adm.trigger['email'] === null ) {
+            this.adm.trigger.emailEnabled = false;
+            this.adm.trigger['email'] = this.$rootScope.userDetails.email;
+          } else {
+            this.adm.trigger.emailEnabled = true;
+          }
 
           // presentation
           this.adm.trigger['context'] = triggerData.trigger.context;
@@ -55,7 +65,11 @@ module HawkularMetrics {
       updatedFullTrigger.trigger.description = this.adm.trigger.description;
       updatedFullTrigger.trigger.severity = this.adm.trigger.severity;
 
-      updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
+      if ( this.adm.trigger.emailEnabled ) {
+        this.updateAction( updatedFullTrigger.trigger.actions, 'email', this.adm.trigger.email);
+      } else {
+        this.removeAction( updatedFullTrigger.trigger.actions, 'email' );
+      }
 
       let triggerSavePromise = this.HawkularAlertsManager.updateTrigger(updatedFullTrigger, errorCallback,
         this.fullTrigger);

@@ -111,7 +111,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "DSCONN");
                     group.addContext("resourceType", "DataSource");
                     group.addContext("triggerType", "Threshold");
@@ -141,7 +141,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "DSRESP");
                     group.addContext("resourceType", "DataSource");
                     group.addContext("triggerType", "Threshold");
@@ -171,7 +171,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "DSCREATE");
                     group.addContext("resourceType", "DataSource");
                     group.addContext("triggerType", "Threshold");
@@ -204,7 +204,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "AVAILABLE_MEMORY");
                     group.addContext("resourceType", "Memory");
                     group.addContext("triggerType", "RangeByPercent");
@@ -244,7 +244,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "CPU_USAGE_EXCEED");
                     group.addContext("resourceType", "Processor");
                     group.addContext("triggerType", "Threshold");
@@ -279,7 +279,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setAutoResolve(true); // Support AUTORESOLVE mode as an inverse of the firing conditions
                     group.setSeverity(Severity.HIGH);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "PINGRESPONSE");
                     group.addContext("resourceType", "URL");
                     group.addContext("triggerType", "Threshold");
@@ -317,7 +317,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setAutoResolve(true); // Support AUTORESOLVE mode as an inverse of the firing conditions
                     group.setSeverity(Severity.CRITICAL);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "PINGAVAIL");
                     group.addContext("resourceType", "URL");
                     group.addContext("triggerType", "Availability");
@@ -356,7 +356,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "PHEAP");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "RangeByPercent");
@@ -393,7 +393,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "NHEAP");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "RangeByPercent");
@@ -437,7 +437,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "GARBA");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "Threshold");
@@ -469,7 +469,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "ACTIVE_SESSIONS");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "Range");
@@ -502,7 +502,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.LOW);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "EXPIRED_SESSIONS");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "Threshold");
@@ -535,7 +535,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.LOW);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "REJECTED_SESSIONS");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "Threshold");
@@ -568,7 +568,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
-                    group.addAction("email", "[defaultEmail]");
+                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "DEPLOYMENT_FAIL");
                     group.addContext("resourceType", "App Server Deployment");
                     group.addContext("triggerType", "Event");
@@ -619,9 +619,9 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     Map<String, String> memberTags = new HashMap<>(1);
                     memberTags.put("resourceId", qualifiedResourceId); // TODO: UI had this as feedId
 
-                    String groupTriggerId = "DS_Connections";
+                    String groupTriggerId = "DS_Conn";
                     String memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    String memberDescription = "Available Connection Count for DS " + resourceId;
+                    String memberDescription = "Available Connection Count for DS [" + resourceId + "]";
                     Map<String, String> dataIdMap = new HashMap<>(2);
                     String dataId1 = "Datasource Pool Metrics~Available Count";
                     String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
@@ -634,7 +634,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // Wait Time
                     groupTriggerId = "DS_PoolWait";
                     memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    memberDescription = "Pool Wait Time Responsiveness for DS " + resourceId;
+                    memberDescription = "Pool Wait Time Responsiveness for DS [" + resourceId + "]";
                     dataIdMap.clear();
                     dataId1 = "Datasource Pool Metrics~Average Wait Time";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
@@ -647,7 +647,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // Create Time
                     groupTriggerId = "DS_PoolCreate";
                     memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    memberDescription = "Pool Create Time Responsiveness for DS " + resourceId;
+                    memberDescription = "Pool Create Time Responsiveness for DS [" + resourceId + "]";
                     dataIdMap.clear();
                     dataId1 = "Datasource Pool Metrics~Average Creation Time";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
@@ -671,7 +671,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
 
                     String groupTriggerId = "Memory_Available";
                     String memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    String memberDescription = "Memory Available percent of Total Memory for " + resourceId;
+                    String memberDescription = "Memory Available percent of Total Memory for [" + resourceId + "]";
                     Map<String, String> dataIdMap = new HashMap<>(2);
                     String dataId1 = "Available Memory";
                     String dataId2 = "Total Memory";
@@ -690,6 +690,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     String feedId = r.getPath().ids().getFeedId();
                     String resourceId = r.getId();
                     String qualifiedResourceId = feedId + "/" + resourceId;
+                    String cpu = resourceId.substring(resourceId.length() - 1); // last char is the cpu num
                     Map<String, String> memberContext = new HashMap<>(2);
                     memberContext.put("resourceName", qualifiedResourceId); // TODO: UI had this as feedId
                     memberContext.put("resourcePath", event.getHeaders().get("path"));
@@ -698,7 +699,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
 
                     String groupTriggerId = "CPU_Usage";
                     String memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    String memberDescription = "CPU Usage for " + resourceId;
+                    String memberDescription = "CPU [" + cpu + "] Usage";
                     Map<String, String> dataIdMap = new HashMap<>(2);
                     String dataId1 = "CPU Usage";
                     String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
@@ -728,7 +729,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     String groupTriggerId = "URL_Response";
                     String memberId = groupTriggerId + "_" + resourceId;
                     String memberName = "URL Response [" + url + "]";
-                    String memberDescription = "Response Time for URL " + url;
+                    String memberDescription = "Response Time for URL [" + resourceId + "]";
                     Map<String, String> dataIdMap = new HashMap<>(2);
                     String dataId1 = "status.duration";
                     String memberDataId1 = resourceId + ".status.duration";
@@ -742,7 +743,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     groupTriggerId = "URL_Down";
                     memberId = groupTriggerId + "_" + resourceId;
                     memberName = "URL Availability [" + url + "]";
-                    memberDescription = "Availability for URL " + url;
+                    memberDescription = "Availability for URL [" + resourceId + "]";
                     dataIdMap.clear();
                     dataId1 = "status.code";
                     memberDataId1 = resourceId + ".status.code";
@@ -776,7 +777,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // JVM HEAP
                     String groupTriggerId = "JVM_HeapUsed";
                     String memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    String memberDescription = "JVM Heap Used percent of Heap Max for " + resourceId;
+                    String memberDescription = "JVM Heap Used percent of Heap Max for [" + resourceId + "]";
                     Map<String, String> dataIdMap = new HashMap<>(2);
                     String dataId1 = "WildFly Memory Metrics~Heap Used";
                     String dataId2 = "WildFly Memory Metrics~Heap Max";
@@ -792,7 +793,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // JVM NON-HEAP
                     groupTriggerId = "JVM_NonHeapUsed";
                     memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    memberDescription = "JVM Non Heap Used percent of Heap Max for " + resourceId;
+                    memberDescription = "JVM Non Heap Used percent of Heap Max for [" + resourceId + "]";
                     dataIdMap.clear();
                     dataId1 = "WildFly Memory Metrics~NonHeap Used";
                     dataId2 = "WildFly Memory Metrics~Heap Max";
@@ -815,7 +816,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // TODO: 'Rate' This should likely be a new triggerType but for now we'll treat it like threshold.
                     groupTriggerId = "JVM_GC";
                     memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    memberDescription = "Accumulated GC Duration Per-Minute for " + resourceId;
+                    memberDescription = "Accumulated GC Duration Per-Minute for [" + resourceId + "]";
                     dataIdMap.clear();
                     dataId1 = "WildFly Memory Metrics~Accumulated GC Duration";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
@@ -829,7 +830,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // ACTIVE SESSIONS
                     groupTriggerId = "Web_SessionsActive";
                     memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    memberDescription = "Active Web Sessions for " + resourceId;
+                    memberDescription = "Active Web Sessions for [" + resourceId + "]";
                     dataIdMap.clear();
                     dataId1 = "WildFly Aggregated Web Metrics~Aggregated Active Web Sessions";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
@@ -842,7 +843,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // EXPIRED SESSIONS
                     groupTriggerId = "Web_SessionsExpired";
                     memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    memberDescription = "Expired Web Sessions Per-Minute for " + resourceId;
+                    memberDescription = "Expired Web Sessions Per-Minute for [" + resourceId + "]";
                     dataIdMap.clear();
                     dataId1 = "WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
@@ -855,7 +856,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // REJECTED SESSIONS
                     groupTriggerId = "Web_SessionsRejected";
                     memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    memberDescription = "Rejected Web Sessions Per-Minute for " + resourceId;
+                    memberDescription = "Rejected Web Sessions Per-Minute for [" + resourceId + "]";
                     dataIdMap.clear();
                     dataId1 = "WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
@@ -868,7 +869,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // FAILED DEPLOYMENTS
                     groupTriggerId = "Deployment_Failure";
                     memberId = groupTriggerId + "_" + qualifiedResourceId;
-                    memberDescription = "Deployment failure for " + resourceId;
+                    memberDescription = "Deployment failure for [" + resourceId + "]";
                     dataIdMap.clear();
                     dataId1 = "DeployApplicationResponse";
                     memberDataId1 = qualifiedResourceId + "_" + dataId1;

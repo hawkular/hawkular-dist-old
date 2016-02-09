@@ -278,7 +278,7 @@ module HawkularMetrics {
     constructor(private hkTimeUnit: any) {
       this.link = (scope: any) => {
         let localChange = false;
-        let durationBackup = scope.hkDuration || 1;
+        let durationBackup = scope.hkDuration || 0;
 
         scope.durationChange = (): void => {
           localChange = true;
@@ -287,7 +287,7 @@ module HawkularMetrics {
         scope.durationToggle = (): void => {
           if (scope.durationEnabled) {
             scope.hkDuration = durationBackup;
-            if (scope.hkDuration === 0) {
+            if (scope.hkDuration !== 0) {
               scope.responseUnit = hkTimeUnit.getFittestTimeUnit(scope.hkDuration);
             }
           } else {
