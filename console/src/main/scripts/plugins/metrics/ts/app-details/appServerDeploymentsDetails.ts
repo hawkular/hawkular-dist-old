@@ -164,7 +164,7 @@ module HawkularMetrics {
                 'Deployment Status~Deployment Status'),
               distinct: true
             }, (availResource: IAvailResource[]) => {
-              let latestData = _.last(availResource);
+              let latestData = _.first(availResource);
               if (latestData) {
                 res.state = latestData.value;
                 res.updateTimestamp = latestData.timestamp;
