@@ -2881,6 +2881,59 @@ section {
   }
 }
 
+// Message center
+.hk-message-center {
+
+  .hk-message-title {
+    color: @navbar-pf-color;
+    margin-right: @grid-gutter-width/3;
+    text-decoration: none;
+    cursor: pointer;
+
+    i.fa {
+      color: inherit;
+      margin-right: 7px;
+      margin-top: 11px;
+    }
+  }
+
+  .dropdown-menu {
+    margin-top: 10px;
+    margin-right: 5px;
+
+    &::after {
+      position: absolute;
+      top: -6px;
+      right: 40px;
+      display: inline-block;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid white;
+      border-left: 6px solid transparent;
+      content: '';
+    }
+  }
+
+  #toast-container {
+    position: inherit;
+    margin-right: 5px;
+    margin-left: 5px;
+  }
+  .hk-last-item {
+
+    .hk-show-more {
+      text-align: center;
+      color: #0099d3;
+    }
+
+    .hk-no-messages {
+      width: @popover-max-width;
+      margin-top: @grid-gutter-width/3;
+      margin-bottom: @grid-gutter-width/3;
+      text-align: center;
+    }
+  }
+}
+
 // Agent installer screen
 
 .hk-agent-installer {

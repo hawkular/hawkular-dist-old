@@ -1,0 +1,47 @@
+<section class="hk-message-center">
+  <div class="dropdown" dropdown auto-close="outsideClick" ng-click="vm.msgCenterClicked()">
+    <div href="#" class="hk-message-title" dropdown-toggle>
+      <i class="fa fa-inbox"></i>
+      <span>
+        Messages
+      </span>
+      <span class="badge ng-binding" ng-show="vm.storedMessages.length - vm.seenMessages !== 0">{{vm.storedMessages.length - vm.seenMessages}}</span>
+    </div>
+    <ul class="dropdown-menu dropdown-menu-right">
+      <li>
+        <div id="toast-container">
+          <div ng-repeat="oneMsg in vm.storedMessages | limitTo : vm.visibleMessages" class="toast {{oneMsg.type.cssClass}}">
+            <div ng-if="oneMsg.type.value !== 'action' && oneMsg.type.value !== 'loading'" ng-click="vm.removeMessage($index)" title="Remove this message">
+              {{oneMsg.message}}
+              <div class="pull-right toast-pf-action">
+                <span>{{oneMsg.timestamp | date:'HH:mm:ss'}}</span>
+              </div>
+            </div>
+            <div ng-if="oneMsg.type.value === 'loading'" ng-click="vm.removeMessage($index)" title="Remove this message">
+              <div class="progress-container">
+                <div class="progress progress-striped active" style="margin-bottom: 0px;">
+                  <div class="progress-bar progress-bar-info" style="width:100%;">{{oneMsg.message}}</div>
+                </div>
+              </div>
+            </div>
+            <div ng-if="oneMsg.type.value === 'action'">
+              <span ng-bind-html="oneMsg.message"></span>
+              <a href="#" ng-click="vm.removeMessage($index)" title="Remove this message">
+                <i class="fa fa-times pull-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="hk-last-item">
+        <a class="hk-show-more" ng-click="vm.moreMessages($event)" ng-show="vm.storedMessages.length > vm.visibleMessages">
+          Show more...
+        </a>
+        <div class="hk-no-messages" ng-show="!vm.storedMessages || vm.storedMessages.length === 0">
+          No messages to show.
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</section>
