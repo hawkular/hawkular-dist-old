@@ -78,12 +78,15 @@ module HawkularAccounts {
 
     public personaForToken(token: IToken): string {
       if (this.loading) {
-        return token.id;
+        // we return the key, as the page has not finished loading yet, so, we might not have access to the current
+        // persona, as it's required on further steps
+        return token.key;
       }
 
       let id = token.attributes['Hawkular-Persona'];
-      if (id === null) {
-        id = token.id;
+      if (id == null) { // null or undefined?
+        this.$log.debug('id is null, assigning the principal as ID');
+        id = token.principal;
       }
 
       if (id === this.$rootScope.currentPersona.id) {
@@ -114,7 +117,7 @@ module HawkularAccounts {
             this.NotificationsService.success('Token successfully revoked.');
             this.tokens.splice(this.tokens.indexOf(token), 1);
           }, (error: IErrorPayload) => {
-            let message = `Failed to revoke the token ${token.id}: ${error.data.message}`;
+            let message = `Failed to revoke the token ${token.key}: ${error.data.message}`;
             this.$log.warn(message);
             this.NotificationsService.error(message);
           });
@@ -132,44 +135,44 @@ module HawkularAccounts {
     }
 
     public edit(token: IToken): void {
-      this.newNames[token.id] = token.attributes['name'];
-      this.newDescriptions[token.id] = token.attributes['description'];
-      this.newExpirations[token.id] = token.expiresAt;
-      this.editState[token.id] = EditState.EDIT;
+      this.newNames[token.key] = token.attributes['name'];
+      this.newDescriptions[token.key] = token.attributes['description'];
+      this.newExpirations[token.key] = token.expiresAt;
+      this.editState[token.key] = EditState.EDIT;
     }
 
     public discard(token: IToken): void {
-      this.newNames[token.id] = '';
-      this.newDescriptions[token.id] = '';
-      this.newExpirations[token.id] = '';
-      this.editState[token.id] = EditState.READ;
+      this.newNames[token.key] = '';
+      this.newDescriptions[token.key] = '';
+      this.newExpirations[token.key] = '';
+      this.editState[token.key] = EditState.READ;
     }
 
     public confirm(token: IToken): void {
-      token.attributes['name'] = this.newNames[token.id];
-      token.attributes['description'] = this.newDescriptions[token.id];
+      token.attributes['name'] = this.newNames[token.key];
+      token.attributes['description'] = this.newDescriptions[token.key];
 
       // this datepicker has a different context as Angular, so, binding doesn't work here...
-      let date = $(`#dateFor${token.id}`).val();
+      let date = $(`#dateFor${token.key}`).val();
       if (date) {
         let offset = new Date().getTimezoneOffset() * 60 * 1000; // getTimezoneOffset is in minutes
         let d = new Date((new Date(date).valueOf() + offset));
         token.expiresAt = d.toISOString();
       }
-      this.newNames[token.id] = '';
-      this.newDescriptions[token.id] = '';
-      this.editState[token.id] = EditState.READ;
+      this.newNames[token.key] = '';
+      this.newDescriptions[token.key] = '';
+      this.editState[token.key] = EditState.READ;
 
       token.$update(null, (response: IToken) => {
-        this.tokensToUpdate[token.id] = PersistenceState.SUCCESS;
+        this.tokensToUpdate[token.key] = PersistenceState.SUCCESS;
       }, (error: IErrorPayload) => {
-        this.tokensToUpdate[token.id] = PersistenceState.ERROR;
-        this.$log.debug(`Error changing the name for token ${token.id}. Response: ${error.data.message}`);
+        this.tokensToUpdate[token.key] = PersistenceState.ERROR;
+        this.$log.debug(`Error changing the name for token ${token.key}. Response: ${error.data.message}`);
       });
     }
 
     public inEditMode(token: IToken): boolean {
-      return this.editState[token.id] === EditState.EDIT;
+      return this.editState[token.key] === EditState.EDIT;
     }
   }
 

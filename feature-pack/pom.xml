@@ -64,6 +64,62 @@
     <plugins>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-deps</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/upstream-subsystem-templates</outputDirectory>
+              <includes>subsystem-templates/*.xml</includes>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.keycloak</groupId>
+                  <artifactId>keycloak-wildfly-server-subsystem</artifactId>
+                  <version>${version.org.keycloak}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.hawkular.accounts</groupId>
+                  <artifactId>hawkular-accounts-feature-pack</artifactId>
+                  <version>${version.org.hawkular.accounts}</version>
+                  <type>zip</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <!--
+              OK, this is a little bit weird step.
+              To make the provisioning plugin realize that we need the subsystems from accounts, we would have to
+              declare a module that would include the artifact with the subsystem-templates of accounts. Now inventory
+              feature pack does NOT need any such module - we just want to declare the same stuff as accounts.
+            -->
+            <id>copy-accounts-subsystem-templates</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}</outputDirectory>
+              <includes>subsystem-templates/*xml</includes>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.hawkular.accounts</groupId>
+                  <artifactId>hawkular-accounts-feature-pack</artifactId>
+                  <version>${version.org.hawkular.accounts}</version>
+                  <type>zip</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
         <groupId>org.wildfly.build</groupId>
         <artifactId>wildfly-feature-pack-build-maven-plugin</artifactId>
         <executions>
