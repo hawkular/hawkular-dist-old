@@ -83,7 +83,7 @@ public class AbstractTestBase {
     protected void postNew(String path, Object payload) throws Throwable {
         String json = mapper.writeValueAsString(payload);
         Response response = post(path, json);
-        Assert.assertEquals(201, response.code());
+        Assert.assertEquals("Response msg: " + response.body().string(), 201, response.code());
     }
 
     protected Response post(String path, String payload) throws Throwable {
@@ -104,9 +104,10 @@ public class AbstractTestBase {
             try {
                 Request request = newAuthRequest().url(url).build();
                 Response response = client.newCall(request).execute();
-                Assert.assertEquals(200, response.code());
+                String responseBody = response.body().string();
+                Assert.assertEquals("Response msg: " + responseBody, 200, response.code());
                 System.out.println("Got after " + (i + 1) + " retries: " + url);
-                return response.body().string();
+                return responseBody;
             } catch (Throwable t) {
                 /* some initial attempts may fail */
                 e = t;
