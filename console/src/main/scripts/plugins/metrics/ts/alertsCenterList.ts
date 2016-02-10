@@ -112,6 +112,8 @@ module HawkularMetrics {
         }).finally(() => {
           this.lastUpdateDate = new Date();
         });
+
+      this.$rootScope.lastUpdateTimestamp = new Date();
     }
 
     public showDetailPage(alertId: AlertId): void {
