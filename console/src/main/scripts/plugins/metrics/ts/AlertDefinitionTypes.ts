@@ -20,6 +20,7 @@
 /// <reference path="services/errorsManager.ts"/>
 
 module HawkularMetrics {
+
   export interface IAlertDefinitionCondition {
     triggerId: string;
     type: string;
@@ -30,6 +31,22 @@ module HawkularMetrics {
     data2Id?: string;
     period?: string;
     threshold?: number;
+  }
+
+  export interface IAlertProperties {
+    to: string;
+    cc: string;
+    description: string;
+    ccResolved: string;
+  }
+
+  export interface IAlertAction {
+    tenantId: string;
+    actionPlugin: string;
+    actionId: string;
+    states: string;
+    calendar: string;
+    properties?: IAlertProperties;
   }
 
   export interface IAlertDefinitionDampening {
@@ -156,6 +173,87 @@ module HawkularMetrics {
       public data2Multiplier: number,
       public threshold: number,
       public type: string) {
+    }
+  }
+
+  export class AlertActionsPropertiesBuilder {
+    private _to: string;
+    private _cc: string;
+    private _description: string;
+    private _ccResolved: string;
+
+    public withTo(value: string) {
+      this._to = value;
+      return this;
+    }
+
+    public withCc(value: string) {
+      this._cc = value;
+      return this;
+    }
+
+    public withDescription(value: string) {
+      this._description = value;
+      return this;
+    }
+
+    public withCcResolved(value: string) {
+      this._ccResolved = value;
+      return this;
+    }
+
+    public build(): IAlertProperties {
+      return new AlertProperties(this._ccResolved, this._to, this._cc, this._description);
+    }
+  }
+
+  export class AlertActionsBuilder {
+    private _tenantId: string;
+    private _actionPlugin: string;
+    private _actionId: string;
+    private _states: string;
+    private _calendar: string;
+    private _properties: any;
+
+    public withTenantId(value: string) {
+      this._tenantId = value;
+      return this;
+    }
+
+    public withActionPlugin(value: string) {
+      this._actionPlugin = value;
+      return this;
+    }
+
+    public withActionId(value: string) {
+      this._actionId = value;
+      return this;
+    }
+
+    public withStates(value: string) {
+      this._states = value;
+      return this;
+    }
+
+    public withCalendar(value: string) {
+      this._calendar = value;
+      return this;
+    }
+
+    public withProperties(value: any) {
+      this._properties = value;
+      return this;
+    }
+
+    public build(): IAlertAction {
+      return new AlertAction(
+        this._tenantId,
+        this._actionPlugin,
+        this._actionId,
+        this._states,
+        this._calendar,
+        this._properties
+      );
     }
   }
 
@@ -364,6 +462,20 @@ module HawkularMetrics {
       public dampenings: HawkularMetrics.IAlertDefinitionDampening[],
       public conditions: HawkularMetrics.IAlertDefinitionCondition[]) {
     }
+  }
+
+  export class AlertAction implements IAlertAction {
+    constructor(public tenantId: string,
+                public actionPlugin: string,
+                public actionId: string,
+                public states: string,
+                public calendar: string,
+                public properties?: IAlertProperties) {};
+  }
+
+  export class AlertProperties implements IAlertProperties {
+    constructor(public ccResolved: string, public to: string, public cc: string, public description: string) {
+          }
   }
 
 }

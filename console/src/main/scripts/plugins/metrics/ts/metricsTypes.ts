@@ -157,10 +157,6 @@ module HawkularMetrics {
     resourceType: string;
   }
 
-  export interface IAlertAction {
-    //@todo: not needed yet
-  }
-
   export interface ITriggerContext {
     alertType: string;
     resourceName: string;
@@ -172,7 +168,7 @@ module HawkularMetrics {
   }
 
   export interface IAlertTrigger {
-    actions: any;
+    actions: IAlertAction[];
     autoDisable: boolean;
     autoEnable: boolean;
     autoResolve: boolean;
