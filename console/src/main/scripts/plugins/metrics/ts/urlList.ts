@@ -97,6 +97,7 @@ module HawkularMetrics {
     public sorting: any;
     public currentSortIndex: number = 0;
     public startTimeStamp: TimestampInMillis;
+    private defaultAction: any;
 
     constructor(private $location: ng.ILocationService,
       private $scope: any,
@@ -120,6 +121,7 @@ module HawkularMetrics {
       this.resourceUrl = this.httpUriPart;
       this.startTimeStamp = +moment().subtract((this.$routeParams.timeOffset || 3600000), 'milliseconds');
 
+      this.createDefaultActions();
       if ($rootScope.currentPersona) {
         this.getResourceList(this.$rootScope.currentPersona.id);
       } else {
@@ -164,6 +166,15 @@ module HawkularMetrics {
       return _.sortBy(this.filteredResourceList, (a) => {
         return a.properties['hwk-gui-domainSort'];
       });
+    }
+
+    private createDefaultActions(): void {
+      //TODO: There are no properties set up! After moving to alerts 0.9.x enable properties
+      //const defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+      this.defaultAction = new AlertActionsBuilder()
+        .withActionId('email-to-admin')
+        .withActionPlugin('email')
+        .build();
     }
 
     public addUrl(url: string): void {
@@ -211,7 +222,6 @@ module HawkularMetrics {
       this.$log.info('Adding new Resource Url to Hawkular-inventory: ' + url);
 
       let metricId: string;
-      let defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
       let err = (error: any, msg: string): void => this.ErrorsManager.errorHandler(error, msg);
       let currentTenantId: TenantId = this.$rootScope.currentPersona.id;
       let resourcePath: string;
@@ -258,7 +268,7 @@ module HawkularMetrics {
         })
 
         // Find if a default email exists
-        .then(() => this.HawkularAlertsManager.addEmailAction(defaultEmail),
+        .then(() => this.HawkularAlertsManager.addEmailAction(this.defaultAction),
         (e) => err(e, 'Error during saving metrics.'))
 
         // Create threshold trigger for newly created metrics
@@ -281,7 +291,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: true, // We do support AUTORESOLVE mode as an inverse of the firing conditions
               severity: 'HIGH',
-              actions: { email: [defaultEmail] },
+              actions: [this.defaultAction],
               tags: {
                 resourceId: resourceId
               },
@@ -351,7 +361,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: true, // We do support AUTORESOLVE mode as an inverse of the firing conditions
               severity: 'CRITICAL',
-              actions: { email: [defaultEmail] },
+              actions: [this.defaultAction],
               tags: {
                 resourceId: resourceId
               },

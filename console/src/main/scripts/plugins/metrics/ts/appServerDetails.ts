@@ -59,9 +59,9 @@ module HawkularMetrics {
       HawkularOps.init(this.NotificationsService);
 
       this.defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
+      this.createDefaultActions();
       this.feedId = this.$routeParams.feedId;
       this.resourceId = this.$routeParams.feedId + '/' + this.$routeParams.resourceId;
-      this.defaultAction = {email: [this.defaultEmail]};
       $scope.$on('$routeUpdate', (action, newRoute) => {
         if (newRoute.params.action && newRoute.params.action === 'export-jdr') {
           $scope.tabs.requestExportJDR();
@@ -177,6 +177,14 @@ module HawkularMetrics {
       }
     }
 
+    private createDefaultActions(): void {
+      //TODO: There are no properties set up! After moving to alerts 0.9.x enable properties
+      this.defaultAction = new AlertActionsBuilder()
+        .withActionId('email-to-admin')
+        .withActionPlugin('email')
+        .build();
+    }
+
     public updateTab(newTabId: string) {
       this.$route.updateParams({tabId: newTabId});
     }
@@ -197,7 +205,7 @@ module HawkularMetrics {
     private loadTriggers(): void {
       // Check if triggers exist on controller creation. If not, create the triggers before continuing.
 
-      let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(this.defaultEmail);
+      let defaultEmailPromise = this.HawkularAlertsManager.addEmailAction(_.cloneDeep(this.defaultAction));
 
       // The Wildfly agent generates resource IDs unique among the app servers it is monitoring because
       // each resource is prefixed with the managedServerName.  But when dealing with multiple Wildfly-agent feeds
@@ -229,7 +237,7 @@ module HawkularMetrics {
             autoEnable: true, // Enable trigger once an alert is resolved
             autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
             severity: 'MEDIUM',
-            actions: {email: [this.defaultEmail]},
+            actions: [this.defaultAction],
             firingMatch: 'ANY',
             tags: {
               resourceId: qualifiedResourceId
@@ -306,7 +314,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'HIGH',
-              actions: {email: [this.defaultEmail]},
+              actions: [this.defaultAction],
               firingMatch: 'ANY',
               tags: {
                 resourceId: qualifiedResourceId
@@ -386,7 +394,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'HIGH',
-              actions: {email: [this.defaultEmail]},
+              actions: [this.defaultAction],
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -448,7 +456,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'MEDIUM',
-              actions: {email: [this.defaultEmail]},
+              actions: [this.defaultAction],
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -509,7 +517,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'LOW',
-              actions: {email: [this.defaultEmail]},
+              actions: [this.defaultAction],
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -567,7 +575,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'LOW',
-              actions: {email: [this.defaultEmail]},
+              actions: [this.defaultAction],
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -631,7 +639,7 @@ module HawkularMetrics {
               autoEnable: true, // Enable trigger once an alert is resolved
               autoResolve: false, // Don't change into AUTORESOLVE mode as we don't have AUTORESOLVE conditions
               severity: 'MEDIUM',
-              actions: {email: [this.defaultEmail]},
+              actions: [this.defaultAction],
               tags: {
                 resourceId: qualifiedResourceId
               },
@@ -705,8 +713,8 @@ module HawkularMetrics {
           .withId(triggerId)
           .withName('CPU usage')
           .withDescription(description)
-          .withActions(this.defaultAction)
-          .withTags({resourceId: this.feedId, resourceName: cpuResource['name']})
+          .withActions([this.defaultAction])
+          .withTags({ resourceId: this.feedId, resourceName: cpuResource['name'] })
           .withContext(
             new AlertDefinitionContextBuilder(AlertDefinitionContext.TRESHOLD_TRIGGER_TYPE)
               .withAlertType('CPU_USAGE_EXCEED')
@@ -759,8 +767,8 @@ module HawkularMetrics {
               .withId(triggerId)
               .withName('Available memory')
               .withDescription(description)
-              .withTags({resourceId: this.feedId})
-              .withActions(this.defaultAction)
+              .withTags({ resourceId: this.feedId })
+              .withActions([this.defaultAction])
               .withContext(
                 new AlertDefinitionContextBuilder(AlertDefinitionContext.RANGE_PERCENT_TRIGGER_TYPE)
                   .withAlertType('AVAILABLE_MEMORY')

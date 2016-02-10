@@ -84,7 +84,7 @@ module HawkularMetrics {
      * @desc Check if a previous email action exists, or it creates a new one
      * @param email - recipient of the email action
      */
-    addEmailAction(email: EmailType): ng.IPromise<void>;
+    addEmailAction(action: IAlertAction): ng.IPromise<void>;
 
     /**
      * @name queryAlerts
@@ -512,8 +512,7 @@ module HawkularMetrics {
         actions: {}
       };
 
-      let trigger = angular.extend(triggerDefaults, fullTrigger.trigger);
-
+      let trigger: IAlertTrigger = angular.extend(triggerDefaults, fullTrigger.trigger);
       return this.HawkularAlert.Trigger.save(trigger).$promise.then((savedTrigger) => {
 
         let dampeningPromises = [];
@@ -572,14 +571,18 @@ module HawkularMetrics {
     }
 
     public updateTrigger(fullTrigger: any, errorCallback: any, backupTrigger?: any): ng.IPromise<any> {
-
-      let emailPromise = this.addEmailAction(fullTrigger.trigger.actions.email[0]).then(() => {
-        if (angular.equals(fullTrigger.trigger, backupTrigger.trigger) || !fullTrigger.trigger) {
-          return;
-        }
-        return this.HawkularAlert.Trigger.put({ triggerId: fullTrigger.trigger.id }, fullTrigger.trigger).$promise;
-      }, (error) => {
-        return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
+      let emailPromise = [];
+      _.forEach(fullTrigger.trigger.actions, (action: IAlertAction) => {
+        emailPromise.push(
+          this.addEmailAction(action).then(() => {
+            if (angular.equals(fullTrigger.trigger, backupTrigger.trigger) || !fullTrigger.trigger) {
+              return;
+            }
+            return this.HawkularAlert.Trigger.put({ triggerId: fullTrigger.trigger.id }, fullTrigger.trigger).$promise;
+          }, (error) => {
+            return this.ErrorsManager.errorHandler(error, 'Error saving email action.', errorCallback);
+          })
+        );
       });
 
       let triggerId = fullTrigger.trigger.id;
@@ -703,23 +706,14 @@ module HawkularMetrics {
       }).$promise;
     }
 
-    private createEmailAction(email: EmailType): ng.IPromise<void> {
-      return this.HawkularAlert.Action.save({
-        actionPlugin: 'email',
-        actionId: email,
-        description: 'Created on ' + Date(),
-        to: email
-      }).$promise;
-    }
-
-    public addEmailAction(email: EmailType): ng.IPromise<void> {
-      return this.getEmailAction(email).then((promiseValue: any) => {
+    public addEmailAction(action: IAlertAction): ng.IPromise<void> {
+      return this.getEmailAction(action.actionId).then((promiseValue: any) => {
         return promiseValue;
       }, (reason: any) => {
         // Create a default email action
         if (reason.status === 404) {
           this.$log.debug('Action does not exist, creating one');
-          return this.createEmailAction(email);
+          return this.HawkularAlert.Action.save(action).$promise;
         }
       });
     }
