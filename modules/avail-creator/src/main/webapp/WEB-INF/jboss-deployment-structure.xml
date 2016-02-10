@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
@@ -16,10 +17,11 @@
     limitations under the License.
 
 -->
-<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.1">
+<jboss-deployment-structure>
   <deployment>
     <dependencies>
       <module name="org.hawkular.nest" />
+      <module name="org.apache.httpcomponents" />
     </dependencies>
   </deployment>
 </jboss-deployment-structure>

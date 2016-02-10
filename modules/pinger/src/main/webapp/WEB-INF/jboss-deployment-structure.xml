@@ -21,8 +21,11 @@
   <deployment>
     <dependencies>
       <module name="org.hawkular.nest" />
+      <module name="org.hawkular.commons.guava" />
       <module name="org.jboss.resteasy.resteasy-jackson2-provider" services="import"/>
       <module name="deployment.hawkular-inventory-dist.war" services="import"/>
+      <module name="org.apache.httpcomponents" />
+      <module name="org.apache.commons.io" />
     </dependencies>
   </deployment>
 </jboss-deployment-structure>
