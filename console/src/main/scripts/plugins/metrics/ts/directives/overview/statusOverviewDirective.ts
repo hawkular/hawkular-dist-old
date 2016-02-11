@@ -45,7 +45,7 @@ module HawkularMetrics {
           type: 'donut',
           columns: [
             ['Used', used],
-            ['Available', 100]
+            ['Available', 100 - used]
           ],
           groups: [
             ['used', 'available']
