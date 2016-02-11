@@ -75,7 +75,7 @@ module HawkularMetrics {
       updatedFullTrigger.conditions[0].thresholdLow = this.adm.trigger.minThreshold;
 
       if ( this.adm.trigger.emailEnabled ) {
-        this.updateAction( updatedFullTrigger.trigger.actions, 'email', this.adm.trigger.email);
+        this.updateAction( updatedFullTrigger.trigger.actions, 'email', this.adm.trigger.email, null);
       } else {
         this.removeAction( updatedFullTrigger.trigger.actions, 'email' );
       }

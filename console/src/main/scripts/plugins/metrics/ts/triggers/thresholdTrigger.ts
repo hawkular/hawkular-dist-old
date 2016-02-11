@@ -32,6 +32,7 @@ module HawkularMetrics {
           this.fullTrigger = triggerData;
 
           this.adm.trigger = {};
+
           // updateable
           this.adm.trigger['description'] = triggerData.trigger.description;
           this.adm.trigger['enabled'] = triggerData.trigger.enabled;
@@ -41,15 +42,16 @@ module HawkularMetrics {
           this.adm.trigger['conditionThreshold'] = triggerData.conditions[0].threshold;
 
           if ( triggerData.trigger.actions !== undefined ) {
-            triggerData.trigger.actions.forEach((triggerAction: any) => {
+            triggerData.trigger.actions.forEach((triggerAction: ITriggerAction) => {
               this.adm.trigger[triggerAction.actionPlugin] = triggerAction.actionId;
             });
           }
+
           if ( this.adm.trigger['email'] === undefined || this.adm.trigger['email'] === null ) {
-            this.adm.trigger.emailEnabled = false;
+            this.adm.trigger['emailEnabled'] = false;
             this.adm.trigger['email'] = this.$rootScope.userDetails.email;
           } else {
-            this.adm.trigger.emailEnabled = true;
+            this.adm.trigger['emailEnabled'] = true;
           }
 
           this.adm.trigger['evalTimeSetting'] = super.getEvalTimeSetting(triggerData.dampenings[0].evalTimeSetting);
@@ -73,9 +75,14 @@ module HawkularMetrics {
 
       // manipulate the TriggerAction Set appropriately
       if ( this.adm.trigger.emailEnabled ) {
-        this.updateAction( updatedFullTrigger.trigger.actions, 'email', this.adm.trigger.email);
+        console.log('>>>> email enabled ' + JSON.stringify(updatedFullTrigger.trigger.actions));
+        updatedFullTrigger.trigger.actions = this.updateAction(
+          updatedFullTrigger.trigger.actions, 'email', this.adm.trigger.email, null);  // TODO: properties
+        console.log('>>>> email enabled ' + JSON.stringify(updatedFullTrigger.trigger.actions));
       } else {
-        this.removeAction( updatedFullTrigger.trigger.actions, 'email' );
+        console.log('>>>> email NOT enabled ' + JSON.stringify(updatedFullTrigger.trigger.actions));
+        updatedFullTrigger.trigger.actions = this.removeAction( updatedFullTrigger.trigger.actions, 'email' );
+        console.log('>>>> email NOT enabled ' + JSON.stringify(updatedFullTrigger.trigger.actions));
       }
 
       // When using AutoResolve the settings are implicit. We use the same dampening as for Firing mode.
@@ -88,7 +95,7 @@ module HawkularMetrics {
           dampening.evalTimeSetting = null;
         } else {
           dampening.type = 'STRICT_TIME';
-          dampening.evalTrueSetting = null;
+          dampening.evalTrueSetting = 0;
           dampening.evalTimeSetting = this.adm.trigger.evalTimeSetting;
         }
       });

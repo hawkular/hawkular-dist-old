@@ -6,11 +6,9 @@
     <label class="col-sm-3 control-label" for="email-heap">Email</label>
 
     <div class="col-sm-6">
-      <input type="text" id="email-heap" class="form-control" ng-model="hkAlertEmail"
-             ng-disabled="!tc.adm.trigger.emailEnabled">
+      <input type="text" id="email-heap" class="form-control" ng-model="hkAlertEmail" ng-disabled="hkAlertEmailEnabled">
     </div>
     <div class="col-sm-3">
-      <hk-switch hk-model="tc.adm.trigger.emailEnabled" class="pull-right" id="email-switch" ></hk-switch>
+      <hk-switch hk-model="hkAlertEmailEnabled" class="pull-right" id="email-switch" ></hk-switch>
     </div>
-  </div>
 </fieldset>

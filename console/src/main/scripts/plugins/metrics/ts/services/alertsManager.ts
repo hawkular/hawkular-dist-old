@@ -483,7 +483,7 @@ module HawkularMetrics {
 //      let deferred = this.$q.defer();
 //      let trigger = {};
 //
-//      this.HawkularAlert.Trigger.getFull({ triggerId: triggerId }).$promise.then((triggerData) => {
+//      this.HawkularAlert.Trigger.get({ triggerId: triggerId }).$promise.then((triggerData) => {
 //        trigger['trigger'] = triggerData;
 //        return this.HawkularAlert.Dampening.query({ triggerId: triggerId }).$promise;
 //      }).then((dampeningData) => {
@@ -498,9 +498,7 @@ module HawkularMetrics {
 //    }
 
     public getTrigger(triggerId: TriggerId): any {
-      this.HawkularAlert.Trigger.getFull({ triggerId: triggerId }).$promise.then((fullTriggerData) => {
-        return fullTriggerData;
-      });
+      return this.HawkularAlert.Trigger.full({ triggerId: triggerId }).$promise;
     }
 
     public getTriggerConditions(triggerId: TriggerId): ng.IPromise<any> {
@@ -593,9 +591,7 @@ module HawkularMetrics {
       this.getTrigger(groupId).then((groupTrigger) => {
         let changedAttrs = !angular.equals(groupTrigger.trigger.enabled, fullTrigger.trigger.enabled);
         changedAttrs = changedAttrs || !angular.equals(groupTrigger.trigger.severity, fullTrigger.trigger.severity);
-        let changedActions = !angular.equals(groupTrigger.trigger.actions, fullTrigger.trigger.actions);
         if (changedAttrs) {
-          console.log( '>>>>>>>>>> Updating group Attributes...');
           groupTrigger.trigger.enabled = fullTrigger.trigger.enabled;
           // don't allow update on name or description at the group level because those have instance-info in them
           // groupTrigger.trigger.name = fullTrigger.trigger.name;
@@ -603,11 +599,14 @@ module HawkularMetrics {
           groupTrigger.trigger.severity = fullTrigger.trigger.severity;
         }
 
+        console.log( '>>>>>>>>>> GroupAction: ' + JSON.stringify(groupTrigger.trigger.actions));
+        console.log( '>>>>>>>>>> FullAction: ' + JSON.stringify(fullTrigger.trigger.actions));
+
+        let changedActions = !angular.equals(groupTrigger.trigger.actions, fullTrigger.trigger.actions);
         if ( changedActions ) {
-          console.log( '>>>>>>>>>> Updating group Actions...');
           groupTrigger.trigger.actions = fullTrigger.trigger.actions;
           // Ensure the actions exist
-          for (let i = 0; groupTrigger.trigger.actions && i < groupTrigger.actions.length; i++) {
+          for (let i = 0; groupTrigger.trigger.actions && i < groupTrigger.trigger.actions.length; i++) {
             if (groupTrigger.trigger.actions[i]) {
               let actionPromise = this.addAction(groupTrigger.trigger.actions[i]).then(null, (error) => {
                 return this.ErrorsManager.errorHandler(error, 'Error adding action.', errorCallback);
@@ -620,8 +619,8 @@ module HawkularMetrics {
 
         if (changedAttrs || changedActions) {
           this.$q.all(actionPromises).then(() => {
-            console.log( '>>>>>>>>>> Updating group...');
-            groupPromise = this.HawkularAlert.Group.put({ groupId: groupId }, groupTrigger.trigger);
+            console.log( '>>>>>>>>>> Updating group trigger...');
+            groupPromise = this.HawkularAlert.Trigger.putGroup({ groupId: groupId }, groupTrigger.trigger);
           }, (error) => {
             return this.ErrorsManager.errorHandler(error, 'Error saving group.', errorCallback);
           });
@@ -629,11 +628,13 @@ module HawkularMetrics {
 
         for (let i = 0; fullTrigger.dampenings && i < fullTrigger.dampenings.length; i++) {
           if (fullTrigger.dampenings[i] && !angular.equals(fullTrigger.dampenings[i], backupTrigger.dampenings[i])) {
+            console.log( '>>>>>>>>>> Full: ' + JSON.stringify(fullTrigger.dampenings[i]));
+            console.log( '>>>>>>>>>> Back: ' + JSON.stringify(backupTrigger.dampenings[i]));
             fullTrigger.dampenings[i].triggerId = groupTrigger.dampenings[i].triggerId;
             fullTrigger.dampenings[i].dampeningId = groupTrigger.dampenings[i].dampeningId;
             let dampeningId = groupTrigger.dampenings[i].dampeningId;
             console.log( '>>>>>>>>>> Updating dampening...');
-            let dampeningPromise = this.HawkularAlert.GroupDampening.put({ groupId: groupId, dampeningId: dampeningId },
+            let dampeningPromise = this.HawkularAlert.Dampening.putGroup({ groupId: groupId, dampeningId: dampeningId },
               fullTrigger.dampenings[i]).$promise.then(null, (error) => {
                 return this.ErrorsManager.errorHandler(error, 'Error saving dampening.', errorCallback);
               });
@@ -644,37 +645,51 @@ module HawkularMetrics {
 
         let firingConditions = [];
         let autoResolveConditions = [];
+        let updateConditions = false;
         for (let j = 0; fullTrigger.conditions && j < fullTrigger.conditions.length; j++) {
           if (fullTrigger.conditions[j]) {
-            if (fullTrigger.conditions[j].triggerMode && fullTrigger.conditions[j].triggerMode === 'AUTORESOLVE') {
-              autoResolveConditions.push(fullTrigger.conditions[j]);
+            updateConditions = updateConditions ||
+                               !angular.equals(fullTrigger.conditions[j],backupTrigger.conditions[j]);
+            let groupCondition = fullTrigger.conditions[j];
+            groupCondition.dataId = groupTrigger.conditions[j].dataId;
+            if ( groupCondition.data2Id ) {
+              groupCondition.data2Id = groupTrigger.conditions[j].data2Id;
+            }
+            if (groupCondition.triggerMode && groupCondition.triggerMode === 'AUTORESOLVE') {
+              autoResolveConditions.push(groupCondition);
             } else {
               // A condition without triggerMode is treated as FIRING
-              firingConditions.push(fullTrigger.conditions[j]);
+              firingConditions.push(groupCondition);
             }
           }
         }
 
-        if (firingConditions.length > 0) {
-          console.log( '>>>>>>>>>> Updating firing condition...');
-          let conditionPromise = this.HawkularAlert.GroupConditions.set({
+        if (updateConditions && firingConditions.length > 0) {
+          // don't need dataMemberIdMap because we're not introducing any new dataIds
+          let groupConditionsInfo = {
+            conditions: firingConditions };
+
+          console.log( '>>>>>>>>>> Updating firing conditions...');
+          let conditionPromise = this.HawkularAlert.Conditions.saveGroup({
             groupId: groupId,
             triggerMode: 'FIRING'
-          },
-            firingConditions).$promise.then(null, (error) => {
-              return this.ErrorsManager.errorHandler(error, 'Error creating firing conditions.', errorCallback);
-            });
+          }, groupConditionsInfo).$promise.then(null, (error) => {
+            return this.ErrorsManager.errorHandler(error, 'Error creating firing conditions.', errorCallback);
+          });
           conditionPromises.push(conditionPromise);
         }
-        if (autoResolveConditions.length > 0) {
-          console.log( '>>>>>>>>>> Updating resolve condition...');
-          let conditionPromise = this.HawkularAlert.GroupConditions.set({
+        if (updateConditions && autoResolveConditions.length > 0) {
+          // don't need dataMemberIdMap because we're not introducing any new dataIds
+          let groupConditionsInfo = {
+            conditions: autoResolveConditions };
+
+          console.log( '>>>>>>>>>> Updating resolve conditions...');
+          let conditionPromise = this.HawkularAlert.Conditions.saveGroup({
             groupId: groupId,
             triggerMode: 'AUTORESOLVE'
-          },
-            autoResolveConditions).$promise.then(null, (error) => {
-              return this.ErrorsManager.errorHandler(error, 'Error creating autoresolve conditions.', errorCallback);
-            });
+          }, groupConditionsInfo).$promise.then(null, (error) => {
+            return this.ErrorsManager.errorHandler(error, 'Error creating autoresolve conditions.', errorCallback);
+          });
           conditionPromises.push(conditionPromise);
         }
       }, (error) => {
@@ -764,9 +779,13 @@ module HawkularMetrics {
         // Create a default email action
         if (reason.status === 404) {
           this.$log.debug('Action does not exist, creating one');
-          let actionDefinition: IActionDefinition;
-          actionDefinition.actionPlugin = action.actionPlugin;
-          actionDefinition.actionId = action.actionId;
+          let actionDefinition: IActionDefinition = {
+            actionPlugin: action.actionPlugin,
+            actionId: action.actionId,
+            properties: {
+              description: 'Created on ' + Date()
+            }
+          };
           if (action.actionPlugin === 'email') {
             actionDefinition.properties.to = action.actionId; // email address
           }

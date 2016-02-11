@@ -143,6 +143,7 @@ module HawkularMetrics {
       let triggerPromise = this.loadTrigger(triggerId);
 
       this.$q.all(triggerPromise).then(() => {
+        console.log('>>> ADM SET: ' + JSON.stringify(this.adm));
         this.admBak = angular.copy(this.adm);
         this.isSettingChange = false;
 
@@ -152,6 +153,7 @@ module HawkularMetrics {
       this.$scope.$watch(angular.bind(this, () => {
         return this.adm;
       }), () => {
+        console.log('>>> ADM: ' + JSON.stringify(this.adm));
         this.isSettingChange = !angular.equals(this.adm, this.admBak);
       }, true);
 
@@ -257,10 +259,11 @@ module HawkularMetrics {
       return evalTimeSetting;
     }
 
-    protected updateAction(actions: any, actionPlugin: string, actionId: string) {
-      if ( !actions ) {
-         actions[0].actionPlugin = actionPlugin;
-         actions[0].actionId = actionId;
+    protected updateAction(actions: ITriggerAction[], actionPlugin: string, actionId: string, properties: any) {
+      if ((undefined === actions) || (null === actions)) {
+         actions = [{
+           actionPlugin: actionPlugin,
+           actionId: actionId }];
          return actions;
       }
 

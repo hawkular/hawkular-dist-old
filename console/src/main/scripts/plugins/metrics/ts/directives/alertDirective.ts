@@ -199,6 +199,7 @@ module HawkularMetrics {
     public replace = 'true';
     public scope = {
       hkAlertEmail: '=',
+      hkAlertEmailEnabled: '=',
       hkDisabled: '='
     };
     public templateUrl = 'plugins/metrics/html/directives/fieldset-notification.html';

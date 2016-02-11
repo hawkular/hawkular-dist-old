@@ -66,7 +66,7 @@ module HawkularMetrics {
       updatedFullTrigger.trigger.severity = this.adm.trigger.severity;
 
       if ( this.adm.trigger.emailEnabled ) {
-        this.updateAction( updatedFullTrigger.trigger.actions, 'email', this.adm.trigger.email);
+        this.updateAction( updatedFullTrigger.trigger.actions, 'email', this.adm.trigger.email, null);
       } else {
         this.removeAction( updatedFullTrigger.trigger.actions, 'email' );
       }
