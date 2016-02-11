@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.glue.bus.listener;
+package org.hawkular.listener.bus;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,24 +94,21 @@ public class InventoryEventListener extends InventoryEventMessageListener {
     private void handleResourceTypeEvent(ResourceTypeEvent event) {
         try {
             init();
-            log.warn("\n*********** " + event.toString());
 
             String tenantId = event.getTenant().getId();
             ResourceType rt = event.getObject();
-            //String type = URLDecoder.decode(rt.getId(), "UTF-8");
             String type = rt.getId();
             switch (type) {
                 case "Datasource": {
                     // Available Connections
                     String groupTriggerId = "DS_Conn";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "Datasource Available Connections");
                     group.setDescription("Available Connection Count for DS");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "DSCONN");
                     group.addContext("resourceType", "DataSource");
                     group.addContext("triggerType", "Threshold");
@@ -130,18 +127,17 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     // Wait Time
                     groupTriggerId = "DS_PoolWait";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Datasource Pool Wait Time");
                     group.setDescription("Pool Wait Time Responsiveness for DS");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "DSRESP");
                     group.addContext("resourceType", "DataSource");
                     group.addContext("triggerType", "Threshold");
@@ -160,18 +156,17 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     // Create Time
                     groupTriggerId = "DS_PoolCreate";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Datasource Pool Create Time");
                     group.setDescription("Pool Create Time Responsiveness for DS");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "DSCREATE");
                     group.addContext("resourceType", "DataSource");
                     group.addContext("triggerType", "Threshold");
@@ -190,21 +185,20 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     break;
                 }
                 case "Memory": {
                     // TODO: Verify that this is correct, I'm not sure the UI had this defined as needed
                     String groupTriggerId = "Memory_Available";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "Memory Available");
                     group.setDescription("Memory Available percent of Total Memory");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "AVAILABLE_MEMORY");
                     group.addContext("resourceType", "Memory");
                     group.addContext("triggerType", "RangeByPercent");
@@ -230,21 +224,20 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     break;
                 }
                 case "Processor": {
                     // TODO: Verify that this is correct, I'm not sure the UI had this defined as needed
                     String groupTriggerId = "CPU_Usage";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "CPU Usage");
                     group.setDescription("CPU Usage");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "CPU_USAGE_EXCEED");
                     group.addContext("resourceType", "Processor");
                     group.addContext("triggerType", "Threshold");
@@ -264,14 +257,14 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     break;
                 }
                 case "URL": {
                     // Response Time
                     String groupTriggerId = "URL_Response";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "URL Response");
                     group.setDescription("Response Time for URL");
                     group.setEnabled(true);
@@ -279,7 +272,6 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setAutoResolve(true); // Support AUTORESOLVE mode as an inverse of the firing conditions
                     group.setSeverity(Severity.HIGH);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "PINGRESPONSE");
                     group.addContext("resourceType", "URL");
                     group.addContext("triggerType", "Threshold");
@@ -305,11 +297,11 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                             Collections.singleton(cFiring), null);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.AUTORESOLVE,
                             Collections.singleton(cResolve), null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     // Avail
                     groupTriggerId = "URL_Down";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "URL Down");
                     group.setDescription("Availability for URL");
                     group.setEnabled(true);
@@ -317,7 +309,6 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setAutoResolve(true); // Support AUTORESOLVE mode as an inverse of the firing conditions
                     group.setSeverity(Severity.CRITICAL);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "PINGAVAIL");
                     group.addContext("resourceType", "URL");
                     group.addContext("triggerType", "Availability");
@@ -342,21 +333,20 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                             Collections.singleton(cFiring), null);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.AUTORESOLVE,
                             Collections.singleton(cResolve), null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     break;
                 }
                 case "WildFly Server": {
                     // JVM HEAP
                     String groupTriggerId = "JVM_HeapUsed";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     Trigger group = new Trigger(tenantId, groupTriggerId, "JVM Heap Used");
                     group.setDescription("JVM Heap Used percent of Heap Max");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "PHEAP");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "RangeByPercent");
@@ -382,18 +372,17 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     // JVM NON-HEAP
                     groupTriggerId = "JVM_NonHeapUsed";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "JVM Non Heap Used");
                     group.setDescription("JVM Non Heap Used percent of Heap Max");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "NHEAP");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "RangeByPercent");
@@ -419,7 +408,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     // Accumulated GC Time
                     // Note that the GC metric is a counter, an ever-increasing value reflecting the total time the JVM
@@ -430,14 +419,13 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // a lot of time spent in GC between readings.  We'll start with 200ms per minute for 5 minutes.
                     // TODO: 'Rate' This should likely be a new triggerType but for now we'll treat it like threshold.
                     groupTriggerId = "JVM_GC";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "JVM Accumulated GC Duration");
                     group.setDescription("Accumulated GC Duration Per-Minute");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "GARBA");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "Threshold");
@@ -457,19 +445,18 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     // WEB SESSION TRIGGERS
                     // ACTIVE SESSIONS
                     groupTriggerId = "Web_SessionsActive";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Web Sessions Active");
                     group.setDescription("Active Web Sessions");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.MEDIUM);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "ACTIVE_SESSIONS");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "Range");
@@ -486,23 +473,22 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     cFiring1.setContext(conditionContext);
                     conditions.clear();
                     conditions.add(cFiring1);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     // EXPIRED SESSIONS
                     groupTriggerId = "Web_SessionsExpired";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Web Sessions Expired");
                     group.setDescription("Expired Web Sessions");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.LOW);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "EXPIRED_SESSIONS");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "Threshold");
@@ -524,18 +510,17 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     // REJECTED SESSIONS
                     groupTriggerId = "Web_SessionsRejected";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Web Sessions Rejected");
                     group.setDescription("Rejected Web Sessions");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.LOW);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "REJECTED_SESSIONS");
                     group.addContext("resourceType", "App Server");
                     group.addContext("triggerType", "Threshold");
@@ -557,18 +542,17 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.addGroupDampening(tenantId, dFiring);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     // FAILED DEPLOYMENTS
                     groupTriggerId = "Deployment_Failure";
-                    log.warn("\n*********** Group Trigger: " + groupTriggerId);
+                    log.debugf("Creating Group Trigger: [%s]", groupTriggerId);
                     group = new Trigger(tenantId, groupTriggerId, "Deployment Failure");
                     group.setDescription("Deployment failure");
                     group.setEnabled(true);
                     group.setAutoDisable(true); // Disable trigger when fired
                     group.setAutoEnable(true); // Enable trigger once an alert is resolved
                     group.setSeverity(Severity.HIGH);
-                    // group.addAction(new TriggerAction("email", "[defaultEmail]"));
                     group.addContext("alertType", "DEPLOYMENT_FAIL");
                     group.addContext("resourceType", "App Server Deployment");
                     group.addContext("triggerType", "Event");
@@ -585,12 +569,12 @@ public class InventoryEventListener extends InventoryEventMessageListener {
 
                     definitions.addGroupTrigger(tenantId, group);
                     definitions.setGroupConditions(tenantId, groupTriggerId, Mode.FIRING, conditions, null);
-                    log.warn("\n*********** Group Trigger Created: " + groupTriggerId);
+                    log.debugf("Group Trigger Created: [%s]", groupTriggerId);
 
                     break;
                 }
                 default:
-                    log.infof("\n*********** Group Trigger Not Created for type [%s] ", type);
+                    log.debugf("Group Trigger ignored for type [%s] ", type);
                     return; // no alerting
             }
 
@@ -602,7 +586,6 @@ public class InventoryEventListener extends InventoryEventMessageListener {
     private void handleResourceEvent(ResourceEvent event) {
         try {
             init();
-            log.warn("\n*********** " + event.toString());
 
             String tenantId = event.getTenant().getId();
             Resource r = event.getObject();
@@ -626,10 +609,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     String dataId1 = "Datasource Pool Metrics~Available Count";
                     String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
                             memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     // Wait Time
                     groupTriggerId = "DS_PoolWait";
@@ -639,10 +622,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     dataId1 = "Datasource Pool Metrics~Average Wait Time";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
                             memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     // Create Time
                     groupTriggerId = "DS_PoolCreate";
@@ -652,10 +635,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     dataId1 = "Datasource Pool Metrics~Average Creation Time";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
                             memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
                     break;
                 }
                 case "Memory": {
@@ -679,10 +662,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     String memberDataId2 = getMetricId(dataId2, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
                     dataIdMap.put(dataId2, memberDataId2);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
                             memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
                     break;
                 }
                 case "Processor": {
@@ -704,10 +687,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     String dataId1 = "CPU Usage";
                     String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
                             memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     break;
                 }
@@ -734,10 +717,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     String dataId1 = "status.duration";
                     String memberDataId1 = resourceId + ".status.duration";
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
                             memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     // Avail
                     groupTriggerId = "URL_Down";
@@ -748,10 +731,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     dataId1 = "status.code";
                     memberDataId1 = resourceId + ".status.code";
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
                             memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     break;
                 }
@@ -785,10 +768,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     String memberDataId2 = getMetricId(dataId2, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
                     dataIdMap.put(dataId2, memberDataId2);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
                             memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     // JVM NON-HEAP
                     groupTriggerId = "JVM_NonHeapUsed";
@@ -801,10 +784,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     memberDataId2 = getMetricId(dataId2, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
                     dataIdMap.put(dataId2, memberDataId2);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
                             memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     // Accumulated GC Time
                     // Note that the GC metric is a counter, an ever-increasing value reflecting the total time the JVM
@@ -821,10 +804,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     dataId1 = "WildFly Memory Metrics~Accumulated GC Duration";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,
                             memberDescription, memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     // WEB SESSION TRIGGERS
                     // ACTIVE SESSIONS
@@ -835,10 +818,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     dataId1 = "WildFly Aggregated Web Metrics~Aggregated Active Web Sessions";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,
                             memberDescription, memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     // EXPIRED SESSIONS
                     groupTriggerId = "Web_SessionsExpired";
@@ -848,10 +831,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     dataId1 = "WildFly Aggregated Web Metrics~Aggregated Expired Web Sessions";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,
                             memberDescription, memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     // REJECTED SESSIONS
                     groupTriggerId = "Web_SessionsRejected";
@@ -861,10 +844,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     dataId1 = "WildFly Aggregated Web Metrics~Aggregated Rejected Web Sessions";
                     memberDataId1 = getMetricId(dataId1, feedId, resourceId);
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,
                             memberDescription, memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     // FAILED DEPLOYMENTS
                     groupTriggerId = "Deployment_Failure";
@@ -874,16 +857,15 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     dataId1 = "DeployApplicationResponse";
                     memberDataId1 = qualifiedResourceId + "_" + dataId1;
                     dataIdMap.put(dataId1, memberDataId1);
-                    log.warn("\n*********** Member : " + memberId);
+                    log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null,
                             memberDescription, memberContext, memberTags, dataIdMap);
-                    log.warn("\n*********** Member Created : " + memberId);
+                    log.debugf("Member Created: [%s]", memberId);
 
                     break;
                 }
                 default:
-                    log.infof("\n*********** Member Trigger Not Created for resource [%s,%s] ", r.getType().getId(),
-                            r.getId());
+                    log.debugf("Member Trigger ignored for resource: [%s,%s]", r.getType().getId(), r.getId());
                     return; // no alerting
             }
         } catch (Exception e) {

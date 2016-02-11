@@ -27,11 +27,11 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hawkular-glue</artifactId>
+  <artifactId>hawkular-listener</artifactId>
   <version>1.0.0.Alpha10-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Hawkular Glue</name>
+  <name>Hawkular: Listener</name>
 
   <dependencies>
 

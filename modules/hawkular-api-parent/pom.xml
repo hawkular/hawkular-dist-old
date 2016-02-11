@@ -35,7 +35,7 @@
   <description>Common pom for rest api, listener and RX extensions modules, to be able to build them together.</description>
 
   <modules>
-    <module>hawkular-glue</module>
+    <module>hawkular-listener</module>
     <module>hawkular-rest-api</module>
     <module>hawkular-rx</module>
   </modules>

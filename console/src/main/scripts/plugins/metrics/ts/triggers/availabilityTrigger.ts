@@ -33,27 +33,29 @@ module HawkularMetrics {
 
           this.adm.trigger = {};
           // updateable
-          this.adm.trigger['description'] = triggerData.trigger.description;
           this.adm.trigger['enabled'] = triggerData.trigger.enabled;
-          this.adm.trigger['name'] = triggerData.trigger.name;
           this.adm.trigger['severity'] = triggerData.trigger.severity;
 
           if ( triggerData.trigger.actions !== undefined ) {
-            triggerData.trigger.actions.forEach((triggerAction: any) => {
+            triggerData.trigger.actions.forEach((triggerAction: ITriggerAction) => {
               this.adm.trigger[triggerAction.actionPlugin] = triggerAction.actionId;
             });
           }
           if ( this.adm.trigger['email'] === undefined || this.adm.trigger['email'] === null ) {
-            this.adm.trigger.emailEnabled = false;
+            this.adm.trigger['emailEnabled'] = false;
             this.adm.trigger['email'] = this.$rootScope.userDetails.email;
           } else {
-            this.adm.trigger.emailEnabled = true;
+            this.adm.trigger['emailEnabled'] = true;
           }
 
           this.adm.trigger['evalTimeSetting'] = super.getEvalTimeSetting(triggerData.dampenings[0].evalTimeSetting);
 
           // presentation
+          // note: name, description not updateable at group level, should/will be at member level
           this.adm.trigger['context'] = triggerData.trigger.context;
+          this.adm.trigger['description'] = triggerData.trigger.description;
+          this.adm.trigger['name'] = triggerData.trigger.name;
+
         });
 
       return [triggerPromise];
@@ -63,14 +65,14 @@ module HawkularMetrics {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);
       updatedFullTrigger.trigger.enabled = this.adm.trigger.enabled;
-      updatedFullTrigger.trigger.name = this.adm.trigger.name;
-      updatedFullTrigger.trigger.description = this.adm.trigger.description;
       updatedFullTrigger.trigger.severity = this.adm.trigger.severity;
 
+      // manipulate the TriggerAction Set appropriately
       if ( this.adm.trigger.emailEnabled ) {
-        this.updateAction( updatedFullTrigger.trigger.actions, 'email', this.adm.trigger.email, null);
+        updatedFullTrigger.trigger.actions = this.updateAction(
+          updatedFullTrigger.trigger.actions, 'email', this.adm.trigger.email, null);  // TODO: properties
       } else {
-        this.removeAction( updatedFullTrigger.trigger.actions, 'email' );
+        updatedFullTrigger.trigger.actions = this.removeAction( updatedFullTrigger.trigger.actions, 'email' );
       }
 
       // When using AutoResolve the settings are implicit. We use the same dampening as for Firing mode.
@@ -83,7 +85,7 @@ module HawkularMetrics {
           dampening.evalTimeSetting = null;
         } else {
           dampening.type = 'STRICT_TIME';
-          dampening.evalTrueSetting = null;
+          dampening.evalTrueSetting = 0;
           dampening.evalTimeSetting = this.adm.trigger.evalTimeSetting;
         }
       });
