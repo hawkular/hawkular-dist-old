@@ -416,8 +416,7 @@ module HawkularMetrics {
     public autoResolveAlerts: boolean;
     public autoResolveMatch: string;
     public enabled: boolean;
-    public group: boolean;
-    public orphan: boolean;
+    public type: string;
     public severity: string;
     public tenantId: HawkularMetrics.TenantId;
     public triggerId: HawkularMetrics.TriggerId;

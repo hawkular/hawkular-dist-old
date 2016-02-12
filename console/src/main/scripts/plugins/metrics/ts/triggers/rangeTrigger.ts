@@ -33,20 +33,32 @@ module HawkularMetrics {
 
           this.adm.trigger = {};
           // updateable
-          this.adm.trigger['description'] = triggerData.trigger.description;
           this.adm.trigger['enabled'] = triggerData.trigger.enabled;
-          this.adm.trigger['name'] = triggerData.trigger.name;
           this.adm.trigger['severity'] = triggerData.trigger.severity;
 
           this.adm.trigger['maxThreshold'] = triggerData.conditions[0].thresholdHigh;
           this.adm.trigger['minThreshold'] = triggerData.conditions[0].thresholdLow;
 
-          this.adm.trigger['email'] = triggerData.trigger.actions.email[0];
+          if ( triggerData.trigger.actions !== undefined ) {
+            triggerData.trigger.actions.forEach((triggerAction: ITriggerAction) => {
+              this.adm.trigger[triggerAction.actionPlugin] = triggerAction.actionId;
+            });
+          }
+          if ( this.adm.trigger['email'] === undefined || this.adm.trigger['email'] === null ) {
+            this.adm.trigger['emailEnabled'] = false;
+            this.adm.trigger['email'] = this.$rootScope.userDetails.email;
+          } else {
+            this.adm.trigger['emailEnabled'] = true;
+          }
+
           this.adm.trigger['evalTimeSetting'] = super.getEvalTimeSetting(triggerData.dampenings[0].evalTimeSetting);
 
           // presentation
+          // note: name, description not updateable at group level, should/will be at member level
           this.adm.trigger['context'] = triggerData.trigger.context;
           this.adm.trigger['conditionContext'] = triggerData.conditions[0].context;
+          this.adm.trigger['description'] = triggerData.trigger.description;
+          this.adm.trigger['name'] = triggerData.trigger.name;
         });
 
       return [triggerPromise];
@@ -56,14 +68,18 @@ module HawkularMetrics {
 
       let updatedFullTrigger = angular.copy(this.fullTrigger);
       updatedFullTrigger.trigger.enabled = this.adm.trigger.enabled;
-      updatedFullTrigger.trigger.name = this.adm.trigger.name;
-      updatedFullTrigger.trigger.description = this.adm.trigger.description;
       updatedFullTrigger.trigger.severity = this.adm.trigger.severity;
 
       updatedFullTrigger.conditions[0].thresholdHigh = this.adm.trigger.maxThreshold;
       updatedFullTrigger.conditions[0].thresholdLow = this.adm.trigger.minThreshold;
 
-      updatedFullTrigger.trigger.actions.email[0] = this.adm.trigger.email;
+      // manipulate the TriggerAction Set appropriately
+      if ( this.adm.trigger.emailEnabled ) {
+        updatedFullTrigger.trigger.actions = this.updateAction(
+          updatedFullTrigger.trigger.actions, 'email', this.adm.trigger.email, null);  // TODO: properties
+      } else {
+        updatedFullTrigger.trigger.actions = this.removeAction( updatedFullTrigger.trigger.actions, 'email' );
+      }
 
       // time == 0 is a flag for default dampening (i.e. Strict(1))
       if (this.adm.trigger.evalTimeSetting === 0) {
@@ -72,7 +88,7 @@ module HawkularMetrics {
         updatedFullTrigger.dampenings[0].evalTimeSetting = null;
       } else {
         updatedFullTrigger.dampenings[0].type = 'STRICT_TIME';
-        updatedFullTrigger.dampenings[0].evalTrueSetting = null;
+        updatedFullTrigger.dampenings[0].evalTrueSetting = 0;
         updatedFullTrigger.dampenings[0].evalTimeSetting = this.adm.trigger.evalTimeSetting;
       }
 

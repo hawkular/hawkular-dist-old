@@ -40,7 +40,8 @@ module HawkularMetrics {
   export type ConditionId = string;
   export type DampeningId = string;
   export type AlertId = string;
-  export type EmailType = string;
+  export type ActionPlugin = string;
+  export type ActionId = string;
   export type PersonaId = string;
   export type Persona = IPersona;
 
@@ -157,6 +158,17 @@ module HawkularMetrics {
     resourceType: string;
   }
 
+  export interface IActionDefinition {
+    actionPlugin: ActionPlugin;
+    actionId: ActionId;
+    properties: any;
+  }
+
+  export interface ITriggerAction {
+    actionPlugin: ActionPlugin;
+    actionId: ActionId;
+  }
+
   export interface ITriggerContext {
     alertType: string;
     resourceName: string;
@@ -168,7 +180,7 @@ module HawkularMetrics {
   }
 
   export interface IAlertTrigger {
-    actions: IAlertAction[];
+    actions: ITriggerAction[];
     autoDisable: boolean;
     autoEnable: boolean;
     autoResolve: boolean;
@@ -178,15 +190,13 @@ module HawkularMetrics {
     description: string;
     enabled: boolean;
     firingMatch: string; /// @todo: change to enum
-    group: boolean;
+    type: string; /// @toto: change to enum
     id: TriggerId;
     name: string;
-    orphan: boolean;
     severity: string; /// @todo: change to enum
     tags: any;
     tenantId: TenantId;
     triggerId: TriggerId;
-    ///@todo: ignoring actions for now
 
     // UI may augment this by adding a 'selected' property for list results
     // so we can use the original data structure as-is

@@ -17,14 +17,8 @@
     limitations under the License.
 
 -->
-<jboss-deployment-structure>
-  <deployment>
-    <dependencies>
-      <module name="org.hawkular.commons.cassandra-driver"/>
-      <module name="com.fasterxml.jackson.core.jackson-core"/>
-      <module name="org.hawkular.commons.guava"/>
-      <module name="org.hawkular.bus"/>
-      <module name="deployment.hawkular-alerts-rest.war" />
-    </dependencies>
-  </deployment>
-</jboss-deployment-structure>
+<jboss umlns="urn:jboss:1.0">
+  <jboss-deployment-dependencies xmlns="urn:jboss:deployment-dependencies:1.0">
+    <dependency name="hawkular-alerts-rest.war"/>
+  </jboss-deployment-dependencies>
+</jboss>

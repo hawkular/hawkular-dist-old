@@ -32,9 +32,14 @@
   <packaging>pom</packaging>
 
   <name>Hawkular: API parent pom</name>
-  <description>Common pom for rest api module and RX extensions module, to be able to build them together.</description>
+  <description>Common pom for rest api, listener and RX extensions modules, to be able to build them together.</description>
+
+  <properties>
+    <version.javaee.spec>7.0</version.javaee.spec>
+  </properties>
 
   <modules>
+    <module>hawkular-listener</module>
     <module>hawkular-rest-api</module>
     <module>hawkular-rx</module>
   </modules>

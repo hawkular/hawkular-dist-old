@@ -42,9 +42,22 @@
     </dependency>
     <dependency>
       <groupId>org.hawkular.inventory</groupId>
+      <artifactId>hawkular-inventory-bus-api</artifactId>
+      <version>${version.org.hawkular.inventory}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.inventory</groupId>
       <artifactId>hawkular-inventory-json-helper</artifactId>
       <version>${version.org.hawkular.inventory}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-listener</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.hawkular.accounts</groupId>
       <artifactId>hawkular-accounts-api</artifactId>
@@ -71,10 +84,10 @@
       <artifactId>guava</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <scope>provided</scope>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-api</artifactId>
     </dependency>
 
     <!-- RX -->
