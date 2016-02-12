@@ -16,88 +16,80 @@
  */
 package org.hawkular.component.pinger;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
-import javax.ejb.Stateless;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.ejb.Singleton;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSContext;
+import javax.jms.JMSException;
+import javax.jms.JMSProducer;
+import javax.jms.Queue;
+import javax.jms.TextMessage;
 
 /**
  * Publish metrics data
  *
  * @author Heiko W. Rupp
  */
-@Stateless
+@Singleton
 public class MetricPublisher {
+    @Resource(mappedName = "java:/queue/hawkular/metrics/gauges/new")
+    Queue gaugesQueue;
 
-    private static void addDataItem(List<Map<String, Object>> mMetrics, String resourceId, long timestamp,
-            Number value, String name) {
-        Map<String, Number> dataMap = new HashMap<>(2);
-        dataMap.put("timestamp", timestamp);
-        dataMap.put("value", value);
-        List<Map<String, Number>> data = new ArrayList<>(1);
-        data.add(dataMap);
-        Map<String, Object> outer = new HashMap<>(2);
-        outer.put("id", resourceId + ".status." + name);
-        outer.put("data", data);
-        mMetrics.add(outer);
+    @Resource(mappedName = "java:/HawkularBusConnectionFactory")
+    private ConnectionFactory connectionFactory;
+
+    private JMSContext context;
+    private JMSProducer producer;
+
+    @PostConstruct
+    public void createContext() {
+        context = connectionFactory.createContext();
+        producer = context.createProducer();
     }
 
-    private final PingerConfiguration configuration = PingerConfiguration.getInstance();
-
     /**
-     * Serializes the given {@link PingStatus} and then submits it to Hawkular-metrics service via REST
+     * Submits data from {@link PingStatus} to Metrics via Bus
      *
      * @param status
      *            the {@link PingStatus} to publish
      */
     @Asynchronous
-    public void sendToMetricsViaRest(PingStatus status) {
-
-        List<Map<String, Object>> mMetrics = new ArrayList<>();
-
+    public void publish(PingStatus status) {
         final PingDestination dest = status.getDestination();
         final String resourceId = dest.getResourceId();
         final long timestamp = status.getTimestamp();
-        addDataItem(mMetrics, resourceId, timestamp, status.getDuration(), "duration");
-        addDataItem(mMetrics, resourceId, timestamp, status.getCode(), "code");
+        MetricDataMessage message = new MetricDataMessage();
+        MetricDataMessage.MetricData metricData = new MetricDataMessage.MetricData();
 
-        // Send it to metrics via rest
-        String payload;
+        MetricDataMessage.SingleMetric durationMetric = new MetricDataMessage.SingleMetric(
+                resourceId,
+                timestamp,
+                status.getDuration()
+        );
+
+        MetricDataMessage.SingleMetric statusCodeMetric = new MetricDataMessage.SingleMetric(
+                resourceId,
+                timestamp,
+                status.getCode()
+        );
+
+        metricData.setTenantId(status.getDestination().getTenantId());
+        metricData.setData(Arrays.asList(durationMetric, statusCodeMetric));
+        message.setMetricData(metricData);
+
+        TextMessage jmsMessage = context.createTextMessage();
+        String json = message.toJSON();
         try {
-            payload = new ObjectMapper().writeValueAsString(mMetrics);
-        } catch (JsonProcessingException e) {
-            Log.LOG.eCouldNotParseMessage(e);
-            return;
+            jmsMessage.setText(json);
+            producer.send(gaugesQueue, jmsMessage);
+        } catch (JMSException e) {
+            Log.LOG.eCouldNotSendMessage(e);
         }
-        HttpClient client = HttpClientBuilder.create().build();
 
-        HttpPost request = new HttpPost(configuration.getMetricsBaseUri() + "/gauges/data");
-        request.addHeader("Hawkular-Tenant", status.getDestination().getTenantId());
-
-        request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
-
-        try {
-            HttpResponse response = client.execute(request);
-            if (response.getStatusLine().getStatusCode() > 399) {
-                Log.LOG.wMetricPostStatus(response.getStatusLine().toString());
-            }
-        } catch (IOException e) {
-            Log.LOG.eMetricsIoException(e);
-        }
     }
 
 }

@@ -266,6 +266,9 @@
       <jms-topic name="HawkularAvailData" entries="java:/topic/HawkularAvailData"/>
       <jms-topic name="HawkularCommandEvent" entries="java:/topic/HawkularCommandEvent"/>
       <jms-topic name="HawkularAlertsActionsTopic" entries="java:/topic/HawkularAlertsActionsTopic"/>
+      <jms-queue name="hawkular/metrics/gauges/new" entries="java:/queue/hawkular/metrics/gauges/new"/>
+      <jms-queue name="hawkular/metrics/counters/new" entries="java:/queue/hawkular/metrics/counters/new"/>
+      <jms-queue name="hawkular/metrics/availability/new" entries="java:/queue/hawkular/metrics/availability/new"/>
     </xsl:copy>
   </xsl:template>
 
