@@ -479,24 +479,6 @@ module HawkularMetrics {
       return this.HawkularAlert.Trigger.get({ triggerId: triggerId }).$promise;
     }
 
-//    public getTrigger(triggerId: TriggerId): any {
-//      let deferred = this.$q.defer();
-//      let trigger = {};
-//
-//      this.HawkularAlert.Trigger.get({ triggerId: triggerId }).$promise.then((triggerData) => {
-//        trigger['trigger'] = triggerData;
-//        return this.HawkularAlert.Dampening.query({ triggerId: triggerId }).$promise;
-//      }).then((dampeningData) => {
-//        trigger['dampenings'] = dampeningData;
-//        return this.HawkularAlert.Conditions.query({ triggerId: triggerId }).$promise;
-//      }).then((conditionData) => {
-//        trigger['conditions'] = conditionData;
-//        deferred.resolve(trigger);
-//      });
-//
-//      return deferred.promise;
-//    }
-
     public getTrigger(triggerId: TriggerId): any {
       return this.HawkularAlert.Trigger.full({ triggerId: triggerId }).$promise;
     }
@@ -599,9 +581,6 @@ module HawkularMetrics {
           groupTrigger.trigger.severity = fullTrigger.trigger.severity;
         }
 
-        console.log( '>>>>>>>>>> GroupAction: ' + JSON.stringify(groupTrigger.trigger.actions));
-        console.log( '>>>>>>>>>> FullAction: ' + JSON.stringify(fullTrigger.trigger.actions));
-
         let changedActions = !angular.equals(groupTrigger.trigger.actions, fullTrigger.trigger.actions);
         if ( changedActions ) {
           groupTrigger.trigger.actions = fullTrigger.trigger.actions;
@@ -611,7 +590,6 @@ module HawkularMetrics {
               let actionPromise = this.addAction(groupTrigger.trigger.actions[i]).then(null, (error) => {
                 return this.ErrorsManager.errorHandler(error, 'Error adding action.', errorCallback);
               });
-              console.log( '>>>>>>>>>> Done Updating group Actions...');
               actionPromises.push(actionPromise);
             }
           }
@@ -619,7 +597,6 @@ module HawkularMetrics {
 
         if (changedAttrs || changedActions) {
           this.$q.all(actionPromises).then(() => {
-            console.log( '>>>>>>>>>> Updating group trigger...');
             groupPromise = this.HawkularAlert.Trigger.putGroup({ groupId: groupId }, groupTrigger.trigger);
           }, (error) => {
             return this.ErrorsManager.errorHandler(error, 'Error saving group.', errorCallback);
@@ -628,12 +605,9 @@ module HawkularMetrics {
 
         for (let i = 0; fullTrigger.dampenings && i < fullTrigger.dampenings.length; i++) {
           if (fullTrigger.dampenings[i] && !angular.equals(fullTrigger.dampenings[i], backupTrigger.dampenings[i])) {
-            console.log( '>>>>>>>>>> Full: ' + JSON.stringify(fullTrigger.dampenings[i]));
-            console.log( '>>>>>>>>>> Back: ' + JSON.stringify(backupTrigger.dampenings[i]));
             fullTrigger.dampenings[i].triggerId = groupTrigger.dampenings[i].triggerId;
             fullTrigger.dampenings[i].dampeningId = groupTrigger.dampenings[i].dampeningId;
             let dampeningId = groupTrigger.dampenings[i].dampeningId;
-            console.log( '>>>>>>>>>> Updating dampening...');
             let dampeningPromise = this.HawkularAlert.Dampening.putGroup({ groupId: groupId, dampeningId: dampeningId },
               fullTrigger.dampenings[i]).$promise.then(null, (error) => {
                 return this.ErrorsManager.errorHandler(error, 'Error saving dampening.', errorCallback);
@@ -669,7 +643,6 @@ module HawkularMetrics {
           let groupConditionsInfo = {
             conditions: firingConditions };
 
-          console.log( '>>>>>>>>>> Updating firing conditions...');
           let conditionPromise = this.HawkularAlert.Conditions.saveGroup({
             groupId: groupId,
             triggerMode: 'FIRING'
@@ -683,7 +656,6 @@ module HawkularMetrics {
           let groupConditionsInfo = {
             conditions: autoResolveConditions };
 
-          console.log( '>>>>>>>>>> Updating resolve conditions...');
           let conditionPromise = this.HawkularAlert.Conditions.saveGroup({
             groupId: groupId,
             triggerMode: 'AUTORESOLVE'

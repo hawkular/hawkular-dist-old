@@ -37,7 +37,9 @@ module HawkularMetrics {
           this.adm.trigger['enabled'] = triggerData.trigger.enabled;
           this.adm.trigger['severity'] = triggerData.trigger.severity;
 
-          this.adm.trigger['conditionThreshold'] = triggerData.conditions[0].threshold;
+          this.adm.trigger['conditionThreshold'] = ( triggerData.conditions[0].context.unit === '%' )
+            ? triggerData.conditions[0].threshold * 100
+            : triggerData.conditions[0].threshold;
 
           if ( triggerData.trigger.actions !== undefined ) {
             triggerData.trigger.actions.forEach((triggerAction: ITriggerAction) => {
@@ -98,7 +100,9 @@ module HawkularMetrics {
       // the only difference is the operation (LTE for AR, GT for Firing). So, update both the firing and,
       // if it exists, AR condition.
       updatedFullTrigger.conditions.forEach((condition: any) => {
-        condition.threshold = this.adm.trigger.conditionThreshold;
+        condition.threshold = ( this.adm.trigger.conditionContext.unit === '%' )
+            ? this.adm.trigger.conditionThreshold / 100
+            : this.adm.trigger.conditionThreshold;
       });
 
       let triggerSavePromise = this.HawkularAlertsManager.updateTrigger(updatedFullTrigger, errorCallback,

@@ -148,7 +148,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     conditionContext.put("description", "Average Wait Time");
                     conditionContext.put("unit", "ms");
                     cFiring1 = new ThresholdCondition(tenantId, groupTriggerId, Mode.FIRING,
-                            "Datasource Pool Metrics~Average Wait Time", ThresholdCondition.Operator.GT, 200.0);
+                            "Datasource Pool Metrics~Average Get Time", ThresholdCondition.Operator.GT, 200.0);
                     cFiring1.setContext(conditionContext);
                     conditions.clear();
                     conditions.add(cFiring1);
@@ -607,7 +607,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     String memberDescription = "Available Connection Count for DS [" + resourceId + "]";
                     Map<String, String> dataIdMap = new HashMap<>(2);
                     String dataId1 = "Datasource Pool Metrics~Available Count";
-                    String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    String memberDataId1 = getMetricId(dataId1, feedId, resourceId, "");
                     dataIdMap.put(dataId1, memberDataId1);
                     log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
@@ -619,8 +619,8 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     memberId = groupTriggerId + "_" + qualifiedResourceId;
                     memberDescription = "Pool Wait Time Responsiveness for DS [" + resourceId + "]";
                     dataIdMap.clear();
-                    dataId1 = "Datasource Pool Metrics~Average Wait Time";
-                    memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    dataId1 = "Datasource Pool Metrics~Average Get Time";
+                    memberDataId1 = getMetricId(dataId1, feedId, resourceId, "");
                     dataIdMap.put(dataId1, memberDataId1);
                     log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
@@ -633,7 +633,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     memberDescription = "Pool Create Time Responsiveness for DS [" + resourceId + "]";
                     dataIdMap.clear();
                     dataId1 = "Datasource Pool Metrics~Average Creation Time";
-                    memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    memberDataId1 = getMetricId(dataId1, feedId, resourceId, "");
                     dataIdMap.put(dataId1, memberDataId1);
                     log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
@@ -658,8 +658,8 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     Map<String, String> dataIdMap = new HashMap<>(2);
                     String dataId1 = "Available Memory";
                     String dataId2 = "Total Memory";
-                    String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
-                    String memberDataId2 = getMetricId(dataId2, feedId, resourceId);
+                    String memberDataId1 = getMetricId(dataId1, feedId, resourceId, "");
+                    String memberDataId2 = getMetricId(dataId2, feedId, resourceId, "");
                     dataIdMap.put(dataId1, memberDataId1);
                     dataIdMap.put(dataId2, memberDataId2);
                     log.debugf("Creating Member: [%s]", memberId);
@@ -685,7 +685,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     String memberDescription = "CPU [" + cpu + "] Usage";
                     Map<String, String> dataIdMap = new HashMap<>(2);
                     String dataId1 = "CPU Usage";
-                    String memberDataId1 = getMetricId(dataId1, feedId, resourceId);
+                    String memberDataId1 = getMetricId(dataId1, feedId, resourceId, "");
                     dataIdMap.put(dataId1, memberDataId1);
                     log.debugf("Creating Member: [%s]", memberId);
                     definitions.addMemberTrigger(tenantId, groupTriggerId, memberId, null, memberDescription,
@@ -874,7 +874,11 @@ public class InventoryEventListener extends InventoryEventMessageListener {
     }
 
     private String getMetricId(String groupDataId, String feedId, String resId) {
-        return "MI~R~[" + feedId + "/" + resId + "~~]~MT~" + groupDataId;
+        return getMetricId(groupDataId, feedId, resId, "~~");
+    }
+
+    private String getMetricId(String groupDataId, String feedId, String resId, String resIdSuffix) {
+        return "MI~R~[" + feedId + "/" + resId + resIdSuffix + "]~MT~" + groupDataId;
     }
 
     private synchronized void init() throws Exception {
