@@ -17,6 +17,7 @@
 package org.hawkular.component.pinger;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.hawkular.bus.common.AbstractMessage;
 import org.hawkular.metrics.client.common.SingleMetric;
@@ -24,10 +25,16 @@ import org.hawkular.metrics.client.common.SingleMetric;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
+ * A bus message for messages on HawkularMetricData Topic.
+ *
+ * @author Jay Shaughnessy
  * @author Lucas Ponce
  */
-public class MetricDataMessage extends AbstractMessage {
 
+public class MetricDataMessage extends AbstractMessage {
+    // TODO: we now have *3 copies* of this payload... shouldn't we have a place for payloads?
+
+    // the basic message body - it will be exposed to the JSON output
     @JsonInclude
     private MetricData metricData;
 
@@ -44,6 +51,26 @@ public class MetricDataMessage extends AbstractMessage {
 
     public void setMetricData(MetricData metricData) {
         this.metricData = metricData;
+    }
+
+    @Override
+    public String toString() {
+        return "MetricDataMessage{" +
+                "metricData=" + metricData +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MetricDataMessage that = (MetricDataMessage) o;
+        return Objects.equals(metricData, that.metricData);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(metricData);
     }
 
     public static class MetricData {
@@ -74,6 +101,83 @@ public class MetricDataMessage extends AbstractMessage {
         @Override
         public String toString() {
             return "MetricData [tenantId=" + tenantId + ", data=" + data + "]";
+        }
+
+        @Override public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            MetricData that = (MetricData) o;
+            return Objects.equals(tenantId, that.tenantId) &&
+                    Objects.equals(data, that.data);
+        }
+
+        @Override public int hashCode() {
+            return Objects.hash(tenantId, data);
+        }
+    }
+
+    /**
+     * This is meant to parse out an instance of <code>org.rhq.metrics.client.common.SingleMetric</code>
+     */
+    public static class SingleMetric {
+        @JsonInclude
+        private String source;
+        @JsonInclude
+        private long timestamp;
+        @JsonInclude
+        private double value;
+
+        public SingleMetric() {
+        }
+
+        public SingleMetric(String source, long timestamp, double value) {
+            this.source = source;
+            this.timestamp = timestamp;
+            this.value = value;
+        }
+
+        public String getSource() {
+            return source;
+        }
+
+        public void setSource(String source) {
+            this.source = source;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(long timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public double getValue() {
+            return value;
+        }
+
+        public void setValue(double value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return "SingleMetric [source=" + source + ", timestamp=" + timestamp + ", value=" + value + "]";
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SingleMetric that = (SingleMetric) o;
+            return Objects.equals(timestamp, that.timestamp) &&
+                    Objects.equals(value, that.value) &&
+                    Objects.equals(source, that.source);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(source, timestamp, value);
         }
     }
 }

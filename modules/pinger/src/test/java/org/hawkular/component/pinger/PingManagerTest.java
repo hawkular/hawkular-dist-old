@@ -50,7 +50,7 @@ public class PingManagerTest {
         String expectedPoweredBy = "GitHub.com";
 
         ArgumentCaptor<PingStatus> metricsRestStatusCaptor = ArgumentCaptor.forClass(PingStatus.class);
-        Mockito.verify(manager.metricPublisher).sendToMetricsViaRest(metricsRestStatusCaptor.capture());
+        Mockito.verify(manager.metricPublisher).publish(metricsRestStatusCaptor.capture());
         assertStatus(expectedDest, expectedPoweredBy, metricsRestStatusCaptor.getValue());
 
         ArgumentCaptor<PingStatus> traitsStatusCaptor = ArgumentCaptor.forClass(PingStatus.class);
