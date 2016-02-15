@@ -277,6 +277,7 @@ module HawkularMetrics {
           stacked: true
         }).$promise.then((resource) => {
           if (resource.length) {
+            resource = _.sortBy(resource, 'start'); // FIXME: workaround until HWKMETRICS-353 is fixed
             this.chartCpuData = MetricsService.formatBucketedChartOutput(resource, 100);
             this.resolvedCPUData = true;
           }
