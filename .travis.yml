@@ -12,6 +12,8 @@ jdk:
 - oraclejdk8
 install:
 - mvn -s .travis.maven.settings.xml -version -B
+# unshallow is needed by license-maven-plugin
+- git fetch origin --unshallow
 - df -h .
 - du -sh $HOME/.m2/repository
 
