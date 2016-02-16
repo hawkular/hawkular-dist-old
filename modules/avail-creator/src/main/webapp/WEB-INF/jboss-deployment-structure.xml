@@ -21,7 +21,7 @@
   <deployment>
     <dependencies>
       <module name="org.hawkular.nest" />
-      <module name="org.apache.httpcomponents" />
+      <module name="org.hawkular.bus"/>
     </dependencies>
   </deployment>
 </jboss-deployment-structure>

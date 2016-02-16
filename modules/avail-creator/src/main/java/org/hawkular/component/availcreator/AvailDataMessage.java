@@ -17,16 +17,22 @@
 package org.hawkular.component.availcreator;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.hawkular.bus.common.AbstractMessage;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
+ * A bus message for messages on HawkularAvailData Topic.
+ *
+ * @author Jay Shaughnessy
  * @author Lucas Ponce
  */
+
 public class AvailDataMessage extends AbstractMessage {
 
+    // the basic message body - it will be exposed to the JSON output
     @JsonInclude
     private AvailData availData;
 
@@ -43,6 +49,23 @@ public class AvailDataMessage extends AbstractMessage {
 
     public void setAvailData(AvailData availData) {
         this.availData = availData;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AvailDataMessage that = (AvailDataMessage) o;
+        return Objects.equals(availData, that.availData);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(availData);
     }
 
     public static class AvailData {
@@ -64,5 +87,105 @@ public class AvailDataMessage extends AbstractMessage {
         public String toString() {
             return "AvailData [data=" + data + "]";
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            AvailData availData = (AvailData) o;
+            return Objects.equals(data, availData.data);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(data);
+        }
     }
+
+    /**
+     * This is meant to parse out an instance of <code>org.rhq.metrics.client.common.SingleMetric</code>
+     */
+    public static class SingleAvail {
+        @JsonInclude
+        private String tenantId;
+        @JsonInclude
+        private String id;
+        @JsonInclude
+        private long timestamp;
+        @JsonInclude
+        private String avail;
+
+        public SingleAvail() {
+        }
+
+        public SingleAvail(String tenantId, String id, long timestamp, String avail) {
+            this.tenantId = tenantId;
+            this.id = id;
+            this.timestamp = timestamp;
+            this.avail = avail;
+        }
+
+        public String getTenantId() {
+            return tenantId;
+        }
+
+        public void setTenantId(String tenantId) {
+            this.tenantId = tenantId;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(long timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public String getAvail() {
+            return avail;
+        }
+
+        public void setAvail(String avail) {
+            this.avail = avail;
+        }
+
+        @Override
+        public String toString() {
+            return "SingleAvail [tenantId=" + tenantId + ", id=" + id + ", timestamp=" + timestamp + ", avail="
+                    + avail + "]";
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            SingleAvail that = (SingleAvail) o;
+            return Objects.equals(timestamp, that.timestamp) &&
+                    Objects.equals(tenantId, that.tenantId) &&
+                    Objects.equals(id, that.id) &&
+                    Objects.equals(avail, that.avail);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(tenantId, id, timestamp, avail);
+        }
+    }
+
 }

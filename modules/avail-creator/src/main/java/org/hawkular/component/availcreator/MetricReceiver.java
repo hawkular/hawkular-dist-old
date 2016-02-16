@@ -30,6 +30,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.hawkular.component.availcreator.AvailDataMessage.SingleAvail;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -93,7 +95,7 @@ public class MetricReceiver implements MessageListener {
                 }
             }
             if (!outer.isEmpty()) {
-                availPublisher.sendToMetricsViaRest(outer);
+                availPublisher.publish(outer);
             }
 
         } catch (Exception e) {
