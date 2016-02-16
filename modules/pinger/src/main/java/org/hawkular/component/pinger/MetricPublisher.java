@@ -19,15 +19,17 @@ package org.hawkular.component.pinger;
 import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.Singleton;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSContext;
-import javax.jms.JMSException;
 import javax.jms.JMSProducer;
 import javax.jms.Queue;
-import javax.jms.TextMessage;
+
+import org.hawkular.component.pinger.MetricDataMessage.MetricData;
+import org.hawkular.component.pinger.MetricDataMessage.SingleMetric;
 
 /**
  * Publish metrics data
@@ -59,37 +61,35 @@ public class MetricPublisher {
      */
     @Asynchronous
     public void publish(PingStatus status) {
-        final PingDestination dest = status.getDestination();
-        final String resourceId = dest.getResourceId();
-        final long timestamp = status.getTimestamp();
+        String resourceId = status.getDestination().getResourceId();
+        long timestamp = status.getTimestamp();
+
         MetricDataMessage message = new MetricDataMessage();
-        MetricDataMessage.MetricData metricData = new MetricDataMessage.MetricData();
+        MetricData metricData = new MetricData();
 
-        MetricDataMessage.SingleMetric durationMetric = new MetricDataMessage.SingleMetric(
-                resourceId,
-                timestamp,
-                status.getDuration()
-        );
-
-        MetricDataMessage.SingleMetric statusCodeMetric = new MetricDataMessage.SingleMetric(
-                resourceId,
-                timestamp,
-                status.getCode()
-        );
+        SingleMetric durationMetric = new SingleMetric(resourceId + ".status.duration", timestamp,
+                status.getDuration());
+        SingleMetric statusCodeMetric = new SingleMetric(resourceId + ".status.code", timestamp, status.getCode());
 
         metricData.setTenantId(status.getDestination().getTenantId());
         metricData.setData(Arrays.asList(durationMetric, statusCodeMetric));
         message.setMetricData(metricData);
 
-        TextMessage jmsMessage = context.createTextMessage();
-        String json = message.toJSON();
         try {
-            jmsMessage.setText(json);
-            producer.send(gaugesQueue, jmsMessage);
-        } catch (JMSException e) {
+            producer.send(gaugesQueue, message.toJSON());
+        } catch (Exception e) {
             Log.LOG.eCouldNotSendMessage(e);
         }
 
     }
 
+    @PreDestroy
+    public void closeContext() {
+        if (context != null) {
+            try {
+                context.close();
+            } catch (Exception ignored) {
+            }
+        }
+    }
 }

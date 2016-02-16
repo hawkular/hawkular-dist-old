@@ -18,73 +18,66 @@ package org.hawkular.component.availcreator;
 
 import static javax.ejb.TransactionAttributeType.NOT_SUPPORTED;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSContext;
+import javax.jms.JMSProducer;
+import javax.jms.Queue;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hawkular.component.availcreator.AvailDataMessage.AvailData;
+import org.hawkular.component.availcreator.AvailDataMessage.SingleAvail;
 
 /**
  * Publish Avail data
  *
  * @author Heiko W. Rupp
  */
-@Stateless
+@Singleton
 @TransactionAttribute(NOT_SUPPORTED)
 public class AvailPublisher {
 
-    private static final String METRICS_BASE_URI;
-    static {
-        String host = System.getProperty("jboss.bind.address", "localhost");
-        String port = System.getProperty("jboss.http.port", "8080");
-        METRICS_BASE_URI = "http://"+ host + ":"+ port + "/hawkular/metrics";
+    @Resource(mappedName = "java:/queue/hawkular/metrics/availability/new")
+    Queue availabilityQueue;
+
+    @Resource(mappedName = "java:/HawkularBusConnectionFactory")
+    ConnectionFactory connectionFactory;
+
+    private JMSContext context;
+    private JMSProducer producer;
+
+    @PostConstruct
+    public void createContext() {
+        context = connectionFactory.createContext();
+        producer = context.createProducer();
     }
 
     @Asynchronous
-    public void sendToMetricsViaRest(List<SingleAvail> availabilities) {
-        // Send it to metrics via rest
+    public void publish(List<SingleAvail> availabilities) {
 
-        HttpClient client = HttpClientBuilder.create().build();
+        AvailData availData = new AvailData();
+        availData.setData(availabilities);
+        AvailDataMessage availDataMessage = new AvailDataMessage(availData);
 
-        for (SingleAvail avr : availabilities) {
+        try {
+            producer.send(availabilityQueue, availDataMessage.toJSON());
+        } catch (Exception e) {
+            Log.LOG.wAvailPostStatus(e.getMessage());
+        }
+    }
 
-            String rid = avr.id;
-            String tenantId = avr.tenantId;
-
-            HttpPost request = new HttpPost(METRICS_BASE_URI + "/availability/" + rid + "/data");
-            request.addHeader("Hawkular-Tenant", tenantId);
-
-            Availability availability = new Availability(avr.timestamp, avr.avail.toLowerCase());
-            List<Availability> list = new ArrayList<>(1);
-            list.add(availability);
-            String payload;
+    @PreDestroy
+    public void closeContext() {
+        if (context != null) {
             try {
-                payload = new ObjectMapper().writeValueAsString(list);
-            } catch (JsonProcessingException e) {
-                Log.LOG.eCouldNotParseMessage(e);
-                return;
-            }
-            request.setEntity(new StringEntity(payload, ContentType.APPLICATION_JSON));
-
-            try {
-                HttpResponse response = client.execute(request);
-                if (response.getStatusLine().getStatusCode() > 399) {
-                    Log.LOG.wAvailPostStatus(response.getStatusLine().toString());
-                }
-            } catch (IOException e) {
-                Log.LOG.wAvailPostStatus(e.getMessage());
+                context.close();
+            } catch (Exception ignored) {
             }
         }
     }
