@@ -696,14 +696,10 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                 }
                 case "URL": {
                     // common to members
-                    String feedId = r.getPath().ids().getFeedId();
-                    String url = event.getHeaders().get("url");
-                    //String resourceId = String.valueOf(MessageDigest.getInstance("MD5").digest(
-                    //        r.getId().getBytes("UTF-8")));
+                    // TODO: use the URL as needed, not the hash if and when we can get the actual URL from the event
                     String resourceId = r.getId();
-                    //String qualifiedResourceId = feedId + "/" + resourceId;
                     Map<String, String> memberContext = new HashMap<>(2);
-                    memberContext.put("resourceName", url);
+                    memberContext.put("resourceName", "URL [" + resourceId + "]"); // Should be the URL
                     memberContext.put("resourcePath", event.getHeaders().get("path"));
                     Map<String, String> memberTags = new HashMap<>(1);
                     memberTags.put("resourceId", resourceId);
@@ -711,8 +707,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // Response Time
                     String groupTriggerId = "URL_Response";
                     String memberId = groupTriggerId + "_" + resourceId;
-                    String memberName = "URL Response [" + url + "]";
-                    String memberDescription = "Response Time for URL [" + resourceId + "]";
+                    String memberDescription = "Response Time for URL [" + resourceId + "]"; // should be the URL
                     Map<String, String> dataIdMap = new HashMap<>(2);
                     String dataId1 = "status.duration";
                     String memberDataId1 = resourceId + ".status.duration";
@@ -725,8 +720,7 @@ public class InventoryEventListener extends InventoryEventMessageListener {
                     // Avail
                     groupTriggerId = "URL_Down";
                     memberId = groupTriggerId + "_" + resourceId;
-                    memberName = "URL Availability [" + url + "]";
-                    memberDescription = "Availability for URL [" + resourceId + "]";
+                    memberDescription = "Availability for URL [" + resourceId + "]"; // Should be the URL
                     dataIdMap.clear();
                     dataId1 = "status.code";
                     memberDataId1 = resourceId + ".status.code";
