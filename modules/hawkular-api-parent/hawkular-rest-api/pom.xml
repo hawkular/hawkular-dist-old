@@ -85,11 +85,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.hawkular.accounts</groupId>
-      <artifactId>hawkular-accounts-api</artifactId>
-    </dependency>
-
     <!-- RX -->
     <dependency>
       <groupId>com.netflix.hystrix</groupId>
