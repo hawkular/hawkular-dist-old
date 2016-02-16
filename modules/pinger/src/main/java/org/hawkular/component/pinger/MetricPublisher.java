@@ -19,6 +19,7 @@ package org.hawkular.component.pinger;
 import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.Singleton;
@@ -82,4 +83,13 @@ public class MetricPublisher {
 
     }
 
+    @PreDestroy
+    public void closeContext() {
+        if (context != null) {
+            try {
+                context.close();
+            } catch (Exception ignored) {
+            }
+        }
+    }
 }
