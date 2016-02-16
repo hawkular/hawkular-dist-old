@@ -23,12 +23,12 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-api-parent</artifactId>
-    <version>1.0.0.Alpha10-SNAPSHOT</version>
+    <version>1.0.0.Alpha10</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>hawkular-rx</artifactId>
-  <version>1.0.0.Alpha10-SNAPSHOT</version>
+  <version>1.0.0.Alpha10</version>
 
   <name>Hawkular: RX extensions layer</name>
   <description>Hawkular RX extensions layer</description>
