@@ -23,12 +23,12 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-api-parent</artifactId>
-    <version>1.0.0.Alpha10</version>
+    <version>1.0.0.Alpha11-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>hawkular-listener</artifactId>
-  <version>1.0.0.Alpha10</version>
+  <version>1.0.0.Alpha11-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Hawkular: Listener</name>
