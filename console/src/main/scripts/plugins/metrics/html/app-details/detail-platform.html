@@ -120,6 +120,59 @@
 
           <div class="panel panel-default hk-summary">
             <div class="panel-heading">
+              <a class="hk-heading hk-resource-name" href="#" ng-click="os.expandedList[fs.id] = !os.expandedList[fs.id]">
+                <i class="fa"
+                   ng-class="os.expandedList[fs.id] ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'"></i>
+                  {{fs.name}}
+              </a>
+              <div class="btn-group pull-right hk-action-buttons" dropdown auto-close="always">
+                <button id="ds-actions" class="btn btn-link" type="button" dropdown-toggle aria-haspopup="true"
+                        aria-expanded="true">
+                  Actions
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="ds-actions">
+                  <li class="disabled"><a href="#">Enable</a></li>
+                  <li class="disabled"><a href="#">Disable</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="panel-body hk-graph" ng-class="{ 'hide': !os.expandedList[fs.id]}" ng-if="os.expandedList[fs.id]">
+              <div ng-if="os.resolvedChartFileSystemData[fs.id]">
+                <h2>File System Usage</h2>
+                <div class="hk-graph-container hk-graph-metrics">
+                  <hawkular-chart
+                    multi-data="os.chartFileSystemData[fs.id]"
+                    chart-type="multiline"
+                    y-axis-units="Disk Space (MB)"
+                    chart-height="250">
+                  </hawkular-chart>
+                </div>
+                <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
+                  <div class="col-md-12">
+                    <h4>Disk Space</h4>
+                    <div class="hk-graphselector hk-orange">
+                      <input id="disktotal_{{$index}}" type="checkbox"
+                             ng-checked="!os.skipChartData[fs.id + '_Total']"
+                             ng-click="os.toggleChartData(fs.id + '_Total')">
+                      <label for="disktotal_{{$index}}"><span>Total space</span></label>
+                    </div>
+                    <div class="hk-graphselector hk-blue">
+                      <input id="diskfree_{{$index}}" type="checkbox"
+                             ng-checked="!os.skipChartData[fs.id + '_Free']"
+                             ng-click="os.toggleChartData(fs.id + '_Free')">
+                      <label for="diskfree_{{$index}}"><span>Free space</span></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+<!--
+          <div class="panel panel-default hk-summary">
+            <div class="panel-heading">
               <span class="hk-heading hk-bold hk-resource-name">
                 {{fs.name}}
               </span>
@@ -185,6 +238,7 @@
                   </div>
                 </div>
           </div>
+-->
         </div>
       <!-- End of graphs -->
 
