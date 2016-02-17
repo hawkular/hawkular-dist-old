@@ -1399,6 +1399,14 @@ a:hover .fa-times-circle-o,
       font-weight: 600;
     }
 
+    a.hk-heading {
+      color: @gray-dark;
+
+      .fa {
+        vertical-align: middle;
+      }
+    }
+
     .hk-resource-name {
       font-size: ceil(@font-size-base * 1.5);
     }
@@ -2343,8 +2351,6 @@ h2 + .tiles-view-pf {
 
 .hk-urls-list {
 
-  padding: 0 @grid-gutter-width 0 @grid-gutter-width/4;
-
   &.hk-urls-empty {
     margin-top: @grid-gutter-width*4;
   }
@@ -2734,79 +2740,6 @@ section {
 
 .hk-application-datasources .tiles-view-pf .row {
   overflow: hidden; // to avoid scroll in Firefox
-}
-
-// to be deleted
-
-.hk-panel-collapse-area {
-
-  border-bottom: 1px solid @table-border-color;
-  margin-bottom: @grid-gutter-width/2;
-  margin-top: -19px;
-  text-align: center;
-  padding: 2px 0 3px 0;
-  -webkit-transition: background 0.3s ease;
-  -moz-transition: background 0.3s ease;
-  transition: background 0.3s ease;
-
-  a {
-    color: @gray;
-
-    &:hover {
-      color: @link-hover-color;
-    }
-
-    .fa {
-      margin-left: 5px;
-    }
-  }
-
-  &.hk-collapsed {
-    background-color: white;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-    border-color: transparent;
-    padding-bottom: 2px;
-  }
-}
-
-.hk-resource-container {
-  margin-bottom: @grid-gutter-width/2;
-}
-
-.hk-collapsible-area {
-  display: block !important;
-  max-height: 1320px;
-  overflow: hidden;
-  -webkit-transition: max-height 0.3s ease;
-  -moz-transition: max-height 0.3s ease;
-  transition: max-height 0.3s ease;
-
-  &.ng-enter,
-  &.ng-leave.ng-leave-active {
-    max-height: 0;
-  }
-
-  &.ng-leave,
-  &.ng-enter.ng-enter-active {
-    max-height: 1320px;
-  }
-
-  &:not(.hide) {
-    margin-bottom: @grid-gutter-width/2;
-  }
-
-  &.hide {
-    max-height: 0;
-  }
-
-  .hk-info-top {
-    margin-top: -10px;
-
-    h3,
-    .hk-trigger {
-      font-weight: normal;
-    }
-  }
 }
 
 .hk-alerts {
