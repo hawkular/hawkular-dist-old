@@ -93,7 +93,7 @@
     <version.org.hawkular.cmdgw>0.10.11.Final</version.org.hawkular.cmdgw>
     <version.org.hawkular.commons>0.3.5.Final</version.org.hawkular.commons>
     <version.org.hawkular.inventory>0.12.2.Final</version.org.hawkular.inventory>
-    <version.org.hawkular.metrics>0.12.1.Final</version.org.hawkular.metrics>
+    <version.org.hawkular.metrics>0.13.0.Final-SRC-revision-163a3c8</version.org.hawkular.metrics>
     <version.org.jboss.weld.se>2.3.2.Final</version.org.jboss.weld.se>
     <version.org.keycloak>1.8.1.Final</version.org.keycloak>
     <version.org.keycloak.secretstore>1.0.12.Final</version.org.keycloak.secretstore>
