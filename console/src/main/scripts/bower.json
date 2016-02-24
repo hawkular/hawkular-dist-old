@@ -42,7 +42,7 @@
     "angular-utils-pagination": "0.9.4"
   },
   "devDependencies": {
-    "hawtio-core-dts": "2.0.23"
+    "hawtio-core-dts": "2.0.28"
   },
   "resolutions": {
     "lodash": "~3.2.0",

@@ -255,7 +255,7 @@ module HawkularMetrics {
         _.forEach(graphData, (item, key) => {
           if (item.hasOwnProperty('length')) {
             //TODO: when proper graph used change this
-            let value = (item['length'] === 'NaN') ? 0 : item['length'];
+            let value = (!_.isNumber(item['length'])) ? 0 : item['length'];
             alertInfo.push(new AlertChartDataPoint(value,
               parseInt(key.toString(), 10) * this.alertRound
             ));
@@ -289,7 +289,7 @@ module HawkularMetrics {
       angular.forEach(resourceLists, (aResourceList) => {
         angular.forEach(aResourceList, (res: IResource) => {
           res.feedId = this.feedId;
-          if (res['id'].startsWith(new RegExp(this.$routeParams.resourceId + '~/'))) {
+          if (res.id.indexOf(this.$routeParams.resourceId + '~/') === 0) {
             this.getAlertsInfo(res.feedId, res.id);
             this.HawkularAlertRouterManager.registerForAlerts(
               res.feedId + '/' + res.id,

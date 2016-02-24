@@ -37,5 +37,5 @@ module HawkularMetrics {
     }
   }
 
-  _module.directive('hkAlertNotification', HkAlertNotification.Factory());
+  _module.directive('hkAlertNotification', [HkAlertNotification.Factory()]);
 }

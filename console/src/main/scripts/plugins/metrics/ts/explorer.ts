@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,8 @@ module HawkularMetrics {
           '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'MetricsService',
           'ErrorsManager', '$q', '$sessionStorage', '$localStorage'];
 
-
     public feeds = ['Test','Data'];
-    private title:string = 'Hello Explorer';
+    //private title:string = 'Hello Explorer';
     public pleaseWait = true;
     public resourceButtonEnabled = false;
     private selectedFeed;
@@ -38,28 +37,26 @@ module HawkularMetrics {
     private chartData = [];
     private selectedMetric;
     private buttonActive = false;
-    public startTimeStamp:TimestampInMillis;
-    public endTimeStamp:TimestampInMillis;
+    public startTimeStamp: TimestampInMillis;
+    public endTimeStamp: TimestampInMillis;
     private chartType = [];
     private chartUnit = [];
 
-
-
-    constructor(private $location:ng.ILocationService,
-                private $scope:any,
-                private $rootScope:any,
-                private $interval:ng.IIntervalService,
-                private $log:ng.ILogService,
-                private $routeParams:any,
-                private $modal:any,
-                private $window:any,
+    constructor(private $location: ng.ILocationService,
+                private $scope: any,
+                private $rootScope: any,
+                private $interval: ng.IIntervalService,
+                private $log: ng.ILogService,
+                private $routeParams: any,
+                private $modal: any,
+                private $window: any,
                 private HawkularInventory: any,
                 private HawkularMetric: any,
-                private MetricsService:IMetricsService,
-                private ErrorsManager:IErrorsManager,
-                private $q:ng.IQService,
-                private $sessionStorage:any,
-                private $localStorage:any
+                private MetricsService: IMetricsService,
+                private ErrorsManager: IErrorsManager,
+                private $q: ng.IQService,
+                private $sessionStorage: any,
+                private $localStorage: any
     ) {
       $scope.exc = this;
 
@@ -68,7 +65,7 @@ module HawkularMetrics {
       let tmp = $localStorage.hawkular_charts;
       if (!angular.isUndefined(tmp)) {
         this.charts = tmp;
-        _.forEach(tmp, (metric:any) => {
+        _.forEach(tmp, (metric: any) => {
             this.$log.log('Found metric in storage: ' + metric.id);
         });
         if ($rootScope.currentPersona) {
@@ -87,11 +84,9 @@ module HawkularMetrics {
       this.getFeeds();
     }
 
+    private autoRefreshPromise: ng.IPromise<number>;
 
-    private autoRefreshPromise:ng.IPromise<number>;
-
-
-    private autoRefresh(intervalInSeconds:number):void {
+    private autoRefresh(intervalInSeconds: number): void {
       this.autoRefreshPromise = this.$interval(() => {
         this.refresh();
       }, intervalInSeconds * 1000);
@@ -101,7 +96,7 @@ module HawkularMetrics {
       });
     }
 
-    private getFeeds():any {
+    private getFeeds(): any {
 
       this.pleaseWait = true;
 
@@ -116,7 +111,7 @@ module HawkularMetrics {
           });
     }
 
-    public selectFeed(feed:string):void {
+    public selectFeed(feed: string): void {
 
       this.selectedMetric = '';
       this.selectedResource = '';
@@ -126,7 +121,7 @@ module HawkularMetrics {
     }
 
     private getResources(feed) {
-      this.pleaseWait=true;
+      this.pleaseWait = true;
       this.HawkularInventory.ResourceUnderFeed.query({
           feedId: feed.id
         },
@@ -138,7 +133,7 @@ module HawkularMetrics {
       );
     };
 
-    public selectResource(resource:string):void {
+    public selectResource(resource: string): void {
 
       this.selectedResource = resource;
       this.selectedMetric = '';
@@ -164,7 +159,6 @@ module HawkularMetrics {
 
       this.selectedMetric = metric;
       this.buttonActive = true;
-
 
      // this.showChart(); // TODO activate only after button press
     }
@@ -205,11 +199,11 @@ module HawkularMetrics {
     }
 
     public refresh() {
-      if (this.charts ==null) {
+      if (this.charts == null) {
         return;
       }
 
-      _.forEach(this.charts, (res:any) => {
+      _.forEach(this.charts, (res: any) => {
           let theId = res.id;
           // TODO potentially replace with MetricsService....
           if (res.type.type === 'GAUGE') {
@@ -261,8 +255,7 @@ module HawkularMetrics {
       });
     }
 
-
-    private addMetricToStorage():void {
+    private addMetricToStorage(): void {
         this.$log.log('addMetricToStorage');
       this.$localStorage.hawkular_charts = this.charts;
     }

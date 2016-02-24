@@ -29,7 +29,7 @@ module HawkularTopology {
           selection: '=',
           force: '='
         },
-        link: ($scope, element, attributes) => {
+        link: ($scope: any, element: any, attributes: any) => {
           element.css('display', 'block');
 
           let graph;

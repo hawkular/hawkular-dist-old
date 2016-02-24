@@ -65,7 +65,7 @@ module HawkularMetrics {
     }
   }
 
-  _module.directive('hkSwitch', HawkularMetrics.HkSwitch.Factory());
+  _module.directive('hkSwitch', [HawkularMetrics.HkSwitch.Factory()]);
 
   export class HkTimeInput {
 
@@ -122,7 +122,7 @@ module HawkularMetrics {
     }
   }
 
-  _module.directive('hkTimeInput', HawkularMetrics.HkTimeInput.Factory());
+  _module.directive('hkTimeInput', [HawkularMetrics.HkTimeInput.Factory()]);
 
   export class HkAutofocus {
 
@@ -158,6 +158,6 @@ module HawkularMetrics {
     }
   }
 
-  _module.directive('hkAutofocus', HawkularMetrics.HkAutofocus.Factory());
+  _module.directive('hkAutofocus', [HawkularMetrics.HkAutofocus.Factory()]);
 
 }

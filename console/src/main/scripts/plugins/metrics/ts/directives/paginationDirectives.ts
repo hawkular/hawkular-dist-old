@@ -127,6 +127,6 @@ module HawkularMetrics {
     }
   }
 
-  _module.directive('hkPagination', HkPagination.Factory());
-  _module.directive('hkDataPagination', HkDataPagination.Factory());
+  _module.directive('hkPagination', [HkPagination.Factory()]);
+  _module.directive('hkDataPagination', [HkDataPagination.Factory()]);
 }

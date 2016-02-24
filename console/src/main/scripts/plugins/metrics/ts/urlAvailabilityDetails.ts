@@ -247,7 +247,8 @@ module HawkularMetrics {
 
     private getDurationAux(duration: number, pattern: string): any {
       let result = [];
-      let durations = this.$filter('duration')(duration, pattern).split(' ');
+      const filterDuration: any = this.$filter('duration');
+      let durations = filterDuration(duration, pattern).split(' ');
       _.each(pattern.split(' '), (unit: any, idx) => {
         result.push({ value: durations[idx], unit: MetricsAvailabilityController.durationUnits[unit].unit });
       }, this);

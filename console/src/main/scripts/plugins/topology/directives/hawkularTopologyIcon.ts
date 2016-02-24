@@ -24,7 +24,7 @@ module HawkularTopology {
       restrict: 'E',
       transclude: true,
       template: '<ng-transclude></ng-transclude>',
-      link: ($scope, element, attrs) => {
+      link: ($scope: any, element: any, attrs: any) => {
         let kind = attrs.kind;
         let value = $scope.vm.kinds[kind];
 
