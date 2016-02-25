@@ -44,6 +44,21 @@ module Subtab {
           return $location.path().indexOf('/hawkular-ui/alerts-center-triggers') === 0;
         };
 
+        // BTM INTEGRATION START - used in isShowTimeRange() and isShowLastUpdate()
+        $scope.isBTMPage = () => {
+          return $location.path().indexOf('/hawkular-ui/btm') === 0 ||
+            $location.path().indexOf('/hawkular-ui/apm') === 0;
+        };
+        // BTM INTEGRATION FINISH
+
+        $scope.isShowTimeRange = () => {
+          return !($scope.isAlertsCenterTriggersPage() || $scope.isBTMPage());
+        };
+
+        $scope.isShowLastUpdate = () => {
+          return !($scope.isAlertsCenterTriggersPage() || $scope.isBTMPage());
+        };
+
         $scope.isUrlPage = () => {
           return $location.path().indexOf('/hawkular-ui/url/') !== -1 &&
             $location.path().indexOf('url-list') === -1;

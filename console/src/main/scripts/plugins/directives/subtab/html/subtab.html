@@ -17,7 +17,7 @@
         </ol>
       </div>
       <div class="col-xs-5">
-        <div class="hk-date-range dropdown" dropdown ng-hide="isAlertsCenterTriggersPage()">
+        <div class="hk-date-range dropdown" dropdown ng-show="isShowTimeRange()">
           <div class="input-group" dropdown-toggle>
             <div class="hk-input">
               {{offsetName}} <span ng-show="false">{{getFormattedDate()}}</span>
@@ -44,7 +44,7 @@
       </div>
     </div>
     <div class="hk-heading">
-      <span class="hk-update pull-right" tooltip-trigger tooltip="Last update" ng-hide="isAlertsCenterTriggersPage()">
+      <span class="hk-update pull-right" tooltip-trigger tooltip="Last update" ng-show="isShowLastUpdate()">
         <i class="fa fa-clock-o"></i>{{lastUpdateTimestamp | date:'HH:mm:ss'}}</span>
       <h1 ng-init="(isAppServerPage() && !hkParams.hasOwnProperty('datasourceId')) ? getAppServerFromId(hkParams.resourceId) : (!isAlertsPage() && getUrlFromId(hkParams.resourceId))">{{resourceName || '&nbsp;'}}</h1>
       <h1 ng-show="isAlertsPage()">Alert Center</h1>

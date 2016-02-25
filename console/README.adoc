@@ -5,3 +5,16 @@
 This console application pulls in various bower packages (libs) and Hawt.io 2 plugins (which are also bower packages) to plug-n-play various functionality to the console. Since one of the bower packages it pulls in is our Hawt.io plugin, it loads this plugin and adds it to the nav bar.
 
 For more info on Hawkular UI development, please see: http://www.hawkular.org/docs/dev/ui-dev.html[Hawkular UI Dev Guide]
+
+
+== BTM/APM Integration
+
+The UI integration is performed by adding the hawkularbtm.js/css files to the _dist_ folder, which are referenced in the _index.html_.
+
+Currently the BTM/APM pages also reference the html files on the server, rather than from the templateCache (to be investigated), so these are also added to the console war.
+
+=== Additional bower dependencies
+
+* angular-xeditable
+* angularUtils-pagination
+
