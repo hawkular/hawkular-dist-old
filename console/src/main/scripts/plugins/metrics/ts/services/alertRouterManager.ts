@@ -101,7 +101,6 @@ module HawkularMetrics {
 
     public getAlertsForResourceId(resourceId, startTime, endTime): ng.IPromise<any> {
       let fullAlertData = {};
-
       let promise = this.HawkularAlertsManager.queryAlerts({
         statuses: 'OPEN',
         tags: 'resourceId|' + resourceId,

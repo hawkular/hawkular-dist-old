@@ -31,6 +31,9 @@ module Subtab {
   export let SubtabController = _module.controller('Subtab.SubtabController',
     ['$scope', '$rootScope', '$location', 'HawkularNav', 'HawkularInventory',
       ($scope, $rootScope, $location, HawkularNav, HawkularInventory) => {
+        $scope.isExplorerView = () => {
+          return $location.path().indexOf('/hawkular-ui/explorer/view') === 0;
+        };
 
         $scope.isAlertsPage = () => {
           return $location.path().indexOf('/hawkular-ui/alerts-center') === 0;

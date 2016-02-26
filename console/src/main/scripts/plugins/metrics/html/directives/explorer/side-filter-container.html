@@ -1,0 +1,25 @@
+<div>
+  <div class="hk-filter-v-block">
+    <div class="card-pf">
+      <hk-radio-filter config="$ctrl.feedsConfig"
+                     filter-clicked="$ctrl.feedSelected(value)">
+      </hk-radio-filter>
+    </div>
+  </div>
+  <div class="hk-filter-v-block">
+    <div class="card-pf">
+      <hk-radio-filter config="$ctrl.resourceConfig"
+                       filter-clicked="$ctrl.resourceSelected(value)">
+      </hk-radio-filter>
+    </div>
+  </div>
+
+  <div class="hk-filter-v-block">
+    <div class="card-pf">
+      <h3>Resource children tree</h3>
+      <div ng-if="$ctrl.childrenTree.length !== 0">
+        <hk-boot-nav-tree tree-data="$ctrl.childrenTree" on-node-selected="$ctrl.onBranchSelect(branch)"></hk-boot-nav-tree>
+      </div>
+    </div>
+  </div>
+</div>

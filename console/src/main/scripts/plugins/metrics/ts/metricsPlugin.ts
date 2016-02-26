@@ -25,7 +25,7 @@ module HawkularMetrics {
   export let _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ngAnimate', 'ui.select',
     'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5', 'toastr',
     'infinite-scroll', 'mgo-angular-wizard', 'hawkular.charts', 'angular-clipboard', 'patternfly.filters',
-    'patternfly.charts']);
+    'patternfly.charts', 'ngStorage']);
 
   _module.config(['$compileProvider', function($compileProvider) {
     //disable debug info
@@ -216,7 +216,7 @@ module HawkularMetrics {
         controllerAs: 'tc'
       }).
       when('/hawkular-ui/agent-installer/view', { templateUrl: 'plugins/metrics/html/agent-installer.html' }).
-      when('/hawkular-ui/explorer/view', {templateUrl: 'plugins/metrics/html/explorer.html'}).
+      when('/hawkular-ui/explorer/view/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/explorer.html'}).
       otherwise({ redirectTo: '/hawkular-ui/app/app-list' });
   }]);
 

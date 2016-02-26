@@ -21,16 +21,10 @@
 module HawkularMetrics {
 
   export class ExplorerController implements IRefreshable {
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$routeParams',
-          '$modal', '$window', 'HawkularInventory', 'HawkularMetric', 'MetricsService',
-          'ErrorsManager', '$q', '$sessionStorage', '$localStorage'];
-
-    public feeds = ['Test','Data'];
-    //private title:string = 'Hello Explorer';
+    public title: string = 'Metrics Explorer';
     public pleaseWait = true;
     public resourceButtonEnabled = false;
     private selectedFeed;
-    private resources = [];
     private selectedResource;
     private metrics = [];
     private charts = [];
@@ -41,13 +35,20 @@ module HawkularMetrics {
     public endTimeStamp: TimestampInMillis;
     private chartType = [];
     private chartUnit = [];
-
+    public example_treedata: any;
+    public childrenTree: any = [];
+    public alertList: any[] = [];
+    public foo: any;
+    public static get pathDelimiter(): string {return '/r;';}
+    /*@ngInject*/
     constructor(private $location: ng.ILocationService,
                 private $scope: any,
                 private $rootScope: any,
                 private $interval: ng.IIntervalService,
                 private $log: ng.ILogService,
                 private $routeParams: any,
+                private HawkularAlertRouterManager: IHawkularAlertRouterManager,
+                private HawkularNav: any,
                 private $modal: any,
                 private $window: any,
                 private HawkularInventory: any,
@@ -59,16 +60,22 @@ module HawkularMetrics {
                 private $localStorage: any
     ) {
       $scope.exc = this;
-
+      this.example_treedata = [{
+        label: 'Languages',
+        children: [{label: 'Jade'},{label: 'Less'},{label: 'Coffeescript'}]
+      }];
       // Check if we have charts in local storage
       // and set them up if so.
       let tmp = $localStorage.hawkular_charts;
       if (!angular.isUndefined(tmp)) {
         this.charts = tmp;
         _.forEach(tmp, (metric: any) => {
+          this.registerForAlerts(metric.feed, metric.resource);
             this.$log.log('Found metric in storage: ' + metric.id);
         });
         if ($rootScope.currentPersona) {
+          this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
+          this.endTimeStamp = +moment();
           this.refresh();
         } else {
           // No persona yet injected -> wait for it.
@@ -77,11 +84,28 @@ module HawkularMetrics {
         }
       }
 
+      // handle drag ranges on charts to change the time range
+      this.$scope.$on(EventNames.CHART_TIMERANGE_CHANGED, (event, data: Date[]) => {
+        this.changeTimeRange(data);
+      });
+
+      // handle drag ranges on charts to change the time range
+      this.$scope.$on('ContextChartTimeRangeChanged', (event, data: Date[]) => {
+        this.$log.debug('Received ContextChartTimeRangeChanged event' + data);
+        this.changeTimeRange(data);
+      });
+
       this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
       this.endTimeStamp = +moment();
 
       this.autoRefresh(20);
-      this.getFeeds();
+    }
+
+    private changeTimeRange(data: Date[]): void {
+      this.startTimeStamp = data[0].getTime();
+      this.endTimeStamp = data[1].getTime();
+      this.HawkularNav.setTimestampStartEnd(this.startTimeStamp, this.endTimeStamp);
+      this.refresh();
     }
 
     private autoRefreshPromise: ng.IPromise<number>;
@@ -96,57 +120,11 @@ module HawkularMetrics {
       });
     }
 
-    private getFeeds(): any {
-
+    public getMetrics(resource) {
       this.pleaseWait = true;
-
-      this.HawkularInventory.Feed.query({},
-          (aFeedList) => {
-            this.feeds = aFeedList;
-            this.pleaseWait = false;
-            if (!aFeedList.length) {
-              // there are no feeds, no app servers
-              this.feeds = ['Hello', 'World','Eat','More','Bacon'];
-            }
-          });
-    }
-
-    public selectFeed(feed: string): void {
-
-      this.selectedMetric = '';
-      this.selectedResource = '';
-      this.selectedFeed = feed;
-      this.buttonActive = false;
-      this.getResources(feed);
-    }
-
-    private getResources(feed) {
-      this.pleaseWait = true;
-      this.HawkularInventory.ResourceUnderFeed.query({
-          feedId: feed.id
-        },
-        (resourceList) => {
-          this.resources = resourceList;
-          this.pleaseWait = false;
-          // TODO fetch recursive childen too
-        }
-      );
-    };
-
-    public selectResource(resource: string): void {
-
-      this.selectedResource = resource;
-      this.selectedMetric = '';
-      this.buttonActive = false;
-      this.getMetrics(resource);
-    }
-
-    private getMetrics(resource) {
-      this.pleaseWait = true;
-      this.HawkularInventory['ResourceUnderFeed']['getMetrics']({
+      this.HawkularInventory['MetricOfResourceUnderFeed']['get']({
           feedId: this.selectedFeed.id,
-          resourcePath: resource.id
-
+          resourcePath: resource.id.replace(/\//g, '%2F')
         },
         (metricList) => {
           this.metrics = metricList;
@@ -156,11 +134,46 @@ module HawkularMetrics {
     };
 
     public selectMetric(metric) {
-
       this.selectedMetric = metric;
       this.buttonActive = true;
+      this.registerForAlerts(this.selectedFeed, this.selectedResource);
 
      // this.showChart(); // TODO activate only after button press
+    }
+
+    private registerForAlerts(feed, resource) {
+      ExplorerController.stripLastCharactersFromResourceId(resource, 2);
+      this.HawkularAlertRouterManager.registerForAlerts(
+        feed.id + '/' + resource.id,
+        'explorer',
+        _.bind(this.filterAlerts, this)
+      );
+    }
+
+    private static stripLastCharactersFromResourceId(resource, numberOfChars) {
+      if (resource.id.substr(resource.id.length - numberOfChars) === '~~') {
+        resource.id = resource.id.substr(0, resource.id.length - numberOfChars);
+      }
+    }
+
+    private getAlerts(): void {
+      _.forEach(this.charts, (oneChart) => {
+        if (oneChart.hasOwnProperty('feed') && oneChart.hasOwnProperty('resource')) {
+          this.HawkularAlertRouterManager.getAlertsForResourceId(
+              oneChart.feed.id + '/' + oneChart.resource.id,
+                this.startTimeStamp,
+                this.endTimeStamp
+          );
+        }
+      });
+    }
+
+    public filterAlerts(alertData: IHawkularAlertQueryResult) {
+      let deploymentAlerts = alertData.alertList;
+      _.forEach(deploymentAlerts, (item) => {
+        item['alertType'] = item.context.alertType;
+      });
+      this.alertList = this.alertList.concat(deploymentAlerts);
     }
 
     public showChart() {
@@ -170,6 +183,8 @@ module HawkularMetrics {
       // Only add if not empty and not yet in the array.
       if (this.selectedMetric != null && this.selectedMetric !== '' &&
            this.charts.indexOf(this.selectedMetric) === -1) {
+        this.selectedMetric['resource'] = _.cloneDeep(this.selectedResource);
+        this.selectedMetric['feed'] = _.cloneDeep(this.selectedFeed);
         this.addNewChartToController(this.selectedMetric);
         this.addMetricToStorage();
         this.refresh();
@@ -192,67 +207,62 @@ module HawkularMetrics {
         if (index > -1) {
           this.chartData.splice(index,1);
         }
-
         this.refresh();
-
       }
     }
 
     public refresh() {
-      if (this.charts == null) {
-        return;
-      }
+      this.alertList = [];
+      this.getAlerts();
+      this.getMetricData();
+    }
 
+    public getMetricData() {
       _.forEach(this.charts, (res: any) => {
-          let theId = res.id;
-          // TODO potentially replace with MetricsService....
-          if (res.type.type === 'GAUGE') {
-            this.HawkularMetric.GaugeMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-              gaugeId: theId,
-              start: this.startTimeStamp,
-              end: this.endTimeStamp,
-              buckets: 120
-            }, (data) => {
-//              this.$log.log('Got data: ' + data);
-
-              if (data.length) {
-                let scale = 1 /  MetricsService.getMultiplier(data);
-                this.chartData[theId] = MetricsService.formatBucketedChartOutput(data,scale);
-              }
-            }, this);
-
-          } else if (res.type.type === 'COUNTER') {
-            this.HawkularMetric.CounterMetricData(this.$rootScope.currentPersona.id).queryMetrics({
-              counterId: theId,
-              start: this.startTimeStamp,
-              end: this.endTimeStamp,
-              buckets: 120
-            }, (data) => {
-//              this.$log.log('Got data: ' + data);
-
-              if (data.length) {
-
-                this.chartData[theId] = MetricsService.formatBucketedChartOutput(data);
-              }
-            }, this);
-          } else if (res.type.type === 'AVAILABILITY') {
-            this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
-              availabilityId: theId,
-              start: this.startTimeStamp,
-              end: this.endTimeStamp,
-              buckets: 120
-            }, (data) => {
-//              this.$log.log('Got data: ' + data);
-
-              if (data.length) {
-                this.chartData[theId] = MetricsService.formatBucketedChartOutput(data);
-              }
-            }, this);
-
+        if (res.type.type === 'GAUGE') {
+          this.MetricsService.retrieveGaugeMetrics(this.$rootScope.currentPersona.id,
+            res.id,
+            this.startTimeStamp,
+            this.endTimeStamp,
+            60
+          ).then((data) => {
+            this.formatChartGaugeData(res.id, data);
+          });
+        } else if (res.type.type === 'COUNTER') {
+          this.MetricsService.retrieveCounterMetrics(this.$rootScope.currentPersona.id,
+            res.id,
+            this.startTimeStamp,
+            this.endTimeStamp,
+            60
+          ).then((data) => {
+            this.formatChartData(res.id, data);
+          });
+        } else if (res.type.type === 'AVAILABILITY') {
+          this.MetricsService.retrieveAvailabilityMetrics(this.$rootScope.currentPersona.id,
+            res.id,
+            this.startTimeStamp,
+            this.endTimeStamp,
+            60
+          ).then((data) => {
+            this.formatChartData(res.id, data);
+          });
         } else {
           this.$log.log('Unknown type ' + res.type.type);
         }
       });
+    }
+
+    private formatChartGaugeData(resourceId, data) {
+      if (data.length) {
+        let scale = 1 /  MetricsService.getMultiplier(data);
+        this.chartData[resourceId] = MetricsService.formatBucketedChartOutput(data,scale);
+      }
+    }
+
+    private formatChartData(resourceId, data) {
+      if (data.length) {
+        this.chartData[resourceId] = MetricsService.formatBucketedChartOutput(data);
+      }
     }
 
     private addMetricToStorage(): void {
