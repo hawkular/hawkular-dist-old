@@ -323,11 +323,11 @@ module HawkularMetrics {
 
   _module.service('hkTimeUnit', HawkularMetrics.HkTimeUnit.Factory());
   _module.service('hkTime', HawkularMetrics.HkTime);
-  _module.directive('hkFieldsetNotification', HawkularMetrics.HkFieldsetNotification.Factory());
-  _module.directive('hkAlertPanelList', HawkularMetrics.HkAlertPanelList.Factory());
-  _module.directive('hkAlertPanel', HawkularMetrics.HkAlertPanel.Factory());
-  _module.directive('hkTimeInterval', HawkularMetrics.HkTimeInterval.Factory());
-  _module.directive('hkFieldsetDampening', HawkularMetrics.HkFieldsetDampening.Factory());
-  _module.directive('hkAlertInfo', HawkularMetrics.HkAlertInfo.Factory());
-  _module.directive('hkAlertSummary', HawkularMetrics.HkAlertSummary.Factory());
+  _module.directive('hkFieldsetNotification', [HawkularMetrics.HkFieldsetNotification.Factory()]);
+  _module.directive('hkAlertPanelList', [HawkularMetrics.HkAlertPanelList.Factory()]);
+  _module.directive('hkAlertPanel', [HawkularMetrics.HkAlertPanel.Factory()]);
+  _module.directive('hkTimeInterval', [HawkularMetrics.HkTimeInterval.Factory()]);
+  _module.directive('hkFieldsetDampening', [HawkularMetrics.HkFieldsetDampening.Factory()]);
+  _module.directive('hkAlertInfo', [HawkularMetrics.HkAlertInfo.Factory()]);
+  _module.directive('hkAlertSummary', [HawkularMetrics.HkAlertSummary.Factory()]);
 }

@@ -256,7 +256,7 @@ module HawkularMetrics {
       }, this);
       this.$q.all(availPromises).then((data) => {
         let tmpChartFileSystemData = {};
-        _.forEach(data, (item) => {
+        _.forEach(data, (item: any) => {
           if (!tmpChartFileSystemData[item.fileStoreId]) {
             tmpChartFileSystemData[item.fileStoreId] = [];
           }

@@ -129,7 +129,7 @@ module HawkularTopology {
 
       const extractServerId = (id: string): string => id.substring(0, id.indexOf('/')) + '~';
       const extractFeedId = (path: string): string => {
-        const feedChunk = path.split('/').filter((chunk) => chunk.startsWith('f;'));
+        const feedChunk = path.split('/').filter((chunk) => _.startsWith(chunk, 'f;'));
         return feedChunk.length === 1 && feedChunk[0] ? feedChunk[0].slice(2) : 'localhost';
       };
 
@@ -154,7 +154,7 @@ module HawkularTopology {
             return;
           }
           let previousServerId;
-          angular.forEach(flatResources, (res) => {
+          angular.forEach(flatResources, (res: any) => {
             const feedId = extractFeedId(res.path);
             const newItem = {
               kind: this.typeToKind[res.type.id],

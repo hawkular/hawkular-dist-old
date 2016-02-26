@@ -157,7 +157,7 @@ module HawkularMetrics {
           if (res.id.indexOf(this.$routeParams.resourceId + '~/') === 0) {
             tmpResourceList.push(res);
             res.feedId = this.$routeParams.feedId;
-            res.selected = _.result(_.find(this.resourceList, { 'id': res.id }), 'selected');
+            res.selected = _.result(_.find(this.resourceList, { 'id': res.id }), 'selected') !== undefined;
             promises.push(this.HawkularMetric.AvailabilityMetricData(this.$rootScope.currentPersona.id).query({
               tenantId: tenantId,
               availabilityId: MetricsService.getMetricId('A', res.feedId, res.id,

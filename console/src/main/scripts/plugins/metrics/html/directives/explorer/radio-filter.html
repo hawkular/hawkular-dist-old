@@ -1,0 +1,17 @@
+<div>
+  <button class="btn-link hk-label-heading" ng-click="isCollapsed = !isCollapsed">
+    <i class="fa fa-minus-square"></i>
+    {{config.title}}
+  </button>
+  <div collapse="isCollapsed">
+    <div ng-repeat="value in config.values" class="radio">
+      <label>
+        <input type="radio"
+               name="{{config.title}}"
+               ng-model="checked"
+               ng-checked="false"
+               ng-click="filterClicked({value: value})"> {{value.id}}
+      </label>
+    </div>
+  </div>
+</div>

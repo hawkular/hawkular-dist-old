@@ -22,6 +22,9 @@
     <a href="/hawkular-ui/btm">Business Transactions</a>
   </li>
   <!-- BTM INTEGRATION FINISH -->
+  <li ng-class="getClass('/hawkular-ui/metric-explorer/')" ng-show="$root.isExperimental">
+    <a href="/hawkular-ui/explorer/view/{{hkParams.timeOffset}}">Explorer</a>
+  </li>
   <li class="pull-right">
     <hk-message-center></hk-message-center>
   </li>

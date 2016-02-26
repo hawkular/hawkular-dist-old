@@ -26,7 +26,7 @@ module HawkularMetrics {
   _module.directive('hkValidFile', function() {
     return {
       require: 'ngModel',
-      link: function(scope, el, attrs, ngModel) {
+      link: function(scope: any, el: any, attrs: any, ngModel: any) {
         //change event is fired when file is selected
         el.bind('change', function() {
           scope.$apply(function() {

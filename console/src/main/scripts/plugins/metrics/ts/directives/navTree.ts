@@ -19,16 +19,33 @@
 /// <reference path="../../includes.ts"/>
 
 module HawkularMetrics {
-
-  class HkAlertNotification {
-
-    public controller: ($scope: any) => void;
-    public templateUrl = 'plugins/metrics/html/directives/alert-setup-notification.html';
+  export class HkNavTreeDirective {
+    public link = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+      angular.element(document).ready(function () {
+        scope.$slider = $(element)['treeview']({
+          collapseIcon: 'fa fa-angle-down',
+          data: scope.treeData,
+          expandIcon: 'fa fa-angle-right',
+          emptyIcon: 'fa fa-file',
+          showIcon: false,
+          levels: 1,
+          onNodeSelected: (event, data) => {
+            scope.onNodeSelected({branch: data});
+          },
+          showBorder: false
+        });
+      });
+    };
+    public template = '<div></div>';
     public replace = 'true';
+    public scope = {
+      treeData: '=',
+      onNodeSelected: '&'
+    };
 
     public static Factory() {
       let directive = () => {
-        return new HkAlertNotification();
+        return new HkNavTreeDirective();
       };
 
       directive['$inject'] = [];
@@ -37,5 +54,5 @@ module HawkularMetrics {
     }
   }
 
-  _module.directive('hkAlertNotification', [HkAlertNotification.Factory()]);
+  _module.directive('hkBootNavTree', [HkNavTreeDirective.Factory()]);
 }
