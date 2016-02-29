@@ -18,7 +18,7 @@
     <div class="card-pf">
       <h3>Resource children tree</h3>
       <div ng-if="$ctrl.childrenTree.length !== 0">
-        <hk-boot-nav-tree tree-data="$ctrl.childrenTree" on-node-selected="$ctrl.onBranchSelect(branch)"></hk-boot-nav-tree>
+        <hk-boot-nav-tree tree-data="$ctrl.childrenTree" on-node-selected="$ctrl.onLoadMetrics(resource)"></hk-boot-nav-tree>
       </div>
     </div>
   </div>
