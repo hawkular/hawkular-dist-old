@@ -20,14 +20,13 @@
 
 module HawkularMetrics {
 
-  export class ViewController {
+  export class ViewContainerController {
     public viewClass: string;
     constructor(private $scope: any,
                 private $rootScope: any,
                 private $location: ng.ILocationService
     ) {
       const viewClasses = {
-        'app-list': 'container-fluid',
         'explorer/view': 'container-fluid'
       };
       Object.freeze(viewClasses);
@@ -48,11 +47,11 @@ module HawkularMetrics {
         }
       });
       if (!changed) {
-        this.viewClass = ViewController.defaultClass;
+        this.viewClass = ViewContainerController.defaultClass;
       }
     }
     public static get defaultClass(): string { return 'container'; }
   }
 
-  _module.controller('HawkularMetrics.ViewController', ViewController);
+  _module.controller('HawkularMetrics.ViewContainerController', ViewContainerController);
 }

@@ -46,6 +46,7 @@ module HawkularMetrics {
     }
 
     public feedSelected(feed) {
+      this.selectedResource = null;
       this.HawkularInventory.ResourceUnderFeed.query({
         feedId: feed.id
       }).$promise.then((resourceList) => {
@@ -55,29 +56,26 @@ module HawkularMetrics {
     }
 
     public resourceSelected(resource) {
-      this.selectedResource = resource;
-      if (this.hasOwnProperty('loadMetrics') && typeof this['loadMetrics'] === 'function') {
-        this['loadMetrics']({resource: this.selectedResource});
-      }
+      this.onLoadMetrics(resource);
       this.fetchResourceChildren(resource, this.selectedFeed);
     }
 
     private fetchResourceChildren(resource, feed) {
       this.HawkularInventory.ResourceRecursiveChildrenUnderFeed.get({
         feedId: feed.id,
-        resourcePath: resource.id
+        resourcePath: resource.id.replace(/\//g, '%2F')
       }).$promise.then((children) => {
-        let preffix = feed.id + ExplorerController.pathDelimiter;
+        let preffix = feed.id + InventoryExplorerController.pathDelimiter;
         let grouppedChildren = _.groupBy(children, (item: any) => item.path.substring(
           item.path.lastIndexOf(preffix) + preffix.length,
-          item.path.lastIndexOf(ExplorerController.pathDelimiter))
+          item.path.lastIndexOf(InventoryExplorerController.pathDelimiter))
         );
-        const orderedChildren = {};
-        Object.keys(grouppedChildren).sort().forEach(function(key) {
+        let orderedChildren = {};
+        Object.keys(grouppedChildren).sort().forEach((key) => {
           orderedChildren[key] = grouppedChildren[key];
         });
         let childrenAsTree = _.reduce(orderedChildren, (curr: any, value: any, key: string) => {
-          const path = key.split(ExplorerController.pathDelimiter);
+          const path = key.split(InventoryExplorerController.pathDelimiter);
           if (path.length === 1) {
             curr.text = SideFilterController.stripSpecialCharsFromLabel(path[0]);
             curr.nodes = SideFilterController.fillChildrenNodes(value);
@@ -97,8 +95,7 @@ module HawkularMetrics {
     }
 
     private static stripSpecialCharsFromLabel(childId): string {
-      let label = childId;
-      label = label.substring(label.lastIndexOf('/') + 1, label.length);
+      let label = childId.substring(childId.lastIndexOf('/') + 1, childId.length);
       label = (label.lastIndexOf('%2F') !== -1)
         ? label.substring(label.lastIndexOf('%2F') + '%2F'.length, label.length)
         : label;
@@ -125,8 +122,11 @@ module HawkularMetrics {
       }
     }
 
-    public onBranchSelect(branch) {
-      this.selectedResource = branch;
+    private onLoadMetrics(resource) {
+      resource.resourcePath = resource.path.substr(
+        resource.path.indexOf(this.selectedFeed.id) + this.selectedFeed.id.length
+      );
+      this.selectedResource = resource;
       if (this.hasOwnProperty('loadMetrics') && typeof this['loadMetrics'] === 'function') {
         this['loadMetrics']({resource: this.selectedResource});
       }

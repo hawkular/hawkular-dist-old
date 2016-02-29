@@ -21,20 +21,25 @@
 module HawkularMetrics {
   export class HkNavTreeDirective {
     public link = (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
-      angular.element(document).ready(function () {
-        scope.$slider = $(element)['treeview']({
-          collapseIcon: 'fa fa-angle-down',
-          data: scope.treeData,
-          expandIcon: 'fa fa-angle-right',
-          emptyIcon: 'fa fa-file',
-          showIcon: false,
-          levels: 1,
-          onNodeSelected: (event, data) => {
-            scope.onNodeSelected({branch: data});
-          },
-          showBorder: false
-        });
+      scope.$watch('treeData',() => {
+        scope.onRefresh();
       });
+      scope.onRefresh = () => {
+        angular.element(document).ready(function () {
+          scope.$slider = $(element)['treeview']({
+            collapseIcon: 'fa fa-angle-down',
+            data: scope.treeData,
+            expandIcon: 'fa fa-angle-right',
+            emptyIcon: 'fa fa-file',
+            showIcon: false,
+            levels: 1,
+            onNodeSelected: (event, data) => {
+              scope.onNodeSelected({resource: data});
+            },
+            showBorder: false
+          });
+        });
+      };
     };
     public template = '<div></div>';
     public replace = 'true';

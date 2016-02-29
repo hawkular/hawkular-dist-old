@@ -1,5 +1,5 @@
-<div ng-controller="ExplorerController as exc">
-  <div class="hk-sidebar hk-explorer-sidebar">
+<div ng-controller="InventoryExplorerController as exc">
+  <div class="hk-sidebar hk-explorer-sidebar" >
     <hk-side-filter-container selected-feed="exc.selectedFeed"
                               selected-resource="exc.selectedResource"
                               load-metrics="exc.getMetrics(resource)"></hk-side-filter-container>
@@ -14,13 +14,13 @@
                   <div class="col-md-4">
                      <div class="card-pf">
                       <h3>Selected Feed</h3>
-                      <div class="card-pf-title">{{exc.selectedFeed.id}}</div>
+                      <span class="hk-selected-resource">{{exc.selectedFeed.id}}</span>
                      </div>
                   </div>
                   <div class="col-md-4">
                     <div class="card-pf">
                       <h3>Selected Resource</h3>
-                      <div class="card-pf-title">{{exc.selectedResource.id}}</div>
+                      <span class="hk-selected-resource">{{exc.selectedResource.id}}</span>
                     </div>
                   </div>
                   <div class="col-md-4">
@@ -35,7 +35,7 @@
                               </li>
                           </ul>
                       </div>
-                      <div class="card-pf-title">{{exc.selectedMetric.name}}</div>
+                      <span class="hk-selected-resource">{{exc.selectedMetric.name}}</span>
                     </div>
                   </div>
               </div>

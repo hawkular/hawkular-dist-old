@@ -20,7 +20,7 @@
 
 module HawkularMetrics {
 
-  export class ExplorerController implements IRefreshable {
+  export class InventoryExplorerController implements IRefreshable {
     public title: string = 'Metrics Explorer';
     public pleaseWait = true;
     public resourceButtonEnabled = false;
@@ -71,7 +71,7 @@ module HawkularMetrics {
         this.charts = tmp;
         _.forEach(tmp, (metric: any) => {
           this.registerForAlerts(metric.feed, metric.resource);
-            this.$log.log('Found metric in storage: ' + metric.id);
+          this.$log.log('Found metric in storage: ' + metric.id);
         });
         if ($rootScope.currentPersona) {
           this.startTimeStamp = +moment().subtract(($routeParams.timeOffset || 3600000), 'milliseconds');
@@ -122,9 +122,11 @@ module HawkularMetrics {
 
     public getMetrics(resource) {
       this.pleaseWait = true;
+      this.selectedMetric = null;
+      this.buttonActive = false;
       this.HawkularInventory['MetricOfResourceUnderFeed']['get']({
           feedId: this.selectedFeed.id,
-          resourcePath: resource.id.replace(/\//g, '%2F')
+          resourcePath: resource.resourcePath.replace(/\/r;/g, '/').slice(1)
         },
         (metricList) => {
           this.metrics = metricList;
@@ -142,7 +144,7 @@ module HawkularMetrics {
     }
 
     private registerForAlerts(feed, resource) {
-      ExplorerController.stripLastCharactersFromResourceId(resource, 2);
+      InventoryExplorerController.stripLastCharactersFromResourceId(resource, 2);
       this.HawkularAlertRouterManager.registerForAlerts(
         feed.id + '/' + resource.id,
         'explorer',
@@ -177,9 +179,6 @@ module HawkularMetrics {
     }
 
     public showChart() {
-      this.$log.log('showChart');
-      this.$log.log(this.selectedMetric);
-
       // Only add if not empty and not yet in the array.
       if (this.selectedMetric != null && this.selectedMetric !== '' &&
            this.charts.indexOf(this.selectedMetric) === -1) {
@@ -277,6 +276,6 @@ module HawkularMetrics {
   //  });
   //}]);
 
-  _module.controller('ExplorerController', ExplorerController);
+  _module.controller('InventoryExplorerController', InventoryExplorerController);
 
 }
