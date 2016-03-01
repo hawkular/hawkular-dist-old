@@ -211,6 +211,7 @@ module HawkularMetrics {
     }
 
     public refresh() {
+      this.$rootScope.lastUpdateTimestamp = new Date();
       this.alertList = [];
       this.getAlerts();
       this.getMetricData();
