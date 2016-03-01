@@ -1,7 +1,7 @@
 <div class="card-pf card-pf-utilization">
   <div class="card-pf-heading">
-    <p class="card-pf-heading-details hk-definitions-link">{{startTimeStamp | date:'d MMM yyyy'}}, {{startTimeStamp |
-      date:'HH:mm'}} - {{endTimeStamp | date:'HH:mm'}}</p>
+    <p class="card-pf-heading-details hk-definitions-link"><span>{{startTimeStamp | date:'d MMM yyyy'}}, {{startTimeStamp |
+      date:'HH:mm'}} -{{vm.parseDayFromTimestamp(endTimeStamp)}} {{endTimeStamp | date:'HH:mm'}}</span></p>
     <h2 class="card-pf-title">Status Overview</h2>
   </div>
   <div class="card-pf-body">

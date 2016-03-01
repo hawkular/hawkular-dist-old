@@ -92,9 +92,9 @@ module HawkularMetrics {
       this.feedId = this.$routeParams.feedId;
       this.resourceId = this.$routeParams.resourceId + '~~';
       let selectedTime = $routeParams.timeOffset || 3600000;
+      this.endTimeStamp = $routeParams.hasOwnProperty('endTime') ? parseInt($routeParams.endTime, 10) : +moment();
       this.alertRound = selectedTime / AppServerOverviewDetailsController.ALERTS_PER_PAGE;
-      this.startTimeStamp = +moment().subtract(selectedTime, 'milliseconds');
-      this.endTimeStamp = +moment();
+      this.startTimeStamp = +moment(this.endTimeStamp).subtract(selectedTime, 'milliseconds');
       $scope.vm = this;
       this.HawkularAlertRouterManager.registerForAlerts(
         this.$routeParams.feedId + '/' + this.$routeParams.resourceId,
@@ -190,10 +190,12 @@ module HawkularMetrics {
             _.forEach(resource, (item) => {
               item['value'] = item['avg'];
             });
-            let latestData = _.last(resource);
+            let latestData: any = _.last(resource);
             resourceData['activeWebSessions']['graph'] =
               MetricsService.formatBucketedChartOutput(resource, AppServerJvmDetailsController.BYTES2MB);
-            resourceData['activeWebSessions']['last'] = +latestData['avg'].toFixed(2);
+            if (latestData.avg !== 'NaN') {
+              resourceData['activeWebSessions']['last'] = +latestData.avg.toFixed(2);
+            }
           }
         })
       );

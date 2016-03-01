@@ -20,6 +20,28 @@
 
 module HawkularMetrics {
   export class StatusOverviewController {
+    constructor(private $filter: ng.IFilterService) {}
+
+    public parseDayFromTimestamp(timestamp): string {
+      const dateFilter = this.$filter('date');
+      const parsedDate = new Date(timestamp);
+      const today = new Date();
+      const yesterday = new Date();
+      yesterday.setDate(today.getDate() - 1);
+      if (StatusOverviewController.isSameDayMonthYear(parsedDate, yesterday)) {
+        return 'Yesterday';
+      } else if (StatusOverviewController.isSameDayMonthYear(parsedDate, today)) {
+        return 'Today';
+      } else {
+        return dateFilter(timestamp, 'd MMM yyyy');
+      }
+    }
+
+    private static isSameDayMonthYear(firstDate, secondDate): boolean {
+      return firstDate.getFullYear() === secondDate.getFullYear()
+      && firstDate.getMonth() === secondDate.getMonth()
+      && firstDate.getDate() === secondDate.getDate();
+    }
 
     public initPie(data) {
       const used = Math.round(data.inUseCount.value / (data.inUseCount.value + data.availableCount.value) * 100 || 0);
