@@ -23,24 +23,15 @@ module HawkularMetrics {
     constructor(private $filter: ng.IFilterService) {}
 
     public parseDayFromTimestamp(timestamp): string {
-      const dateFilter = this.$filter('date');
-      const parsedDate = new Date(timestamp);
-      const today = new Date();
-      const yesterday = new Date();
-      yesterday.setDate(today.getDate() - 1);
-      if (StatusOverviewController.isSameDayMonthYear(parsedDate, yesterday)) {
-        return 'Yesterday';
-      } else if (StatusOverviewController.isSameDayMonthYear(parsedDate, today)) {
+      const parsedDate = moment(timestamp).startOf('day');
+      const today = moment().startOf('day');
+      if (today.diff(parsedDate) === 0) {
         return 'Today';
+      } else if (today.add(-1, 'days').startOf('day').diff(parsedDate) === 0) {
+        return 'Yesterday';
       } else {
-        return dateFilter(timestamp, 'd MMM yyyy');
+        return moment(timestamp).format('D MMM YYYY');
       }
-    }
-
-    private static isSameDayMonthYear(firstDate, secondDate): boolean {
-      return firstDate.getFullYear() === secondDate.getFullYear()
-      && firstDate.getMonth() === secondDate.getMonth()
-      && firstDate.getDate() === secondDate.getDate();
     }
 
     public initPie(data) {
