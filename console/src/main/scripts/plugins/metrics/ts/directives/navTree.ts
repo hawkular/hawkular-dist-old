@@ -25,8 +25,8 @@ module HawkularMetrics {
         scope.onRefresh();
       });
       scope.onRefresh = () => {
-        angular.element(document).ready(function () {
-          scope.$slider = $(element)['treeview']({
+        angular.element(document).ready(() => {
+          $(element)['treeview']({
             collapseIcon: 'fa fa-angle-down',
             data: scope.treeData,
             expandIcon: 'fa fa-angle-right',

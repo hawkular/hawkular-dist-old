@@ -27,7 +27,7 @@ module HawkularMetrics {
                 private $location: ng.ILocationService
     ) {
       const viewClasses = {
-        'explorer/view': 'container-fluid'
+        'explorer/view': 'container'
       };
       Object.freeze(viewClasses);
       $scope.$watch(() => {

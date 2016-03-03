@@ -22,23 +22,17 @@ module HawkularMetrics {
 
   export class InventoryExplorerController implements IRefreshable {
     public title: string = 'Metrics Explorer';
-    public pleaseWait = true;
-    public resourceButtonEnabled = false;
     private selectedFeed;
     private selectedResource;
-    private metrics = [];
     private charts = [];
     private chartData = [];
     private selectedMetric;
-    private buttonActive = false;
     public startTimeStamp: TimestampInMillis;
     public endTimeStamp: TimestampInMillis;
     private chartType = [];
     private chartUnit = [];
     public example_treedata: any;
-    public childrenTree: any = [];
     public alertList: any[] = [];
-    public foo: any;
     public static get pathDelimiter(): string {return '/r;';}
     /*@ngInject*/
     constructor(private $location: ng.ILocationService,
@@ -120,27 +114,9 @@ module HawkularMetrics {
       });
     }
 
-    public getMetrics(resource) {
-      this.pleaseWait = true;
-      this.selectedMetric = null;
-      this.buttonActive = false;
-      this.HawkularInventory['MetricOfResourceUnderFeed']['get']({
-          feedId: this.selectedFeed.id,
-          resourcePath: resource.resourcePath.replace(/\/r;/g, '/').slice(1)
-        },
-        (metricList) => {
-          this.metrics = metricList;
-          this.pleaseWait = false;
-        }
-      );
-    };
-
-    public selectMetric(metric) {
-      this.selectedMetric = metric;
-      this.buttonActive = true;
+    public activateMetric() {
+      this.showChart();
       this.registerForAlerts(this.selectedFeed, this.selectedResource);
-
-     // this.showChart(); // TODO activate only after button press
     }
 
     private registerForAlerts(feed, resource) {
@@ -266,17 +242,9 @@ module HawkularMetrics {
     }
 
     private addMetricToStorage(): void {
-        this.$log.log('addMetricToStorage');
       this.$localStorage.hawkular_charts = this.charts;
     }
   }
 
-  //_module.config(['ngClipProvider', (ngClipProvider) => {
-  //  ngClipProvider.setConfig({
-  //    zIndex: 50
-  //  });
-  //}]);
-
   _module.controller('InventoryExplorerController', InventoryExplorerController);
-
 }
