@@ -287,9 +287,14 @@
 
       <!-- BTM INTEGRATION START -->
       <jms-topic name="BusinessTransactions" entries="java:/BusinessTransactions"/>
-      <jms-topic name="CompletionTimes" entries="java:/CompletionTimes"/>
+      <jms-topic name="CommunicationDetails" entries="java:/CommunicationDetails"/>
+      <jms-topic name="BTxnCompletionTimes" entries="java:/BTxnCompletionTimes"/>
+      <jms-topic name="FragmentCompletionTimes" entries="java:/FragmentCompletionTimes"/>
       <jms-topic name="NodeDetails" entries="java:/NodeDetails"/>
       <jms-topic name="Notifications" entries="java:/Notifications"/>
+
+      <!-- Retained for smooth migration from 0.7.1 to 0.7.3. Can be removed after upgrade to BTM 0.7.3.Final -->
+      <jms-topic name="CompletionTimes" entries="java:/CompletionTimes"/>
       <!-- BTM INTEGRATION FINISH -->
     </xsl:copy>
   </xsl:template>
