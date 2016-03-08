@@ -1,25 +1,47 @@
-<div>
-  <div class="hk-filter-v-block">
-    <div class="card-pf">
-      <hk-radio-filter config="$ctrl.feedsConfig"
-                     filter-clicked="$ctrl.feedSelected(value)">
-      </hk-radio-filter>
-    </div>
+<div class="card-pf">
+  <div class="card-pf-title">
+    Select and add chart
   </div>
-  <div class="hk-filter-v-block">
-    <div class="card-pf">
-      <hk-radio-filter config="$ctrl.resourceConfig"
-                       filter-clicked="$ctrl.resourceSelected(value)">
-      </hk-radio-filter>
-    </div>
-  </div>
+  <div class="card-pf-body">
+    <div class="row">
 
-  <div class="hk-filter-v-block">
-    <div class="card-pf">
-      <h3>Resource children tree</h3>
-      <div ng-if="$ctrl.childrenTree.length !== 0">
-        <hk-boot-nav-tree tree-data="$ctrl.childrenTree" on-node-selected="$ctrl.onLoadMetrics(resource)"></hk-boot-nav-tree>
+      <div class="col-sm-3">
+        <hk-radio-filter config="$ctrl.feedsConfig"
+                       filter-clicked="$ctrl.feedSelected(resource)">
+        </hk-radio-filter>
       </div>
+
+      <div class="col-sm-3">
+        <hk-radio-filter config="$ctrl.resourceConfig"
+                         filter-clicked="$ctrl.resourceSelected(resource)">
+        </hk-radio-filter>
+        <hk-resource-tree on-load-metrics="$ctrl.onLoadMetrics(resource)"
+                          selected-feed="$ctrl.selectedFeed"
+                          selected-resource="$ctrl.selectedResource">
+        </hk-resource-tree>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="dropdown" dropdown>
+            <button id="btn-metric" type="button" class="btn btn-default" dropdown-toggle>
+                Metric <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
+                <li ng-repeat="metric in $ctrl.metrics" role="presentation">
+                    <a role="menutitem" href="#" ng-click="$ctrl.selectMetric(metric)">{{ metric.name }}</a>
+                </li>
+            </ul>
+        </div>
+        <span class="hk-selected-resource">{{$ctrl.selectedMetric.name}}</span>
+      </div>
+
+      <div class="col-sm-3">
+        <button id="btn-add" type="button" class="btn btn-primary"
+                ng-click="$ctrl.onActivateMetric()" ng-disabled="!$ctrl.buttonActive">
+            Add Chart
+        </button>
+      </div>
+
     </div>
   </div>
 </div>
