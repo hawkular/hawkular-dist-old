@@ -41,7 +41,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="/*[name()='server']/*[name()='system-properties']/*[name()='property'][@name='keycloak.import']">
+  <xsl:template match="/*[local-name()='server']/*[local-name()='system-properties']/*[local-name()='property'][@name='keycloak.import']">
     <xsl:choose>
       <xsl:when test="$kettle.build.type='dev'">
         <property>
@@ -273,6 +273,7 @@
       <xsl:attribute name="name">default</xsl:attribute>
       <statistics enabled="true"/>
       <xsl:apply-templates select="@*|node()"/>
+
       <jms-topic name="HawkularInventoryChanges" entries="java:/topic/HawkularInventoryChanges"/>
       <jms-topic name="HawkularAlertData" entries="java:/topic/HawkularAlertData"/>
       <jms-topic name="HawkularMetricData" entries="java:/topic/HawkularMetricData"/>
@@ -285,13 +286,26 @@
       <jms-queue name="hawkular/metrics/counters/new" entries="java:/queue/hawkular/metrics/counters/new"/>
       <jms-queue name="hawkular/metrics/availability/new" entries="java:/queue/hawkular/metrics/availability/new"/>
 
-      <!-- BTM INTEGRATION START -->
+      <xsl:comment> Required by Hawkular BTM </xsl:comment>
       <jms-topic name="BusinessTransactions" entries="java:/BusinessTransactions"/>
-      <jms-topic name="CompletionTimes" entries="java:/CompletionTimes"/>
+      <jms-topic name="CommunicationDetails" entries="java:/CommunicationDetails"/>
+      <jms-topic name="BTxnCompletionTimes" entries="java:/BTxnCompletionTimes"/>
+      <jms-topic name="FragmentCompletionTimes" entries="java:/FragmentCompletionTimes"/>
       <jms-topic name="NodeDetails" entries="java:/NodeDetails"/>
       <jms-topic name="Notifications" entries="java:/Notifications"/>
-      <!-- BTM INTEGRATION FINISH -->
     </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="node()[local-name()='cache-container'][last()]">
+
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+    <cache-container name="btm" jndi-name="infinispan/BTM">
+      <local-cache name="communicationdetails"/>
+      <local-cache name="producerinfo"/>
+    </cache-container>
+
   </xsl:template>
 
   <!-- A temporary fix to avoid WARN AMQ212053: CompletionListener/SendAcknowledgementHandler used with confirmationWindowSize=-1. ...
