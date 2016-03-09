@@ -1,23 +1,28 @@
 <div class="card-pf">
-  <div class="card-pf-title">
-    Select and add chart
+  <div class="panel-heading">
+    <a class="hk-heading hk-body-collapse-title" href="#" ng-click="sfCtrl.isExpandedBody = !sfCtrl.isExpandedBody">
+      <span class="hk-align-i-to-text">
+        <i class="fa fa-chevron-circle-right" ng-class="sfCtrl.isExpandedBody ? 'fa-chevron-circle-down' : 'fa-chevron-circle-right'" style=""></i>
+      </span>
+      Select and add chart
+    </a>
   </div>
-  <div class="card-pf-body">
+  <div class="card-pf-body" collapse="!sfCtrl.isExpandedBody">
     <div class="row">
 
       <div class="col-sm-3">
-        <hk-radio-filter config="$ctrl.feedsConfig"
-                       filter-clicked="$ctrl.feedSelected(resource)">
+        <hk-radio-filter config="sfCtrl.feedsConfig"
+                       filter-clicked="sfCtrl.feedSelected(resource)">
         </hk-radio-filter>
       </div>
 
       <div class="col-sm-3">
-        <hk-radio-filter config="$ctrl.resourceConfig"
-                         filter-clicked="$ctrl.resourceSelected(resource)">
+        <hk-radio-filter config="sfCtrl.resourceConfig"
+                         filter-clicked="sfCtrl.resourceSelected(resource)">
         </hk-radio-filter>
-        <hk-resource-tree on-load-metrics="$ctrl.onLoadMetrics(resource)"
-                          selected-feed="$ctrl.selectedFeed"
-                          selected-resource="$ctrl.selectedResource">
+        <hk-resource-tree on-load-metrics="sfCtrl.onLoadMetrics(resource)"
+                          selected-feed="sfCtrl.selectedFeed"
+                          selected-resource="sfCtrl.selectedResource">
         </hk-resource-tree>
       </div>
 
@@ -27,17 +32,17 @@
                 Metric <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
-                <li ng-repeat="metric in $ctrl.metrics" role="presentation">
-                    <a role="menutitem" href="#" ng-click="$ctrl.selectMetric(metric)">{{ metric.name }}</a>
+                <li ng-repeat="metric in sfCtrl.metrics" role="presentation">
+                    <a role="menutitem" href="#" ng-click="sfCtrl.selectMetric(metric)">{{ metric.name }}</a>
                 </li>
             </ul>
         </div>
-        <span class="hk-selected-resource">{{$ctrl.selectedMetric.name}}</span>
+        <span class="hk-selected-resource">{{sfCtrl.selectedMetric.name}}</span>
       </div>
 
       <div class="col-sm-3">
         <button id="btn-add" type="button" class="btn btn-primary"
-                ng-click="$ctrl.onActivateMetric()" ng-disabled="!$ctrl.buttonActive">
+                ng-click="sfCtrl.onActivateMetric()" ng-disabled="!sfCtrl.buttonActive">
             Add Chart
         </button>
       </div>

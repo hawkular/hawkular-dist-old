@@ -1,6 +1,6 @@
 <div>
   <button class="btn-link hk-label-heading" ng-click="isCollapsed = !isCollapsed">
-    <i class="fa fa-minus-square"></i>
+    <i class="fa" ng-class="isCollapsed ? 'fa-plus-square' : 'fa-minus-square'"></i>
     {{config.title}}
   </button>
   <div collapse="isCollapsed">
