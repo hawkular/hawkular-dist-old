@@ -21,6 +21,7 @@
 module HawkularMetrics {
 
   export class SideFilterController {
+    public isExpandedBody: boolean = false;
     public selectedFeed: any;
     public selectedResource: any;
     public feedsConfig: any;
@@ -105,6 +106,7 @@ module HawkularMetrics {
     };
     /*@ngInject*/
     public controller = SideFilterController;
+    public controllerAs = 'sfCtrl';
   }
 
   export class HkRadioFilterDirective {
