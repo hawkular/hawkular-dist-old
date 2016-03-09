@@ -21,15 +21,31 @@
   <dependencies>
     <artifact name="org.hawkular.accounts:hawkular-accounts-feature-pack" />
     <artifact name="org.hawkular.agent:hawkular-wildfly-agent-feature-pack" />
-
-    <!-- BTM INTEGRATION START -->
     <artifact name="org.hawkular.btm:hawkular-btm-integrated-feature-pack" />
-    <!-- BTM INTEGRATION FINISH -->
   </dependencies>
 
   <config>
     <standalone template="configuration/standalone/template.xml" subsystems="configuration/standalone/subsystems.xml" output-file="standalone/configuration/standalone.xml" />
   </config>
+
+  <copy-artifacts>
+    <copy-artifact artifact="org.hawkular:hawkular-avail-creator" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-avail-creator.war" />
+    <copy-artifact artifact="org.hawkular:hawkular-console" extract="true" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-console.war" />
+    <copy-artifact artifact="org.hawkular:hawkular-pinger" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-pinger.war" />
+    <copy-artifact artifact="org.hawkular:hawkular-wildfly-agent-download" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-wildfly-agent-download.war" />
+    <copy-artifact artifact="org.hawkular:hawkular-rest-api" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-rest-api.war" />
+
+    <copy-artifact artifact="org.hawkular.agent:hawkular-wildfly-agent-wf-extension" to-location="standalone/configuration/hawkular-wildfly-agent-wf-extension.zip" />
+    <copy-artifact artifact="org.hawkular.agent:hawkular-wildfly-agent-installer" to-location="standalone/configuration/hawkular-wildfly-agent-installer.jar" />
+
+    <copy-artifact artifact="org.hawkular.alerts:hawkular-alerts-rest" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-alerts-rest.war" />
+    <copy-artifact artifact="org.hawkular.alerts:hawkular-alerts-actions-email" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-alerts-actions-email.war" />
+
+    <copy-artifact artifact="org.hawkular.inventory:hawkular-inventory-dist" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-inventory-dist.war" />
+    <copy-artifact artifact="org.hawkular.metrics:hawkular-metrics-component" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-metrics-component.war" />
+    <copy-artifact artifact="org.hawkular.cmdgw:hawkular-command-gateway-war" to-location="modules/system/layers/hawkular/org/hawkular/nest/main/deployments/hawkular-command-gateway-war.war" />
+
+  </copy-artifacts>
 
   <file-permissions>
     <permission value="755">

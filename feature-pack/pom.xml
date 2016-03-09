@@ -33,16 +33,43 @@
   <dependencies>
 
     <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-avail-creator</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-console</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-pinger</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-wildfly-agent-download</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.hawkular</groupId>
+      <artifactId>hawkular-rest-api</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
       <groupId>org.hawkular.accounts</groupId>
       <artifactId>hawkular-accounts-feature-pack</artifactId>
       <version>${version.org.hawkular.accounts}</version>
       <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -50,28 +77,62 @@
       <artifactId>hawkular-wildfly-agent-feature-pack</artifactId>
       <version>${version.org.hawkular.agent}</version>
       <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
-    <!-- BTM INTEGRATION START -->
+    <dependency>
+      <groupId>org.hawkular.agent</groupId>
+      <artifactId>hawkular-wildfly-agent-wf-extension</artifactId>
+      <version>${version.org.hawkular.agent}</version>
+      <type>zip</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.agent</groupId>
+      <artifactId>hawkular-wildfly-agent-installer</artifactId>
+      <version>${version.org.hawkular.agent}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.alerts</groupId>
+      <artifactId>hawkular-alerts-rest</artifactId>
+      <version>${version.org.hawkular.alerts}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.alerts</groupId>
+      <artifactId>hawkular-alerts-actions-email</artifactId>
+      <version>${version.org.hawkular.alerts}</version>
+      <type>war</type>
+    </dependency>
+
     <dependency>
       <groupId>org.hawkular.btm</groupId>
       <artifactId>hawkular-btm-integrated-feature-pack</artifactId>
       <version>${version.org.hawkular.btm}</version>
       <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
-    <!-- BTM INTEGRATION FINISH -->
+
+    <dependency>
+      <groupId>org.hawkular.cmdgw</groupId>
+      <artifactId>hawkular-command-gateway-war</artifactId>
+      <version>${version.org.hawkular.cmdgw}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.inventory</groupId>
+      <artifactId>hawkular-inventory-dist</artifactId>
+      <version>${version.org.hawkular.inventory}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.metrics</groupId>
+      <artifactId>hawkular-metrics-component</artifactId>
+      <version>${version.org.hawkular.metrics}</version>
+      <type>war</type>
+    </dependency>
 
   </dependencies>
 
@@ -89,46 +150,46 @@
               <goal>unpack</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/upstream-subsystem-templates</outputDirectory>
-              <includes>subsystem-templates/*.xml</includes>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.keycloak</groupId>
-                  <artifactId>keycloak-wildfly-server-subsystem</artifactId>
-                  <version>${version.org.keycloak}</version>
+                  <groupId>org.hawkular.agent</groupId>
+                  <artifactId>hawkular-wildfly-agent-feature-pack</artifactId>
+                  <version>${version.org.hawkular.agent}</version>
+                  <type>zip</type>
+                  <includes>subsystem-templates/*.xml</includes>
+                  <outputDirectory>${project.build.directory}/feature-pack-resources</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.hawkular.accounts</groupId>
                   <artifactId>hawkular-accounts-feature-pack</artifactId>
                   <version>${version.org.hawkular.accounts}</version>
                   <type>zip</type>
+                  <includes>subsystem-templates/*.xml</includes>
+                  <outputDirectory>${project.build.directory}/feature-pack-resources</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
           <execution>
-            <!--
-              OK, this is a little bit weird step.
-              To make the provisioning plugin realize that we need the subsystems from accounts, we would have to
-              declare a module that would include the artifact with the subsystem-templates of accounts. Now inventory
-              feature pack does NOT need any such module - we just want to declare the same stuff as accounts.
-            -->
-            <id>copy-accounts-subsystem-templates</id>
-            <phase>prepare-package</phase>
+            <id>copy-resources</id>
+            <phase>generate-resources</phase>
             <goals>
-              <goal>unpack</goal>
+              <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}</outputDirectory>
-              <includes>subsystem-templates/*xml</includes>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.hawkular.accounts</groupId>
-                  <artifactId>hawkular-accounts-feature-pack</artifactId>
-                  <version>${version.org.hawkular.accounts}</version>
-                  <type>zip</type>
-                </artifactItem>
-              </artifactItems>
+              <outputDirectory>${project.build.directory}/feature-pack-resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/src/main/resources</directory>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
@@ -145,7 +206,7 @@
               <goal>build</goal>
             </goals>
             <configuration>
-              <config-file>feature-pack-build.xml</config-file>
+              <resources-dir>target/feature-pack-resources</resources-dir>
             </configuration>
           </execution>
         </executions>
