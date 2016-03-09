@@ -91,7 +91,7 @@
     <version.org.hawkular.accounts>2.0.22.Final</version.org.hawkular.accounts>
     <version.org.hawkular.agent>0.17.0.Final</version.org.hawkular.agent>
     <version.org.hawkular.alerts>1.0.1.Final</version.org.hawkular.alerts>
-    <version.org.hawkular.btm>0.7.3.Final</version.org.hawkular.btm>
+    <version.org.hawkular.btm>0.7.4.Final</version.org.hawkular.btm>
     <version.org.hawkular.cmdgw>0.11.0.Final</version.org.hawkular.cmdgw>
     <version.org.hawkular.commons>0.4.0.Final</version.org.hawkular.commons>
     <version.org.hawkular.inventory>0.13.0.Final</version.org.hawkular.inventory>

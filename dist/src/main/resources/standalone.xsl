@@ -290,6 +290,7 @@
       <jms-topic name="BusinessTransactions" entries="java:/BusinessTransactions"/>
       <jms-topic name="CommunicationDetails" entries="java:/CommunicationDetails"/>
       <jms-topic name="BTxnCompletionTimes" entries="java:/BTxnCompletionTimes"/>
+      <jms-topic name="BTxnCompletionInformation" entries="java:/BTxnCompletionInformation"/>
       <jms-topic name="FragmentCompletionTimes" entries="java:/FragmentCompletionTimes"/>
       <jms-topic name="NodeDetails" entries="java:/NodeDetails"/>
       <jms-topic name="Notifications" entries="java:/Notifications"/>
