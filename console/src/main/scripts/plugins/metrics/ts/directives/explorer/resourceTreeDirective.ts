@@ -26,7 +26,7 @@ module HawkularMetrics {
     public selectedResource: any;
 
     /*@ngInject*/
-    constructor (private HawkularInventory: any, $scope: ng.IScope) {
+    constructor (private HawkularInventory: any, $scope: ng.IScope, private $log: ng.ILogService) {
       $scope.$watch(() => this.selectedResource, () => {
         if (this.selectedFeed && this.selectedResource) {
           if (ResourceTreeController.isParentNode(this.selectedResource)) {
@@ -79,6 +79,7 @@ module HawkularMetrics {
       label = (label.lastIndexOf('%2F') !== -1)
         ? label.substring(label.lastIndexOf('%2F') + '%2F'.length, label.length)
         : label;
+      label = label.replace(/%3D/g, '=');
       return label;
     }
 
@@ -89,7 +90,20 @@ module HawkularMetrics {
       return children;
     }
 
+    /**
+     * Insert item (children) at certain path. Path is array containing each parent node, this path is with each
+     * recursion shorten, until it's empty.
+     * @param parent traversing rough tree over parent.nodes
+     * @param path array of items where this children should be inserted
+     * @param item array of children. They will be put at parent.node
+     * @returns {any} slowly builds up the tree.
+     */
     public insertAtPath(parent: any, path: any, item: any) {
+      if (typeof parent === 'undefined') {
+        this.$log.error('There has been error in rendering the child tree. Trying to display at least some part of ' +
+          'this children tree. These are the children we are trying to insert: ', item);
+        return undefined;
+      }
       if (path.length === 0) {
         parent.nodes = ResourceTreeController.fillChildrenNodes(item);
         return parent;
@@ -101,7 +115,6 @@ module HawkularMetrics {
           path, item);
       }
     }
-
   }
 
   class HkResourceTreeComponent {
