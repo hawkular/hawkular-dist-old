@@ -78,9 +78,11 @@ module HawkularMetrics {
     public getMetrics(resource) {
       this.selectedMetric = null;
       this.buttonActive = false;
+      const resourcePath = resource.resourcePath.replace(/\/r;/g, '/').slice(1);
+      console.log(resourcePath);
       this.HawkularInventory['MetricOfResourceUnderFeed']['get']({
           feedId: this.selectedFeed.id,
-          resourcePath: resource.resourcePath.replace(/\/r;/g, '/').slice(1)
+          resourcePath: resourcePath
         },
         (metricList) => {
           this.metrics = metricList;
