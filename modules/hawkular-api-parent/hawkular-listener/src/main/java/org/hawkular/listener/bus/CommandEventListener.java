@@ -36,7 +36,7 @@ import org.hawkular.inventory.api.model.CanonicalPath;
 import org.jboss.logging.Logger;
 
 /**
- * Consume Command Gateway Events, convert to Hawkular Events and forward to alerts engine for persistence/evaluation.
+ * Consume Command Gateway Events, convert to Hawkular Events and forward for persistence/evaluation.
  * <p>
  * This is useful only when deploying into the Hawkular Bus with Hawkular Command Gateway. The expected message
  * payload should be a command pojo.
@@ -68,18 +68,15 @@ public class CommandEventListener extends BasicMessageListener<BasicMessage> {
                 String canonicalPathString = dar.getResourcePath();
                 CanonicalPath canonicalPath = CanonicalPath.fromString(canonicalPathString);
                 String tenantId = canonicalPath.ids().getTenantId();
-                String feedId = canonicalPath.ids().getFeedId();
-                String resourceId = canonicalPath.ids().getResourcePath().getSegment().getElementId();
-                resourceId = resourceId.substring(0, resourceId.length() - 2); // trim trailing '~~'
                 String eventId = UUID.randomUUID().toString();
-                String dataId = feedId + "/" + resourceId + "_DeployApplicationResponse";
                 String category = "Hawkular Deployment";
-                String text = dar.getStatus().name();
-                Event event = new Event(tenantId, eventId, dataId, category, text);
-                event.addContext("CanonicalPath", canonicalPathString);
-                event.addContext("Message", dar.getMessage());
-
-                log.debugf("Received message [%s] and forwarding it to Alerts as event [%s]", dar, event);
+                String text = dar.getStatus().name().toLowerCase();
+                Event event = new Event(tenantId, eventId, category, text);
+                event.addContext("resource_path", canonicalPathString);
+                event.addContext("message", dar.getMessage());
+                event.addTag("miq.event_type", "hawkular_deployment." + ("error".equals(text) ? text : "ok"));
+                event.addTag("miq.resource_type", "MiddlewareServer");
+                log.debugf("Received message [%s] and forwarding it as [%s]", dar, event);
 
                 alerts.addEvents(Collections.singleton(event));
 
