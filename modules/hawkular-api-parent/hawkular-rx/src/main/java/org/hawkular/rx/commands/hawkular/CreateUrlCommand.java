@@ -30,9 +30,9 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.hawkular.inventory.api.model.CanonicalPath;
 import org.hawkular.inventory.api.model.Metric;
 import org.hawkular.inventory.api.model.Resource;
+import org.hawkular.inventory.paths.CanonicalPath;
 import org.hawkular.rx.cdi.CreateCommand;
 import org.hawkular.rx.cdi.Initialized;
 import org.hawkular.rx.cdi.WithValues;

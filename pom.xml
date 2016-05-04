@@ -94,7 +94,7 @@
     <version.org.hawkular.btm>0.7.4.Final</version.org.hawkular.btm>
     <version.org.hawkular.cmdgw>0.11.0.Final</version.org.hawkular.cmdgw>
     <version.org.hawkular.commons>0.4.0.Final</version.org.hawkular.commons>
-    <version.org.hawkular.inventory>0.13.0.Final</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>0.15.1.Final</version.org.hawkular.inventory>
     <version.org.hawkular.metrics>0.13.0.Final</version.org.hawkular.metrics>
 
     <version.org.jboss.weld.se>2.3.2.Final</version.org.jboss.weld.se>

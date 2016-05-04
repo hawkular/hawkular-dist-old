@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hawkular.component.pinger.PingDestination.ResourceField;
-import org.hawkular.inventory.api.model.CanonicalPath;
 import org.hawkular.inventory.api.model.Resource;
 import org.hawkular.inventory.api.model.ResourceType;
+import org.hawkular.inventory.paths.CanonicalPath;
 
 /**
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
@@ -40,9 +40,9 @@ public class PingerTestUtils {
         props.put(ResourceField.url.name(), PingerTestUtils.TEST_URL);
         props.put(ResourceField.method.name(), PingerTestUtils.GET_METHOD);
         ResourceType urlType = new ResourceType(CanonicalPath.of().tenant(TEST_TENANT_ID)
-                .resourceType(PingDestination.URL_TYPE).get());
+                .resourceType(PingDestination.URL_TYPE).get(), "URL");
         Resource urlResource = new Resource(CanonicalPath.of().tenant(TEST_TENANT_ID).environment(TEST_ENVIRONMENT_ID)
-                .resource(TEST_RESOURCE_ID).get(), urlType, props);
+                .resource(TEST_RESOURCE_ID).get(), TEST_RESOURCE_ID, urlType, props);
         return urlResource;
     }
 

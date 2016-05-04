@@ -62,7 +62,7 @@ public class ExceptionMapperUtils {
         private final Filter[][] paths;
 
         public static EntityTypeAndPath fromException(EntityNotFoundException e) {
-            return new EntityTypeAndPath(e.getEntityType().getSimpleName(), e.getFilters());
+            return new EntityTypeAndPath(e.getEntitySimpleTypeName(), e.getFilters());
         }
 
         public EntityTypeAndPath(String entityType, Filter[][] paths) {
