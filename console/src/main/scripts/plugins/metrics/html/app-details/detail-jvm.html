@@ -63,11 +63,11 @@
 
             <div class="hk-graph-container hk-graph-metrics">
               <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-              <hawkular-chart
+              <hk-metric-chart
                 multi-data="vm.chartHeapData"
                 chart-type="multiline"
                 y-axis-units="Usage (MB)">
-              </hawkular-chart>
+              </hk-metric-chart>
               <!-- Context Chart Begins here
               <div class="context-graph-container" ng-if="vm.contextChartHeapUsedData.length > 2">
                 <hawkular-context-chart
@@ -110,11 +110,11 @@
 
             <div class="hk-graph-container hk-graph-metrics">
               <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-              <hawkular-chart
+              <hk-metric-chart
                 multi-data="vm.chartNonHeapData"
                 chart-type="multiline"
                 y-axis-units="Usage (MB)">
-              </hawkular-chart>
+              </hk-metric-chart>
               <!-- Context Chart Begins here
               <div class="context-graph-container" ng-if="vm.contextChartNonHeapUsedData.length > 2">
                 <hawkular-context-chart
@@ -151,14 +151,14 @@
             <h2>GC Duration</h2>
 
             <div class="hk-graph-container hk-graph-metrics">
-              <hawkular-chart
+              <hk-metric-chart
                 data="vm.chartGCDurationData"
                 chart-type="histogram"
                 alert-value="{{vm.threshold}}"
                 use-zero-min-value="true"
                 hide-high-low-values="true"
                 y-axis-units="GC Duration (ms)">
-              </hawkular-chart>
+              </hk-metric-chart>
               <!-- Context Chart Begins here
               <div class="context-graph-container" ng-if="vm.contextChartGCDurationData.length > 2">
                 <hawkular-context-chart

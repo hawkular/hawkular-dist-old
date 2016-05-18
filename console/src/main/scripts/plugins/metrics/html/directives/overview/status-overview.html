@@ -12,20 +12,21 @@
         <hk-status-overview-item metric-title="Alerts"
                                  metric-count="alertInfo.alertCount"
                                  metric-info="Open Alerts">
-          <hawkular-sparkline-chart data="alertInfo.graphData"
+          <hk-metric-chart data="alertInfo.graphData"
                                     show-x-axis-values="true"
                                     show-y-axis-values="true">
-          </hawkular-sparkline-chart>
+          </hk-metric-chart>
         </hk-status-overview-item>
       </div>
       <div class="col-sm-6 hk-dashboard-block">
         <hk-status-overview-item metric-title="JVM Heap Usage"
                                  metric-count="overviewInfo.heapUsage.last / 1024 / 1024 | number : 0"
                                  metric-info="JVM Heap Usage">
-          <hawkular-sparkline-chart data="overviewInfo.heapUsage.graph"
+          <hk-metric-chart data="overviewInfo.heapUsage.graph"
                                     show-x-axis-values="true"
-                                    show-y-axis-values="true">
-          </hawkular-sparkline-chart>
+                                    show-y-axis-values="true"
+                                    chart-type="area">
+          </hk-metric-chart>
         </hk-status-overview-item>
       </div>
       <div ng-repeat="datasource in datasourceInfo track by $index" class="col-sm-6 hk-dashboard-block">
@@ -71,11 +72,11 @@
         <hk-status-overview-item metric-title="Web Sessions"
                                  metric-count="overviewInfo.activeWebSessions.last"
                                  metric-info="active sessions">
-          <div ng-if="overviewInfo && overviewInfo.activeWebSessions">
-            <hawkular-sparkline-chart data="overviewInfo.activeWebSessions.graph"
+          <div ng-if="overviewInfo && overviewInfo.activeWebSessions" style="height: 150px; width: 300px">
+            <hk-metric-chart data="overviewInfo.activeWebSessions.graph"
                                       show-x-axis-values="true"
                                       show-y-axis-values="true">
-            </hawkular-sparkline-chart>
+            </hk-metric-chart>
           </div>
         </hk-status-overview-item>
       </div>

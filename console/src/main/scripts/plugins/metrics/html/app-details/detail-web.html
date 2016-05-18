@@ -55,12 +55,12 @@
             <h2>Web Sessions</h2>
             <div class="hk-graph-container hk-graph-metrics">
               <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-              <hawkular-chart
+              <hk-metric-chart
                 multi-data="vm.chartWebSessionData"
                 chart-type="multiline"
                 y-axis-units="Count (#)"
                 chart-height="250">
-              </hawkular-chart>
+              </hk-metric-chart>
               <!--
               <div class="context-graph-container" ng-if="vm.contextChartActiveWebSessionData.length > 2">
                 <hawkular-context-chart
