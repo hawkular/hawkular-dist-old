@@ -15,11 +15,11 @@
         <span class="spinner spinner-inline" ng-hide="vm.resource.responseTime.length > 0" popover="Your data is being collected. You should see something in a few seconds." popover-trigger="mouseenter" popover-placement="bottom"></span>
       </div>
       <div class="chart-pf-sparkline {{vm.resource.isUp?'':'c3-danger'}}">
-        <hawkular-sparkline-chart
+        <hk-metric-chart
           data="vm.resource.graphResponseTime"
           show-x-axis-values="false"
           show-y-axis-values="false">
-        </hawkular-sparkline-chart>
+        </hk-metric-chart>
       </div>
       <div class="hk-tile-info">
         <a href="{{vm.getResponseTimeUrl(vm.resource.id)}}">

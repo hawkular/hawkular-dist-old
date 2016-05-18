@@ -64,13 +64,13 @@
         <h2>Memory Usage</h2>
         <div class="hk-graph-container hk-graph-metrics" ng-if="os.resolvedMemoryData">
           <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-          <hawkular-chart
+          <hk-metric-chart
             data="os.chartMemoryUsageData"
             chart-type="area"
             hide-high-low-values="false"
             y-axis-units="Available (MB)"
             chart-height="250">
-          </hawkular-chart>
+          </hk-metric-chart>
         </div>
       </div>
 
@@ -79,13 +79,13 @@
         <!-- cpu summary usage over all cpus -->
         <div class="hk-graph-container hk-graph-metrics" ng-if="os.resolvedCPUData">
           <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-          <hawkular-chart
+          <hk-metric-chart
             data="os.chartCpuData"
             chart-type="rhqbar"
             hide-high-low-values="false"
             y-axis-units="Usage (%)"
             chart-height="250">
-          </hawkular-chart>
+          </hk-metric-chart>
         </div>
 
         <!-- mini charts per cpu -->
@@ -93,15 +93,17 @@
         <div class="panel panel-default hk-graph" ng-if="os.resolvedCPUData">
           <div class="row">
             <div class="hk-graph-container hk-graph-metrics col-xs-6"  ng-repeat="cpu in os.processorList">
-              <span ng-show="os.chartCpuDataMulti[cpu]">
+              <span ng-show="os.chartCpuDataMulti[cpu]" style="height: 100%;">
                 <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-                <hawkular-chart
-                  data="os.chartCpuDataMulti[cpu]"
-                  chart-type="rhqbar"
-                  hide-high-low-values="false"
-                  y-axis-units="Usage (%)"
-                  chart-height="150">
-                </hawkular-chart>
+                <div style="height: 100%">
+                    <hk-metric-chart
+                      data="os.chartCpuDataMulti[cpu]"
+                      chart-type="rhqbar"
+                      hide-high-low-values="false"
+                      y-axis-units="Usage (%)"
+                      chart-height="150">
+                    </hk-metric-chart>
+                  </div>
               </span>
               <span class="hk-data" ng-show="!os.chartCpuDataMulti[cpu]">Loading ...</span>
               <span class="hk-item">{{os.processorListNames[cpu]}}</span>
@@ -142,12 +144,12 @@
               <div ng-if="os.resolvedChartFileSystemData[fs.id]">
                 <h2>File System Usage</h2>
                 <div class="hk-graph-container hk-graph-metrics">
-                  <hawkular-chart
+                  <hk-metric-chart
                     multi-data="os.chartFileSystemData[fs.id]"
                     chart-type="multiline"
                     y-axis-units="Disk Space (MB)"
                     chart-height="250">
-                  </hawkular-chart>
+                  </hk-metric-chart>
                 </div>
                 <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
                   <div class="col-md-12">
@@ -212,12 +214,12 @@
                 <div class="panel panel-default hk-graph" ng-if="os.resolvedChartFileSystemData[fs.id]">
                   <h2>File System Usage</h2>
                   <div class="hk-graph-container hk-graph-metrics">
-                    <hawkular-chart
+                    <hk-metric-chart
                       multi-data="os.chartFileSystemData[fs.id]"
                       chart-type="multiline"
                       y-axis-units="Disk Space (MB)"
                       chart-height="250">
-                    </hawkular-chart>
+                    </hk-metric-chart>
                   </div>
                   <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
                     <div class="col-md-12">

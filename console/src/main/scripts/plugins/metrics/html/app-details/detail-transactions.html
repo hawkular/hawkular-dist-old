@@ -55,26 +55,28 @@
             <h2 class="card-pf-title">
               Inflight Transactions
             </h2>
-            <div class="card-pf-body">
+            <div class="card-pf-body" style="height: 80px; width: 200px;">
               <p class="card-pf-utilization-details">
                 <span class="card-pf-utilization-card-details-count">{{vm.inflightTx.max}}</span>
               </p>
-              <hawkular-sparkline-chart data="vm.chartTxInflightData" show-x-axis-values="false"
-                                        show-y-axis-values="false"></hawkular-sparkline-chart>
+              <hk-metric-chart data="vm.chartTxInflightData"
+                               show-x-axis-values="false"
+                               show-y-axis-values="false">
+              </hk-metric-chart>
               <!--<p class="hk-card-interval">Last Hour</p>--> <!-- TODO: Show interval ? -->
             </div>
           </div>
         </div>
 
         <div class="col-sm-9">
-          <div class="card-pf hk-graph">
+          <div class="card-pf hk-graph hk-graph-metrics">
             <h2>Transactions <!-- span>(10 Jun 2015, 12:15 - 13:15)</span TODO: Show interval ? --></h2>
 
-            <hawkular-chart
+            <hk-metric-chart
               multi-data="vm.chartTxData"
               chart-type="multiline"
               y-axis-units="Count (#)">
-            </hawkular-chart>
+            </hk-metric-chart>
 
             <div class="row hk-legend text-left">
               <div class="hk-graphselector hk-blue col-md-4 col-sm-6">

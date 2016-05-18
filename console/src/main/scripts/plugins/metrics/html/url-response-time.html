@@ -76,14 +76,14 @@
 
           <div class="hk-graph-container hk-graph-metrics">
             <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-            <hawkular-chart
+            <hk-metric-chart
               data="vm.chartData.dataPoints"
               chart-type="line"
               alert-value="{{vm.threshold}}"
               use-zero-min-value="true"
               y-axis-units="Response Time (ms)"
               chart-height="250">
-            </hawkular-chart>
+            </hk-metric-chart>
           </div>
 
           <div class="hk-legend text-left hk-legend-metrics" ng-show="vm.chartData.dataPoints.length">

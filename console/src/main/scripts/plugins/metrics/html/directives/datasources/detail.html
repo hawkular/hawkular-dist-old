@@ -20,10 +20,10 @@
       <div class="panel panel-default hk-graph" ng-if="vm.resolvedAvailData">
         <h2>Availability</h2>
         <div class="hk-graph-container hk-graph-metrics">
-          <hawkular-chart multi-data="vm.chartAvailData"
+          <hk-metric-chart multi-data="vm.chartAvailData"
                           chart-type="multiline" y-axis-units="Availability (#)"
                           chart-height="250">
-          </hawkular-chart>
+          </hk-metric-chart>
         </div>
         <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
           <div class="col-md-12">
@@ -53,11 +53,11 @@
       <div class="panel panel-default hk-graph" ng-if="vm.resolvedRespData">
         <h2>Responsiveness</h2>
         <div class="hk-graph-container hk-graph-metrics">
-          <hawkular-chart multi-data="vm.chartRespData"
+          <hk-metric-chart multi-data="vm.chartRespData"
                           chart-type="multiline"
                           y-axis-units="Responsiveness (ms)"
                           chart-height="250">
-          </hawkular-chart>
+          </hk-metric-chart>
         </div>
         <div class="row hk-legend hk-legend-inline text-left hk-legend-metrics">
           <div class="col-md-12">
