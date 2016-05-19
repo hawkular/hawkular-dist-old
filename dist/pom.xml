@@ -77,6 +77,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hawkular.datamining</groupId>
+      <artifactId>hawkular-datamining-dist</artifactId>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
       <groupId>org.hawkular.inventory</groupId>
       <artifactId>hawkular-inventory-dist</artifactId>
       <type>war</type>
