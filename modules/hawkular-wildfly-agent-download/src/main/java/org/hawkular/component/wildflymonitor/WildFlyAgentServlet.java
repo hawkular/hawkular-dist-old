@@ -82,8 +82,6 @@ public class WildFlyAgentServlet extends HttpServlet {
     private static final String AGENT_INSTALLER_PROPERTY_MANAGED_SERVER_NAME = "managed-server-name";
     private static final String AGENT_INSTALLER_PROPERTY_USERNAME = "username";
     private static final String AGENT_INSTALLER_PROPERTY_PASSWORD = "password";
-    private static final String AGENT_INSTALLER_PROPERTY_SECURITY_KEY = "security-key";
-    private static final String AGENT_INSTALLER_PROPERTY_SECURITY_SECRET = "security-secret";
     private static final String AGENT_INSTALLER_PROPERTY_KEYSTORE_PATH = "keystore-path";
     private static final String AGENT_INSTALLER_PROPERTY_KEYSTORE_PASSWORD = "keystore-password";
     private static final String AGENT_INSTALLER_PROPERTY_KEY_PASSWORD = "key-password";
@@ -200,10 +198,6 @@ public class WildFlyAgentServlet extends HttpServlet {
                     getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_USERNAME, null));
             newProperties.put(AGENT_INSTALLER_PROPERTY_PASSWORD,
                     getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_PASSWORD, null));
-            newProperties.put(AGENT_INSTALLER_PROPERTY_SECURITY_KEY,
-                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_SECURITY_KEY, null));
-            newProperties.put(AGENT_INSTALLER_PROPERTY_SECURITY_SECRET,
-                    getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_SECURITY_SECRET, null));
             newProperties.put(AGENT_INSTALLER_PROPERTY_KEYSTORE_PATH,
                     getValueFromRequestParam(req, AGENT_INSTALLER_PROPERTY_KEYSTORE_PATH, null));
             newProperties.put(AGENT_INSTALLER_PROPERTY_KEY_ALIAS,
@@ -230,8 +224,6 @@ public class WildFlyAgentServlet extends HttpServlet {
                 encode(newProperties, AGENT_INSTALLER_PROPERTY_KEY_PASSWORD,
                         encryptionKey, encryptionSalt, useWeakEncryption);
                 encode(newProperties, AGENT_INSTALLER_PROPERTY_PASSWORD,
-                        encryptionKey, encryptionSalt, useWeakEncryption);
-                encode(newProperties, AGENT_INSTALLER_PROPERTY_SECURITY_SECRET,
                         encryptionKey, encryptionSalt, useWeakEncryption);
             }
 
