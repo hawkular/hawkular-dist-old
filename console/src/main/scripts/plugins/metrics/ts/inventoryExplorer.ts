@@ -51,7 +51,8 @@ module HawkularMetrics {
                 private ErrorsManager: IErrorsManager,
                 private $q: ng.IQService,
                 private $sessionStorage: any,
-                private $localStorage: any
+                private $localStorage: any,
+                private HawkularDatamining: any
     ) {
       $scope.exc = this;
       this.example_treedata = [{
@@ -170,6 +171,8 @@ module HawkularMetrics {
       this.charts.push(metric);
       this.chartType[metric.id] = metric.type.type;
       this.chartUnit[metric.id] = metric.type.unit;
+      metric.predictedData = 0;
+      metric.predictionSteps = 0;
     };
 
     public removeChart(chart) {
@@ -224,6 +227,45 @@ module HawkularMetrics {
           });
         } else {
           this.$log.log('Unknown type ' + res.type.type);
+        }
+
+        if (res.predictionSteps > 0) {
+          this.HawkularDatamining.Forecaster(this.$rootScope.currentPersona.id).forecast({
+            metricId: res.id, ahead: res.predictionSteps
+          }).$promise.then((data) => {
+            res.predictedData = this.HawkularDatamining.formatPredictedData(data, res.type.unit === 'BYTES');
+          });
+        } else if (res.predictionSteps === 0) {
+          res.predictedData = [];
+        }
+      });
+    }
+
+    public predictionChanged(chart) {
+      let predictiveRelationship = null;
+
+      this.HawkularDatamining.PredictiveRelationship().getAll().$promise.then((data) => {
+        console.log(data);
+
+        _.each(data, (rel: any) => {
+          if (rel.target === chart.path) {
+            predictiveRelationship = rel;
+          }
+        });
+
+        if (chart.predictionSteps === 0 && predictiveRelationship != null) {
+          // disable prediction
+          console.log('Disabling prediction');
+          this.HawkularDatamining.PredictiveRelationship.disablePrediction(predictiveRelationship);
+        } else if (chart.predictionSteps > 0 && predictiveRelationship == null) {
+          //enable
+          console.log('Enabling prediction');
+          predictiveRelationship = {
+            name: '__inPrediction',
+            source: '/t;' + this.$rootScope.currentPersona.id,
+            target: chart.path
+          };
+          this.HawkularDatamining.PredictiveRelationship().enablePrediction(predictiveRelationship);
         }
       });
     }

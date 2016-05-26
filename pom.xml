@@ -94,8 +94,9 @@
     <version.org.hawkular.btm>0.7.4.Final</version.org.hawkular.btm>
     <version.org.hawkular.cmdgw>0.11.0.Final</version.org.hawkular.cmdgw>
     <version.org.hawkular.commons>0.4.0.Final</version.org.hawkular.commons>
+    <version.org.hawkular.datamining>0.2.0.Final</version.org.hawkular.datamining>
     <version.org.hawkular.inventory>0.13.0.Final</version.org.hawkular.inventory>
-    <version.org.hawkular.metrics>0.13.0.Final</version.org.hawkular.metrics>
+    <version.org.hawkular.metrics>0.16.0.Final-SRC-revision-b89fb68dce4c4e280938f10d622e0f4d9375a9d5</version.org.hawkular.metrics>
 
     <version.org.jboss.weld.se>2.3.2.Final</version.org.jboss.weld.se>
     <version.org.keycloak>1.8.1.Final</version.org.keycloak>
@@ -161,6 +162,13 @@
         <artifactId>hawkular-commons-embedded-cassandra-ear</artifactId>
         <version>${version.org.hawkular.commons}</version>
         <type>ear</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.datamining</groupId>
+        <artifactId>hawkular-datamining-dist</artifactId>
+        <version>${version.org.hawkular.datamining}</version>
+        <type>war</type>
       </dependency>
 
       <dependency>
@@ -281,9 +289,7 @@
           <artifactId>docker-maven-plugin</artifactId>
           <version>${version.com.spotify.docker-maven-plugin}</version>
         </plugin>
-
       </plugins>
     </pluginManagement>
   </build>
-
 </project>

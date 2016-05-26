@@ -92,6 +92,7 @@ module HawkularMetrics {
     public contextChartHeapUsedData: IContextChartDataPoint[];
     public contextChartNonHeapUsedData: IContextChartDataPoint[];
     public contextChartGCDurationData: IContextChartDataPoint[];
+    public predictedData: any = {};
 
     // will contain in the format: 'metric name' : true | false
     public skipChartData = {};

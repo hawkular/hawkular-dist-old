@@ -22,14 +22,37 @@
       <div class="row row-cards-pf">
         <div class="col-xs-12">
           <div ng-repeat="chart in exc.charts" class="card-pf hk-graph" style="height: 380px">
-            <h2>{{chart.name}}</h2>
-            <a href="" ng-click="exc.removeChart(chart)" title="Remove this chart">
-              <span class="pull-right"><i class="fa fa-trash-o"></i></span>
-            </a>
+
+            <div class="row">
+              <div class="col-lg-3">
+                  <div class="form-group">
+                    <label class="col-sm-7 control-label" style="display: block; line-height: 25px;">Prediction
+                      <a class="hk-btn-icon" tabindex="-1" role="button" popover-append-to-body="true"
+                         popover-placement="top" popover-trigger="mouseover mouseout"
+                         popover="Enable prediction of the metric.">
+                        <i class="fa fa-info-circle"></i></a>
+                    </label>
+                    <div class="col-sm-5">
+                      <div class="input-group">
+                        <input type="number"
+                               title="Number of prediction steps. One step is equal to collection interval."
+                               min="0" value="0" ng-model="chart.predictionSteps" ng-change="exc.predictionChanged(chart)"
+                               class="form-control" style="box-shadow: 0px 0px 1px black;">
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <h2 class="col-lg-7">{{chart.name}}</h2>
+              <a class="col-lg-2" href="" ng-click="exc.removeChart(chart)" title="Remove this chart">
+                <span class="pull-right"><i class="fa fa-trash-o"></i></span>
+              </a>
+            </div>
+
             <div style="height: 300px">
                 <hk-metric-chart
                   ng-if="exc.chartType[chart.id] !=='AVAILABILITY'"
                   data="exc.chartData[chart.id]"
+                  forecast-data="chart.predictedData"
                   chart-type="line"
                   hide-high-low-values="false"
                   use-zero-min-value="false"
@@ -38,7 +61,7 @@
                 <hk-availability-chart ng-if="exc.chartType[chart.id] ==='AVAILABILITY'"
                                     data="exc.chartData[chart.id]">
                 </hk-availability-chart>
-              </div>
+            </div>
           </div>
         </div>
       </div>
