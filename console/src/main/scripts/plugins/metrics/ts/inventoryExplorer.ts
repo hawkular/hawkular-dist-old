@@ -187,6 +187,8 @@ module HawkularMetrics {
     }
 
     public refresh() {
+      this.endTimeStamp = this.$routeParams.endTime || +moment();
+      this.startTimeStamp = this.endTimeStamp - (this.$routeParams.timeOffset || 3600000);
       this.$rootScope.lastUpdateTimestamp = new Date();
       this.alertList = [];
       this.getAlerts();
